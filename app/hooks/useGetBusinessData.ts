@@ -1,0 +1,38 @@
+import { useEffect, useState } from 'react'
+import { findBusiness } from '@/app/services/business'
+import { Business } from '@/app/types/business'
+import { useSearchParams } from 'next/navigation'
+
+function useGetBusinessData () {
+  const [loading, setLoading] = useState('loading')
+  const [business, setBusiness] = useState<Business | null>(null)
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const businessId = searchParams.get('id')
+    const branchId = searchParams.get('sucursal')
+    const waiterId = searchParams.get('mesero')
+
+    if (!businessId) return
+    const fetchData = async () => {
+      setLoading('requesting')
+      try {
+        const res = await findBusiness(businessId, branchId, waiterId) || null
+
+        setBusiness(res)
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setLoading('loaded')
+      }
+    }
+    fetchData()
+  }, [])
+
+  return {
+    loading,
+    business
+  }
+}
+
+export default useGetBusinessData
