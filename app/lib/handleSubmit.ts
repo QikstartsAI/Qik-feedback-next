@@ -2,7 +2,7 @@ import { COLLECTION_NAME } from '@/app/constants/general'
 import { getFirebase, getTimesTampFromDate } from '@/app/lib/firebase'
 import { Waiter } from '@/app/types/business'
 import { FeedbackProps } from '@/app/validators/feedbackSchema'
-import { addDoc, updateDoc, collection, doc, getDoc } from 'firebase/firestore'
+import { addDoc, updateDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore'
 
 const handleSubmitFeedback = async (
   {
@@ -60,6 +60,7 @@ const handleSubmitFeedback = async (
         waiterId || '',
         'feedbacks'
       )
+      const waiterFeedbackDocRef = doc(waiterFeedbackRef, Email)
       const waitersRef = doc(collection(businessDocRef, 'meseros'), waiterId || '')
       const waitersDocSnap = await getDoc(waitersRef)
       const waiterData = waitersDocSnap.data() as Waiter
@@ -72,7 +73,7 @@ const handleSubmitFeedback = async (
         waiterRating += parseInt(Rating)
       }
       const ratingAverage = (waiterRating / (numberOfSurveys + 1)).toFixed(1)
-      await addDoc(waiterFeedbackRef, data)
+      await setDoc(waiterFeedbackDocRef, data)
 
       await updateDoc(waitersRef, {
         numberOfSurveys: numberOfSurveys + 1,
@@ -94,6 +95,7 @@ const handleSubmitFeedback = async (
         waiterId || '',
         'feedbacks'
       )
+      const waiterFeedbackDocRef = doc(waiterFeedbackRef, Email)
       const branchDocRef = doc(collection(businessDocRef, 'sucursales'), branchId || '')
       const waitersRef = doc(collection(branchDocRef, 'meseros'), waiterId || '')
       const waitersDocSnap = await getDoc(waitersRef)
@@ -107,7 +109,7 @@ const handleSubmitFeedback = async (
         waiterRating += parseInt(Rating)
       }
       const ratingAverage = (waiterRating / (numberOfSurveys + 1)).toFixed(1)
-      await addDoc(waiterFeedbackRef, data)
+      await setDoc(waiterFeedbackDocRef, data)
       await updateDoc(waitersRef, {
         numberOfSurveys: numberOfSurveys + 1,
         latestSum: waiterRating,
@@ -128,9 +130,11 @@ const handleSubmitFeedback = async (
         branchId || '',
         'feedbacks'
     )
-      await addDoc(branchFeedbackRef, data)
+      const branchFeedbackDocRef = doc(branchFeedbackRef, Email)
+      await setDoc(branchFeedbackDocRef, data)
     } else if (businessId && !waiterId) {
-      await addDoc(businessFeedbackRef, data)
+      const businessFeedbackDocRef = doc(businessFeedbackRef, Email)
+      await setDoc(businessFeedbackDocRef, data)
     }
   } catch (err) {
     console.error(err)
