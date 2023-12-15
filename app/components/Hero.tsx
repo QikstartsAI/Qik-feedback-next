@@ -1,8 +1,6 @@
 import { Business } from '@/app/types/business'
-import { Button } from './ui/Button'
-import { IconChevronsDown, IconMapPin } from '@tabler/icons-react'
+import { IconMapPin } from '@tabler/icons-react'
 import ImageRounded from './ui/ImageRounded'
-import Banner from './Banner'
 import Image from 'next/image'
 
 interface HeroProps {
@@ -26,18 +24,10 @@ function Hero ({ business }: HeroProps) {
         width={1914}
         height={548}
       />
-      <div className='relative h-screen bg-gray-900 bg-opacity-75'>
-        <div className='px-6 md:px-12 h-screen flex flex-col items-center justify-center space-y-4 lg:space-y-6'>
+      <div className='relative bg-gray-900 bg-opacity-75'>
+        <div className='px-6 md:px-12 flex flex-col items-center justify-center pb-4'>
           <>
-            <Banner className='fixed top-0' businessCountry={business?.Country || 'EC'} />
-            <div className='flex flex-col items-center space-y-4 lg:space-y-6'>
-              <Image
-                src='/googleqik.webp'
-                alt='logo google'
-                className='w-32 sm:w-40'
-                width={1584}
-                height={958}
-              />
+            <div className='flex flex-col items-center'>
               <Image
                 src={business?.Icono || ''}
                 className='w-32 lg:w-40 animate-in'
@@ -46,11 +36,11 @@ function Hero ({ business }: HeroProps) {
                 height={90}
                 loading='eager'
               />
-              <h2 className='font-sans text-2xl sm:text-3xl text-center font-bold tracking-tight text-white sm:leading-none'>
+              <h2 className='font-sans lg:text-2xl sm:text-3xl font-bold tracking-tight text-white'>
                 {business?.Name}
               </h2>
             </div>
-            <div className='flex flex-col items-center text-white/80 space-y-2 sm:space-y-3 max-w-lg'>
+            <div className='flex flex-col items-center text-white/80 mt-3 max-w-lg'>
               <p className='max-w-xl text-center text-xs sm:text-base'>
                 <IconMapPin className='w-4 h-4  sm:w-6 sm:h-6 inline-block' />{' '}
                 {business?.Address}
