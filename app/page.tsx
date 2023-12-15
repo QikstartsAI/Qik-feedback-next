@@ -18,7 +18,7 @@ export default function Home() {
     return <Thanks businessCountry={business?.Country || 'EC'} />
   }
   return (
-    <div className='min-h-screen'>
+    <div>
       {
         loading === 'loading'
           ? (
