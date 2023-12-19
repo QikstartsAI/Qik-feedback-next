@@ -8,13 +8,13 @@ import { Improvements } from '@/app/types/feedback'
 const getKnownOrigins = (business: Business | null) => {
   const referred = business?.Country === 'US'
     ? 'Referred'
-    : business?.Country === 'CA'
+    : business?.Country === 'CA' || business?.Country === 'FR'
       ? 'Référé'
       : 'Referido'
 
   const newClient = business?.Country === 'US'
     ? 'New client'
-    : business?.Country === 'CA'
+    : business?.Country === 'CA' || business?.Country === 'FR'
       ? 'Nouvelle cliente'
       : 'Cliente nuevo'
   return [
@@ -31,13 +31,13 @@ const getKnownOrigins = (business: Business | null) => {
 const getCustomersQuantity = (business: Business | null) => {
   const toGo = business?.Country === 'US'
     ? 'To go'
-    : business?.Country === 'CA'
+    : business?.Country === 'CA' || business?.Country === 'FR'
       ? 'Pour emporter'
       : 'Para llevar'
 
   const forDelivery = business?.Country === 'US'
     ? 'For delivery'
-    : business?.Country === 'CA'
+    : business?.Country === 'CA' || business?.Country === 'FR'
       ? 'Pour livraison'
       : 'Domicilio'
   return [
@@ -74,19 +74,19 @@ const getImprovements: IGetImprovements = ({ Ambience, Food, Service, business }
   const businessCountry = business?.Country
   const foodLabel = businessCountry === 'US'
     ? Improvements.Food
-    : businessCountry === 'CA'
+    : business?.Country === 'CA' || business?.Country === 'FR'
       ? 'Nourriture'
       : 'Comida'
 
   const serviceLabel = businessCountry === 'US'
     ? Improvements.Service
-    : businessCountry === 'CA'
+    : business?.Country === 'CA' || business?.Country === 'FR'
       ? 'Service'
       : 'Servicio'
 
   const ambienceLabel = businessCountry === 'US'
     ? Improvements.Ambience
-    : businessCountry === 'CA'
+    : business?.Country === 'CA' || business?.Country === 'FR'
       ? 'Ambiance'
       : 'Ambiente'
 

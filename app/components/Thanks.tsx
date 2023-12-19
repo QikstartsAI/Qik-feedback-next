@@ -11,13 +11,13 @@ function Thanks ({ businessCountry }: Props) {
       <Image
         src={businessCountry === 'US'
           ? '/thanks-en.webp'
-          : businessCountry === 'CA'
+          : businessCountry === 'CA' || businessCountry === 'FR'
             ? '/thanks-fr.webp'
             : '/thanks.webp'}
         alt={
           businessCountry === 'US'
             ? 'Remember to ask the waiter for your courtesy.'
-            : businessCountry === 'CA'
+            : businessCountry === 'CA' || businessCountry === 'FR'
               ? "N'oubliez pas de demander votre courtoisie au serveur"
               : '¡Recuerda pedir tu cortesía al mesero!'
         }

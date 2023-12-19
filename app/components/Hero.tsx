@@ -60,13 +60,13 @@ function Hero ({ business }: HeroProps) {
               {
                 business?.Country === 'US'
                   ? 'Your rating drives us to'
-                  : business?.Country === 'CA'
+                  : business?.Country === 'CA' || business?.Country === 'FR'
                     ? 'Votre note nous pousse à'
                     : 'Tu calificación nos impulsa a la'
               } <br /> {
                 business?.Country === 'US'
                   ? 'excellence'
-                  : business?.Country === 'CA'
+                  : business?.Country === 'CA' || business?.Country === 'FR'
                     ? 'excellence'
                     : 'excelencia'
               }
@@ -87,7 +87,7 @@ function Hero ({ business }: HeroProps) {
                     {
                       business?.Country === 'US'
                         ? 'Today I attended to you:'
-                        : business?.Country === 'CA'
+                        : business?.Country === 'CA' || business?.Country === 'FR'
                           ? "Aujourd'hui, je me suis occupé de vous:"
                           : 'Hoy te atendí:'
                     }
@@ -102,7 +102,7 @@ function Hero ({ business }: HeroProps) {
               {
                 business?.Country === 'US'
                   ? 'Start'
-                  : business?.Country === 'CA'
+                  : business?.Country === 'CA' || business?.Country === 'FR'
                     ? 'Commencer'
                     : 'Empezar'
               }{' '}

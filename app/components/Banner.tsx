@@ -13,14 +13,14 @@ function Banner ({ className, businessCountry }: Props) {
         src={
           businessCountry === 'US'
             ? '/cortesia-en.gif'
-            : businessCountry === 'CA'
+            : businessCountry === 'CA' || businessCountry === 'FR'
               ? '/cortesia-fr.gif'
               : '/cortesia-es.gif'
         }
         alt={
           businessCountry === 'US'
             ? 'Remember to ask the waiter for your courtesy.'
-            : businessCountry === 'CA'
+            : businessCountry === 'CA' || businessCountry === 'FR'
               ? "N'oubliez pas de demander votre courtoisie au serveur"
               : '¡Recuerda pedir tu cortesía al mesero!'
         }

@@ -38,7 +38,7 @@ function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
             <p className='w-full text-[10px] sm:text-[11px]'>  {
               business?.Country === 'US'
                 ? 'Bad'
-                : business?.Country === 'CA'
+                : business?.Country === 'CA' || business?.Country === 'FR'
                   ? 'Mal'
                   : 'Mal'
             }
@@ -70,7 +70,7 @@ function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
             <p className='w-full text-[10px] sm:text-[11px]'> {
               business?.Country === 'US'
                 ? 'Fair'
-                : business?.Country === 'CA'
+                : business?.Country === 'CA' || business?.Country === 'FR'
                   ? 'Régulière'
                   : 'Regular'
             }
@@ -103,7 +103,7 @@ function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
             <p className='w-full text-[10px] sm:text-[11px]'>    {
               business?.Country === 'US'
                 ? 'Good'
-                : business?.Country === 'CA'
+                : business?.Country === 'CA' || business?.Country === 'FR'
                   ? 'Bon'
                   : 'Bueno'
             }
@@ -136,7 +136,7 @@ function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
             <p className='w-full text-[10px] sm:text-[11px]'> {
               business?.Country === 'US'
                 ? 'Excellent'
-                : business?.Country === 'CA'
+                : business?.Country === 'CA' || business?.Country === 'FR'
                   ? 'Excellent'
                   : 'Excelente'
             }

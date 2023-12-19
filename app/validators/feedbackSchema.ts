@@ -7,7 +7,7 @@ export const feedbackSchema = (averageTicket: [string, ...string[]], businessCou
       message:
         businessCountry === 'US'
           ? 'Please tell us your name'
-          : businessCountry === 'CA'
+          : businessCountry === 'CA' || businessCountry === 'FR'
             ? "S'il vous plaît dites-nous votre nom"
             : 'Por favor dinos tu nombre'
     }),
@@ -17,7 +17,7 @@ export const feedbackSchema = (averageTicket: [string, ...string[]], businessCou
         required_error:
           businessCountry === 'US'
             ? 'Please tell us your phone number'
-            : businessCountry === 'CA'
+            : businessCountry === 'CA' || businessCountry === 'FR'
               ? "S'il vous plaît dites-nous votre numéro de téléphone"
               : 'Por favor dinos tu número de teléfono'
       })
@@ -25,7 +25,7 @@ export const feedbackSchema = (averageTicket: [string, ...string[]], businessCou
         13,
         businessCountry === 'US'
           ? 'Please type a correct phone number'
-          : businessCountry === 'CA'
+          : businessCountry === 'CA' || businessCountry === 'FR'
             ? "S'il vous plaît entrer un numéro de téléphone valide"
             : 'Por favor ingresa un número de teléfono válido'
       )
@@ -39,14 +39,14 @@ export const feedbackSchema = (averageTicket: [string, ...string[]], businessCou
         required_error:
           businessCountry === 'US'
             ? 'Please tell us your email'
-            : businessCountry === 'CA'
+            : businessCountry === 'CA' || businessCountry === 'FR'
               ? "S'il vous plaît dites-nous votre email"
               : 'Por favor dinos tu correo electrónico'
       })
       .email(
         businessCountry === 'US'
           ? 'Please type a correct email'
-          : businessCountry === 'CA'
+          : businessCountry === 'CA' || businessCountry === 'FR'
             ? 'Veuillez entrer un email valide'
             : 'Por favor ingresa un correo electrónico válido'
       ),
@@ -55,7 +55,7 @@ export const feedbackSchema = (averageTicket: [string, ...string[]], businessCou
       required_error:
         businessCountry === 'US'
           ? 'Please tell us where you know us'
-          : businessCountry === 'CA'
+          : businessCountry === 'CA' || businessCountry === 'FR'
             ? "S'il vous plaît dites-nous d'où vous nous connaissez"
             : 'Por favor dinos de dónde nos conoces'
     }),
@@ -65,14 +65,14 @@ export const feedbackSchema = (averageTicket: [string, ...string[]], businessCou
         '1-2',
         '2-4',
         '+4',
-        businessCountry === 'US' ? 'To go' : businessCountry === 'CA' ? 'Pour emporter' : 'Para llevar',
-        businessCountry === 'US' ? 'For delivery' : businessCountry === 'CA' ? 'Pour livraison' : 'Domicilio'
+        businessCountry === 'US' ? 'To go' : businessCountry === 'CA' || businessCountry === 'FR' ? 'Pour emporter' : 'Para llevar',
+        businessCountry === 'US' ? 'For delivery' : businessCountry === 'CA' || businessCountry === 'FR' ? 'Pour livraison' : 'Domicilio'
       ],
       {
         required_error:
           businessCountry === 'US'
             ? 'Please tell us how many people had dinner with you'
-            : businessCountry === 'CA'
+            : businessCountry === 'CA' || businessCountry === 'FR'
               ? "S'il vous plaît dites-nous combien de personnes ont dîné avec vous"
               : 'Por favor dinos cuántas personas cenaron contigo'
       }
@@ -82,7 +82,7 @@ export const feedbackSchema = (averageTicket: [string, ...string[]], businessCou
       required_error:
         businessCountry === 'US'
           ? 'Please tell us how much did you spend today per person?'
-          : businessCountry === 'CA'
+          : businessCountry === 'CA' || businessCountry === 'FR'
             ? "Veuillez nous dire combien vous avez dépensé aujourd'hui par personne"
             : 'Por favor dinos cuánto gastaste hoy por persona'
     }),
@@ -91,7 +91,7 @@ export const feedbackSchema = (averageTicket: [string, ...string[]], businessCou
       required_error:
         businessCountry === 'US'
           ? 'Please tell us how were we today'
-          : businessCountry === 'CA'
+          : businessCountry === 'CA' || businessCountry === 'FR'
             ? "S'il te plaît, dis-nous comment nous étions aujourd'hui"
             : 'Por favor cuentanos cómo estuvimos el día de hoy'
     }),
@@ -113,7 +113,7 @@ export const feedbackSchema = (averageTicket: [string, ...string[]], businessCou
         500,
         businessCountry === 'US'
           ? 'You cannot exceed 500 characters'
-          : businessCountry === 'CA'
+          : businessCountry === 'CA' || businessCountry === 'FR'
             ? 'Vous ne pouvez pas dépasser 500 caractères'
             : 'No puedes exceder los 500 caracteres'
       ),

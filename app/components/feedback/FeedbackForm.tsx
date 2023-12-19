@@ -86,6 +86,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
   const isLowRating = watchRating === Ratings.Mal || watchRating === Ratings.Regular
   const isUsCountry = business?.Country === 'US'
   const isCaCountry = business?.Country === 'CA'
+  const isFrCountry = business?.Country === 'FR'
   const watchFullName = watch('FullName')
 
   const handleRedirect = () => {
@@ -100,7 +101,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
         type: 'manual',
         message: isUsCountry
           ? 'Select at least one option'
-          : isCaCountry
+          : isCaCountry || isFrCountry
             ? 'Sélectionnez au moins une option'
             : 'Selecciona al menos una opción'
       })
@@ -112,7 +113,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
         type: 'manual',
         message: isUsCountry
           ? 'Please tell us how can we improve'
-          : isCaCountry
+          : isCaCountry || isFrCountry
             ? 'Veuillez écrire comment nous pouvons améliorer'
             : 'Por favor, escribe en que podemos mejorar'
       })
@@ -132,7 +133,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
       toast({
         title: isUsCountry
           ? 'An error occurred, try again'
-          : isCaCountry
+          : isCaCountry || isFrCountry
             ? "Une erreur s'est produite, réessayez"
             : 'Ocurrio un error, intenta nuevamente',
         variant: 'destructive'
@@ -152,7 +153,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
               {
               isUsCountry
                 ? 'We value your opinion 😊, it will take you less than '
-                : isCaCountry
+                : isCaCountry || isFrCountry
                   ? 'Nous apprécions votre avis 😊, cela vous prendra moins de '
                   : 'Valoramos tu opinión 😊, te tomará menos de '
             }
@@ -160,7 +161,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                 {
                 isUsCountry
                   ? '1 minute'
-                  : isCaCountry
+                  : isCaCountry || isFrCountry
                     ? '1 minute'
                     : '1 minuto'
               }
@@ -187,7 +188,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                           {
                           isUsCountry
                             ? 'Full name'
-                            : isCaCountry
+                            : isCaCountry || isFrCountry
                               ? 'Nom complet'
                               : 'Nombre completo'
                         }
@@ -208,7 +209,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                           {
                           isUsCountry
                             ? 'Phone (optional)'
-                            : isCaCountry
+                            : isCaCountry || isFrCountry
                               ? 'Téléphone (facultatif)'
                               : 'Teléfono (opcional)'
                         }
@@ -240,7 +241,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                             {
                             isUsCountry
                               ? 'I agree to receive promotions'
-                              : isCaCountry
+                              : isCaCountry || isFrCountry
                                 ? "J'accepte de recevoir des promotions"
                                 : 'Acepto recibir promociones'
                           }
@@ -258,7 +259,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                           {
                           isUsCountry
                             ? 'Email'
-                            : isCaCountry
+                            : isCaCountry || isFrCountry
                               ? 'Courrier électronique'
                               : 'Correo electrónico'
                         }
@@ -279,7 +280,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                         <FormLabel>   {
                           isUsCountry
                             ? 'Where do you know us from?'
-                            : isCaCountry
+                            : isCaCountry || isFrCountry
                               ? "D'où nous connaissez-vous?"
                               : '¿De dónde nos conoces?'
                         }
@@ -308,7 +309,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                           {
                           isUsCountry
                             ? 'Your birthday? 🎂 (optional)'
-                            : isCaCountry
+                            : isCaCountry || isFrCountry
                               ? 'Ton anniversaire? 🎂 (facultatif)'
                               : '¿Tu fecha de cumpleaños? 🎂 (opcional)'
                         }
@@ -329,7 +330,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                         <FormLabel>  {
                           isUsCountry
                             ? 'People at the table?'
-                            : isCaCountry
+                            : isCaCountry || isFrCountry
                               ? 'Du monde à table ?'
                               : '¿Personas en la mesa?'
                         }
@@ -356,7 +357,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                         <FormLabel>       {
                           isUsCountry
                             ? 'How much did you spend today per person?'
-                            : isCaCountry
+                            : isCaCountry || isFrCountry
                               ? "Qu'est-ce que tu as à manger aujourd'hui par personne ?"
                               : '¿Cuánto gastaste hoy por persona?'
                         }
@@ -383,7 +384,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                         <FormLabel>  {
                           isUsCountry
                             ? 'How were we today?'
-                            : isCaCountry
+                            : isCaCountry || isFrCountry
                               ? "Comment sommes-nous le jour d'aujourd'hui ?"
                               : '¿Cómo estuvimos el dia de hoy?'
                         }
@@ -408,7 +409,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                             {
                             isUsCountry
                               ? 'What can we improve?'
-                              : isCaCountry
+                              : isCaCountry || isFrCountry
                                 ? "Et qu'est-ce que nous pourrions améliorer?"
                                 : '¿En qué podemos mejorar?'
                           }
@@ -440,7 +441,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                                     {
                                     isUsCountry
                                       ? 'Food'
-                                      : isCaCountry
+                                      : isCaCountry || isFrCountry
                                         ? 'Cuisine'
                                         : 'Comida'
                                   }
@@ -474,7 +475,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                                     {
                                     isUsCountry
                                       ? 'Service'
-                                      : isCaCountry
+                                      : isCaCountry || isFrCountry
                                         ? 'Service'
                                         : 'Servicio'
                                   }
@@ -508,7 +509,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                                     {
                                     isUsCountry
                                       ? 'Atmosphere'
-                                      : isCaCountry
+                                      : isCaCountry || isFrCountry
                                         ? 'Ambiance'
                                         : 'Ambiente'
                                   }
@@ -530,7 +531,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                                 {
                                 isUsCountry
                                   ? 'Share details about your experience in this place'
-                                  : isCaCountry
+                                  : isCaCountry || isFrCountry
                                     ? 'Partagez des détails sur votre expérience dans ce lieu'
                                     : 'Compartenos detalles sobre tu experiencia en este lugar'
                               }
@@ -540,7 +541,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                                   placeholder={
                                   isUsCountry
                                     ? 'Ej:the food was very good, but the service was slow.'
-                                    : isCaCountry
+                                    : isCaCountry || isFrCountry
                                       ? 'Fr: La nourriture était très bonne, mais le service était lent.'
                                       : 'Ej: La comida estuvo muy buena, pero el servicio fue lento.'
                                 }
@@ -562,7 +563,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                         {
                         isUsCountry
                           ? 'Last favor'
-                          : isCaCountry
+                          : isCaCountry || isFrCountry
                             ? 'Une dernière faveur'
                             : 'Un último favor'
                       }, {watchFullName}!
@@ -571,7 +572,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                         {
                         isUsCountry
                           ? 'When you submit, you will be directed to Google to rate our business with stars 🌟.'
-                          : isCaCountry
+                          : isCaCountry || isFrCountry
                             ? "L'envoyer sera dirigé vers Google pour améliorer notre emploi avec des étoiles 🌟."
                             : 'Al enviar, serás dirigido a Google, para calificar nuestro emprendimiento con estrellas 🌟.'
                       }
@@ -579,7 +580,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                         {
                         isUsCountry
                           ? 'Your opinion helps us so that more people know about us and we stand out in the sector. Thank you! 😍'
-                          : isCaCountry
+                          : isCaCountry || isFrCountry
                             ? 'Votre avis nous aide à ce que les plus grandes personnes connaissent nos gens et nous dévastent le secteur. Merci ! 😍'
                             : 'Tu opinión nos ayuda a que más personas conozcan de nosotros y destaquemos en el sector. ¡Gracias! 😍'
                       }
@@ -597,7 +598,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                   {
                   isUsCountry
                     ? 'Send'
-                    : isCaCountry
+                    : isCaCountry || isFrCountry
                       ? 'Envoyer'
                       : 'Enviar'
                 }
@@ -619,7 +620,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                             {
                 isUsCountry
                   ? 'By pressing "Submit", I declare that I accept the'
-                  : isCaCountry
+                  : isCaCountry || isFrCountry
                     ? 'En pressant "Enviar", déclarez que vous acceptez les'
                     : 'Al presionar "Enviar", declaro que acepto los'
               }
@@ -633,14 +634,14 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                               {
                   isUsCountry
                     ? 'Terms and Cons'
-                    : isCaCountry
+                    : isCaCountry || isFrCountry
                       ? 'Conditions et conditions'
                       : 'Términos y Condiciones'
                 }
                             </a> {
                 isUsCountry
                   ? ' and the '
-                  : isCaCountry
+                  : isCaCountry || isFrCountry
                     ? ' et là '
                     : ' y las '
               } <a className='text-primary hover:underline' href='https://qikstarts.com/privacy-policy' rel='noopener noreferrer' target='_blank'>{isUsCountry ? 'Privacy Policies' : isCaCountry ? 'Politiques de confidentialité' : 'Políticas de Privacidad'}</a>

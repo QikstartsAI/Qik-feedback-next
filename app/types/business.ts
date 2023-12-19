@@ -61,7 +61,7 @@ export interface Business {
     Name: string
     Cover: string
     IconoWhite: string
-    Country: 'CO' | 'EC' | 'MX' | 'US' | 'AR' | 'CA' | 'DO' | 'HN'
+    Country: 'CO' | 'EC' | 'MX' | 'US' | 'AR' | 'CA' | 'DO' | 'HN' | 'GT' | 'ES' | 'FR'
     sucursales?: Branch[]
     meseros?: Waiter[]
     Waiter?: Waiter
