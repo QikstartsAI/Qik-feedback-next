@@ -1,6 +1,5 @@
 import { Business } from '@/app/types/business'
 import { IconMapPin } from '@tabler/icons-react'
-import ImageRounded from './ui/ImageRounded'
 import Image from 'next/image'
 
 interface HeroProps {
@@ -8,12 +7,6 @@ interface HeroProps {
 }
 
 function Hero ({ business }: HeroProps) {
-  const handleScrollToForm = () => {
-    const form = document.getElementById('form')
-    form?.scrollIntoView({ behavior: 'smooth' })
-  }
-
-  const waiter = business?.Waiter
 
   return (
     <div className='relative'>
@@ -46,33 +39,6 @@ function Hero ({ business }: HeroProps) {
                 {business?.Address}
               </p>
             </div>
-            {
-              waiter && (
-                <div className='flex flex-col justify-center items-center my-2'>
-                  {
-                    waiter.gender === 'masculino' || waiter.gender === 'male' || waiter.gender === 'mâle'
-                      ? (
-                        <ImageRounded imageUrl='/waiter_male.gif' imageAlt='Icono de mesero' />
-                        )
-                      : (
-                        <ImageRounded imageUrl='/waiter_female.gif' imageAlt='Icono de mesera' />
-                        )
-                  }
-                  <p className='text-center text-sm text-white/90 sm:text-lg pb-1 font-medium'>
-                    {
-                      business?.Country === 'US'
-                        ? 'Today I attended to you:'
-                        : business?.Country === 'CA'
-                          ? "Aujourd'hui, je me suis occupé de vous:"
-                          : 'Hoy te atendí:'
-                    }
-                  </p>
-                  <p className='text-center text-base text-white/90 sm:text-lg pb-1 font-semibold'>
-                    {waiter.name}
-                  </p>
-                </div>
-              )
-            }
           </>
         </div>
       </div>
