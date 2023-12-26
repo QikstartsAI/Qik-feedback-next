@@ -1,6 +1,5 @@
 import { Business } from '@/app/types/business'
 import { IconMapPin } from '@tabler/icons-react'
-import ImageRounded from './ui/ImageRounded'
 import Image from 'next/image'
 
 interface HeroProps {
