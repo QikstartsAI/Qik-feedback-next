@@ -6,12 +6,15 @@ import useGetBusinessData from './hooks/useGetBusinessData'
 import Loader from './components/Loader'
 import Thanks from './components/Thanks'
 import { Toaster } from './components/ui/Toaster'
+import Intro from './components/feedback/Intro';
 
 const Hero = lazy(() => import('./components/Hero'))
 const FeedbackForm = lazy(() => import('./components/feedback/FeedbackForm'))
 
 export default function Home() {
   const { business, loading } = useGetBusinessData()
+  const [startTest, setStartTest] = useState(false)
+  const toggleStartTest = () => setStartTest(!startTest)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [rating, setRating] = useState('')
   if (isSubmitted && rating !== '4' && rating !== '5') {
@@ -30,7 +33,8 @@ export default function Home() {
             ) : (
             <>
               <Hero business={business} />
-              <FeedbackForm business={business} setIsSubmitted={setIsSubmitted} setRating={setRating} />
+              { !startTest && <Intro business={business} toggleStartTest={toggleStartTest} /> }
+              { startTest && <FeedbackForm business={business} setIsSubmitted={setIsSubmitted} setRating={setRating} /> }
             </>
           )
       }

@@ -1,6 +1,5 @@
 import { Business } from '@/app/types/business'
 import { IconMapPin } from '@tabler/icons-react'
-import ImageRounded from './ui/ImageRounded'
 import Image from 'next/image'
 
 interface HeroProps {
@@ -8,12 +7,6 @@ interface HeroProps {
 }
 
 function Hero ({ business }: HeroProps) {
-  const handleScrollToForm = () => {
-    const form = document.getElementById('form')
-    form?.scrollIntoView({ behavior: 'smooth' })
-  }
-
-  const waiter = business?.Waiter
 
   return (
     <div className='relative'>
