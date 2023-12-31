@@ -122,8 +122,9 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
 
     try {
       const updatedData = data
+      updatedData.ImproveText = isLowRating ? ImproveText : ''
       updatedData.AcceptPromotions = isChecked
-      const improveOptions = getImprovements({ Ambience, Service, Food, business })
+      const improveOptions = isLowRating ? getImprovements({ Ambience, Service, Food, business }) : []
       await handleSubmitFeedback(updatedData, improveOptions)
       if ((data.Rating === Ratings.Bueno || data.Rating === Ratings.Excelente) && business?.MapsUrl) {
         handleRedirect()
