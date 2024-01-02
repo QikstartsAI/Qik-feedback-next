@@ -32,6 +32,7 @@ import { FeedbackProps, feedbackSchema } from '@/app/validators/feedbackSchema'
 import { RadioGroup } from '../ui/RadioGroup'
 import { Ratings } from '@/app/types/feedback'
 import handleSubmitFeedback from '@/app/lib/handleSubmit'
+import { findCustomerDataByEmail } from '@/app/lib/handleEmail'
 import { Checkbox } from '../ui/Checkbox'
 import { Textarea } from '../ui/TextArea'
 import { Alert, AlertDescription, AlertTitle } from '../ui/Alert'
@@ -48,7 +49,7 @@ interface FeedbackFormProps {
   setRating: Dispatch<SetStateAction<string>>
 }
 
-export default function FeedbackForm ({ business, setIsSubmitted, setRating }: FeedbackFormProps) {
+export default function FeedbackForm({ business, setIsSubmitted, setRating }: FeedbackFormProps) {
   const [isChecked, setIsChecked] = useState(true)
   const [isTermsChecked, setIsTermsChecked] = useState(true)
   const { toast } = useToast()
@@ -88,12 +89,13 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
   const isCaCountry = business?.Country === 'CA'
   const isFrCountry = business?.Country === 'FR'
   const watchFullName = watch('FullName')
+  const watchEmail = watch('Email')
 
   const handleRedirect = () => {
     window.location.replace(business?.MapsUrl || '')
   }
 
-  async function onSubmit (data: FeedbackProps) {
+  async function onSubmit(data: FeedbackProps) {
     setRating(data.Rating)
     const { Ambience, Service, Food, ImproveText } = data
     if (isLowRating && (!Ambience && !Service && !Food)) {
@@ -152,20 +154,20 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
           <CardHeader>
             <CardTitle>
               {
-              isUsCountry
-                ? 'We value your opinion 😊, it will take you less than '
-                : isCaCountry || isFrCountry
-                  ? 'Nous apprécions votre avis 😊, cela vous prendra moins de '
-                  : 'Valoramos tu opinión 😊, te tomará menos de '
-            }
+                isUsCountry
+                  ? 'We value your opinion 😊, it will take you less than '
+                  : isCaCountry || isFrCountry
+                    ? 'Nous apprécions votre avis 😊, cela vous prendra moins de '
+                    : 'Valoramos tu opinión 😊, te tomará menos de '
+              }
               <span className='text-sky-500 font-medium'>
                 {
-                isUsCountry
-                  ? '1 minute'
-                  : isCaCountry || isFrCountry
+                  isUsCountry
                     ? '1 minute'
-                    : '1 minuto'
-              }
+                    : isCaCountry || isFrCountry
+                      ? '1 minute'
+                      : '1 minuto'
+                }
               </span>
             </CardTitle>
           </CardHeader>
@@ -179,6 +181,42 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                 <div
                   className={cn('space-y-3 mb-3', {})}
                 >
+                  <FormField
+                    control={form.control}
+                    name='Email'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          {
+                            isUsCountry
+                              ? 'Email'
+                              : isCaCountry || isFrCountry
+                                ? 'Courrier électronique'
+                                : 'Correo electrónico'
+                          }
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder='Ej: juan@gmail.com'
+                            {...field}
+                            type='email'
+                            onBlur={async () => {
+                              const email = field.value
+                              if (email) {
+                                const customerData = await findCustomerDataByEmail(email)
+                                if (customerData) {
+                                  form.setValue('FullName', customerData.name)
+                                  form.setValue('PhoneNumber', customerData.phoneNumber || '')
+                                  form.setValue('BirthdayDate', customerData.birthdayDate || '')
+                                }
+                              }
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   {/* name */}
                   <FormField
                     control={form.control}
@@ -187,12 +225,12 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                       <FormItem>
                         <FormLabel>
                           {
-                          isUsCountry
-                            ? 'Full name'
-                            : isCaCountry || isFrCountry
-                              ? 'Nom complet'
-                              : 'Nombre completo'
-                        }
+                            isUsCountry
+                              ? 'Full name'
+                              : isCaCountry || isFrCountry
+                                ? 'Nom complet'
+                                : 'Nombre completo'
+                          }
                         </FormLabel>
                         <FormControl>
                           <Input placeholder='Ej: Juan Pérez' {...field} />
@@ -208,12 +246,12 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                       <FormItem>
                         <FormLabel>
                           {
-                          isUsCountry
-                            ? 'Phone (optional)'
-                            : isCaCountry || isFrCountry
-                              ? 'Téléphone (facultatif)'
-                              : 'Teléfono (opcional)'
-                        }
+                            isUsCountry
+                              ? 'Phone (optional)'
+                              : isCaCountry || isFrCountry
+                                ? 'Téléphone (facultatif)'
+                                : 'Teléfono (opcional)'
+                          }
                         </FormLabel>
                         <FormControl>
                           <PhoneInput
@@ -240,12 +278,12 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                           />
                           <span className='ml-2 text-gray-700 text-xs'>
                             {
-                            isUsCountry
-                              ? 'I agree to receive promotions'
-                              : isCaCountry || isFrCountry
-                                ? "J'accepte de recevoir des promotions"
-                                : 'Acepto recibir promociones'
-                          }
+                              isUsCountry
+                                ? 'I agree to receive promotions'
+                                : isCaCountry || isFrCountry
+                                  ? "J'accepte de recevoir des promotions"
+                                  : 'Acepto recibir promociones'
+                            }
                           </span>
                         </>
                       </FormControl>
@@ -253,20 +291,20 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                   />
                   <FormField
                     control={form.control}
-                    name='Email'
+                    name='BirthdayDate'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>
                           {
-                          isUsCountry
-                            ? 'Email'
-                            : isCaCountry || isFrCountry
-                              ? 'Courrier électronique'
-                              : 'Correo electrónico'
-                        }
+                            isUsCountry
+                              ? 'Your birthday? 🎂 (optional)'
+                              : isCaCountry || isFrCountry
+                                ? 'Ton anniversaire? 🎂 (facultatif)'
+                                : '¿Tu fecha de cumpleaños? 🎂 (opcional)'
+                          }
                         </FormLabel>
                         <FormControl>
-                          <Input placeholder='Ej: juan@gmail.com' {...field} type='email' />
+                          <Input type='date' placeholder='Ej: 29/10/1999' max='2005-12-31' {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -296,27 +334,6 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                               value={field.value} items={getKnownOrigins(business)}
                             />
                           </RadioGroup>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name='BirthdayDate'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          {
-                          isUsCountry
-                            ? 'Your birthday? 🎂 (optional)'
-                            : isCaCountry || isFrCountry
-                              ? 'Ton anniversaire? 🎂 (facultatif)'
-                              : '¿Tu fecha de cumpleaños? 🎂 (opcional)'
-                        }
-                        </FormLabel>
-                        <FormControl>
-                          <Input type='date' placeholder='Ej: 29/10/1999' max='2005-12-31' {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -408,12 +425,12 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                         <FormItem>
                           <FormLabel>
                             {
-                            isUsCountry
-                              ? 'What can we improve?'
-                              : isCaCountry || isFrCountry
-                                ? "Et qu'est-ce que nous pourrions améliorer?"
-                                : '¿En qué podemos mejorar?'
-                          }
+                              isUsCountry
+                                ? 'What can we improve?'
+                                : isCaCountry || isFrCountry
+                                  ? "Et qu'est-ce que nous pourrions améliorer?"
+                                  : '¿En qué podemos mejorar?'
+                            }
                           </FormLabel>
                         </FormItem>
                         <div className='grid grid-cols-3 sm:grid-cols-4 gap-1 sm:gap-2 text-sm font-medium text-gray-900'>
@@ -440,12 +457,12 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                                   <IconToolsKitchen />
                                   <p className='w-full text-[10px] sm:text-[11px]'>
                                     {
-                                    isUsCountry
-                                      ? 'Food'
-                                      : isCaCountry || isFrCountry
-                                        ? 'Cuisine'
-                                        : 'Comida'
-                                  }
+                                      isUsCountry
+                                        ? 'Food'
+                                        : isCaCountry || isFrCountry
+                                          ? 'Cuisine'
+                                          : 'Comida'
+                                    }
                                   </p>
                                 </FormLabel>
                               </FormItem>
@@ -474,12 +491,12 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                                   <IconUsers />
                                   <p className='w-full text-[10px] sm:text-[11px]'>
                                     {
-                                    isUsCountry
-                                      ? 'Service'
-                                      : isCaCountry || isFrCountry
+                                      isUsCountry
                                         ? 'Service'
-                                        : 'Servicio'
-                                  }
+                                        : isCaCountry || isFrCountry
+                                          ? 'Service'
+                                          : 'Servicio'
+                                    }
                                   </p>
                                 </FormLabel>
                               </FormItem>
@@ -508,12 +525,12 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                                   <IconBuildingStore />
                                   <p className='w-full text-[10px] sm:text-[11px]'>
                                     {
-                                    isUsCountry
-                                      ? 'Atmosphere'
-                                      : isCaCountry || isFrCountry
-                                        ? 'Ambiance'
-                                        : 'Ambiente'
-                                  }
+                                      isUsCountry
+                                        ? 'Atmosphere'
+                                        : isCaCountry || isFrCountry
+                                          ? 'Ambiance'
+                                          : 'Ambiente'
+                                    }
                                   </p>
                                 </FormLabel>
                               </FormItem>
@@ -530,22 +547,22 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                             <FormItem>
                               <FormLabel>
                                 {
-                                isUsCountry
-                                  ? 'Share details about your experience in this place'
-                                  : isCaCountry || isFrCountry
-                                    ? 'Partagez des détails sur votre expérience dans ce lieu'
-                                    : 'Compartenos detalles sobre tu experiencia en este lugar'
-                              }
+                                  isUsCountry
+                                    ? 'Share details about your experience in this place'
+                                    : isCaCountry || isFrCountry
+                                      ? 'Partagez des détails sur votre expérience dans ce lieu'
+                                      : 'Compartenos detalles sobre tu experiencia en este lugar'
+                                }
                               </FormLabel>
                               <FormControl>
                                 <Textarea
                                   placeholder={
-                                  isUsCountry
-                                    ? 'Ej:the food was very good, but the service was slow.'
-                                    : isCaCountry || isFrCountry
-                                      ? 'Fr: La nourriture était très bonne, mais le service était lent.'
-                                      : 'Ej: La comida estuvo muy buena, pero el servicio fue lento.'
-                                }
+                                    isUsCountry
+                                      ? 'Ej:the food was very good, but the service was slow.'
+                                      : isCaCountry || isFrCountry
+                                        ? 'Fr: La nourriture était très bonne, mais le service était lent.'
+                                        : 'Ej: La comida estuvo muy buena, pero el servicio fue lento.'
+                                  }
                                   {...field}
                                 />
                               </FormControl>
@@ -554,7 +571,7 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                           )}
                         />
                       </>
-                      )
+                    )
                     : null}
                 </div>
                 {!isLowRating && watchFullName
@@ -562,47 +579,47 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                     <Alert>
                       <AlertTitle className={cn('text-xs sm:text-sm')}>
                         {
-                        isUsCountry
-                          ? 'Last favor'
-                          : isCaCountry || isFrCountry
-                            ? 'Une dernière faveur'
-                            : 'Un último favor'
-                      }, {watchFullName}!
+                          isUsCountry
+                            ? 'Last favor'
+                            : isCaCountry || isFrCountry
+                              ? 'Une dernière faveur'
+                              : 'Un último favor'
+                        }, {watchFullName}!
                       </AlertTitle>
                       <AlertDescription className={cn('text-xs sm:text-sm')}>
                         {
-                        isUsCountry
-                          ? 'When you submit, you will be directed to Google to rate our business with stars 🌟.'
-                          : isCaCountry || isFrCountry
-                            ? "L'envoyer sera dirigé vers Google pour améliorer notre emploi avec des étoiles 🌟."
-                            : 'Al enviar, serás dirigido a Google, para calificar nuestro emprendimiento con estrellas 🌟.'
-                      }
+                          isUsCountry
+                            ? 'When you submit, you will be directed to Google to rate our business with stars 🌟.'
+                            : isCaCountry || isFrCountry
+                              ? "L'envoyer sera dirigé vers Google pour améliorer notre emploi avec des étoiles 🌟."
+                              : 'Al enviar, serás dirigido a Google, para calificar nuestro emprendimiento con estrellas 🌟.'
+                        }
                         <br />
                         {
-                        isUsCountry
-                          ? 'Your opinion helps us so that more people know about us and we stand out in the sector. Thank you! 😍'
-                          : isCaCountry || isFrCountry
-                            ? 'Votre avis nous aide à ce que les plus grandes personnes connaissent nos gens et nous dévastent le secteur. Merci ! 😍'
-                            : 'Tu opinión nos ayuda a que más personas conozcan de nosotros y destaquemos en el sector. ¡Gracias! 😍'
-                      }
+                          isUsCountry
+                            ? 'Your opinion helps us so that more people know about us and we stand out in the sector. Thank you! 😍'
+                            : isCaCountry || isFrCountry
+                              ? 'Votre avis nous aide à ce que les plus grandes personnes connaissent nos gens et nous dévastent le secteur. Merci ! 😍'
+                              : 'Tu opinión nos ayuda a que más personas conozcan de nosotros y destaquemos en el sector. ¡Gracias! 😍'
+                        }
                       </AlertDescription>
                     </Alert>
-                    )
+                  )
                   : null}
                 <Button
                   type='submit' disabled={
-                  isTermsChecked === false
-                    ? true
-                    : form.formState.isSubmitting
-                }
+                    isTermsChecked === false
+                      ? true
+                      : form.formState.isSubmitting
+                  }
                 >
                   {
-                  isUsCountry
-                    ? 'Send'
-                    : isCaCountry || isFrCountry
-                      ? 'Envoyer'
-                      : 'Enviar'
-                }
+                    isUsCountry
+                      ? 'Send'
+                      : isCaCountry || isFrCountry
+                        ? 'Envoyer'
+                        : 'Enviar'
+                  }
                 </Button>
                 <CardFooter>
                   <FormField
@@ -619,12 +636,12 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                           />
                           <small className='text-gray-500'>
                             {
-                isUsCountry
-                  ? 'By pressing "Submit", I declare that I accept the'
-                  : isCaCountry || isFrCountry
-                    ? 'En pressant "Enviar", déclarez que vous acceptez les'
-                    : 'Al presionar "Enviar", declaro que acepto los'
-              }
+                              isUsCountry
+                                ? 'By pressing "Submit", I declare that I accept the'
+                                : isCaCountry || isFrCountry
+                                  ? 'En pressant "Enviar", déclarez que vous acceptez les'
+                                  : 'Al presionar "Enviar", declaro que acepto los'
+                            }
                             {' '}
                             <a
                               className='text-primary hover:underline'
@@ -633,19 +650,19 @@ export default function FeedbackForm ({ business, setIsSubmitted, setRating }: F
                               target='_blank'
                             >
                               {
-                  isUsCountry
-                    ? 'Terms and Cons'
-                    : isCaCountry || isFrCountry
-                      ? 'Conditions et conditions'
-                      : 'Términos y Condiciones'
-                }
+                                isUsCountry
+                                  ? 'Terms and Cons'
+                                  : isCaCountry || isFrCountry
+                                    ? 'Conditions et conditions'
+                                    : 'Términos y Condiciones'
+                              }
                             </a> {
-                isUsCountry
-                  ? ' and the '
-                  : isCaCountry || isFrCountry
-                    ? ' et là '
-                    : ' y las '
-              } <a className='text-primary hover:underline' href='https://qikstarts.com/privacy-policy' rel='noopener noreferrer' target='_blank'>{isUsCountry ? 'Privacy Policies' : isCaCountry ? 'Politiques de confidentialité' : 'Políticas de Privacidad'}</a>
+                              isUsCountry
+                                ? ' and the '
+                                : isCaCountry || isFrCountry
+                                  ? ' et là '
+                                  : ' y las '
+                            } <a className='text-primary hover:underline' href='https://qikstarts.com/privacy-policy' rel='noopener noreferrer' target='_blank'>{isUsCountry ? 'Privacy Policies' : isCaCountry ? 'Politiques de confidentialité' : 'Políticas de Privacidad'}</a>
                             .
                           </small>
                         </>
