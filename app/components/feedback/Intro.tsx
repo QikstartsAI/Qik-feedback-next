@@ -81,10 +81,10 @@ function Intro({ business, toggleStartTest }: IntroProps) {
               <Button variant='secondary' onClick={toggleStartTest} >
                 {
                 isUsCountry
-                  ? 'Existing client'
+                  ? 'I am already a client'
                   : isCaCountry
-                    ? 'Client existant'
-                    : 'Cliente existente'
+                    ? 'Je suis déjà client'
+                    : 'Ya soy cliente'
               }
               </Button>
             </div>
