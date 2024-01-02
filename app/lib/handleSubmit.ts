@@ -2,7 +2,7 @@ import { COLLECTION_NAME, CUSTOMERS_COLLECTION_NAME } from '@/app/constants/gene
 import { getFirebase, getTimesTampFromDate } from '@/app/lib/firebase'
 import { Waiter } from '@/app/types/business'
 import { FeedbackProps } from '@/app/validators/feedbackSchema'
-import { addDoc, updateDoc, collection, doc, getDoc, setDoc, DocumentReference } from 'firebase/firestore'
+import { addDoc, updateDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore'
 import { findBusiness } from '../services/business'
 
 const handleSubmitFeedback = async (

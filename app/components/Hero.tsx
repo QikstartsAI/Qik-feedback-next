@@ -1,5 +1,6 @@
 import { Business } from '@/app/types/business'
 import { IconMapPin } from '@tabler/icons-react'
+import ImageRounded from './ui/ImageRounded'
 import Image from 'next/image'
 
 interface HeroProps {
@@ -7,7 +8,6 @@ interface HeroProps {
 }
 
 function Hero ({ business }: HeroProps) {
-
   return (
     <div className='relative'>
       <Image
@@ -39,58 +39,6 @@ function Hero ({ business }: HeroProps) {
                 {business?.Address}
               </p>
             </div>
-            <p className='text-center text-base text-white/90 sm:text-lg pb-2 font-bold'>
-              {
-                business?.Country === 'US'
-                  ? 'Your rating drives us to'
-                  : business?.Country === 'CA' || business?.Country === 'FR'
-                    ? 'Votre note nous pousse à'
-                    : 'Tu calificación nos impulsa a la'
-              } <br /> {
-                business?.Country === 'US'
-                  ? 'excellence'
-                  : business?.Country === 'CA' || business?.Country === 'FR'
-                    ? 'excellence'
-                    : 'excelencia'
-              }
-            </p>
-            {
-              waiter && (
-                <div className='flex flex-col justify-center items-center my-2'>
-                  {
-                    waiter.gender === 'masculino' || waiter.gender === 'male' || waiter.gender === 'mâle'
-                      ? (
-                        <ImageRounded imageUrl='/waiter_male.gif' imageAlt='Icono de mesero' />
-                        )
-                      : (
-                        <ImageRounded imageUrl='/waiter_female.gif' imageAlt='Icono de mesera' />
-                        )
-                  }
-                  <p className='text-center text-sm text-white/90 sm:text-lg pb-1 font-medium'>
-                    {
-                      business?.Country === 'US'
-                        ? 'Today I attended to you:'
-                        : business?.Country === 'CA' || business?.Country === 'FR'
-                          ? "Aujourd'hui, je me suis occupé de vous:"
-                          : 'Hoy te atendí:'
-                    }
-                  </p>
-                  <p className='text-center text-base text-white/90 sm:text-lg pb-1 font-semibold'>
-                    {waiter.name}
-                  </p>
-                </div>
-              )
-            }
-            <Button variant='secondary' onClick={handleScrollToForm}>
-              {
-                business?.Country === 'US'
-                  ? 'Start'
-                  : business?.Country === 'CA' || business?.Country === 'FR'
-                    ? 'Commencer'
-                    : 'Empezar'
-              }{' '}
-              <IconChevronsDown className='w-4 h-4 ml-2 animate-bounce' />
-            </Button>
           </>
         </div>
       </div>

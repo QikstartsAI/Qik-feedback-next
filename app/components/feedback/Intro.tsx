@@ -66,7 +66,7 @@ function Intro({ business, toggleStartTest }: IntroProps) {
                 </div>
               )
             }
-            <div className='flex flex-col lg:flex-row lg:justify-center lg:items-center lg:space-x-4 space-y-4 lg:space-y-0 mt-4'>
+            <div className='flex flex-row justify-center items-center space-x-4 mt-4'>
               <Button
                 onClick={toggleStartTest}
               >
