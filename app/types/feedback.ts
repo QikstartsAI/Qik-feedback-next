@@ -7,9 +7,6 @@ export enum Origins {
     'Referido' = 'Referido',
     'Referred' = 'Referred',
     'Référé' = 'Référé',
-    'ClienteNuevo' = 'Cliente nuevo',
-    'New client' = 'New client',
-    'Nouvelle cliente' = 'Nouvelle cliente'
   }
 
 export enum Ratings {

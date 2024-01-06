@@ -675,8 +675,6 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating }: Fe
           </CardContent>
         </Card>
       </div>
-      <Footer />
-
     </>
   )
 }

@@ -11,12 +11,6 @@ const getKnownOrigins = (business: Business | null) => {
     : business?.Country === 'CA' || business?.Country === 'FR'
       ? 'Référé'
       : 'Referido'
-
-  const newClient = business?.Country === 'US'
-    ? 'New client'
-    : business?.Country === 'CA' || business?.Country === 'FR'
-      ? 'Nouvelle cliente'
-      : 'Cliente nuevo'
   return [
     { value: 'Maps', label: 'Maps', icon: IconBrandGoogleMaps },
     { value: 'TikTok', label: 'TikTok', icon: IconBrandTiktok },
@@ -24,7 +18,6 @@ const getKnownOrigins = (business: Business | null) => {
     { value: 'WhatsApp', label: 'WhatsApp', icon: IconBrandWhatsapp },
     { value: 'Instagram', label: 'Instagram', icon: IconBrandInstagram },
     { value: referred, label: referred, icon: IconUserShare },
-    { value: newClient, label: newClient, icon: IconUserPlus }
   ]
 }
 

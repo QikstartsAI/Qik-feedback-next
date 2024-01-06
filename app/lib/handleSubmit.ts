@@ -30,7 +30,8 @@ const handleSubmitFeedback = async (
     email: Email,
     name: FullName,
     phoneNumber: PhoneNumber || '',
-    birthdayDate: BirthdayDate || ''
+    birthdayDate: BirthdayDate || '',
+    origin: Origin || ''
   }
 
   const businessFeedbackRef = collection(
