@@ -11,10 +11,7 @@ import {
 import {
   Card,
   CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from '../ui/Card'
+  CardFooter} from '../ui/Card'
 
 import { currencyPrices } from '@/app/constants/prices'
 import { phoneNumbersPlaceholders } from '@/app/constants/placeholders'
@@ -41,7 +38,7 @@ import { Dispatch, SetStateAction, useState } from 'react'
 import CustomRadioGroup from '../form/CustomRadioGroup'
 import { getCustomersQuantity, getKnownOrigins, getAverageTicket, getImprovements } from '@/app/constants/form'
 import RatingRadioGroup from '../form/RatingRadioGroup'
-import Footer from './Footer'
+import RewardsApproval from '../form/RewardsApproval';
 
 interface FeedbackFormProps {
   business: Business | null
@@ -89,7 +86,6 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating }: Fe
   const isCaCountry = business?.Country === 'CA'
   const isFrCountry = business?.Country === 'FR'
   const watchFullName = watch('FullName')
-  const watchEmail = watch('Email')
 
   const handleRedirect = () => {
     window.location.replace(business?.MapsUrl || '')
@@ -151,26 +147,6 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating }: Fe
     <>
       <div className='mx-auto py-12 lg:py-24 max-w-xl px-6 min-h-screen' id='form'>
         <Card>
-          <CardHeader>
-            <CardTitle>
-              {
-                isUsCountry
-                  ? 'We value your opinion 😊, it will take you less than '
-                  : isCaCountry || isFrCountry
-                    ? 'Nous apprécions votre avis 😊, cela vous prendra moins de '
-                    : 'Valoramos tu opinión 😊, te tomará menos de '
-              }
-              <span className='text-sky-500 font-medium'>
-                {
-                  isUsCountry
-                    ? '1 minute'
-                    : isCaCountry || isFrCountry
-                      ? '1 minute'
-                      : '1 minuto'
-                }
-              </span>
-            </CardTitle>
-          </CardHeader>
           <CardContent>
             <Form {...form}>
               <form
@@ -178,6 +154,36 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating }: Fe
                 className='space-y-4 md:space-y-6'
                 noValidate
               >
+                  {/* origin */}
+                  <FormField
+                    control={form.control}
+                    name='Origin'
+                    render={({ field }) => (
+                      <FormItem className='space-y-3'>
+                        <FormLabel>   {
+                          isUsCountry
+                            ? 'Where do you know us from?'
+                            : isCaCountry || isFrCountry
+                              ? "D'où nous connaissez-vous?"
+                              : '¿De dónde nos conoces?'
+                        }
+                        </FormLabel>
+                        <FormControl>
+                          <RadioGroup
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            className=''
+                          >
+                            <CustomRadioGroup
+                              value={field.value} items={getKnownOrigins(business)}
+                            />
+                          </RadioGroup>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                <RewardsApproval/>
                 <div
                   className={cn('space-y-3 mb-3', {})}
                 >
@@ -188,15 +194,15 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating }: Fe
                       <FormItem>
                         <FormLabel>
                           {
-                            isUsCountry
-                              ? 'Email'
-                              : isCaCountry || isFrCountry
-                                ? 'Courrier électronique'
-                                : 'Correo electrónico'
-                          }
+                          isUsCountry
+                            ? 'Email'
+                            : isCaCountry
+                              ? 'Courrier électronique'
+                              : 'Correo electrónico'
+                        }
                         </FormLabel>
                         <FormControl>
-                          <Input
+                        <Input
                             placeholder='Ej: juan@gmail.com'
                             {...field}
                             type='email'
@@ -296,44 +302,15 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating }: Fe
                       <FormItem>
                         <FormLabel>
                           {
-                            isUsCountry
-                              ? 'Your birthday? 🎂 (optional)'
-                              : isCaCountry || isFrCountry
-                                ? 'Ton anniversaire? 🎂 (facultatif)'
-                                : '¿Tu fecha de cumpleaños? 🎂 (opcional)'
-                          }
-                        </FormLabel>
-                        <FormControl>
-                          <Input type='date' placeholder='Ej: 29/10/1999' max='2005-12-31' {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  {/* origin */}
-                  <FormField
-                    control={form.control}
-                    name='Origin'
-                    render={({ field }) => (
-                      <FormItem className='space-y-3'>
-                        <FormLabel>   {
                           isUsCountry
-                            ? 'Where do you know us from?'
+                            ? 'Your birthday? 🎂 (optional)'
                             : isCaCountry || isFrCountry
-                              ? "D'où nous connaissez-vous?"
-                              : '¿De dónde nos conoces?'
+                              ? 'Ton anniversaire? 🎂 (facultatif)'
+                              : '¿Tu fecha de cumpleaños? 🎂 (opcional)'
                         }
                         </FormLabel>
                         <FormControl>
-                          <RadioGroup
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                            className=''
-                          >
-                            <CustomRadioGroup
-                              value={field.value} items={getKnownOrigins(business)}
-                            />
-                          </RadioGroup>
+                          <Input type='date' placeholder='Ej: 29/10/1999' max='2005-12-31' {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
