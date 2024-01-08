@@ -183,7 +183,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, cust
                     className='list-none'
                   >
                     <button
-                      className={cn('flex justify-center items-center w-[76px] bg-white border border-gray-200 rounded-lg py-1 sm:py-2 cursor-pointer shadow hover:border-sky-500 hover:text-sky-500 transition-all', {
+                      className={cn('flex justify-center items-center w-full px-3 bg-white border border-gray-200 rounded-lg py-1 cursor-pointer shadow hover:border-sky-500 hover:text-sky-500 transition-all', {
                         'border-sky-500 text-sky-500': selectedOtherOption?.value === option.value
                       })}
                       onClick={
