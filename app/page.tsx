@@ -7,14 +7,17 @@ import Loader from './components/Loader'
 import Thanks from './components/Thanks'
 import { Toaster } from './components/ui/Toaster'
 import Intro from './components/feedback/Intro';
+import { CustomerRole } from './types/customer';
 
 const Hero = lazy(() => import('./components/Hero'))
 const FeedbackForm = lazy(() => import('./components/feedback/FeedbackForm'))
 
 export default function Home() {
   const { business, loading } = useGetBusinessData()
-  const [startTest, setStartTest] = useState(false)
-  const toggleStartTest = () => setStartTest(!startTest)
+  const [customerType, setCustomerType] = useState<CustomerRole | null>(null)
+  const toggleCustomer = (customerType: CustomerRole) => {
+    setCustomerType(customerType)
+  }
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [rating, setRating] = useState('')
   if (isSubmitted && rating !== '4' && rating !== '5') {
@@ -31,12 +34,19 @@ export default function Home() {
             ? (
               <Loader />
             ) : (
-            <>
-              <Hero business={business} />
-              { !startTest && <Intro business={business} toggleStartTest={toggleStartTest} /> }
-              { startTest && <FeedbackForm business={business} setIsSubmitted={setIsSubmitted} setRating={setRating} /> }
-            </>
-          )
+              <>
+                <Hero business={business} />
+                {!customerType && <Intro business={business} toogleCustomerType={toggleCustomer} />}
+                {customerType && (
+                  <FeedbackForm
+                    business={business}
+                    setIsSubmitted={setIsSubmitted}
+                    setRating={setRating}
+                    customerType={customerType}
+                  />
+                )}
+              </>
+            )
       }
       <Toaster />
     </div>

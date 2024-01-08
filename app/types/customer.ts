@@ -4,3 +4,5 @@ export type Customer = {
   phoneNumber?: string
   birthdayDate?: string
 }
+
+export type CustomerRole = 'new' | 'frequent'
