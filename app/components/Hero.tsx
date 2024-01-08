@@ -16,6 +16,7 @@ function Hero ({ business }: HeroProps) {
         alt='cover del negocio'
         width={1914}
         height={548}
+        priority={true}
       />
       <div className='relative bg-gray-900 bg-opacity-75'>
         <div className='px-6 md:px-12 flex flex-col items-center justify-center pb-4'>
@@ -23,7 +24,7 @@ function Hero ({ business }: HeroProps) {
             <div className='flex flex-col items-center'>
               <Image
                 src={business?.Icono || ''}
-                className='w-32 lg:w-40 animate-in'
+                className='lg:w-40 animate-in w-auto h-auto'
                 alt={business?.Name || 'Icono del negocio'}
                 width={160}
                 height={90}

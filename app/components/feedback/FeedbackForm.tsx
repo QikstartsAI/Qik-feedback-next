@@ -26,11 +26,11 @@ import { Input } from '../ui/Input'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { cn } from '@/app/lib/utils'
-import { IconToolsKitchen, IconBuildingStore, IconUsers } from '@tabler/icons-react'
+import { IconToolsKitchen, IconBuildingStore, IconUsers, IconPlus } from '@tabler/icons-react'
 import { useToast } from '@/app/hooks/useToast'
 import { FeedbackProps, feedbackSchema } from '@/app/validators/feedbackSchema'
 import { RadioGroup } from '../ui/RadioGroup'
-import { Ratings } from '@/app/types/feedback'
+import { Origins, Ratings } from '@/app/types/feedback'
 import handleSubmitFeedback from '@/app/lib/handleSubmit'
 import { findCustomerDataByEmail } from '@/app/lib/handleEmail'
 import { Checkbox } from '../ui/Checkbox'
@@ -39,20 +39,37 @@ import { Alert, AlertDescription, AlertTitle } from '../ui/Alert'
 import { Business } from '@/app/types/business'
 import { Dispatch, SetStateAction, useState } from 'react'
 import CustomRadioGroup from '../form/CustomRadioGroup'
-import { getCustomersQuantity, getKnownOrigins, getAverageTicket, getImprovements } from '@/app/constants/form'
+import Modal from '../ui/Modal'
+import {
+  getCustomersQuantity,
+  getKnownOrigins,
+  getAverageTicket,
+  getImprovements,
+  getOthersText,
+  getOtherOptions,
+  getOtherOriginValues,
+  getOriginLabel
+} from '@/app/constants/form'
 import RatingRadioGroup from '../form/RatingRadioGroup'
-import Footer from './Footer'
+import { SelectedOption } from '@/app/types/general'
+import { CustomerRole } from '@/app/types/customer'
 
 interface FeedbackFormProps {
   business: Business | null
   setIsSubmitted: Dispatch<SetStateAction<boolean>>
   setRating: Dispatch<SetStateAction<string>>
+  customerType: CustomerRole
 }
 
-export default function FeedbackForm({ business, setIsSubmitted, setRating }: FeedbackFormProps) {
+export default function FeedbackForm({ business, setIsSubmitted, setRating, customerType }: FeedbackFormProps) {
   const [isChecked, setIsChecked] = useState(true)
   const [isTermsChecked, setIsTermsChecked] = useState(true)
+
+  const [showOtherOptionsModal, setShowOtherOptionsModal] = useState(false)
+  const [selectedOtherOption, setSelectedOtherOption] = useState<SelectedOption | null>(null)
+
   const { toast } = useToast()
+
   const form = useForm<FeedbackProps>({
     resolver: zodResolver(
       feedbackSchema(
@@ -89,7 +106,6 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating }: Fe
   const isCaCountry = business?.Country === 'CA'
   const isFrCountry = business?.Country === 'FR'
   const watchFullName = watch('FullName')
-  const watchEmail = watch('Email')
 
   const handleRedirect = () => {
     window.location.replace(business?.MapsUrl || '')
@@ -147,9 +163,41 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating }: Fe
     }
   }
 
+  const handleOthersSelecteOption = (option: SelectedOption) => {
+    form.setValue("Origin", option?.value as Origins)
+    setSelectedOtherOption(option)
+  }
+
   return (
     <>
       <div className='mx-auto py-12 lg:py-24 max-w-xl px-6 min-h-screen' id='form'>
+        {showOtherOptionsModal && (
+          <Modal isOpen={true} onClose={() => setShowOtherOptionsModal(false)}>
+            <ul
+              className='flex flex-row flex-wrap justify-center items-center gap-3 text-sm font-medium text-gray-900 mt-5'
+            >
+              {
+                getOtherOptions(business).map((option) => (
+                  <li
+                    key={option.value}
+                    className='list-none'
+                  >
+                    <button
+                      className={cn('flex justify-center items-center w-full px-3 bg-white border border-gray-200 rounded-lg py-1 cursor-pointer shadow hover:border-sky-500 hover:text-sky-500 transition-all', {
+                        'border-sky-500 text-sky-500': selectedOtherOption?.value === option.value
+                      })}
+                      onClick={
+                        () => handleOthersSelecteOption(option)
+                      }
+                    >
+                      <p className='text-[10px]'>{option.label}</p>
+                    </button>
+                  </li>
+                ))
+              }
+            </ul>
+          </Modal>
+        )}
         <Card>
           <CardHeader>
             <CardTitle>
@@ -317,21 +365,34 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating }: Fe
                     render={({ field }) => (
                       <FormItem className='space-y-3'>
                         <FormLabel>   {
-                          isUsCountry
-                            ? 'Where do you know us from?'
-                            : isCaCountry || isFrCountry
-                              ? "D'où nous connaissez-vous?"
-                              : '¿De dónde nos conoces?'
+                          getOriginLabel(
+                            isUsCountry,
+                            isCaCountry,
+                            isFrCountry,
+                            customerType
+                          )
                         }
                         </FormLabel>
                         <FormControl>
                           <RadioGroup
-                            onValueChange={field.onChange}
+                            onValueChange={(value) => {
+                              field.onChange(value);
+                              if (value === getOthersText(business) || value === selectedOtherOption?.value) {
+                                setShowOtherOptionsModal(true);
+                              }
+                            }}
                             defaultValue={field.value}
                             className=''
                           >
                             <CustomRadioGroup
-                              value={field.value} items={getKnownOrigins(business)}
+                              value={field.value}
+                              items={
+                                getKnownOrigins(business).concat(
+                                  !selectedOtherOption
+                                    ? getOtherOriginValues(business)
+                                    : selectedOtherOption
+                                )
+                              }
                             />
                           </RadioGroup>
                         </FormControl>

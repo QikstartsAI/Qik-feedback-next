@@ -7,6 +7,20 @@ export enum Origins {
     'Referido' = 'Referido',
     'Referred' = 'Referred',
     'Référé' = 'Référé',
+    'Otros' = 'Otros',
+    'Others' = 'Others',
+    'Autres' = 'Autres',
+    'TV' = 'TV',
+    'Radio' = 'Radio',
+    'Caminando' = 'Caminando',
+    'Walking' = 'Walking',
+    'Marche' = 'Marche',
+    'Valla publicitaria' = 'Valla publicitaria',
+    'Billboard' = 'Billboard',
+    "Panneau d'affichage" = "Panneau d'affichage",
+    'Eventos' = 'Eventos',
+    'Events' = 'Events',
+    'Événements' = 'Événements'
   }
 
 export enum Ratings {

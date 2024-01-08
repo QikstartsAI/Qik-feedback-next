@@ -3,13 +3,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Business } from '@/app/types/business';
 import ImageRounded from '../ui/ImageRounded';
+import { CustomerRole } from '@/app/types/customer';
 
 type IntroProps = {
   business: Business | null
-  toggleStartTest: () => void
+  toogleCustomerType: (customer: CustomerRole) => void
 }
 
-function Intro({ business, toggleStartTest }: IntroProps) {
+function Intro({ business, toogleCustomerType }: IntroProps) {
   const country = business?.Country || 'EC'
   const waiter = business?.Waiter
   const isUsCountry = country === 'US'
@@ -68,7 +69,7 @@ function Intro({ business, toggleStartTest }: IntroProps) {
             }
             <div className='flex flex-row justify-center items-center space-x-4 mt-4'>
               <Button
-                onClick={toggleStartTest}
+                onClick={() => toogleCustomerType("new")}
               >
                 {
                 isUsCountry
@@ -78,7 +79,7 @@ function Intro({ business, toggleStartTest }: IntroProps) {
                     : 'Nuevo cliente'
               }
               </Button>
-              <Button variant='secondary' onClick={toggleStartTest} >
+              <Button variant='secondary' onClick={() => toogleCustomerType("frequent")}>
                 {
                 isUsCountry
                   ? 'I am already a client'
