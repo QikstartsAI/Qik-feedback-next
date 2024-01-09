@@ -4,6 +4,7 @@ import { Waiter } from '@/app/types/business'
 import { FeedbackProps } from '@/app/validators/feedbackSchema'
 import { addDoc, updateDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore'
 import { findBusiness } from '../services/business'
+import { Customer } from '../types/customer'
 
 const handleSubmitFeedback = async (
   {
@@ -18,20 +19,22 @@ const handleSubmitFeedback = async (
     Email,
     AcceptPromotions,
     AcceptTerms,
-    BirthdayDate
-  }: FeedbackProps, Improve: string[]) => {
+    BirthdayDate,
+  }: FeedbackProps, Improve: string[], customerType: string) => {
   const searchParams = new URLSearchParams(document.location.search)
 
   const businessId = searchParams.get('id')
   const branchId = searchParams.get('sucursal')
   const waiterId = searchParams.get('mesero')
 
-  const customerContactData = {
+  const customerContactData:Customer = {
     email: Email,
     name: FullName,
     phoneNumber: PhoneNumber || '',
     birthdayDate: BirthdayDate || '',
-    origin: Origin || ''
+    origin: Origin || '',
+    customerType: customerType || '',
+    acceptPromotions: AcceptPromotions
   }
 
   const businessFeedbackRef = collection(

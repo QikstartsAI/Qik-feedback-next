@@ -62,7 +62,7 @@ interface FeedbackFormProps {
 }
 
 export default function FeedbackForm({ business, setIsSubmitted, setRating, customerType }: FeedbackFormProps) {
-  const [isChecked, setIsChecked] = useState(true)
+  const [isChecked, setIsChecked] = useState(false)
   const [isTermsChecked, setIsTermsChecked] = useState(true)
 
   const [showOtherOptionsModal, setShowOtherOptionsModal] = useState(false)
@@ -143,7 +143,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, cust
       updatedData.ImproveText = isLowRating ? ImproveText : ''
       updatedData.AcceptPromotions = isChecked
       const improveOptions = isLowRating ? getImprovements({ Ambience, Service, Food, business }) : []
-      await handleSubmitFeedback(updatedData, improveOptions)
+      await handleSubmitFeedback(updatedData, improveOptions, customerType)
       if ((data.Rating === Ratings.Bueno || data.Rating === Ratings.Excelente) && business?.MapsUrl) {
         handleRedirect()
       }
@@ -256,6 +256,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, cust
                                   form.setValue('FullName', customerData.name)
                                   form.setValue('PhoneNumber', customerData.phoneNumber || '')
                                   form.setValue('BirthdayDate', customerData.birthdayDate || '')
+                                  setIsChecked(customerData.acceptPromotions || false)
                                 }
                               }
                             }}
@@ -306,6 +307,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, cust
                             {...field}
                             placeholder={`Ej: ${phoneNumbersPlaceholders[business?.Country || 'EC']}`}
                             defaultCountry={business?.Country}
+                            onChange={(value) => setIsChecked(!!value)}
                           />
                         </FormControl>
                         <FormMessage />

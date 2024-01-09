@@ -3,6 +3,9 @@ export type Customer = {
   name: string
   phoneNumber?: string
   birthdayDate?: string
+  origin: string
+  customerType: string
+  acceptPromotions?: boolean
 }
 
 export type CustomerRole = 'new' | 'frequent'

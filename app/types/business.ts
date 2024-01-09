@@ -91,6 +91,7 @@ export type Client = {
   hasGoogleReview: boolean
   businessName?: string
   phoneNumber?: string
+  
 }
 
 export type OriginAdapted = {
