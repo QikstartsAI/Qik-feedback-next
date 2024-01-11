@@ -26,7 +26,7 @@ import { Input } from '../ui/Input'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { cn } from '@/app/lib/utils'
-import { IconToolsKitchen, IconBuildingStore, IconUsers, IconPlus } from '@tabler/icons-react'
+import { IconToolsKitchen, IconBuildingStore, IconUsers } from '@tabler/icons-react'
 import { useToast } from '@/app/hooks/useToast'
 import { FeedbackProps, feedbackSchema } from '@/app/validators/feedbackSchema'
 import { RadioGroup } from '../ui/RadioGroup'
@@ -106,6 +106,8 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, cust
   const isCaCountry = business?.Country === 'CA'
   const isFrCountry = business?.Country === 'FR'
   const watchFullName = watch('FullName')
+  const waiterName = business?.Waiter?.name || ''
+  const attendantName = waiterName ? waiterName : 'Matriz';
 
   const handleRedirect = () => {
     window.location.replace(business?.MapsUrl || '')
@@ -143,7 +145,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, cust
       updatedData.ImproveText = isLowRating ? ImproveText : ''
       updatedData.AcceptPromotions = isChecked
       const improveOptions = isLowRating ? getImprovements({ Ambience, Service, Food, business }) : []
-      await handleSubmitFeedback(updatedData, improveOptions, customerType)
+      await handleSubmitFeedback(updatedData, improveOptions, customerType, attendantName)
       if ((data.Rating === Ratings.Bueno || data.Rating === Ratings.Excelente) && business?.MapsUrl) {
         handleRedirect()
       }

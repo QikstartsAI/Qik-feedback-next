@@ -7,20 +7,24 @@ import { findBusiness } from '../services/business'
 import { Customer } from '../types/customer'
 
 const handleSubmitFeedback = async (
-  {
-    FullName,
-    ImproveText,
-    Origin,
-    PhoneNumber,
-    Rating,
-    StartTime,
-    Dinners,
-    AverageTicket,
-    Email,
-    AcceptPromotions,
-    AcceptTerms,
-    BirthdayDate,
-  }: FeedbackProps, Improve: string[], customerType: string) => {
+    {
+      FullName,
+      ImproveText,
+      Origin,
+      PhoneNumber,
+      Rating,
+      StartTime,
+      Dinners,
+      AverageTicket,
+      Email,
+      AcceptPromotions,
+      AcceptTerms,
+      BirthdayDate,
+    }: FeedbackProps, 
+    Improve: string[], 
+    customerType: string,
+    AttendedBy: string,
+  ) => {
   const searchParams = new URLSearchParams(document.location.search)
 
   const businessId = searchParams.get('id')
@@ -68,7 +72,8 @@ const handleSubmitFeedback = async (
     Dinners,
     AverageTicket,
     Email,
-    BirthdayDate: BirthdayDate ? getTimesTampFromDate(new Date(BirthdayDate)) : null
+    BirthdayDate: BirthdayDate ? getTimesTampFromDate(new Date(BirthdayDate)) : null,
+    AttendedBy,
   }
   if (waiterId && businessId && !branchId) {
     try {
