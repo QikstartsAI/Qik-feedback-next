@@ -315,6 +315,9 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, cust
                         <FormMessage />
                       </FormItem>
                     )}
+                    rules={{
+                      required: true ? isChecked : false
+                    }}
                   />
                   <FormField
                     control={form.control}
