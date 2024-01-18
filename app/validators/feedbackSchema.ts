@@ -120,5 +120,18 @@ export const feedbackSchema = (averageTicket: [string, ...string[]], businessCou
 
     hiddenInput: z.boolean().optional().nullable()
   })
+  .superRefine((values, context) => {
+    if (values.AcceptPromotions && !values.PhoneNumber) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: businessCountry === 'US'
+        ? 'Please tell us your phone number'
+        : businessCountry === 'CA' || businessCountry === 'FR'
+          ? "S'il vous plaît dites-nous votre numéro de téléphone"
+          : 'Por favor dinos tu número de teléfono',
+        path: ["PhoneNumber"]
+      })
+    }
+  })
 
 export type FeedbackProps = z.infer<ReturnType<typeof feedbackSchema>>

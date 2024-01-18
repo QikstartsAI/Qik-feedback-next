@@ -315,33 +315,36 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, cust
                         <FormMessage />
                       </FormItem>
                     )}
-                    rules={{
-                      required: true ? isChecked : false
-                    }}
                   />
                   <FormField
                     control={form.control}
                     name='AcceptPromotions'
-                    render={() => (
-                      <FormControl>
-                        <>
-                          <input
-                            type='checkbox'
-                            className='form-checkbox h-3 w-3 text-green-500'
-                            onChange={() => setIsChecked(!isChecked)}
-                            checked={isChecked}
-                          />
-                          <span className='ml-2 text-gray-700 text-xs'>
-                            {
-                              isUsCountry
-                                ? 'I agree to receive promotions'
-                                : isCaCountry || isFrCountry
-                                  ? "J'accepte de recevoir des promotions"
-                                  : 'Acepto recibir promociones'
-                            }
-                          </span>
-                        </>
-                      </FormControl>
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <>
+                            <input
+                              type='checkbox'
+                              className='form-checkbox h-3 w-3 text-green-500'
+                              onChange={() => {
+                                const newChecked = !isChecked
+                                setIsChecked(newChecked)
+                                form.setValue("AcceptPromotions", newChecked)
+                              }}
+                              checked={isChecked}
+                            />
+                            <span className='ml-2 text-gray-700 text-xs'>
+                              {
+                                isUsCountry
+                                  ? 'I agree to receive promotions'
+                                  : isCaCountry || isFrCountry
+                                    ? "J'accepte de recevoir des promotions"
+                                    : 'Acepto recibir promociones'
+                              }
+                            </span>
+                          </>
+                        </FormControl>
+                      </FormItem>
                     )}
                   />
                   <FormField
