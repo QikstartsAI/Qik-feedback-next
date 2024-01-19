@@ -309,7 +309,12 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, cust
                             {...field}
                             placeholder={`Ej: ${phoneNumbersPlaceholders[business?.Country || 'EC']}`}
                             defaultCountry={business?.Country}
-                            onChange={(value) => setIsChecked(!!value)}
+                            onChange={
+                              (value) => {
+                                form.setValue("PhoneNumber", value)
+                                setIsChecked(!!value)
+                              }
+                            }
                           />
                         </FormControl>
                         <FormMessage />

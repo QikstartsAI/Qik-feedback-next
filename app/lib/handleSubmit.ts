@@ -30,7 +30,7 @@ const handleSubmitFeedback = async (
   const businessId = searchParams.get('id')
   const branchId = searchParams.get('sucursal')
   const waiterId = searchParams.get('mesero')
-
+  console.log(PhoneNumber)
   const customerContactData:Customer = {
     email: Email,
     name: FullName,
