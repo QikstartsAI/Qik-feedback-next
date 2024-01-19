@@ -20,8 +20,13 @@ export default function Home() {
   }
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [rating, setRating] = useState('')
+  const [customerName, setCustomerName] = useState('')
   if (isSubmitted && rating !== '4' && rating !== '5') {
-    return <Thanks businessCountry={business?.Country || 'EC'} />
+    return <Thanks
+      businessCountry={business?.Country || 'EC'}
+      businessName={business?.Name || ''}
+      customerName={customerName}
+    />
   }
   return (
     <div>
@@ -42,6 +47,7 @@ export default function Home() {
                     business={business}
                     setIsSubmitted={setIsSubmitted}
                     setRating={setRating}
+                    setCustomerName={setCustomerName}
                     customerType={customerType}
                   />
                 )}

@@ -59,9 +59,10 @@ interface FeedbackFormProps {
   setIsSubmitted: Dispatch<SetStateAction<boolean>>
   setRating: Dispatch<SetStateAction<string>>
   customerType: CustomerRole
+  setCustomerName: Dispatch<SetStateAction<string>>
 }
 
-export default function FeedbackForm({ business, setIsSubmitted, setRating, customerType }: FeedbackFormProps) {
+export default function FeedbackForm({ business, setIsSubmitted, setRating, setCustomerName, customerType }: FeedbackFormProps) {
   const [isChecked, setIsChecked] = useState(false)
   const [isTermsChecked, setIsTermsChecked] = useState(true)
 
@@ -115,6 +116,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, cust
 
   async function onSubmit(data: FeedbackProps) {
     setRating(data.Rating)
+    setCustomerName(data.FullName)
     const { Ambience, Service, Food, ImproveText } = data
     if (isLowRating && (!Ambience && !Service && !Food)) {
       form.setError('hiddenInput', {
