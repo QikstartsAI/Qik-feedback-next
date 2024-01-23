@@ -1,12 +1,12 @@
 import { IconGift } from '@tabler/icons-react';
-import React, { useState } from 'react'
+import React, { Dispatch, SetStateAction, useState } from 'react'
 import { Button } from '../ui/Button';
-import { cn } from '@/app/lib/utils';
 
-type Props = {}
+type Props = {
+  handleUserApprovesLoyalty: (value: boolean) => void
+}
 
-function RewardsApproval({}: Props) {
-  const [approved, setApproved] = useState(true)
+function RewardsApproval({handleUserApprovesLoyalty}: Props) {
   return (
     <div className='space-y-2'>
       <div className="flex flex-col items-center">
@@ -15,20 +15,17 @@ function RewardsApproval({}: Props) {
       </div>
       <p className='text-center text-muted-foreground pb-2'>¿Deseas obtener recompensas y sorpresas por tus visitas y consumos?</p>
       <div className="grid grid-cols-2 gap-4">
-        <Button 
-          type="button" 
-          className={cn({
-            'scale-105': approved,
-            'scale-100 opacity-50': !approved
-          })} 
-          onClick={() => setApproved(true)}
+        <Button
+          type="button"
+          className='scale-105'
+          onClick={() => handleUserApprovesLoyalty(true)}
         >
           Me encantaría!
         </Button>
-        <Button 
-          type="button" 
+        <Button
+          type="button"
           variant='outline'
-          onClick={() => setApproved(false)}
+          onClick={() => handleUserApprovesLoyalty(false)}
         >
           La próxima
         </Button>

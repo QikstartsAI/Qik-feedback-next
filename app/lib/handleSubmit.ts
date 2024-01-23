@@ -8,6 +8,7 @@ import { Customer } from '../types/customer'
 
 const handleSubmitFeedback = async (
     {
+      UserApprovesLoyalty,
       FullName,
       ImproveText,
       Origin,
@@ -20,8 +21,8 @@ const handleSubmitFeedback = async (
       AcceptPromotions,
       AcceptTerms,
       BirthdayDate,
-    }: FeedbackProps, 
-    Improve: string[], 
+    }: FeedbackProps,
+    Improve: string[],
     customerType: string,
     AttendedBy: string,
   ) => {
@@ -31,6 +32,7 @@ const handleSubmitFeedback = async (
   const branchId = searchParams.get('sucursal')
   const waiterId = searchParams.get('mesero')
   const customerContactData:Customer = {
+    userApprovesLoyalty: UserApprovesLoyalty || false,
     email: Email,
     name: FullName,
     phoneNumber: PhoneNumber || '',

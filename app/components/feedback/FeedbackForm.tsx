@@ -51,6 +51,7 @@ import RatingRadioGroup from '../form/RatingRadioGroup'
 import RewardsApproval from '../form/RewardsApproval';
 import { SelectedOption } from '@/app/types/general'
 import { CustomerRole } from '@/app/types/customer'
+import GoogleReviewMessage from '../form/GoogleReviewMessage'
 
 interface FeedbackFormProps {
   business: Business | null
@@ -77,6 +78,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
       )
     ),
     defaultValues: {
+      UserApprovesLoyalty: false,
       FullName: '',
       PhoneNumber: '',
       AcceptPromotions: isChecked,
@@ -100,6 +102,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
 
   const { watch } = form
   const watchRating = watch('Rating')
+  const watchUserApprovesLoyalty = watch('UserApprovesLoyalty')
   const isLowRating = watchRating === Ratings.Mal || watchRating === Ratings.Regular
   const isUsCountry = business?.Country === 'US'
   const isCaCountry = business?.Country === 'CA'
@@ -170,6 +173,10 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
     setSelectedOtherOption(option)
   }
 
+  const handleUserApprovesLoyalty = (value: boolean) => {
+    form.setValue('UserApprovesLoyalty', value);
+  }
+
   return (
     <>
       <div className='mx-auto py-12 lg:py-24 max-w-xl px-6 min-h-screen' id='form'>
@@ -237,7 +244,9 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                       </FormItem>
                     )}
                   />
-                <RewardsApproval/>
+                <RewardsApproval
+                  handleUserApprovesLoyalty={handleUserApprovesLoyalty}
+                />
                 <div
                   className={cn('space-y-3 mb-3', {})}
                 >
@@ -308,10 +317,19 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                         <FormLabel>
                           {
                             isUsCountry
-                              ? 'Phone (optional)'
+                              ? `Phone ${!watchUserApprovesLoyalty
+                                ? '(optional)'
+                                : ''
+                              }`
                               : isCaCountry || isFrCountry
-                                ? 'Téléphone (facultatif)'
-                                : 'Teléfono (opcional)'
+                                ? `Téléphone ${!watchUserApprovesLoyalty
+                                  ? '(facultatif)'
+                                  : ''
+                                }`
+                                : `Teléfono ${!watchUserApprovesLoyalty
+                                  ? '(opcional)'
+                                  : ''
+                                }`
                           }
                         </FormLabel>
                         <FormControl>
@@ -370,10 +388,19 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                         <FormLabel>
                           {
                           isUsCountry
-                            ? 'Your birthday? 🎂 (optional)'
+                            ? `Your birthday? 🎂 ${!watchUserApprovesLoyalty
+                              ? '(optional)'
+                              : ''
+                            }`
                             : isCaCountry || isFrCountry
-                              ? 'Ton anniversaire? 🎂 (facultatif)'
-                              : '¿Tu fecha de cumpleaños? 🎂 (opcional)'
+                              ? `Ton anniversaire? 🎂 ${!watchUserApprovesLoyalty
+                                ? '(facultatif)'
+                                : ''
+                              }`
+                              : `¿Tu fecha de cumpleaños? 🎂 ${!watchUserApprovesLoyalty
+                                  ? '(opcional)'
+                                  : ''
+                                }`
                         }
                         </FormLabel>
                         <FormControl>
@@ -660,38 +687,17 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                     )
                     : null}
                 </div>
-                {!isLowRating && watchFullName
+                {(watchRating == Ratings.Excelente || watchRating === Ratings.Bueno) && watchFullName
                   ? (
-                    <Alert>
-                      <AlertTitle className={cn('text-xs sm:text-sm')}>
-                        {
-                          isUsCountry
-                            ? 'Last favor'
-                            : isCaCountry || isFrCountry
-                              ? 'Une dernière faveur'
-                              : 'Un último favor'
-                        }, {watchFullName}!
-                      </AlertTitle>
-                      <AlertDescription className={cn('text-xs sm:text-sm')}>
-                        {
-                          isUsCountry
-                            ? 'When you submit, you will be directed to Google to rate our business with stars 🌟.'
-                            : isCaCountry || isFrCountry
-                              ? "L'envoyer sera dirigé vers Google pour améliorer notre emploi avec des étoiles 🌟."
-                              : 'Al enviar, serás dirigido a Google, para calificar nuestro emprendimiento con estrellas 🌟.'
-                        }
-                        <br />
-                        {
-                          isUsCountry
-                            ? 'Your opinion helps us so that more people know about us and we stand out in the sector. Thank you! 😍'
-                            : isCaCountry || isFrCountry
-                              ? 'Votre avis nous aide à ce que les plus grandes personnes connaissent nos gens et nous dévastent le secteur. Merci ! 😍'
-                              : 'Tu opinión nos ayuda a que más personas conozcan de nosotros y destaquemos en el sector. ¡Gracias! 😍'
-                        }
-                      </AlertDescription>
-                    </Alert>
+                    <GoogleReviewMessage
+                      customerFullName={watchFullName}
+                      isCaCountry={isCaCountry}
+                      isFrCountry={isFrCountry}
+                      isUsCountry={isUsCountry}
+                    />
                   )
-                  : null}
+                  : null
+                }
                 <Button
                   type='submit' disabled={
                     isTermsChecked === false

@@ -1,4 +1,5 @@
 export type Customer = {
+  userApprovesLoyalty: boolean
   email: string
   name: string
   phoneNumber?: string
