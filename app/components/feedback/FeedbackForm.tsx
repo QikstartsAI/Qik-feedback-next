@@ -32,10 +32,9 @@ import { FeedbackProps, feedbackSchema } from '@/app/validators/feedbackSchema'
 import { RadioGroup } from '../ui/RadioGroup'
 import { Origins, Ratings } from '@/app/types/feedback'
 import handleSubmitFeedback from '@/app/lib/handleSubmit'
-import { findCustomerDataByEmail } from '@/app/lib/handleEmail'
+import { findCustomerDataByEmail, findIsCustomerInBusiness } from '@/app/lib/handleEmail'
 import { Checkbox } from '../ui/Checkbox'
 import { Textarea } from '../ui/TextArea'
-import { Alert, AlertDescription, AlertTitle } from '../ui/Alert'
 import { Business } from '@/app/types/business'
 import { Dispatch, SetStateAction, useState } from 'react'
 import CustomRadioGroup from '../form/CustomRadioGroup'
@@ -53,6 +52,7 @@ import {
 import RatingRadioGroup from '../form/RatingRadioGroup'
 import { SelectedOption } from '@/app/types/general'
 import { CustomerRole } from '@/app/types/customer'
+import GoogleReviewMessage from '../form/GoogleReviewMessage'
 
 interface FeedbackFormProps {
   business: Business | null
@@ -66,8 +66,11 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
   const [isChecked, setIsChecked] = useState(false)
   const [isTermsChecked, setIsTermsChecked] = useState(true)
 
-  const [showOtherOptionsModal, setShowOtherOptionsModal] = useState(false)
+  const [showOtherOptionsModal, setShowOtherOptionsModal] = useState<boolean>(false)
   const [selectedOtherOption, setSelectedOtherOption] = useState<SelectedOption | null>(null)
+
+  const [isCustomerInBusiness, setIsCustomerInBusiness] = useState<boolean>(false)
+  // console.log(isCustomerInBusiness)
 
   const { toast } = useToast()
 
@@ -256,6 +259,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                               const email = field.value
                               if (email) {
                                 const customerData = await findCustomerDataByEmail(email)
+                                setIsCustomerInBusiness(await findIsCustomerInBusiness(email, business?.BusinessId || ''))
                                 if (customerData) {
                                   form.setValue('FullName', customerData.name)
                                   form.setValue('PhoneNumber', customerData.phoneNumber || '')
@@ -652,39 +656,21 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                     )
                     : null}
                 </div>
-                {!isLowRating && watchFullName
-                  ? (
-                    <Alert>
-                      <AlertTitle className={cn('text-xs sm:text-sm')}>
-                        {
-                          isUsCountry
-                            ? 'Last favor'
-                            : isCaCountry || isFrCountry
-                              ? 'Une dernière faveur'
-                              : 'Un último favor'
-                        }, {watchFullName}!
-                      </AlertTitle>
-                      <AlertDescription className={cn('text-xs sm:text-sm')}>
-                        {
-                          isUsCountry
-                            ? 'When you submit, you will be directed to Google to rate our business with stars 🌟.'
-                            : isCaCountry || isFrCountry
-                              ? "L'envoyer sera dirigé vers Google pour améliorer notre emploi avec des étoiles 🌟."
-                              : 'Al enviar, serás dirigido a Google, para calificar nuestro emprendimiento con estrellas 🌟.'
-                        }
-                        <br />
-                        {
-                          isUsCountry
-                            ? 'Your opinion helps us so that more people know about us and we stand out in the sector. Thank you! 😍'
-                            : isCaCountry || isFrCountry
-                              ? 'Votre avis nous aide à ce que les plus grandes personnes connaissent nos gens et nous dévastent le secteur. Merci ! 😍'
-                              : 'Tu opinión nos ayuda a que más personas conozcan de nosotros y destaquemos en el sector. ¡Gracias! 😍'
-                        }
-                      </AlertDescription>
-                    </Alert>
-                  )
-                  : null}
+                {!isCustomerInBusiness
+                  ? (watchRating == Ratings.Excelente || watchRating === Ratings.Bueno) && watchFullName
+                    ? (
+                      <GoogleReviewMessage
+                        customerFullName={watchFullName}
+                        isCaCountry={isCaCountry}
+                        isFrCountry={isFrCountry}
+                        isUsCountry={isUsCountry}
+                      />
+                    )
+                    : null
+                  : null
+                }
                 <Button
+                  className='w-full'
                   type='submit' disabled={
                     isTermsChecked === false
                       ? true

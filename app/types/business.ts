@@ -55,6 +55,7 @@ export interface Branch {
 }
 
 export interface Business {
+    BusinessId: string
     Address: string
     Icono: string
     MapsUrl: string
