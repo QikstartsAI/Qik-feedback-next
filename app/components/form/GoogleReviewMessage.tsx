@@ -16,51 +16,46 @@ const GoogleReviewMessage = ({ customerFullName, isUsCountry, isCaCountry, isFrC
       <p className="text-center font-normal text-base">
         {
           isUsCountry
-            ? 'A last favor '
-            : isCaCountry || isFrCountry
-              ? 'Une dernière faveur '
-              : '¡Ún ultimo favor '
-        }
-        <span className="text-primary font-semibold">
-          {firstName}
-        </span>
-        !
-      </p>
-      <div className="h-0.5 rounded-full border-2 border-black w-12" />
-      <p className="text-center font-normal text-base">
-        {
-          isUsCountry
           ? 'By clicking '
           : isCaCountry || isFrCountry
             ? 'En cliquant '
-            : 'Al hacer clic en '
+            : 'Al presionar '
         }
-        <span className="font-semibold">
+        <span className="font-semibold text-primary">
         {
           isUsCountry
-          ? 'Send'
+          ? 'SEND'
           : isCaCountry || isFrCountry
-            ? 'Envoyer'
-            : 'Enviar'
+            ? 'ENVOYER'
+            : 'ENVIAR'
         }
         </span>
         {
           isUsCountry
-          ? ', we will take you to '
+          ? ', we are going to redirect you to '
           : isCaCountry || isFrCountry
-            ? ', nous vous emmènerons à '
-            : ', te llevaremos a '
+            ? ', nous allons vous rediriger vers '
+            : ', te vamos a dirigir a '
         }
         <span className="font-semibold text-red-500">
           Google
         </span>
         {
           isUsCountry
-          ? ' so you can share your stars. We appreciate your support!'
+          ? ', last step to complete your survey.'
           : isCaCountry || isFrCountry
-            ? ' pour que vous puissiez partager vos étoiles. Nous apprécions votre soutien!'
-            : ' para que compartas tus estrellas. ¡Apreciamos tu apoyo!'
+            ? ', dernière étape pour compléter votre sondage.'
+            : ', último paso para completar tu encuesta.'
         }
+        <span className="font-medium">
+        {
+          isUsCountry
+          ? ' We appreciate your support!'
+          : isCaCountry || isFrCountry
+            ? ' Nous apprécions votre soutien!'
+            : ' ¡Agradecemos tu apoyo!'
+        }
+        </span>
       </p>
     </div>
   )

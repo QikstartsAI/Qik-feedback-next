@@ -29,10 +29,9 @@ import { FeedbackProps, feedbackSchema } from '@/app/validators/feedbackSchema'
 import { RadioGroup } from '../ui/RadioGroup'
 import { Origins, Ratings } from '@/app/types/feedback'
 import handleSubmitFeedback from '@/app/lib/handleSubmit'
-import { findCustomerDataByEmail } from '@/app/lib/handleEmail'
+import { findCustomerDataByEmail, findIsCustomerInBusiness } from '@/app/lib/handleEmail'
 import { Checkbox } from '../ui/Checkbox'
 import { Textarea } from '../ui/TextArea'
-import { Alert, AlertDescription, AlertTitle } from '../ui/Alert'
 import { Business } from '@/app/types/business'
 import { Dispatch, SetStateAction, useState } from 'react'
 import CustomRadioGroup from '../form/CustomRadioGroup'
@@ -65,8 +64,11 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
   const [isChecked, setIsChecked] = useState(false)
   const [isTermsChecked, setIsTermsChecked] = useState(true)
 
-  const [showOtherOptionsModal, setShowOtherOptionsModal] = useState(false)
+  const [showOtherOptionsModal, setShowOtherOptionsModal] = useState<boolean>(false)
   const [selectedOtherOption, setSelectedOtherOption] = useState<SelectedOption | null>(null)
+
+  const [isCustomerInBusiness, setIsCustomerInBusiness] = useState<boolean>(false)
+  // console.log(isCustomerInBusiness)
 
   const { toast } = useToast()
 
@@ -273,6 +275,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                               const email = field.value
                               if (email) {
                                 const customerData = await findCustomerDataByEmail(email)
+                                setIsCustomerInBusiness(await findIsCustomerInBusiness(email, business?.BusinessId || ''))
                                 if (customerData) {
                                   form.setValue('FullName', customerData.name)
                                   form.setValue('PhoneNumber', customerData.phoneNumber || '')
@@ -687,18 +690,21 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                     )
                     : null}
                 </div>
-                {(watchRating == Ratings.Excelente || watchRating === Ratings.Bueno) && watchFullName
-                  ? (
-                    <GoogleReviewMessage
-                      customerFullName={watchFullName}
-                      isCaCountry={isCaCountry}
-                      isFrCountry={isFrCountry}
-                      isUsCountry={isUsCountry}
-                    />
-                  )
+                {!isCustomerInBusiness
+                  ? (watchRating == Ratings.Excelente || watchRating === Ratings.Bueno) && watchFullName
+                    ? (
+                      <GoogleReviewMessage
+                        customerFullName={watchFullName}
+                        isCaCountry={isCaCountry}
+                        isFrCountry={isFrCountry}
+                        isUsCountry={isUsCountry}
+                      />
+                    )
+                    : null
                   : null
                 }
                 <Button
+                  className='w-full'
                   type='submit' disabled={
                     isTermsChecked === false
                       ? true

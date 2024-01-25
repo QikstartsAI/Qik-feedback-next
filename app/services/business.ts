@@ -65,6 +65,7 @@ import {
   
       businessData.Icono = iconUrl
       businessData.Cover = coverUrl
+      businessData.BusinessId = businessId || ''
   
       return businessData
     } else {

@@ -21,3 +21,9 @@ export const findCustomerDataByEmail = async (email: string): Promise<Customer |
     return null;
   }
 };
+
+export const findIsCustomerInBusiness = async (email: string, businessId: string) => {
+  const db = getFirebase().db
+  const customerDocRef = doc(db, CUSTOMERS_COLLECTION_NAME || '', email, 'business', businessId)
+  return (await getDoc(customerDocRef)).exists()
+}

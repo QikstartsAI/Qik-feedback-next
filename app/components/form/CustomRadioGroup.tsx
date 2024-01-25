@@ -21,7 +21,7 @@ function CustomRadioGroup ({ items, value }: CustomRadioGrouprops) {
       {items.map(({ icon: Icon, label, value: itemValue }) => (
         <li
           key={itemValue}
-          className={cn('flex justify-center items-center w-full bg-white border border-gray-200 rounded-lg py-1 sm:py-2 cursor-pointer shadowhover:border-sky-500 hover:text-sky-500 transition-all', {
+          className={cn('flex justify-center items-center w-full bg-white border border-gray-200 rounded-lg py-2 sm:py-2 cursor-pointer shadowhover:border-sky-500 hover:text-sky-500 transition-all', {
             'border-sky-500 text-sky-500': value === itemValue
           })}
         >
