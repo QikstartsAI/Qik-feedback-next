@@ -53,6 +53,9 @@ import RatingRadioGroup from '../form/RatingRadioGroup'
 import { SelectedOption } from '@/app/types/general'
 import { CustomerRole } from '@/app/types/customer'
 import GoogleReviewMessage from '../form/GoogleReviewMessage'
+import { lastFeedbackFilledIsGreaterThanOneDay } from '@/app/lib/utils'
+import { Timestamp } from 'firebase/firestore'
+import { getTimesTampFromDate } from '@/app/lib/firebase'
 
 interface FeedbackFormProps {
   business: Business | null
@@ -70,7 +73,9 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
   const [selectedOtherOption, setSelectedOtherOption] = useState<SelectedOption | null>(null)
 
   const [isCustomerInBusiness, setIsCustomerInBusiness] = useState<boolean>(false)
-  // console.log(isCustomerInBusiness)
+  const [isLastFeedbackMoreThanOneDay, setIsLastFeedbackMoreThanOneDay] = useState<boolean | undefined>(false)
+  const [showLastFeedbackFilledModal, setShowLastFeedbackFilledModal] = useState<boolean | undefined>(false)
+  // console.log(lastFeedbackFilledByUser)
 
   const { toast } = useToast()
 
@@ -205,6 +210,32 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
             </ul>
           </Modal>
         )}
+        {
+          showLastFeedbackFilledModal && (
+          <Modal isOpen={true} onClose={() => setShowLastFeedbackFilledModal(false)}>
+            <div className='text-center'>
+              <p>
+                {
+                  isUsCountry
+                    ? 'Thank you! '
+                    : isCaCountry || isFrCountry
+                      ? 'Merci!'
+                      : '¡Gracias!'
+                }
+              </p>
+              <p>
+                {
+                  isUsCountry
+                    ? '✌🏻 You have reached the daily survey limit. Until your next visit! 😉'
+                    : isCaCountry || isFrCountry
+                      ? "✌🏻 Vous avez atteint la limite quotidienne d'enquêtes. A votre prochaine visite ! 😉"
+                      : '✌🏻 Has alcanzado el límite diario de encuestas. ¡Hasta tu próxima visita! 😉'
+                }
+              </p>
+            </div>
+          </Modal>
+          )
+        }
         <Card>
           <CardHeader>
             <CardTitle>
@@ -259,7 +290,10 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                               const email = field.value
                               if (email) {
                                 const customerData = await findCustomerDataByEmail(email)
+                                const lastFeedbackGreaterThanOneDay = lastFeedbackFilledIsGreaterThanOneDay(customerData?.lastFeedbackFilled)
                                 setIsCustomerInBusiness(await findIsCustomerInBusiness(email, business?.BusinessId || ''))
+                                setShowLastFeedbackFilledModal(lastFeedbackGreaterThanOneDay)
+                                setIsLastFeedbackMoreThanOneDay(lastFeedbackGreaterThanOneDay)
                                 if (customerData) {
                                   form.setValue('FullName', customerData.name)
                                   form.setValue('PhoneNumber', customerData.phoneNumber || '')
@@ -672,7 +706,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                 <Button
                   className='w-full'
                   type='submit' disabled={
-                    isTermsChecked === false
+                    isTermsChecked === false || isLastFeedbackMoreThanOneDay
                       ? true
                       : form.formState.isSubmitting
                   }

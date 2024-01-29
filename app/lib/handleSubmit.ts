@@ -37,7 +37,8 @@ const handleSubmitFeedback = async (
     birthdayDate: BirthdayDate || '',
     origin: Origin || '',
     customerType: customerType || '',
-    acceptPromotions: !PhoneNumber ? false : true
+    acceptPromotions: !PhoneNumber ? false : true,
+    lastFeedbackFilled: getTimesTampFromDate(new Date())
   }
 
   const businessFeedbackRef = collection(

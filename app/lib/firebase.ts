@@ -32,6 +32,8 @@ export const getFirebase = () => {
   return { db, firebaseApp, auth }
 }
 
-export const getTimesTampFromDate = (date: Date) => {
-  return Timestamp.fromDate(date)
+export const getTimesTampFromDate = (date: Date | undefined) => {
+  if (date) {
+    return Timestamp.fromDate(date)
+  }
 }

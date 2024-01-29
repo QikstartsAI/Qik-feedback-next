@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore"
+
 export type Customer = {
   email: string
   name: string
@@ -6,6 +8,7 @@ export type Customer = {
   origin: string
   customerType: string
   acceptPromotions?: boolean
+  lastFeedbackFilled: Timestamp | undefined
 }
 
 export type CustomerRole = 'new' | 'frequent'
