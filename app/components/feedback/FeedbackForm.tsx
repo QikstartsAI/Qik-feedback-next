@@ -53,6 +53,8 @@ import { SelectedOption } from '@/app/types/general'
 import { CustomerRole } from '@/app/types/customer'
 import GoogleReviewMessage from '../form/GoogleReviewMessage'
 import { lastFeedbackFilledIsGreaterThanOneDay } from '@/app/lib/utils'
+import { getCustomerDataInBusiness } from '@/app/lib/handleEmail'
+import { useSearchParams } from 'next/navigation'
 
 interface FeedbackFormProps {
   business: Business | null
@@ -63,6 +65,8 @@ interface FeedbackFormProps {
 }
 
 export default function FeedbackForm({ business, setIsSubmitted, setRating, setCustomerName, customerType }: FeedbackFormProps) {
+  const searchParams = useSearchParams()
+
   const [isChecked, setIsChecked] = useState(false)
   const [isTermsChecked, setIsTermsChecked] = useState(true)
 
@@ -72,9 +76,14 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
   const [isCustomerInBusiness, setIsCustomerInBusiness] = useState<boolean>(false)
   const [isLastFeedbackMoreThanOneDay, setIsLastFeedbackMoreThanOneDay] = useState<boolean | undefined>(false)
   const [showLastFeedbackFilledModal, setShowLastFeedbackFilledModal] = useState<boolean | undefined>(false)
+
   const [showLoyaltyWelcomeModal, setShowLoyaltyWelcomeModal] = useState<boolean>(false)
 
   const [isRewardButtonClicked, setIsRewardButtonClicked] = useState<boolean>(false)
+
+  const businessId = searchParams.get('id')
+  const branchId = searchParams.get('sucursal')
+  const waiterId = searchParams.get('mesero')
 
   const { toast } = useToast()
 
@@ -301,7 +310,9 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                                     const email = field.value
                                     if (email) {
                                       const customerData = await findCustomerDataByEmail(email)
-                                      const lastFeedbackGreaterThanOneDay = lastFeedbackFilledIsGreaterThanOneDay(customerData?.lastFeedbackFilled)
+                                      const customerDataInBusiness = await getCustomerDataInBusiness(email, businessId, branchId, waiterId)
+                                const lastFeedbackFilledInBusiness = customerDataInBusiness?.lastFeedbackFilled
+                                const lastFeedbackGreaterThanOneDay = lastFeedbackFilledIsGreaterThanOneDay(lastFeedbackFilledInBusiness)
                                       setIsCustomerInBusiness(await findIsCustomerInBusiness(email, business?.BusinessId || ''))
                                       setShowLastFeedbackFilledModal(lastFeedbackGreaterThanOneDay)
                                       setIsLastFeedbackMoreThanOneDay(lastFeedbackGreaterThanOneDay)
