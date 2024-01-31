@@ -34,7 +34,7 @@ import { findCustomerDataByEmail, findIsCustomerInBusiness } from '@/app/lib/han
 import { Checkbox } from '../ui/Checkbox'
 import { Textarea } from '../ui/TextArea'
 import { Business } from '@/app/types/business'
-import { Dispatch, SetStateAction, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import CustomRadioGroup from '../form/CustomRadioGroup'
 import Modal from '../ui/Modal'
 import {
@@ -50,7 +50,7 @@ import {
 import RatingRadioGroup from '../form/RatingRadioGroup'
 import RewardsApproval from '../form/RewardsApproval';
 import { SelectedOption } from '@/app/types/general'
-import { CustomerRole } from '@/app/types/customer'
+import { Customer, CustomerRole } from '@/app/types/customer'
 import GoogleReviewMessage from '../form/GoogleReviewMessage'
 import { lastFeedbackFilledIsGreaterThanOneDay } from '@/app/lib/utils'
 import { getCustomerDataInBusiness } from '@/app/lib/handleEmail'
@@ -80,6 +80,9 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
   const [showLoyaltyWelcomeModal, setShowLoyaltyWelcomeModal] = useState<boolean>(false)
 
   const [isRewardButtonClicked, setIsRewardButtonClicked] = useState<boolean>(false)
+
+  const [customerData, setCustomerData] = useState<Customer | null>();
+  const [customerDataInBusiness, setCustomerDataInBusiness] = useState<Customer | null>();
 
   const businessId = searchParams.get('id')
   const branchId = searchParams.get('sucursal')
@@ -119,7 +122,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
 
   const { watch } = form
   const watchRating = watch('Rating')
-  const watchUserApprovesLoyalty = watch('UserApprovesLoyalty')
+  const watchEmail = watch('Email')
 
   const isLowRating = watchRating === Ratings.Mal || watchRating === Ratings.Regular
   const isUsCountry = business?.Country === 'US'
@@ -195,6 +198,19 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
     form.setValue('UserApprovesLoyalty', value)
     setShowLoyaltyWelcomeModal(value)
   }
+
+  useEffect(() => {
+    if (customerData) {
+      console.log(customerData);
+      form.setValue('FullName', customerData.name);
+      form.setValue('PhoneNumber', customerData.phoneNumber || '');
+      form.setValue('BirthdayDate', customerData.birthdayDate || '');
+      setIsChecked(customerData.acceptPromotions || false);
+      if (customerData.userApprovesLoyalty) {
+        setIsRewardButtonClicked(true)
+      }
+    }
+  }, [customerData, form]);
 
   return (
     <>
@@ -277,60 +293,73 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                 className='space-y-4 md:space-y-6'
                 noValidate
               >
-                <RewardsApproval
-                  handleUserApprovesLoyalty={handleUserApprovesLoyalty}
-                  setIsRewardButtonClicked={setIsRewardButtonClicked}
-                />
+                <div
+                  className={cn('space-y-3 mb-3', {})}
+                >
+                  <FormField
+                    control={form.control}
+                    name='Email'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          {
+                            isUsCountry
+                              ? 'Email'
+                              : isCaCountry || isFrCountry
+                                ? 'Courrier électronique'
+                                : 'Correo electrónico'
+                          }
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder='Ej: juan@gmail.com'
+                            {...field}
+                            type='email'
+                            onChange={async (e) => {
+                              field.onChange(e)
+                              const email = e.target.value
+                              if (email) {
+                                setCustomerData(await findCustomerDataByEmail(email))
+                                setCustomerDataInBusiness(await getCustomerDataInBusiness(email, businessId, branchId, waiterId))
+                                const lastFeedbackFilledInBusiness = customerDataInBusiness?.lastFeedbackFilled
+                                const lastFeedbackGreaterThanOneDay = lastFeedbackFilledIsGreaterThanOneDay(lastFeedbackFilledInBusiness)
+                                setIsCustomerInBusiness(customerDataInBusiness ? true : false)
+                                setShowLastFeedbackFilledModal(lastFeedbackGreaterThanOneDay)
+                                setIsLastFeedbackMoreThanOneDay(lastFeedbackGreaterThanOneDay)
+                                if (customerData) {
+                                  console.log(customerData)
+                                  form.setValue('FullName', customerData.name)
+                                  form.setValue('PhoneNumber', customerData.phoneNumber || '')
+                                  form.setValue('BirthdayDate', customerData.birthdayDate || '')
+                                  setIsChecked(customerData.acceptPromotions || false)
+                                }
+                              }
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
                 {
-                  isRewardButtonClicked ? (
+
+                  (customerData && !Object.hasOwn(customerData, 'userApprovesLoyalty')) ||
+                  (customerData && !customerDataInBusiness?.userApprovesLoyalty && customerType === 'frequent')
+                  || (!customerData && watchEmail.includes('@')) ? (
+                    <RewardsApproval
+                      handleUserApprovesLoyalty={handleUserApprovesLoyalty}
+                      setIsRewardButtonClicked={setIsRewardButtonClicked}
+                    />
+                  ) : null
+                }
+                {
+                  isRewardButtonClicked
+                  ? (
                     <>
                       <div
                         className={cn('space-y-3 mb-3', {})}
                       >
-                        <FormField
-                          control={form.control}
-                          name='Email'
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>
-                                {
-                                  isUsCountry
-                                    ? 'Email'
-                                    : isCaCountry || isFrCountry
-                                      ? 'Courrier électronique'
-                                      : 'Correo electrónico'
-                                }
-                              </FormLabel>
-                              <FormControl>
-                                <Input
-                                  placeholder='Ej: juan@gmail.com'
-                                  {...field}
-                                  type='email'
-                                  onBlur={async () => {
-                                    const email = field.value
-                                    if (email) {
-                                      const customerData = await findCustomerDataByEmail(email)
-                                      const customerDataInBusiness = await getCustomerDataInBusiness(email, businessId, branchId, waiterId)
-                                const lastFeedbackFilledInBusiness = customerDataInBusiness?.lastFeedbackFilled
-                                const lastFeedbackGreaterThanOneDay = lastFeedbackFilledIsGreaterThanOneDay(lastFeedbackFilledInBusiness)
-                                      setIsCustomerInBusiness(await findIsCustomerInBusiness(email, business?.BusinessId || ''))
-                                      setShowLastFeedbackFilledModal(lastFeedbackGreaterThanOneDay)
-                                      setIsLastFeedbackMoreThanOneDay(lastFeedbackGreaterThanOneDay)
-                                      if (customerData) {
-                                        form.setValue('FullName', customerData.name)
-                                        form.setValue('PhoneNumber', customerData.phoneNumber || '')
-                                        form.setValue('BirthdayDate', customerData.birthdayDate || '')
-                                        setIsChecked(customerData.acceptPromotions || false)
-                                      }
-                                    }
-                                  }}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        {/* name */}
                         <FormField
                           control={form.control}
                           name='FullName'
@@ -791,9 +820,9 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                         />
                       </CardFooter>
                     </>
-                  )
-                    : null
+                  ) : null
                 }
+
               </form>
             </Form>
           </CardContent>

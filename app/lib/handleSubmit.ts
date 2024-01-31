@@ -217,7 +217,7 @@ const handleSubmitFeedback = async (
     const businessRef = doc(parentCustomerBusinessRef, businessId || '')
 
     await setDoc(customerRef, customerContactData)
-    await setDoc(businessRef, businessData)
+    await setDoc(businessRef, {...businessData, userApprovesLoyalty: UserApprovesLoyalty})
   } catch (err) {
     console.error(err)
   }

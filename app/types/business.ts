@@ -68,6 +68,7 @@ export interface Business {
     Waiter?: Waiter
     feedbacks?: Feedback[]
     PricePlan: number
+    userApprovesLoyalty?: boolean
 }
 
 export type BusinessAssets = {

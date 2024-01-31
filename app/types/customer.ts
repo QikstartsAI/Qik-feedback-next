@@ -1,7 +1,7 @@
 import { Timestamp } from "firebase/firestore"
 
 export type Customer = {
-  userApprovesLoyalty: boolean
+  userApprovesLoyalty?: boolean
   email: string
   name: string
   phoneNumber?: string
