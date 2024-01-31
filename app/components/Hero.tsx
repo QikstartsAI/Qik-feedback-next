@@ -6,8 +6,11 @@ import Banner from "./Banner";
 import Image from "next/image";
 import { useGetCurrentBusinessByIdImmutable } from "@/app/hooks/services/businesses";
 import { useGetWaiterByBusinessOrSucursalImmutable } from "@/app/hooks/services/waiters";
+import { useTranslation } from "react-i18next";
 
 function Hero() {
+  const { t } = useTranslation("hero");
+
   const { data: business, isLoading: loadingBusiness } =
     useGetCurrentBusinessByIdImmutable();
   const { data: waiter } = useGetWaiterByBusinessOrSucursalImmutable();
@@ -41,7 +44,7 @@ function Hero() {
                 width={1584}
                 height={958}
               />
-              <img
+              <Image
                 src={business?.Icono || ""}
                 className="w-32 lg:w-40 animate-in"
                 alt={business?.Name || "Icono del negocio"}
@@ -60,17 +63,7 @@ function Hero() {
               </p>
             </div>
             <p className="text-center text-base text-white/90 sm:text-lg pb-2 font-bold">
-              {business?.Country === "US"
-                ? "Your rating drives us to"
-                : business?.Country === "CA"
-                ? "Votre note nous pousse à"
-                : "Tu calificación nos impulsa a la"}{" "}
-              <br />{" "}
-              {business?.Country === "US"
-                ? "excellence"
-                : business?.Country === "CA"
-                ? "excellence"
-                : "excelencia"}
+              {t(`ratingTitle`)} <br /> {t(`excellenceSubtitle`)}
             </p>
             {waiter && (
               <div className="flex flex-col justify-center items-center my-2">
@@ -88,11 +81,7 @@ function Hero() {
                   />
                 )}
                 <p className="text-center text-sm text-white/90 sm:text-lg pb-1 font-medium">
-                  {business?.Country === "US"
-                    ? "Today I attended to you:"
-                    : business?.Country === "CA"
-                    ? "Aujourd'hui, je me suis occupé de vous:"
-                    : "Hoy te atendí:"}
+                  {t(`attendTitle`)}
                 </p>
                 <p className="text-center text-base text-white/90 sm:text-lg pb-1 font-semibold">
                   {waiter.name}
@@ -100,11 +89,7 @@ function Hero() {
               </div>
             )}
             <Button variant="secondary" onClick={handleScrollToForm}>
-              {business?.Country === "US"
-                ? "Start"
-                : business?.Country === "CA"
-                ? "Commencer"
-                : "Empezar"}{" "}
+              {t(`startButton`)}{" "}
               <IconChevronsDown className="w-4 h-4 ml-2 animate-bounce" />
             </Button>
           </>

@@ -19,7 +19,7 @@ import {
 import { currencyPrices } from "@/app/constants/prices";
 import { phoneNumbersPlaceholders } from "@/app/constants/placeholders";
 
-import PhoneInput from "react-phone-number-input";
+import PhoneInput, { Country } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
 import { Input } from "../ui/Input";
@@ -52,6 +52,7 @@ import RatingRadioGroup from "../form/RatingRadioGroup";
 import Footer from "./Footer";
 import { useGetCurrentBusinessByIdImmutable } from "@/app/hooks/services/businesses";
 import { useFormStore } from "@/app/stores/form";
+import { useTranslation } from "react-i18next";
 
 interface FeedbackFormProps {
   setIsSubmitted: Dispatch<SetStateAction<boolean>>;
@@ -59,6 +60,7 @@ interface FeedbackFormProps {
 }
 
 export default function FeedbackForm() {
+  const { t } = useTranslation("form");
   const { setIsSubmitted, setRating } = useFormStore();
 
   const { data: business, isLoading: loadingBusiness } =
@@ -114,11 +116,7 @@ export default function FeedbackForm() {
     if (isLowRating && !Ambience && !Service && !Food) {
       form.setError("hiddenInput", {
         type: "manual",
-        message: isUsCountry
-          ? "Select at least one option"
-          : isCaCountry
-          ? "Sélectionnez au moins une option"
-          : "Selecciona al menos una opción",
+        message: t(`selectOneErrorText`),
       });
       return;
     }
@@ -126,11 +124,7 @@ export default function FeedbackForm() {
     if (isLowRating && ImproveText.length === 0) {
       form.setError("ImproveText", {
         type: "manual",
-        message: isUsCountry
-          ? "Please tell us how can we improve"
-          : isCaCountry
-          ? "Veuillez écrire comment nous pouvons améliorer"
-          : "Por favor, escribe en que podemos mejorar",
+        message: t(`improveTextErrorText`),
       });
       return;
     }
@@ -154,11 +148,7 @@ export default function FeedbackForm() {
     } catch (error) {
       console.log(error);
       toast({
-        title: isUsCountry
-          ? "An error occurred, try again"
-          : isCaCountry
-          ? "Une erreur s'est produite, réessayez"
-          : "Ocurrio un error, intenta nuevamente",
+        title: t(`trylaterErrorText`),
         variant: "destructive",
       });
     } finally {
@@ -176,18 +166,7 @@ export default function FeedbackForm() {
         <Card>
           <CardHeader>
             <CardTitle>
-              {isUsCountry
-                ? "We value your opinion 😊, it will take you less than "
-                : isCaCountry
-                ? "Nous apprécions votre avis 😊, cela vous prendra moins de "
-                : "Valoramos tu opinión 😊, te tomará menos de "}
-              <span className="text-sky-500 font-medium">
-                {isUsCountry
-                  ? "1 minute"
-                  : isCaCountry
-                  ? "1 minute"
-                  : "1 minuto"}
-              </span>
+              <p dangerouslySetInnerHTML={{ __html: t(`title`) }}></p>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -204,13 +183,7 @@ export default function FeedbackForm() {
                     name="FullName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
-                          {isUsCountry
-                            ? "Full name"
-                            : isCaCountry
-                            ? "Nom complet"
-                            : "Nombre completo"}
-                        </FormLabel>
+                        <FormLabel>{t(`fullNameLabel`)}</FormLabel>
                         <FormControl>
                           <Input placeholder="Ej: Juan Pérez" {...field} />
                         </FormControl>
@@ -223,13 +196,7 @@ export default function FeedbackForm() {
                     name="PhoneNumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
-                          {isUsCountry
-                            ? "Phone (optional)"
-                            : isCaCountry
-                            ? "Téléphone (facultatif)"
-                            : "Teléfono (opcional)"}
-                        </FormLabel>
+                        <FormLabel>{t(`phoneLabel`)}</FormLabel>
                         <FormControl>
                           <PhoneInput
                             {...field}
@@ -238,7 +205,7 @@ export default function FeedbackForm() {
                                 business?.Country || "EC"
                               ]
                             }`}
-                            defaultCountry={business?.Country as string}
+                            defaultCountry={business?.Country as Country}
                           />
                         </FormControl>
                         <FormMessage />
@@ -258,11 +225,7 @@ export default function FeedbackForm() {
                             checked={isChecked}
                           />
                           <span className="ml-2 text-gray-700 text-xs">
-                            {isUsCountry
-                              ? "I agree to receive promotions"
-                              : isCaCountry
-                              ? "J'accepte de recevoir des promotions"
-                              : "Acepto recibir promociones"}
+                            {t(`promotionsLabel`)}
                           </span>
                         </>
                       </FormControl>
@@ -273,16 +236,10 @@ export default function FeedbackForm() {
                     name="Email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
-                          {isUsCountry
-                            ? "Email"
-                            : isCaCountry
-                            ? "Courrier électronique"
-                            : "Correo electrónico"}
-                        </FormLabel>
+                        <FormLabel>{t(`emailLabel`)}</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Ej: juan@gmail.com"
+                            placeholder={t(`emailPlaceholder`)}
                             {...field}
                             type="email"
                           />
@@ -297,14 +254,7 @@ export default function FeedbackForm() {
                     name="Origin"
                     render={({ field }) => (
                       <FormItem className="space-y-3">
-                        <FormLabel>
-                          {" "}
-                          {isUsCountry
-                            ? "Where do you know us from?"
-                            : isCaCountry
-                            ? "D'où nous connaissez-vous?"
-                            : "¿De dónde nos conoces?"}
-                        </FormLabel>
+                        <FormLabel>{t(`originsLabel`)}</FormLabel>
                         <FormControl>
                           <RadioGroup
                             onValueChange={field.onChange}
@@ -326,17 +276,11 @@ export default function FeedbackForm() {
                     name="BirthdayDate"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
-                          {isUsCountry
-                            ? "Your birthday? 🎂 (optional)"
-                            : isCaCountry
-                            ? "Ton anniversaire? 🎂 (facultatif)"
-                            : "¿Tu fecha de cumpleaños? 🎂 (opcional)"}
-                        </FormLabel>
+                        <FormLabel>{t(`birthdayLabel`)}</FormLabel>
                         <FormControl>
                           <Input
                             type="date"
-                            placeholder="Ej: 29/10/1999"
+                            placeholder={t(`birthdayPlaceholder`)}
                             max="2005-12-31"
                             {...field}
                           />
@@ -351,14 +295,7 @@ export default function FeedbackForm() {
                     name="Dinners"
                     render={({ field }) => (
                       <FormItem className="space-y-3">
-                        <FormLabel>
-                          {" "}
-                          {isUsCountry
-                            ? "People at the table?"
-                            : isCaCountry
-                            ? "Du monde à table ?"
-                            : "¿Personas en la mesa?"}
-                        </FormLabel>
+                        <FormLabel>{t(`peopleAtTableLabel`)}</FormLabel>
                         <FormControl>
                           <RadioGroup
                             onValueChange={field.onChange}
@@ -381,14 +318,7 @@ export default function FeedbackForm() {
                     name="AverageTicket"
                     render={({ field }) => (
                       <FormItem className="space-y-3">
-                        <FormLabel>
-                          {" "}
-                          {isUsCountry
-                            ? "How much did you spend today per person?"
-                            : isCaCountry
-                            ? "Qu'est-ce que tu as à manger aujourd'hui par personne ?"
-                            : "¿Cuánto gastaste hoy por persona?"}
-                        </FormLabel>
+                        <FormLabel>{t(`spendLabel`)}</FormLabel>
                         <FormControl>
                           <RadioGroup
                             onValueChange={field.onChange}
@@ -411,14 +341,7 @@ export default function FeedbackForm() {
                     name="Rating"
                     render={({ field }) => (
                       <FormItem className="space-y-0">
-                        <FormLabel>
-                          {" "}
-                          {isUsCountry
-                            ? "How were we today?"
-                            : isCaCountry
-                            ? "Comment sommes-nous le jour d'aujourd'hui ?"
-                            : "¿Cómo estuvimos el dia de hoy?"}
-                        </FormLabel>
+                        <FormLabel>{t(`ratingLabel`)}</FormLabel>
                         <FormControl>
                           <RadioGroup onValueChange={field.onChange}>
                             <RatingRadioGroup
@@ -435,13 +358,7 @@ export default function FeedbackForm() {
                   {isLowRating ? (
                     <>
                       <FormItem>
-                        <FormLabel>
-                          {isUsCountry
-                            ? "What can we improve?"
-                            : isCaCountry
-                            ? "Et qu'est-ce que nous pourrions améliorer?"
-                            : "¿En qué podemos mejorar?"}
-                        </FormLabel>
+                        <FormLabel>{t(`lowRatingLabel`)}</FormLabel>
                       </FormItem>
                       <div className="grid grid-cols-3 sm:grid-cols-4 gap-1 sm:gap-2 text-sm font-medium text-gray-900">
                         <FormField
@@ -473,11 +390,7 @@ export default function FeedbackForm() {
                               >
                                 <IconToolsKitchen />
                                 <p className="w-full text-[10px] sm:text-[11px]">
-                                  {isUsCountry
-                                    ? "Food"
-                                    : isCaCountry
-                                    ? "Cuisine"
-                                    : "Comida"}
+                                  {t(`foodLabel`)}
                                 </p>
                               </FormLabel>
                             </FormItem>
@@ -512,11 +425,7 @@ export default function FeedbackForm() {
                               >
                                 <IconUsers />
                                 <p className="w-full text-[10px] sm:text-[11px]">
-                                  {isUsCountry
-                                    ? "Service"
-                                    : isCaCountry
-                                    ? "Service"
-                                    : "Servicio"}
+                                  {t(`serviceLabel`)}
                                 </p>
                               </FormLabel>
                             </FormItem>
@@ -551,11 +460,7 @@ export default function FeedbackForm() {
                               >
                                 <IconBuildingStore />
                                 <p className="w-full text-[10px] sm:text-[11px]">
-                                  {isUsCountry
-                                    ? "Atmosphere"
-                                    : isCaCountry
-                                    ? "Ambiance"
-                                    : "Ambiente"}
+                                  {t(`ambienceLabel`)}
                                 </p>
                               </FormLabel>
                             </FormItem>
@@ -563,35 +468,17 @@ export default function FeedbackForm() {
                         />
                       </div>
                       {form.formState.errors.hiddenInput ? (
-                        <FormMessage>
-                          {isUsCountry
-                            ? "Please select at least one option"
-                            : isCaCountry
-                            ? "Veuillez sélectionner au moins une option"
-                            : "Por favor selecciona al menos una opción"}
-                        </FormMessage>
+                        <FormMessage>{t(`errorOptionMessage`)}</FormMessage>
                       ) : null}
                       <FormField
                         control={form.control}
                         name="ImproveText"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>
-                              {isUsCountry
-                                ? "Share details about your experience in this place"
-                                : isCaCountry
-                                ? "Partagez des détails sur votre expérience dans ce lieu"
-                                : "Compartenos detalles sobre tu experiencia en este lugar"}
-                            </FormLabel>
+                            <FormLabel>{t(`improveTextLabel`)}</FormLabel>
                             <FormControl>
                               <Textarea
-                                placeholder={
-                                  isUsCountry
-                                    ? "Ej:the food was very good, but the service was slow."
-                                    : isCaCountry
-                                    ? "Fr: La nourriture était très bonne, mais le service était lent."
-                                    : "Ej: La comida estuvo muy buena, pero el servicio fue lento."
-                                }
+                                placeholder={t(`improveTextPlaceholder`)}
                                 {...field}
                               />
                             </FormControl>
@@ -605,25 +492,12 @@ export default function FeedbackForm() {
                 {!isLowRating && watchFullName ? (
                   <Alert>
                     <AlertTitle className={cn("text-xs sm:text-sm")}>
-                      {isUsCountry
-                        ? "Last favor"
-                        : isCaCountry
-                        ? "Une dernière faveur"
-                        : "Un último favor"}
-                      , {watchFullName}!
+                      {t(`lastFavorTitle`)}, {watchFullName}!
                     </AlertTitle>
                     <AlertDescription className={cn("text-xs sm:text-sm")}>
-                      {isUsCountry
-                        ? "When you submit, you will be directed to Google to rate our business with stars 🌟."
-                        : isCaCountry
-                        ? "L'envoyer sera dirigé vers Google pour améliorer notre emploi avec des étoiles 🌟."
-                        : "Al enviar, serás dirigido a Google, para calificar nuestro emprendimiento con estrellas 🌟."}
+                      {t(`redirectFavorMessage`)}
                       <br />
-                      {isUsCountry
-                        ? "Your opinion helps us so that more people know about us and we stand out in the sector. Thank you! 😍"
-                        : isCaCountry
-                        ? "Votre avis nous aide à ce que les plus grandes personnes connaissent nos gens et nous dévastent le secteur. Merci ! 😍"
-                        : "Tu opinión nos ayuda a que más personas conozcan de nosotros y destaquemos en el sector. ¡Gracias! 😍"}
+                      {t(`opinionThanksMessage`)}
                     </AlertDescription>
                   </Alert>
                 ) : null}
@@ -635,7 +509,7 @@ export default function FeedbackForm() {
                       : form.formState.isSubmitting
                   }
                 >
-                  {isUsCountry ? "Send" : isCaCountry ? "Envoyer" : "Enviar"}
+                  {t(`sendButton`)}
                 </Button>
                 <CardFooter>
                   <FormField
@@ -651,39 +525,23 @@ export default function FeedbackForm() {
                             checked={isTermsChecked}
                           />
                           <small className="text-gray-500">
-                            {isUsCountry
-                              ? 'By pressing "Submit", I declare that I accept the'
-                              : isCaCountry
-                              ? 'En pressant "Enviar", déclarez que vous acceptez les'
-                              : 'Al presionar "Enviar", declaro que acepto los'}{" "}
+                            {t(`confirmSendText`)}{" "}
                             <a
                               className="text-primary hover:underline"
                               href="https://qikstarts.com/terms-of-service"
                               rel="noopener noreferrer"
                               target="_blank"
                             >
-                              {isUsCountry
-                                ? "Terms and Cons"
-                                : isCaCountry
-                                ? "Conditions et conditions"
-                                : "Términos y Condiciones"}
+                              {t(`termsAndConditionsText`)}
                             </a>{" "}
-                            {isUsCountry
-                              ? " and the "
-                              : isCaCountry
-                              ? " et là "
-                              : " y las "}{" "}
+                            {t(`andText`)}{" "}
                             <a
                               className="text-primary hover:underline"
                               href="https://qikstarts.com/privacy-policy"
                               rel="noopener noreferrer"
                               target="_blank"
                             >
-                              {isUsCountry
-                                ? "Privacy Policies"
-                                : isCaCountry
-                                ? "Politiques de confidentialité"
-                                : "Políticas de Privacidad"}
+                              {t(`privacyPoliciesText`)}
                             </a>
                             .
                           </small>

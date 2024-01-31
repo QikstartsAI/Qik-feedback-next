@@ -1,5 +1,5 @@
 "use client";
-
+import "@/i18n";
 import { lazy, useState } from "react";
 import Loader from "./components/Loader";
 import Thanks from "./components/Thanks";
@@ -20,6 +20,7 @@ export default function Home() {
   if (isSubmitted && rating !== "4" && rating !== "5") {
     return <Thanks businessCountry={business?.Country || "EC"} />;
   }
+
   return (
     <div className="min-h-screen">
       {!business && loadingBusiness && <Loader />}
