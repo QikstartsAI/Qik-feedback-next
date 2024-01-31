@@ -17,7 +17,7 @@ import { Business } from "../types/business";
 import { currencyPrices } from "./prices";
 import { Improvements } from "@/app/types/feedback";
 
-const getKnownOrigins = (business: Business | null) => {
+const getKnownOrigins = (business: Business | BusinessI | undefined | null) => {
   const referred =
     business?.Country === "US"
       ? "Referred"
@@ -42,7 +42,9 @@ const getKnownOrigins = (business: Business | null) => {
   ];
 };
 
-const getCustomersQuantity = (business: Business | null) => {
+const getCustomersQuantity = (
+  business: Business | BusinessI | undefined | null
+) => {
   const toGo =
     business?.Country === "US"
       ? "To go"
@@ -65,7 +67,9 @@ const getCustomersQuantity = (business: Business | null) => {
   ];
 };
 
-const getAverageTicket = (business: Business | null) => {
+const getAverageTicket = (
+  business: Business | BusinessI | undefined | null
+) => {
   const businessCountry = business?.Country;
   const averageTicketList = Object.entries(currencyPrices).find(
     ([key]) => key === businessCountry

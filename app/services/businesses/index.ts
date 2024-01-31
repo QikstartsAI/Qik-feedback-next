@@ -3,6 +3,7 @@ import {
   USERS_COLLECTION_NAME,
 } from "@/app/constants/general";
 import { getFirebase } from "@/app/lib/firebase";
+import { parseBusinessIconAndCover } from "@/app/utils/storage";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 
 class BusinessServices {
@@ -17,7 +18,8 @@ class BusinessServices {
     const business = {
       id: businessDoc?.id,
       ...data,
-    };
+    } as BusinessI;
+    await parseBusinessIconAndCover(business);
     // eslint-disable-next-line no-undef
     return business as BusinessI;
   };
