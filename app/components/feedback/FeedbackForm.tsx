@@ -51,16 +51,16 @@ import {
 import RatingRadioGroup from "../form/RatingRadioGroup";
 import Footer from "./Footer";
 import { useGetCurrentBusinessByIdImmutable } from "@/app/hooks/services/businesses";
+import { useFormStore } from "@/app/stores/form";
 
 interface FeedbackFormProps {
   setIsSubmitted: Dispatch<SetStateAction<boolean>>;
   setRating: Dispatch<SetStateAction<string>>;
 }
 
-export default function FeedbackForm({
-  setIsSubmitted,
-  setRating,
-}: FeedbackFormProps) {
+export default function FeedbackForm() {
+  const { setIsSubmitted, setRating } = useFormStore();
+
   const { data: business, isLoading: loadingBusiness } =
     useGetCurrentBusinessByIdImmutable();
 
