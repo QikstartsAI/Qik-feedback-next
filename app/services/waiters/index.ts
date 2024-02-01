@@ -68,6 +68,7 @@ class WaitersService {
     );
     const waiterRef = doc(businessDocRef, "meseros", waiterId);
     const waiterDoc = await getDoc(waiterRef);
+    if (!waiterDoc.exists()) return null;
     const data = waiterDoc.data();
     const waiter = {
       id: waiterDoc.id,
@@ -90,10 +91,11 @@ class WaitersService {
       DASHBOARD_COLLECTION_NAME,
       businessId
     );
-    if (sucursalId) {
+    if (!!sucursalId) {
       const sucursalRef = doc(businessDocRef, "sucursales", sucursalId);
       const waiterRef = doc(sucursalRef, "meseros", waiterId);
       const waiterDoc = await getDoc(waiterRef);
+      if (!waiterDoc.exists()) return null;
       const data = waiterDoc.data();
       const waiter = {
         id: waiterDoc.id,
@@ -101,7 +103,7 @@ class WaitersService {
       };
       return waiter as WaiterI;
     } else {
-      return this.getWaiterByBusiness({ businessId, waiterId });
+      return await this.getWaiterByBusiness({ businessId, waiterId });
     }
   };
 }

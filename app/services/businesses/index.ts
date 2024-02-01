@@ -19,7 +19,9 @@ class BusinessServices {
       id: businessDoc?.id,
       ...data,
     } as BusinessI;
-    await parseBusinessIconAndCover(business);
+
+    await parseBusinessIconAndCover(business); // FIXME: slow query
+
     // eslint-disable-next-line no-undef
     return business as BusinessI;
   };
@@ -38,7 +40,7 @@ class BusinessServices {
     return business;
   };
 
-  getBusinessSucursal = async ({ businessId }: { businessId: string }) => {
+  getBusinessSucursales = async ({ businessId }: { businessId: string }) => {
     const businessDocRef = doc(
       getFirebase()?.db,
       DASHBOARD_COLLECTION_NAME,
@@ -55,6 +57,29 @@ class BusinessServices {
     });
     // eslint-disable-next-line no-undef
     return results as BusinessSucursalI[];
+  };
+
+  getBusinessSucursal = async ({
+    businessId,
+    sucursalId,
+  }: {
+    businessId: string;
+    sucursalId: string;
+  }) => {
+    const businessDocRef = doc(
+      getFirebase()?.db,
+      DASHBOARD_COLLECTION_NAME,
+      businessId
+    );
+    const sucursalRef = doc(businessDocRef, "sucursales", sucursalId);
+    const item = await getDoc(sucursalRef);
+    if (!item?.exists()) return null;
+    const data = item?.data();
+    const sucursal = {
+      id: item?.id,
+      ...data,
+    };
+    return sucursal as BusinessSucursalI;
   };
 }
 

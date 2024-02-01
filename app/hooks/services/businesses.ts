@@ -40,8 +40,8 @@ export const useGetBusinessSucursales = ({
   businessId: string;
 }) => {
   const response = useSWR(
-    businessId ? `/business/sucursal/${businessId}` : null,
-    () => businessService.getBusinessSucursal({ businessId })
+    businessId ? `/business/sucursales/${businessId}` : null,
+    () => businessService.getBusinessSucursales({ businessId })
   );
   return response;
 };
@@ -49,11 +49,14 @@ export const useGetBusinessSucursales = ({
 export const useGetBusinessSucursalesImmutable = ({
   businessId,
 }: {
-  businessId: string;
+  businessId: string | undefined | null;
 }) => {
   const response = useSWRImmutable(
     businessId ? `/businesses/sucursal/${businessId}` : null,
-    () => businessService.getBusinessSucursal({ businessId })
+    () =>
+      businessService.getBusinessSucursales({
+        businessId: businessId as string,
+      })
   );
   return response;
 };
@@ -64,5 +67,17 @@ export const useGetCurrentBusinessSucursalesImmutable = () => {
   const response = useGetBusinessSucursalesImmutable({
     businessId: businessId as string,
   });
+  return response;
+};
+
+export const useGetCurrentSucursalImmutable = () => {
+  const searchParams = useSearchParams();
+  const businessId = searchParams.get("id") as string;
+  const sucursalId = searchParams.get("sucursal") as string;
+  const enabled = !sucursalId && !!businessId;
+  const response = useSWRImmutable(
+    enabled ? `/business/sucursal/${sucursalId}` : null,
+    () => businessService.getBusinessSucursal({ businessId, sucursalId })
+  );
   return response;
 };

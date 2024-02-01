@@ -1,6 +1,6 @@
 export default {
   banner: {
-    image: "/courtesia-en.gif",
+    image: "/cortesia-en.gif",
     imageAlt: "Remember to ask your waiter for your courtesy!",
   },
   ratingTitle: "Your rating drives us towards",
