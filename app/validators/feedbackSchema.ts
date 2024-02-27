@@ -6,7 +6,7 @@ export const feedbackSchema = (averageTicket: [string, ...string[]], businessCou
     UserApprovesLoyalty: z.boolean().optional(),
     FullName: z.string().nonempty({
       message:
-        businessCountry === 'US'
+        businessCountry === 'US' || businessCountry === 'HK'
           ? 'Please tell us your name'
           : businessCountry === 'CA' || businessCountry === 'FR'
             ? "S'il vous plaît dites-nous votre nom"
@@ -16,7 +16,7 @@ export const feedbackSchema = (averageTicket: [string, ...string[]], businessCou
     PhoneNumber: z
       .string({
         required_error:
-          businessCountry === 'US'
+          businessCountry === 'US' || businessCountry === 'HK'
             ? 'Please tell us your phone number'
             : businessCountry === 'CA' || businessCountry === 'FR'
               ? "S'il vous plaît dites-nous votre numéro de téléphone"
@@ -24,7 +24,7 @@ export const feedbackSchema = (averageTicket: [string, ...string[]], businessCou
       })
       .max(
         13,
-        businessCountry === 'US'
+        businessCountry === 'US' || businessCountry === 'HK'
           ? 'Please type a correct phone number'
           : businessCountry === 'CA' || businessCountry === 'FR'
             ? "S'il vous plaît entrer un numéro de téléphone valide"
@@ -38,14 +38,14 @@ export const feedbackSchema = (averageTicket: [string, ...string[]], businessCou
     Email: z
       .string({
         required_error:
-          businessCountry === 'US'
+          businessCountry === 'US' || businessCountry === 'HK'
             ? 'Please tell us your email'
             : businessCountry === 'CA' || businessCountry === 'FR'
               ? "S'il vous plaît dites-nous votre email"
               : 'Por favor dinos tu correo electrónico'
       })
       .email(
-        businessCountry === 'US'
+        businessCountry === 'US' || businessCountry === 'HK'
           ? 'Please type a correct email'
           : businessCountry === 'CA' || businessCountry === 'FR'
             ? 'Veuillez entrer un email valide'
@@ -54,7 +54,7 @@ export const feedbackSchema = (averageTicket: [string, ...string[]], businessCou
 
     Origin: z.nativeEnum(Origins, {
       required_error:
-        businessCountry === 'US'
+        businessCountry === 'US' || businessCountry === 'HK'
           ? 'Please tell us where you know us'
           : businessCountry === 'CA' || businessCountry === 'FR'
             ? "S'il vous plaît dites-nous d'où vous nous connaissez"
@@ -71,7 +71,7 @@ export const feedbackSchema = (averageTicket: [string, ...string[]], businessCou
       ],
       {
         required_error:
-          businessCountry === 'US'
+          businessCountry === 'US' || businessCountry === 'HK'
             ? 'Please tell us how many people had dinner with you'
             : businessCountry === 'CA' || businessCountry === 'FR'
               ? "S'il vous plaît dites-nous combien de personnes ont dîné avec vous"
@@ -81,7 +81,7 @@ export const feedbackSchema = (averageTicket: [string, ...string[]], businessCou
 
     AverageTicket: z.enum(averageTicket, {
       required_error:
-        businessCountry === 'US'
+        businessCountry === 'US' || businessCountry === 'HK'
           ? 'Please tell us how much did you spend today per person?'
           : businessCountry === 'CA' || businessCountry === 'FR'
             ? "Veuillez nous dire combien vous avez dépensé aujourd'hui par personne"
@@ -90,7 +90,7 @@ export const feedbackSchema = (averageTicket: [string, ...string[]], businessCou
 
     Rating: z.nativeEnum(Ratings, {
       required_error:
-        businessCountry === 'US'
+        businessCountry === 'US' || businessCountry === 'HK'
           ? 'Please tell us how were we today'
           : businessCountry === 'CA' || businessCountry === 'FR'
             ? "S'il te plaît, dis-nous comment nous étions aujourd'hui"
@@ -112,7 +112,7 @@ export const feedbackSchema = (averageTicket: [string, ...string[]], businessCou
       .string()
       .max(
         500,
-        businessCountry === 'US'
+        businessCountry === 'US' || businessCountry === 'HK'
           ? 'You cannot exceed 500 characters'
           : businessCountry === 'CA' || businessCountry === 'FR'
             ? 'Vous ne pouvez pas dépasser 500 caractères'

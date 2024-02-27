@@ -125,7 +125,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
   const watchEmail = watch('Email')
 
   const isLowRating = watchRating === Ratings.Mal || watchRating === Ratings.Regular
-  const isUsCountry = business?.Country === 'US'
+  const isUsCountry = business?.Country === 'US' || business?.Country === 'HK'
   const isCaCountry = business?.Country === 'CA'
   const isFrCountry = business?.Country === 'FR'
   const watchFullName = watch('FullName')

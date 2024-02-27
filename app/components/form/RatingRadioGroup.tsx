@@ -12,6 +12,10 @@ type RatingRadioGroupProps = {
 }
 
 function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
+  const isUsCountry = business?.Country === 'US' || business?.Country === 'HK'
+  const isCaCountry = business?.Country === 'CA'
+  const isFrCountry = business?.Country === 'FR'
+
   return (
     <ul className='grid grid-cols-4 text-sm font-medium text-gray-900'>
       <li className={cn('w-full py-1 sm:py-2 cursor-pointer hover:scale-110 hover:sm:scale-125 filter grayscale hover:grayscale-0 transition-all', {
@@ -36,9 +40,9 @@ function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
               height={657}
             />
             <p className='w-full text-[10px] sm:text-[11px]'>  {
-              business?.Country === 'US'
+              isUsCountry
                 ? 'Bad'
-                : business?.Country === 'CA' || business?.Country === 'FR'
+                : isCaCountry || isFrCountry
                   ? 'Mal'
                   : 'Mal'
             }
@@ -68,9 +72,9 @@ function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
               height={657}
             />
             <p className='w-full text-[10px] sm:text-[11px]'> {
-              business?.Country === 'US'
+              isUsCountry
                 ? 'Fair'
-                : business?.Country === 'CA' || business?.Country === 'FR'
+                : isCaCountry || isFrCountry
                   ? 'Régulière'
                   : 'Regular'
             }
@@ -101,9 +105,9 @@ function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
               height={657}
             />
             <p className='w-full text-[10px] sm:text-[11px]'>    {
-              business?.Country === 'US'
+              isUsCountry
                 ? 'Good'
-                : business?.Country === 'CA' || business?.Country === 'FR'
+                : isCaCountry || isFrCountry
                   ? 'Bon'
                   : 'Bueno'
             }
@@ -134,9 +138,9 @@ function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
               height={657}
             />
             <p className='w-full text-[10px] sm:text-[11px]'> {
-              business?.Country === 'US'
+              isUsCountry
                 ? 'Excellent'
-                : business?.Country === 'CA' || business?.Country === 'FR'
+                : isCaCountry || isFrCountry
                   ? 'Excellent'
                   : 'Excelente'
             }
