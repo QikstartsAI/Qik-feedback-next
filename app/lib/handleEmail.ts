@@ -1,7 +1,8 @@
 import { Customer } from "../types/customer";
 import { CUSTOMERS_COLLECTION_NAME, COLLECTION_NAME } from '@/app/constants/general'
 import { getFirebase } from '@/app/lib/firebase'
-import { doc, getDoc } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore'
+import { Feedback } from "../types/business";
 
 export const findCustomerDataByEmail = async (email: string): Promise<Customer | null> => {
   const db = getFirebase().db;
@@ -27,6 +28,13 @@ export const findIsCustomerInBusiness = async (email: string, businessId: string
   const customerDocRef = doc(db, CUSTOMERS_COLLECTION_NAME || '', email, 'business', businessId)
   return (await getDoc(customerDocRef)).exists()
 }
+
+export const findCustomerFeedbackDataInBusiness = async (email: string, businessId: string) => {
+  const db = getFirebase().db
+  const customerDocRef = doc(db, CUSTOMERS_COLLECTION_NAME || '', email, 'business', businessId)
+  return (await getDoc(customerDocRef)).data() as {customerNumberOfVisits: number}
+}
+
 
 
 export const getCustomerDataInBusiness = async (email: string, businessId: string | null, branchId: string | null, waiterId: string | null) => {
