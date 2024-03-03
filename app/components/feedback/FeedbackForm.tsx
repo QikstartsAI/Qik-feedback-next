@@ -30,7 +30,7 @@ import { FeedbackProps, feedbackSchema } from '@/app/validators/feedbackSchema'
 import { RadioGroup } from '../ui/RadioGroup'
 import { Origins, Ratings } from '@/app/types/feedback'
 import handleSubmitFeedback from '@/app/lib/handleSubmit'
-import { findCustomerDataByEmail, findIsCustomerInBusiness } from '@/app/lib/handleEmail'
+import { findCustomerDataByEmail, findCustomerFeedbackDataInBusiness, findIsCustomerInBusiness } from '@/app/lib/handleEmail'
 import { Checkbox } from '../ui/Checkbox'
 import { Textarea } from '../ui/TextArea'
 import { Business } from '@/app/types/business'
@@ -169,7 +169,18 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
       updatedData.ImproveText = isLowRating ? ImproveText : ''
       updatedData.AcceptPromotions = isChecked
       const improveOptions = isLowRating ? getImprovements({ Ambience, Service, Food, business }) : []
-      await handleSubmitFeedback(updatedData, improveOptions, customerType, attendantName)
+      let customerNumberOfVisits = 0
+      let feedbackNumberOfVisit = 0
+      const customerFeedbackInBusinesData = await findCustomerFeedbackDataInBusiness(data.Email, businessId || '')
+      if (customerFeedbackInBusinesData) {
+        const feedbackVisits = customerFeedbackInBusinesData.customerNumberOfVisits
+        customerNumberOfVisits = feedbackVisits + 1
+        feedbackNumberOfVisit = feedbackVisits + 1
+      } else {
+        customerNumberOfVisits = 1
+        feedbackNumberOfVisit = 1
+      }
+      await handleSubmitFeedback(updatedData, improveOptions, customerType, attendantName, customerNumberOfVisits, feedbackNumberOfVisit)
       if ((data.Rating === Ratings.Bueno || data.Rating === Ratings.Excelente) && business?.MapsUrl) {
         handleRedirect()
       }

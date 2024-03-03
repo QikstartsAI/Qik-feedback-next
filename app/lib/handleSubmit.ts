@@ -25,6 +25,8 @@ const handleSubmitFeedback = async (
     Improve: string[],
     customerType: string,
     AttendedBy: string,
+    customerNumberOfVisits: number,
+    feedbackNumberOfVisit: number
   ) => {
   const searchParams = new URLSearchParams(document.location.search)
 
@@ -60,7 +62,7 @@ const handleSubmitFeedback = async (
   )
   const businessDocRef = doc(getFirebase().db, COLLECTION_NAME || '', businessId || '')
 
-  const data = {
+  const feedbaackData = {
     CreationDate: getTimesTampFromDate(new Date()),
     FullName,
     AcceptPromotions,
@@ -111,7 +113,7 @@ const handleSubmitFeedback = async (
       const ratingAverage = (waiterRating / (numberOfSurveys + 1)).toFixed(1)
       const customerRef = doc(waiterCustomerRef, Email)
       await setDoc(customerRef, customerContactData)
-      await addDoc(waiterFeedbackRef, data)
+      await addDoc(waiterFeedbackRef, feedbaackData)
 
       await updateDoc(waitersRef, {
         numberOfSurveys: numberOfSurveys + 1,
@@ -160,7 +162,7 @@ const handleSubmitFeedback = async (
       const ratingAverage = (waiterRating / (numberOfSurveys + 1)).toFixed(1)
       const customerRef = doc(waiterBranchCustomerRef, Email)
       await setDoc(customerRef, customerContactData)
-      await addDoc(waiterFeedbackRef, data)
+      await addDoc(waiterFeedbackRef, feedbaackData)
       await updateDoc(waitersRef, {
         numberOfSurveys: numberOfSurveys + 1,
         latestSum: waiterRating,
@@ -193,11 +195,11 @@ const handleSubmitFeedback = async (
       )
       const customerRef = doc(branchCustomerRef, Email)
       await setDoc(customerRef, customerContactData)
-      await addDoc(branchFeedbackRef, data)
+      await addDoc(branchFeedbackRef, feedbaackData)
     } else if (businessId && !waiterId) {
       const customerRef = doc(businessCustomerRef, Email)
       await setDoc(customerRef, customerContactData)
-      await addDoc(businessFeedbackRef, data)
+      await addDoc(businessFeedbackRef, feedbaackData)
     }
 
     const parentCustomerDataRef = collection(
@@ -213,11 +215,22 @@ const handleSubmitFeedback = async (
 
     const businessData = await findBusiness(businessId)
 
-    const customerRef = doc(parentCustomerDataRef, Email)
-    const businessRef = doc(parentCustomerBusinessRef, businessId || '')
+    const customerDoc = doc(parentCustomerDataRef, Email)
+    const businessDoc = doc(parentCustomerBusinessRef, businessId || '')
 
-    await setDoc(customerRef, customerContactData)
-    await setDoc(businessRef, {...businessData, userApprovesLoyalty: UserApprovesLoyalty})
+    await setDoc(customerDoc, customerContactData)
+    await setDoc(businessDoc, {...businessData, customerNumberOfVisits, userApprovesLoyalty})
+
+    const customerBusinessFeedbackRef = collection(
+      getFirebase().db,
+      CUSTOMERS_COLLECTION_NAME || '',
+      Email,
+      'business',
+      businessId || '',
+      'feedbacks'
+    )
+    const businessFeedbackDoc = doc(customerBusinessFeedbackRef)
+    await setDoc(businessFeedbackDoc, { ...feedbaackData, feedbackNumberOfVisit })
   } catch (err) {
     console.error(err)
   }
