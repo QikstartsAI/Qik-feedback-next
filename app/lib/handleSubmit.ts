@@ -225,7 +225,15 @@ const handleSubmitFeedback = async (
     }
 
     await setDoc(customerDoc, customerContactData)
-    await setDoc(businessDoc, { ...businessData, customerNumberOfVisits, creationDate })
+    await setDoc(businessDoc, { 
+      ...businessData,
+      customerType: customerData?.customerType,
+      lastFeedbackFilled: customerData?.lastFeedbackFilled,
+      acceptPromotions: customerData?.acceptPromotions,
+      lastOrigin: customerData?.origin,
+      customerNumberOfVisits,
+      creationDate
+    })
 
     const customerBusinessFeedbackRef = collection(
       getFirebase().db,
