@@ -5,6 +5,7 @@ import { FeedbackProps } from '@/app/validators/feedbackSchema'
 import { addDoc, updateDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore'
 import { findBusiness } from '../services/business'
 import { Customer } from '../types/customer'
+import { findCustomerDataByEmail } from './handleEmail'
 
 const handleSubmitFeedback = async (
   {
@@ -212,12 +213,19 @@ const handleSubmitFeedback = async (
     )
 
     const businessData = await findBusiness(businessId)
+    const customerData = await findCustomerDataByEmail(Email)
+
+    let creationDate = customerData?.creationDate;
 
     const customerDoc = doc(parentCustomerDataRef, Email)
     const businessDoc = doc(parentCustomerBusinessRef, businessId || '')
 
+    if (!customerData?.creationDate) {
+      creationDate = getTimesTampFromDate(new Date())
+    }
+
     await setDoc(customerDoc, customerContactData)
-    await setDoc(businessDoc, { ...businessData, customerNumberOfVisits })
+    await setDoc(businessDoc, { ...businessData, customerNumberOfVisits, creationDate })
 
     const customerBusinessFeedbackRef = collection(
       getFirebase().db,
