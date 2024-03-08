@@ -225,15 +225,27 @@ const handleSubmitFeedback = async (
     }
 
     await setDoc(customerDoc, customerContactData)
-    await setDoc(businessDoc, { 
-      ...businessData,
-      customerType: customerData?.customerType,
-      lastFeedbackFilled: customerData?.lastFeedbackFilled,
-      acceptPromotions: customerData?.acceptPromotions,
-      lastOrigin: customerData?.origin,
-      customerNumberOfVisits,
-      creationDate
-    })
+    if (customerData) {
+      await setDoc(businessDoc, { 
+        ...businessData,
+        customerType: customerData?.customerType,
+        lastFeedbackFilled: customerData?.lastFeedbackFilled,
+        acceptPromotions: customerData?.acceptPromotions,
+        lastOrigin: customerData?.origin,
+        customerNumberOfVisits,
+        creationDate
+      })
+    } else {
+      await setDoc(businessDoc, { 
+        ...businessData,
+        customerType: customerType,
+        lastFeedbackFilled: getTimesTampFromDate(new Date()),
+        acceptPromotions: AcceptPromotions,
+        lastOrigin: Origin,
+        customerNumberOfVisits,
+        creationDate
+      })
+    }
 
     const customerBusinessFeedbackRef = collection(
       getFirebase().db,
