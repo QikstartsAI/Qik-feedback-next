@@ -8,6 +8,7 @@ import { useGetCurrentBusinessByIdImmutable } from "@/app/hooks/services/busines
 import { useGetWaiterByBusinessOrSucursalImmutable } from "@/app/hooks/services/waiters";
 import { useFormStore } from "@/app/stores/form";
 import { useGetNearestSucursalOrBusiness } from "./hooks/geo/map";
+import { RestaurantSelector } from "./components/restaurants/Selector";
 
 const Hero = lazy(() => import("./components/Hero"));
 const FeedbackForm = lazy(() => import("./components/feedback/FeedbackForm"));
@@ -41,6 +42,7 @@ export default function Home() {
           <FeedbackForm />
         </>
       )}
+      <RestaurantSelector />
       <Toaster />
     </div>
   );
