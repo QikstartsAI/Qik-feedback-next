@@ -19,6 +19,15 @@ const {
   fullNameQuestion,
   emailQuestion,
   waiterServiceQuestion,
+  placeCleannessQuestion,
+  quicknessQuestion,
+  foodQualityQuestion,
+  ambienceQuestion,
+  courtesyQuestion,
+  latelySeenQuestion,
+  spendingQuestion,
+  recommendingQuestion,
+  experienceQuestion,
   submitButton,
   termsAndConditions1,
   termsAndConditions2,
@@ -44,6 +53,42 @@ const getTranslatedEmailQuestion = ({ businessCountry }: { businessCountry: stri
 
 const getTranslatedWaiterServiceQuestion = ({ businessCountry }: { businessCountry: string }) => {
   return waiterServiceQuestion[businessCountry as keyof typeof waiterServiceQuestion] || waiterServiceQuestion.default
+}
+
+const getTranslatedPlaceCleannessQuestion = ({ businessCountry }: { businessCountry: string }) => {
+  return placeCleannessQuestion[businessCountry as keyof typeof placeCleannessQuestion] || placeCleannessQuestion.default
+}
+
+const getTranslatedQuicknessQuestion = ({ businessCountry }: { businessCountry: string }) => {
+  return quicknessQuestion[businessCountry as keyof typeof quicknessQuestion] || quicknessQuestion.default
+}
+
+const getTranslatedFoodQualityQuestion = ({ businessCountry }: { businessCountry: string }) => {
+  return foodQualityQuestion[businessCountry as keyof typeof foodQualityQuestion] || foodQualityQuestion.default
+}
+
+const getTranslatedAmbienceQuestion = ({ businessCountry }: { businessCountry: string }) => {
+  return ambienceQuestion[businessCountry as keyof typeof ambienceQuestion] || ambienceQuestion.default
+}
+
+const getTranslatedCourtesyQuestion = ({ businessCountry }: { businessCountry: string }) => {
+  return courtesyQuestion[businessCountry as keyof typeof courtesyQuestion] || courtesyQuestion.default
+}
+
+const getTranslatedLatelySeenQuestion = ({ businessCountry }: { businessCountry: string }) => {
+  return latelySeenQuestion[businessCountry as keyof typeof latelySeenQuestion] || latelySeenQuestion.default
+}
+
+const getTranslatedSpendingQuestion = ({ businessCountry }: { businessCountry: string }) => {
+  return spendingQuestion[businessCountry as keyof typeof spendingQuestion] || spendingQuestion.default
+}
+
+const getTranslatedRecommendingQuestion = ({ businessCountry }: { businessCountry: string }) => {
+  return recommendingQuestion[businessCountry as keyof typeof recommendingQuestion] || recommendingQuestion.default
+}
+
+const getTranslatedExperienceQuestion = ({ businessCountry }: { businessCountry: string }) => {
+  return experienceQuestion[businessCountry as keyof typeof experienceQuestion] || experienceQuestion.default
 }
 
 const getSubmitButton = ({ businessCountry }: { businessCountry: string }) => {
@@ -74,6 +119,15 @@ const getFormTranslations = ({ businessCountry }: { businessCountry: string }) =
     fullNameQuestion: getTranslatedFullNameQuestion({ businessCountry }),
     emailQuestion: getTranslatedEmailQuestion({ businessCountry }),
     waiterServiceQuestion: getTranslatedWaiterServiceQuestion({ businessCountry }),
+    placeCleannessQuestion: getTranslatedPlaceCleannessQuestion({ businessCountry }),
+    quicknessQuestion: getTranslatedQuicknessQuestion({ businessCountry }),
+    foodQualityQuestion: getTranslatedFoodQualityQuestion({ businessCountry }),
+    ambienceQuestion: getTranslatedAmbienceQuestion({ businessCountry }),
+    courtesyQuestion: getTranslatedCourtesyQuestion({ businessCountry }),
+    latelySeenQuestion: getTranslatedLatelySeenQuestion({ businessCountry }),
+    spendingQuestion: getTranslatedSpendingQuestion({ businessCountry }),
+    recommendingQuestion: getTranslatedRecommendingQuestion({ businessCountry }),
+    experienceQuestion: getTranslatedExperienceQuestion({ businessCountry }),
     submitButton: getSubmitButton({ businessCountry }),
     termsAndConditions1: getTermsAndConditions1({ businessCountry }),
     termsAndConditions2: getTermsAndConditions2({ businessCountry }),
