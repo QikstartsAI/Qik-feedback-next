@@ -176,6 +176,12 @@ const getOriginLabel = (
   return originLabel
 }
 
+// array of objects with the value and label of the rating from 1 to 10
+const ratingOptionsFrom1To10 = Array.from({ length: 10 }, (_, i) => {
+  const strValue = (i + 1).toString();
+  return { value: strValue, label: strValue };
+});
+
 export {
   getKnownOrigins,
   getCustomersQuantity,
@@ -185,5 +191,6 @@ export {
   getOthersText,
   getOtherOptions,
   getOtherOriginValues,
-  getOriginLabel
+  getOriginLabel,
+  ratingOptionsFrom1To10,
 }
