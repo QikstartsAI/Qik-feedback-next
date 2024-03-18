@@ -289,7 +289,7 @@ termsAndConditions4,
                   : null}
                 <Button
                   type='submit' disabled={
-                    isTermsChecked === false
+                    !isTermsChecked
                       ? true
                       : form.formState.isSubmitting
                   }
