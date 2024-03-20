@@ -157,6 +157,15 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
     fullNameQuestion,
     emailQuestion,
     waiterServiceQuestion,
+    placeCleannessQuestion,
+    quicknessQuestion,
+    foodQualityQuestion,
+    ambienceQuestion,
+    courtesyQuestion,
+    latelySeenQuestion,
+    spendingQuestion,
+    recommendingQuestion,
+    experienceQuestion,
     submitButton,
     termsAndConditions1,
 termsAndConditions2,
@@ -289,7 +298,7 @@ termsAndConditions4,
                   : null}
                 <Button
                   type='submit' disabled={
-                    isTermsChecked === false
+                    !isTermsChecked
                       ? true
                       : form.formState.isSubmitting
                   }
