@@ -19,7 +19,7 @@ function StartsRatingGroup({ items, value, className }: StartsRatingGroupProps &
   const selectedValue = parseInt(value);
 
   return (
-    <ul className={cn(className, 'grid gap-1 sm:gap-2 text-sm font-medium text-gray-900')}>
+    <ul className={cn(className, 'grid gap-1 sm:gap-2 text-sm font-medium text-gray-900 pb-3')}>
       {items.map(({ icon: Icon, label, value: itemValue }, index) => (
         <FormItem
           className='flex flex-col items-center space-y-0'
