@@ -15,6 +15,7 @@ import {
   IconAd,
   IconScreenShare,
   IconRadio,
+  IconStar,
 } from '@tabler/icons-react'
 import { ReactNode } from 'react'
 import { Business } from '../types/business'
@@ -177,9 +178,9 @@ const getOriginLabel = (
 }
 
 // array of objects with the value and label of the rating from 1 to 10
-const ratingOptionsFrom1To10 = Array.from({ length: 10 }, (_, i) => {
+const ratingOptionsFrom1To10 = Array.from({ length: 5 }, (_, i) => {
   const strValue = (i + 1).toString();
-  return { value: strValue, label: strValue };
+  return { value: strValue, label: strValue, icon: IconStar };
 });
 
 export {

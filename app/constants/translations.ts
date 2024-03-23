@@ -112,7 +112,13 @@ const translations = {
     'CA': ' Politiques de confidentialité',
     'ES': ' Políticas de Privacidad',
     'default': ' Políticas de Privacidad'
-  }
+  },
+  formErrorMessage: {
+    'US': 'An error occurred, try again',
+    'CA': "Une erreur s'est produite, réessayez",
+    'ES': 'Ocurrió un error, intenta nuevamente',
+    'default': 'Ocurrió un error, intenta nuevamente'
+  },
 };
 export default translations;
 

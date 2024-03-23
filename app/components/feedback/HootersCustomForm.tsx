@@ -16,8 +16,6 @@ import {
   CardTitle
 } from '../ui/Card'
 
-import { currencyPrices } from '@/app/constants/prices'
-
 import 'react-phone-number-input/style.css'
 
 import { Input } from '../ui/Input'
@@ -25,22 +23,18 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { cn } from '@/app/lib/utils'
 import { useToast } from '@/app/hooks/useToast'
-import { FeedbackProps, feedbackSchema } from '@/app/validators/feedbackSchema'
+import { HootersFeedbackProps, hootersFeedbackSchema } from '@/app/validators/hootersFeedbackSchema';
 import { RadioGroup } from '../ui/RadioGroup'
-import { Ratings } from '@/app/types/feedback'
-import handleSubmitFeedback from '@/app/lib/handleSubmit'
+import handleSubmitHootersForm from '@/app/lib/handleSubmitHootersForm'
 import { findCustomerDataByEmail } from '@/app/lib/handleEmail'
-import { Alert, AlertDescription, AlertTitle } from '../ui/Alert'
 import { Business } from '@/app/types/business'
 import { Dispatch, SetStateAction, useState } from 'react'
-import CustomRadioGroup from '../form/CustomRadioGroup'
 import {
-  getImprovements,
   ratingOptionsFrom1To10
 } from '@/app/constants/form'
-import { SelectedOption } from '@/app/types/general'
 import { CustomerRole } from '@/app/types/customer'
 import getFormTranslations from '@/app/constants/formTranslations';
+import StartsRatingGroup from '../form/StartsRatingGroup';
 
 interface HootersCustomFormProps {
   business: Business | null
@@ -50,34 +44,23 @@ interface HootersCustomFormProps {
 }
 
 export default function HootersCustomForm({ business, setIsSubmitted, setRating, customerType }: HootersCustomFormProps) {
-  const [isChecked, setIsChecked] = useState(false)
   const [isTermsChecked, setIsTermsChecked] = useState(true)
   const businessCountry = business?.Country || 'EC'
 
   const { toast } = useToast()
 
-  const form = useForm<FeedbackProps>({
+  const form = useForm<HootersFeedbackProps>({
     resolver: zodResolver(
-      feedbackSchema(
-        currencyPrices[businessCountry],
+      hootersFeedbackSchema(
         businessCountry
       )
     ),
     defaultValues: {
       FullName: '',
-      PhoneNumber: '',
-      AcceptPromotions: isChecked,
       AcceptTerms: isTermsChecked,
-      BirthdayDate: '',
       Email: '',
-      Origin: undefined,
-      Rating: undefined,
       StartTime: new Date(),
-      Ambience: false,
-      Food: false,
-      Service: false,
-      ImproveText: '',
-      hiddenInput: null
+      WaiterService: undefined,
     }
   })
 
@@ -86,70 +69,8 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
   }
 
   const { watch } = form
-  const watchRating = watch('Rating')
-  const isLowRating = watchRating === Ratings.Mal || watchRating === Ratings.Regular
-  const isUsCountry = businessCountry === 'US'
-  const isCaCountry = businessCountry === 'CA'
-  const isFrCountry = businessCountry === 'FR'
-  const watchFullName = watch('FullName')
   const waiterName = business?.Waiter?.name || ''
   const attendantName = waiterName ? waiterName : 'Matriz';
-
-  const handleRedirect = () => {
-    window.location.replace(business?.MapsUrl || '')
-  }
-
-  async function onSubmit(data: FeedbackProps) {
-    setRating(data.Rating)
-    const { Ambience, Service, Food, ImproveText } = data
-    if (isLowRating && (!Ambience && !Service && !Food)) {
-      form.setError('hiddenInput', {
-        type: 'manual',
-        message: isUsCountry
-          ? 'Select at least one option'
-          : isCaCountry || isFrCountry
-            ? 'Sélectionnez au moins une option'
-            : 'Selecciona al menos una opción'
-      })
-      return
-    }
-
-    if (isLowRating && ImproveText.length === 0) {
-      form.setError('ImproveText', {
-        type: 'manual',
-        message: isUsCountry
-          ? 'Please tell us how can we improve'
-          : isCaCountry || isFrCountry
-            ? 'Veuillez écrire comment nous pouvons améliorer'
-            : 'Por favor, escribe en que podemos mejorar'
-      })
-      return
-    }
-
-    try {
-      const updatedData = data
-      updatedData.ImproveText = isLowRating ? ImproveText : ''
-      updatedData.AcceptPromotions = isChecked
-      const improveOptions = isLowRating ? getImprovements({ Ambience, Service, Food, business }) : []
-      await handleSubmitFeedback(updatedData, improveOptions, customerType, attendantName)
-      if ((data.Rating === Ratings.Bueno || data.Rating === Ratings.Excelente) && business?.MapsUrl) {
-        handleRedirect()
-      }
-    } catch (error) {
-      console.log(error)
-      toast({
-        title: isUsCountry
-          ? 'An error occurred, try again'
-          : isCaCountry || isFrCountry
-            ? "Une erreur s'est produite, réessayez"
-            : 'Ocurrio un error, intenta nuevamente',
-        variant: 'destructive'
-      })
-    } finally {
-      resetForm()
-      setIsSubmitted(true)
-    }
-  }
 
   const {
     title,
@@ -168,10 +89,28 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
     experienceQuestion,
     submitButton,
     termsAndConditions1,
-termsAndConditions2,
-termsAndConditions3,
-termsAndConditions4,
+    termsAndConditions2,
+    termsAndConditions3,
+    termsAndConditions4,
+    formErrorMessage,
   } = getFormTranslations({businessCountry})
+
+  async function onSubmit(data: HootersFeedbackProps) {
+    setRating(data.WaiterService)
+
+    try {
+      await handleSubmitHootersForm(data, customerType, attendantName)
+    } catch (error) {
+      console.log(error)
+      toast({
+        title: formErrorMessage,
+        variant: 'destructive'
+      })
+    } finally {
+      resetForm()
+      setIsSubmitted(true)
+    }
+  }
 
   return (
     <>
@@ -230,9 +169,6 @@ termsAndConditions4,
                                 const customerData = await findCustomerDataByEmail(email)
                                 if (customerData) {
                                   form.setValue('FullName', customerData.name)
-                                  form.setValue('PhoneNumber', customerData.phoneNumber || '')
-                                  form.setValue('BirthdayDate', customerData.birthdayDate || '')
-                                  setIsChecked(customerData.acceptPromotions || false)
                                 }
                               }
                             }}
@@ -244,58 +180,225 @@ termsAndConditions4,
                   />
                    <FormField
                     control={form.control}
-                    name='Dinners'
+                    name='WaiterService'
                     render={({ field }) => (
-                      <FormItem className='space-y-3'>
-                        <FormLabel>  
-                          {waiterServiceQuestion}
+                      <FormItem className='md:grid md:grid-cols-4 md:space-y-0 md:items-center md:gap-12'>
+                        <FormLabel className='col-span-3' >  
+                            {waiterServiceQuestion}
                         </FormLabel>
-                        <FormControl>
-                          <RadioGroup
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                            className=''
-                          >
-                            <CustomRadioGroup value={field.value} items={ratingOptionsFrom1To10} className='sm:grid-cols-10' />
-                          </RadioGroup>
-                        </FormControl>
-                        <FormMessage />
+                        <div className='pt-2 md:pb-0 col-span-1' >
+                          <FormControl>
+                            <RadioGroup
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <StartsRatingGroup value={field.value} items={ratingOptionsFrom1To10} className='grid-cols-5' />
+                            </RadioGroup>
+                          </FormControl>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                   <FormField
+                    control={form.control}
+                    name='PlaceCleanness'
+                    render={({ field }) => (
+                      <FormItem className='md:grid grid-cols-4 space-y-0 items-center gap-12'>
+                        <FormLabel className='col-span-3' >  
+                            {placeCleannessQuestion}
+                        </FormLabel>
+                        <div className='pt-2 md:pb-0 col-span-1' >
+                          <FormControl>
+                            <RadioGroup
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <StartsRatingGroup value={field.value} items={ratingOptionsFrom1To10} className='grid-cols-5' />
+                            </RadioGroup>
+                          </FormControl>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                   <FormField
+                    control={form.control}
+                    name='Quickness'
+                    render={({ field }) => (
+                      <FormItem className='md:grid grid-cols-4 space-y-0 items-center gap-12'>
+                        <FormLabel className='col-span-3' >  
+                            {quicknessQuestion}
+                        </FormLabel>
+                        <div className='pt-2 md:pb-0 col-span-1' >
+                          <FormControl>
+                            <RadioGroup
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <StartsRatingGroup value={field.value} items={ratingOptionsFrom1To10} className='grid-cols-5' />
+                            </RadioGroup>
+                          </FormControl>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                   <FormField
+                    control={form.control}
+                    name='FoodQuality'
+                    render={({ field }) => (
+                      <FormItem className='md:grid grid-cols-4 space-y-0 items-center gap-12'>
+                        <FormLabel className='col-span-3' >  
+                            {foodQualityQuestion}
+                        </FormLabel>
+                        <div className='pt-2 md:pb-0 col-span-1' >
+                          <FormControl>
+                            <RadioGroup
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <StartsRatingGroup value={field.value} items={ratingOptionsFrom1To10} className='grid-cols-5' />
+                            </RadioGroup>
+                          </FormControl>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                   <FormField
+                    control={form.control}
+                    name='Ambience'
+                    render={({ field }) => (
+                      <FormItem className='md:grid grid-cols-4 space-y-0 items-center gap-12'>
+                        <FormLabel className='col-span-3' >  
+                            {ambienceQuestion}
+                        </FormLabel>
+                        <div className='pt-2 md:pb-0 col-span-1' >
+                          <FormControl>
+                            <RadioGroup
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <StartsRatingGroup value={field.value} items={ratingOptionsFrom1To10} className='grid-cols-5' />
+                            </RadioGroup>
+                          </FormControl>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                   <FormField
+                    control={form.control}
+                    name='Courtesy'
+                    render={({ field }) => (
+                      <FormItem className='md:grid grid-cols-4 space-y-0 items-center gap-12'>
+                        <FormLabel className='col-span-3' >  
+                            {courtesyQuestion}
+                        </FormLabel>
+                        <div className='pt-2 md:pb-0 col-span-1' >
+                          <FormControl>
+                            <RadioGroup
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <StartsRatingGroup value={field.value} items={ratingOptionsFrom1To10} className='grid-cols-5' />
+                            </RadioGroup>
+                          </FormControl>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                   <FormField
+                    control={form.control}
+                    name='LatelySeen'
+                    render={({ field }) => (
+                      <FormItem className='md:grid grid-cols-4 space-y-0 items-center gap-12'>
+                        <FormLabel className='col-span-3' >  
+                            {latelySeenQuestion}
+                        </FormLabel>
+                        <div className='pt-2 md:pb-0 col-span-1' >
+                          <FormControl>
+                            <RadioGroup
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <StartsRatingGroup value={field.value} items={ratingOptionsFrom1To10} className='grid-cols-5' />
+                            </RadioGroup>
+                          </FormControl>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                   <FormField
+                    control={form.control}
+                    name='Spending'
+                    render={({ field }) => (
+                      <FormItem className='md:grid grid-cols-4 space-y-0 items-center gap-12'>
+                        <FormLabel className='col-span-3' >  
+                            {spendingQuestion}
+                        </FormLabel>
+                        <div className='pt-2 md:pb-0 col-span-1' >
+                          <FormControl>
+                            <RadioGroup
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <StartsRatingGroup value={field.value} items={ratingOptionsFrom1To10} className='grid-cols-5' />
+                            </RadioGroup>
+                          </FormControl>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                   <FormField
+                    control={form.control}
+                    name='Recommending'
+                    render={({ field }) => (
+                      <FormItem className='md:grid grid-cols-4 space-y-0 items-center gap-12'>
+                        <FormLabel className='col-span-3' >  
+                            {recommendingQuestion}
+                        </FormLabel>
+                        <div className='pt-2 md:pb-0 col-span-1' >
+                          <FormControl>
+                            <RadioGroup
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <StartsRatingGroup value={field.value} items={ratingOptionsFrom1To10} className='grid-cols-5' />
+                            </RadioGroup>
+                          </FormControl>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                   <FormField
+                    control={form.control}
+                    name='Experience'
+                    render={({ field }) => (
+                      <FormItem className='md:grid grid-cols-4 space-y-0 items-center gap-12'>
+                        <FormLabel className='col-span-3' >  
+                            {experienceQuestion}
+                        </FormLabel>
+                        <div className='pt-2 md:pb-0 col-span-1' >
+                          <FormControl>
+                            <RadioGroup
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <StartsRatingGroup value={field.value} items={ratingOptionsFrom1To10} className='grid-cols-5' />
+                            </RadioGroup>
+                          </FormControl>
+                          <FormMessage />
+                        </div>
                       </FormItem>
                     )}
                   />
                 </div>
-                {!isLowRating && watchFullName
-                  ? (
-                    <Alert>
-                      <AlertTitle className={cn('text-xs sm:text-sm')}>
-                        {
-                          isUsCountry
-                            ? 'Last favor'
-                            : isCaCountry || isFrCountry
-                              ? 'Une dernière faveur'
-                              : 'Un último favor'
-                        }, {watchFullName}!
-                      </AlertTitle>
-                      <AlertDescription className={cn('text-xs sm:text-sm')}>
-                        {
-                          isUsCountry
-                            ? 'When you submit, you will be directed to Google to rate our business with stars 🌟.'
-                            : isCaCountry || isFrCountry
-                              ? "L'envoyer sera dirigé vers Google pour améliorer notre emploi avec des étoiles 🌟."
-                              : 'Al enviar, serás dirigido a Google, para calificar nuestro emprendimiento con estrellas 🌟.'
-                        }
-                        <br />
-                        {
-                          isUsCountry
-                            ? 'Your opinion helps us so that more people know about us and we stand out in the sector. Thank you! 😍'
-                            : isCaCountry || isFrCountry
-                              ? 'Votre avis nous aide à ce que les plus grandes personnes connaissent nos gens et nous dévastent le secteur. Merci ! 😍'
-                              : 'Tu opinión nos ayuda a que más personas conozcan de nosotros y destaquemos en el sector. ¡Gracias! 😍'
-                        }
-                      </AlertDescription>
-                    </Alert>
-                  )
-                  : null}
                 <Button
                   type='submit' disabled={
                     !isTermsChecked

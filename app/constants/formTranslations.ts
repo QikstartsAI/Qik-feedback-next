@@ -33,6 +33,7 @@ const {
   termsAndConditions2,
   termsAndConditions3,
   termsAndConditions4,
+  formErrorMessage,
  } = translations
 
 const getTranslatedFormTitle = ({ businessCountry }: { businessCountry: string }) => {  
@@ -111,6 +112,10 @@ const getTermsAndConditions4 = ({ businessCountry }: { businessCountry: string }
   return termsAndConditions4[businessCountry as keyof typeof termsAndConditions4] || termsAndConditions4.default
 }
 
+const getFormErrorMessage = ({ businessCountry }: { businessCountry: string }) => {
+  return formErrorMessage[businessCountry as keyof typeof formErrorMessage] || formErrorMessage.default
+}
+
 const getFormTranslations = ({ businessCountry }: { businessCountry: string }) => {
 
   return {
@@ -133,6 +138,7 @@ const getFormTranslations = ({ businessCountry }: { businessCountry: string }) =
     termsAndConditions2: getTermsAndConditions2({ businessCountry }),
     termsAndConditions3: getTermsAndConditions3({ businessCountry }),
     termsAndConditions4: getTermsAndConditions4({ businessCountry }),
+    formErrorMessage: getFormErrorMessage({ businessCountry }),
   }
 }
 

@@ -34,7 +34,7 @@ function CustomRadioGroup({ items, value, className }: CustomRadioGrouprops & HT
             )}>
             <FormLabel
               className={cn(
-                "text-center w-full font-normal flex flex-col items-center cursor-pointer space-y-1",
+                "text-center w-full font-normal flex flex-col items-center cursor-pointer",
                 {
                   "text-sky-500": value === itemValue,
                 }
