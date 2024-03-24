@@ -35,6 +35,19 @@ import {
 import { CustomerRole } from '@/app/types/customer'
 import getFormTranslations from '@/app/constants/formTranslations';
 import StartsRatingGroup from '../form/StartsRatingGroup';
+import UserInfo from "@/app/components/feedback/UserInfo";
+
+import {useMultistepForm} from "@/app/hooks/useMultistepForm";
+import WaiterServiceQuestion from "@/app/components/feedback/questions/WaiterServiceQuestion";
+import PlaceCleannessQuestion from "@/app/components/feedback/questions/PlaceCleannessQuestion";
+import QuicknessQuestion from "@/app/components/feedback/questions/QuicknessQuestion";
+import FoodQualityQuestion from "@/app/components/feedback/questions/FoodQualityQuestion";
+import AmbienceQuestion from "@/app/components/feedback/questions/AmbienceQuestion";
+import CourtesyQuestion from "@/app/components/feedback/questions/CourtesyQuestion";
+import LatelySeenQuestion from "@/app/components/feedback/questions/LatelySeenQuestion";
+import SpendingQuestion from './questions/SpendingQuestion'
+import RecommendingQuestion from './questions/RecommendingQuestion'
+import ExperienceQuestion from "@/app/components/feedback/questions/ExperienceQuestion";
 
 interface HootersCustomFormProps {
   business: Business | null
@@ -95,6 +108,11 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
     formErrorMessage,
   } = getFormTranslations({businessCountry})
 
+  const {
+    nextStep,
+    currentStepIndex,
+  } = useMultistepForm(10);
+
   async function onSubmit(data: HootersFeedbackProps) {
     setRating(data.WaiterService)
 
@@ -134,271 +152,63 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                 <div
                   className={cn('space-y-3 mb-3', {})}
                 >
-                  {/* name */}
-                  <FormField
-                    control={form.control}
-                    name='FullName'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          {fullNameQuestion}
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder='Ej: Juan Pérez' {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name='Email'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          {emailQuestion}
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder='Ej: juan@gmail.com'
-                            {...field}
-                            type='email'
-                            onBlur={async () => {
-                              const email = field.value
-                              if (email) {
-                                const customerData = await findCustomerDataByEmail(email)
-                                if (customerData) {
-                                  form.setValue('FullName', customerData.name)
-                                }
-                              }
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <UserInfo
+                    form={form}
+                    emailQuestion={emailQuestion}
+                    fullNameQuestion={fullNameQuestion}
+                  >
+                  </UserInfo>
+
                   <div className='flex flex-col gap-2' >
-                    <FormField
-                      control={form.control}
-                      name='WaiterService'
-                      render={({ field }) => (
-                        <FormItem className='md:grid md:grid-cols-4 md:space-y-0 md:items-center md:gap-12'>
-                          <FormLabel className='col-span-3' >  
-                              {waiterServiceQuestion}
-                          </FormLabel>
-                          <div className='pt-2 md:pb-0 col-span-1' >
-                            <FormControl>
-                              <RadioGroup
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                              >
-                                <StartsRatingGroup value={field.value} items={ratingOptionsFrom1To10} className='grid-cols-5' />
-                              </RadioGroup>
-                            </FormControl>
-                            <FormMessage />
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name='PlaceCleanness'
-                      render={({ field }) => (
-                        <FormItem className='md:grid grid-cols-4 space-y-0 items-center gap-12'>
-                          <FormLabel className='col-span-3' >  
-                              {placeCleannessQuestion}
-                          </FormLabel>
-                          <div className='pt-2 md:pb-0 col-span-1' >
-                            <FormControl>
-                              <RadioGroup
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                              >
-                                <StartsRatingGroup value={field.value} items={ratingOptionsFrom1To10} className='grid-cols-5' />
-                              </RadioGroup>
-                            </FormControl>
-                            <FormMessage />
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name='Quickness'
-                      render={({ field }) => (
-                        <FormItem className='md:grid grid-cols-4 space-y-0 items-center gap-12'>
-                          <FormLabel className='col-span-3' >  
-                              {quicknessQuestion}
-                          </FormLabel>
-                          <div className='pt-2 md:pb-0 col-span-1' >
-                            <FormControl>
-                              <RadioGroup
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                              >
-                                <StartsRatingGroup value={field.value} items={ratingOptionsFrom1To10} className='grid-cols-5' />
-                              </RadioGroup>
-                            </FormControl>
-                            <FormMessage />
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name='FoodQuality'
-                      render={({ field }) => (
-                        <FormItem className='md:grid grid-cols-4 space-y-0 items-center gap-12'>
-                          <FormLabel className='col-span-3' >  
-                              {foodQualityQuestion}
-                          </FormLabel>
-                          <div className='pt-2 md:pb-0 col-span-1' >
-                            <FormControl>
-                              <RadioGroup
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                              >
-                                <StartsRatingGroup value={field.value} items={ratingOptionsFrom1To10} className='grid-cols-5' />
-                              </RadioGroup>
-                            </FormControl>
-                            <FormMessage />
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name='Ambience'
-                      render={({ field }) => (
-                        <FormItem className='md:grid grid-cols-4 space-y-0 items-center gap-12'>
-                          <FormLabel className='col-span-3' >  
-                              {ambienceQuestion}
-                          </FormLabel>
-                          <div className='pt-2 md:pb-0 col-span-1' >
-                            <FormControl>
-                              <RadioGroup
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                              >
-                                <StartsRatingGroup value={field.value} items={ratingOptionsFrom1To10} className='grid-cols-5' />
-                              </RadioGroup>
-                            </FormControl>
-                            <FormMessage />
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name='Courtesy'
-                      render={({ field }) => (
-                        <FormItem className='md:grid grid-cols-4 space-y-0 items-center gap-12'>
-                          <FormLabel className='col-span-3' >  
-                              {courtesyQuestion}
-                          </FormLabel>
-                          <div className='pt-2 md:pb-0 col-span-1' >
-                            <FormControl>
-                              <RadioGroup
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                              >
-                                <StartsRatingGroup value={field.value} items={ratingOptionsFrom1To10} className='grid-cols-5' />
-                              </RadioGroup>
-                            </FormControl>
-                            <FormMessage />
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name='LatelySeen'
-                      render={({ field }) => (
-                        <FormItem className='md:grid grid-cols-4 space-y-0 items-center gap-12'>
-                          <FormLabel className='col-span-3' >  
-                              {latelySeenQuestion}
-                          </FormLabel>
-                          <div className='pt-2 md:pb-0 col-span-1' >
-                            <FormControl>
-                              <RadioGroup
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                              >
-                                <StartsRatingGroup value={field.value} items={ratingOptionsFrom1To10} className='grid-cols-5' />
-                              </RadioGroup>
-                            </FormControl>
-                            <FormMessage />
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name='Spending'
-                      render={({ field }) => (
-                        <FormItem className='md:grid grid-cols-4 space-y-0 items-center gap-12'>
-                          <FormLabel className='col-span-3' >  
-                              {spendingQuestion}
-                          </FormLabel>
-                          <div className='pt-2 md:pb-0 col-span-1' >
-                            <FormControl>
-                              <RadioGroup
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                              >
-                                <StartsRatingGroup value={field.value} items={ratingOptionsFrom1To10} className='grid-cols-5' />
-                              </RadioGroup>
-                            </FormControl>
-                            <FormMessage />
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name='Recommending'
-                      render={({ field }) => (
-                        <FormItem className='md:grid grid-cols-4 space-y-0 items-center gap-12'>
-                          <FormLabel className='col-span-3' >  
-                              {recommendingQuestion}
-                          </FormLabel>
-                          <div className='pt-2 md:pb-0 col-span-1' >
-                            <FormControl>
-                              <RadioGroup
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                              >
-                                <StartsRatingGroup value={field.value} items={ratingOptionsFrom1To10} className='grid-cols-5' />
-                              </RadioGroup>
-                            </FormControl>
-                            <FormMessage />
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name='Experience'
-                      render={({ field }) => (
-                        <FormItem className='md:grid grid-cols-4 space-y-0 items-center gap-12'>
-                          <FormLabel className='col-span-3' >  
-                              {experienceQuestion}
-                          </FormLabel>
-                          <div className='pt-2 md:pb-0 col-span-1' >
-                            <FormControl>
-                              <RadioGroup
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                              >
-                                <StartsRatingGroup value={field.value} items={ratingOptionsFrom1To10} className='grid-cols-5' />
-                              </RadioGroup>
-                            </FormControl>
-                            <FormMessage />
-                          </div>
-                        </FormItem>
-                      )}
-                    />
+                    {currentStepIndex === 0 && (
+                      <WaiterServiceQuestion form={form} question={waiterServiceQuestion} nextStep={nextStep}>
+                      </WaiterServiceQuestion>
+                    )}
+
+                    {currentStepIndex === 1 && (
+                      <PlaceCleannessQuestion form={form} question={placeCleannessQuestion} nextStep={nextStep}>
+                      </PlaceCleannessQuestion>
+                    )}
+
+                    {currentStepIndex === 2 && (
+                      <QuicknessQuestion form={form} question={quicknessQuestion} nextStep={nextStep}>
+                      </QuicknessQuestion>
+                    )}
+
+                    {currentStepIndex === 3 && (
+                      <FoodQualityQuestion form={form} question={foodQualityQuestion} nextStep={nextStep}>
+                      </FoodQualityQuestion>
+                    )}
+
+                    {currentStepIndex === 4 && (
+                      <AmbienceQuestion form={form} question={ambienceQuestion} nextStep={nextStep}>
+                      </AmbienceQuestion>
+                    )}
+
+                    {currentStepIndex === 5 && (
+                      <CourtesyQuestion form={form} question={courtesyQuestion} nextStep={nextStep}>
+                      </CourtesyQuestion>
+                    )}
+
+                    {currentStepIndex === 6 && (
+                      <LatelySeenQuestion form={form} question={latelySeenQuestion} nextStep={nextStep}>
+                      </LatelySeenQuestion>
+                    )}
+
+                    {currentStepIndex === 7 && (
+                      <SpendingQuestion form={form} question={spendingQuestion} nextStep={nextStep}>
+                      </SpendingQuestion>
+                    )}
+
+                    {currentStepIndex === 8 && (
+                      <RecommendingQuestion form={form} question={recommendingQuestion} nextStep={nextStep}>
+                      </RecommendingQuestion>
+                    )}
+
+                    {currentStepIndex === 9 && (
+                      <ExperienceQuestion form={form} question={experienceQuestion} nextStep={nextStep}>
+                      </ExperienceQuestion>
+                    )}
                   </div>
                 </div>
                 <Button
