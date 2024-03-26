@@ -28,7 +28,7 @@ import { RadioGroup } from '../ui/RadioGroup'
 import handleSubmitHootersForm from '@/app/lib/handleSubmitHootersForm'
 import { findCustomerDataByEmail } from '@/app/lib/handleEmail'
 import { Business } from '@/app/types/business'
-import { Dispatch, SetStateAction, useState } from 'react'
+import React, { Dispatch, SetStateAction, useState } from 'react'
 import {
   ratingOptionsFrom1To10
 } from '@/app/constants/form'
@@ -36,6 +36,8 @@ import { CustomerRole } from '@/app/types/customer'
 import getFormTranslations from '@/app/constants/formTranslations';
 import StartsRatingGroup from '../form/StartsRatingGroup';
 import UserInfo from "@/app/components/feedback/UserInfo";
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
 
 import {useMultistepForm} from "@/app/hooks/useMultistepForm";
 import WaiterServiceQuestion from "@/app/components/feedback/questions/WaiterServiceQuestion";
@@ -110,8 +112,13 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
 
   const {
     nextStep,
+    goTo,
     currentStepIndex,
   } = useMultistepForm(10);
+
+  const handleStepChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    goTo(value-1)
+  }
 
   async function onSubmit(data: HootersFeedbackProps) {
     setRating(data.WaiterService)
@@ -210,6 +217,10 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                       </ExperienceQuestion>
                     )}
                   </div>
+
+                  <Stack spacing={2}>
+                    <Pagination count={10} page={currentStepIndex+1} onChange={handleStepChange} />
+                  </Stack>
                 </div>
                 <Button
                   type='submit' disabled={
