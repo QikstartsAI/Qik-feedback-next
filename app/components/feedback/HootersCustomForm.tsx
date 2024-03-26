@@ -50,6 +50,7 @@ import LatelySeenQuestion from "@/app/components/feedback/questions/LatelySeenQu
 import SpendingQuestion from './questions/SpendingQuestion'
 import RecommendingQuestion from './questions/RecommendingQuestion'
 import ExperienceQuestion from "@/app/components/feedback/questions/ExperienceQuestion";
+import {styled} from "@mui/material";
 
 interface HootersCustomFormProps {
   business: Business | null
@@ -219,7 +220,14 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                   </div>
 
                   <Stack spacing={2}>
-                    <Pagination count={10} page={currentStepIndex+1} onChange={handleStepChange} />
+                    <Pagination
+                      count={10}
+                      color={'primary'}
+                      size={'small'}
+                      page={currentStepIndex+1}
+                      boundaryCount={0}
+                      onChange={handleStepChange}
+                    />
                   </Stack>
                 </div>
                 <Button
