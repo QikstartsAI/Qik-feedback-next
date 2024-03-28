@@ -13,9 +13,10 @@ interface RecommendingQuestionProps {
 	yesButton: string
 	noButton: string
 	handleResponse: (answer: boolean) => void
+	isRecommendingClicked: React.MutableRefObject<boolean>
 }
 
-export default function RecommendingQuestion({ form, question, yesButton, noButton, handleResponse }: RecommendingQuestionProps) {
+export default function RecommendingQuestion({ form, question, yesButton, noButton, handleResponse,isRecommendingClicked }: RecommendingQuestionProps) {
 	let recommended: boolean;
 
 	return (
@@ -34,12 +35,14 @@ export default function RecommendingQuestion({ form, question, yesButton, noButt
 									<Button type={'button'} onClick={() => {
 										field.onChange(true);
 										handleResponse(true);
+										isRecommendingClicked.current = true;
 									}}>
 										{yesButton}
 									</Button>
 									<Button type={'button'} onClick={() => {
 										field.onChange(false);
 										handleResponse(false);
+										isRecommendingClicked.current = true;
 									}}>
 										{noButton}
 									</Button>

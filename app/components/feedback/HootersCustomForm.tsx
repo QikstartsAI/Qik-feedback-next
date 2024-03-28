@@ -30,6 +30,7 @@ import { findCustomerDataByEmail } from '@/app/lib/handleEmail'
 import { Business } from '@/app/types/business'
 import React, { Dispatch, SetStateAction, useState } from 'react'
 import {
+  getImprovements,
   ratingOptionsFrom1To10
 } from '@/app/constants/form'
 import { CustomerRole } from '@/app/types/customer'
@@ -54,6 +55,11 @@ import RestaurantIcon from '@mui/icons-material/Restaurant';
 import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import StorefrontOutlinedIcon from '@mui/icons-material/StorefrontOutlined';
 import {Textarea} from "@/app/components/ui/TextArea";
+import { IconUsers } from '@tabler/icons-react';
+import { Checkbox } from '../ui/Checkbox'
+import { IconToolsKitchen } from '@tabler/icons-react';
+import { IconUserScan } from '@tabler/icons-react';
+import { IconBuildingStore } from '@tabler/icons-react';
 
 interface HootersCustomFormProps {
   business: Business | null
@@ -70,6 +76,10 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
   const businessCountry = business?.Country || 'EC'
   const questionsNumber = 8
 
+  // useRef to know if user clicks at least once the yes or not buttons from line 255 and 266
+  const isRecommendingClicked = React.useRef(false)
+  console.log('isRecommendingClicked', isRecommendingClicked.current)
+
   const { toast } = useToast()
 
   const form = useForm<HootersFeedbackProps>({
@@ -84,6 +94,13 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
       Email: '',
       StartTime: new Date(),
       Courtesy: undefined,
+      RecommendingText: '',
+      ComeBackText: '',
+      Ambience: false,
+      Food: false,
+      Service: false,
+      ImproveText: '',
+      hiddenInput: null
     }
   })
 
@@ -94,6 +111,9 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
   const { watch } = form
   const waiterName = business?.Waiter?.name || ''
   const attendantName = waiterName ? waiterName : 'Matriz';
+  const watchFullName = watch('FullName');
+
+  console.log('form.state', form.formState.errors)
 
   const {
     title,
@@ -131,6 +151,11 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
     termsAndConditions3,
     termsAndConditions4,
     formErrorMessage,
+    emptyRecommendingError,
+    emptyNoRecommendingError,
+    chooseOneOptionError,
+    howToImprovementError,
+    whyComeBackError,
   } = getFormTranslations({businessCountry})
 
   const {
@@ -153,11 +178,49 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
     setComeBack(answer)
   }
 
+  const handleRedirect = () => {
+    window.location.replace(business?.MapsUrl || '')
+  }
+
+
   async function onSubmit(data: HootersFeedbackProps) {
-    setRating(data.Courtesy)
+    console.log('data', data)
+    // setRating(data.Courtesy)
+
+    const { Ambience, Service, Food, ImproveText, ComeBackText } = data
+    if ((!Ambience && !Service && !Food)) {
+      form.setError('hiddenInput', {
+        type: 'manual',
+        message: chooseOneOptionError
+      })
+      return
+    }
+
+
+    if (!comeBack && ImproveText.length === 0) {
+      form.setError('ImproveText', {
+        type: 'manual',
+        message: howToImprovementError
+      })
+      return
+    }
+
+    if (comeBack && ComeBackText.length === 0) {
+      form.setError('ComeBackText', {
+        type: 'manual',
+        message: whyComeBackError
+      })
+      return
+    }
 
     try {
-      await handleSubmitHootersForm(data, customerType, attendantName)
+      const updatedData = data
+      updatedData.ImproveText = !comeBack ? ImproveText : ''
+      const improveOptions = !comeBack ? getImprovements({ Ambience, Service, Food, business }) : []
+       await handleSubmitHootersForm(updatedData, improveOptions, customerType, attendantName)
+    if (comeBack) {
+      handleRedirect()
+    }
     } catch (error) {
       console.log(error)
       toast({
@@ -168,6 +231,20 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
       resetForm()
       setIsSubmitted(true)
     }
+  }
+
+  // validate if RecommendingText is empty cannot go to next step
+  const isRecommendingTextEmpty = form.watch('RecommendingText') === '';
+
+  const handleNextStep = () => {
+    if (isRecommendingTextEmpty) {
+      toast({
+        title: recommending ? emptyRecommendingError : emptyNoRecommendingError,
+        variant: 'destructive'
+      })
+      return;
+    }
+    nextStep()
   }
 
   return (
@@ -237,6 +314,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                         yesButton={yesButton}
                         noButton={noButton}
                         handleResponse={handleRecommendingQuestion}
+                        isRecommendingClicked={isRecommendingClicked}
                       >
                       </RecommendingQuestion>
                     )}
@@ -271,87 +349,211 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
 
                   {
                     currentStepIndex === 6 && recommending === true && (
-                      <div>
-                        <h2>
-                          { whyText }
-                        </h2>
-                        <Textarea
-                          aria-label="minimum height"
-                          minLength={3}
-                          placeholder={recommendingPlaceholder}
-                        />
-                      </div>
+                      <FormField
+                        control={form.control}
+                        name='RecommendingText'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                            {whyText}
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder={recommendingPlaceholder}
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     )
                   }
 
                   {
                     currentStepIndex === 6 && recommending === false && (
-                      <div>
-                        <h2>
-                          { whyText }
-                        </h2>
-                        <Textarea aria-label="minimum height" minLength={3} placeholder={noRecommendingPlaceholder} />
-                      </div>
+                      <FormField
+                        control={form.control}
+                        name='RecommendingText'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                            {whyText}
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder={noRecommendingPlaceholder}
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     )
                   }
 
                   {
                     currentStepIndex === 7 && comeBack === true && (
                       <div>
-                        <h2>
-                          { whyText }
-                        </h2>
-                        <Textarea
-                          aria-label="minimum height"
-                          minLength={3}
-                          placeholder={recommendingPlaceholder}
-                        />
-
-                        <p>
-                          <b>RICARDO</b> { submitText1 } <b>{ submitButton }</b> { submitText2 } <b>Google</b>
-                          { submitText3 } <b>{ submitText4 }</b> { submitText5 }
-                        </p>
-                      </div>
+                         <FormField
+                        control={form.control}
+                        name='ComeBackText'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                            {whyText}
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder={recommendingPlaceholder}
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      {watchFullName && (
+                          <p className='text-center mt-2'>
+                            <b>{watchFullName}</b> { submitText1 } <b>{ submitButton }</b> { submitText2 } <b>Google</b>
+                            { submitText3 } <b>{ submitText4 }</b> { submitText5 }
+                          </p>
+                      )
+                    }
+                    </div>
+                      
                     )
                   }
 
                   {
                     currentStepIndex === 7 && comeBack === false && (
                       <div className={'space-y-3'}>
-                        <h4>{ toImproveText }</h4>
-                        <Stack direction={'row'} spacing={1}>
-                          <Button type={'button'}>
-                            <div>
-                              <RestaurantIcon />
-                              <p>{ foodButton }</p>
-                            </div>
-                          </Button>
-                          <Button type={'button'}>
-                            <div>
-                              <PeopleOutlinedIcon />
-                              <p>{ serviceButton }</p>
-                            </div>
-                          </Button>
-                          <Button type={'button'}>
-                            <div>
-                              <StorefrontOutlinedIcon />
-                              <p>{ ambienceButton }</p>
-                            </div>
-                          </Button>
-                        </Stack>
-                        <h4>{ shareDetailsText } <b>Hooters</b></h4>
-                        <Textarea aria-label="minimum height" minLength={3} placeholder={shareDetailsPlaceholder} />
+                               <>
+                        <FormItem>
+                          <FormLabel>
+                            {toImproveText}
+                          </FormLabel>
+                        </FormItem>
+                        <div className='grid grid-cols-3 sm:grid-cols-4 gap-1 sm:gap-2 text-sm font-medium text-gray-900'>
+                          <FormField
+                            control={form.control}
+                            name='Food'
+                            render={({ field }) => (
+                              <FormItem className={cn('flex flex-row items-start space-y-0 rounded-md border py-1 sm:py-2 shadow hover:border-sky-500 hover:text-sky-500 transition-all', {
+                                'border-sky-500 text-sky-500': field.value
+                              })}
+                              >
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    className='sr-only'
+                                  />
+                                </FormControl>
+                                <FormLabel
+                                  className={cn('text-center w-full font-normal flex flex-col items-center cursor-pointer space-y-1 hover:border-sky-500 hover:text-sky-500 transition-all', {
+                                    'border-sky-500 text-sky-500': field.value
+                                  })}
+                                >
+                                  <IconToolsKitchen />
+                                  <p className='w-full text-[10px] sm:text-[11px]'>
+                                    {foodButton}
+                                  </p>
+                                </FormLabel>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name='Service'
+                            render={({ field }) => (
+                              <FormItem className={cn('flex flex-row items-start space-y-0 rounded-md border py-1 sm:py-2 shadow hover:border-sky-500 hover:text-sky-500 transition-all', {
+                                'border-sky-500 text-sky-500': field.value
+                              })}
+                              >
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    className='sr-only'
+                                  />
+                                </FormControl>
+                                <FormLabel
+                                  className={cn('text-center w-full font-normal flex flex-col items-center cursor-pointer space-y-1', {
+                                    'text-sky-500': field.value
+                                  })}
+                                >
+                                  <IconUserScan />
+                                  <p className='w-full text-[10px] sm:text-[11px]'>
+                                    {serviceButton}
+                                  </p>
+                                </FormLabel>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name='Ambience'
+                            render={({ field }) => (
+                              <FormItem className={cn('flex flex-row items-start space-y-0 rounded-md border py-1 sm:py-2 shadow hover:border-sky-500 hover:text-sky-500 transition-all', {
+                                'border-sky-500 text-sky-500': field.value
+                              })}
+                              >
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    className='sr-only'
+                                  />
+                                </FormControl>
+                                <FormLabel
+                                  className={cn('text-center w-full font-normal flex flex-col items-center cursor-pointer space-y-1', {
+                                    'text-sky-500': field.value
+                                  })}
+                                >
+                                  <IconBuildingStore />
+                                  <p className='w-full text-[10px] sm:text-[11px]'>
+                                    {ambienceButton}
+                                  </p>
+                                </FormLabel>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        {form.formState.errors.hiddenInput
+                          ? <FormMessage>{chooseOneOptionError}</FormMessage>
+                          : null}
+                        <FormField
+                          control={form.control}
+                          name='ImproveText'
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>
+                                {shareDetailsText}
+                              </FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  placeholder={shareDetailsPlaceholder}
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </>
                       </div>
                     )
                   }
 
                   {
                     // "Next" button is only shown on question 7
-                    currentStepIndex === 6 && (
+                    currentStepIndex === 6 && isRecommendingClicked.current && (
                       <div>
                         <Button
                           type='button'
-                          onClick={() => {nextStep()}}
+                          onClick={handleNextStep}
                         >
                           {nextButton}
                         </Button>

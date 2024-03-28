@@ -209,6 +209,36 @@ const translations = {
     'ES': 'Ocurrió un error, intenta nuevamente',
     'default': 'Ocurrió un error, intenta nuevamente'
   },
+  emptyRecommendingError: {
+    'US': 'Please tell us why you would recommend Hooters',
+    'CA': 'Veuillez nous dire pourquoi vous recommanderiez Hooters',
+    'ES': 'Por favor dinos por qué recomendarías Hooters',
+    'default': 'Por favor dinos por qué recomendarías Hooters'
+  },
+  emptyNoRecommendingError: {
+    'US': 'Please tell us why you wouldn\'t recommend Hooters',
+    'CA': 'Veuillez nous dire pourquoi vous ne recommanderiez pas Hooters',
+    'ES': 'Por favor dinos por qué no recomendarías Hooters',
+    'default': 'Por favor dinos por qué no recomendarías Hooters'
+    },
+  chooseOneOptionError: {
+    'US': 'Choose one option',
+    'CA': 'Choisissez une option',
+    'ES': 'Selecciona al menos una opción',
+    'default': 'Selecciona al menos una opción'
+  },
+  howToImprovementError: {
+    'US': 'Please tell us how we can improve',
+    'CA': 'Veuillez nous dire comment nous pouvons nous améliorer',
+    'ES': 'Por favor, escribe en que podemos mejorar',
+    'default': 'Por favor, escribe en que podemos mejorar'
+  },
+  whyComeBackError: {
+    'US': 'Please tell us why you would come back',
+    'CA': 'Veuillez nous dire pourquoi vous reviendriez',
+    'ES': 'Por favor dinos por qué volverías',
+    'default': 'Por favor dinos por qué volverías'
+  },
 };
 export default translations;
 

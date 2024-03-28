@@ -49,7 +49,13 @@ const {
   termsAndConditions3,
   termsAndConditions4,
   formErrorMessage,
+  emptyRecommendingError,
+  emptyNoRecommendingError,
+  chooseOneOptionError,
+  howToImprovementError,
+  whyComeBackError,
  } = translations
+
 
 const getTranslatedFormTitle = ({ businessCountry }: { businessCountry: string }) => {  
   return formTitle[businessCountry as keyof typeof formTitle] || formTitle.default
@@ -191,6 +197,26 @@ const getFormErrorMessage = ({ businessCountry }: { businessCountry: string }) =
   return formErrorMessage[businessCountry as keyof typeof formErrorMessage] || formErrorMessage.default
 }
 
+const getRecommendingError = ({ businessCountry }: { businessCountry: string }) => {
+  return formErrorMessage[businessCountry as keyof typeof emptyRecommendingError] || emptyRecommendingError.default
+}
+
+const getNoRecommendingError = ({ businessCountry }: { businessCountry: string }) => {
+  return formErrorMessage[businessCountry as keyof typeof emptyNoRecommendingError] || emptyNoRecommendingError.default
+}
+
+const getChooseOneOptionError = ({ businessCountry }: { businessCountry: string }) => {
+  return formErrorMessage[businessCountry as keyof typeof chooseOneOptionError] || chooseOneOptionError.default
+}
+
+const getHowToImprovementError = ({ businessCountry }: { businessCountry: string }) => {
+  return formErrorMessage[businessCountry as keyof typeof howToImprovementError] || howToImprovementError.default
+}
+
+const getWhyComeBackError = ({ businessCountry }: { businessCountry: string }) => { 
+  return formErrorMessage[businessCountry as keyof typeof whyComeBackError] || whyComeBackError.default
+}
+
 const getFormTranslations = ({ businessCountry }: { businessCountry: string }) => {
 
   return {
@@ -229,6 +255,11 @@ const getFormTranslations = ({ businessCountry }: { businessCountry: string }) =
     termsAndConditions3: getTermsAndConditions3({ businessCountry }),
     termsAndConditions4: getTermsAndConditions4({ businessCountry }),
     formErrorMessage: getFormErrorMessage({ businessCountry }),
+    emptyRecommendingError: getRecommendingError({ businessCountry }),
+    emptyNoRecommendingError: getNoRecommendingError({ businessCountry }),
+    chooseOneOptionError: getChooseOneOptionError({ businessCountry }),
+    howToImprovementError: getHowToImprovementError({ businessCountry }),
+    whyComeBackError: getWhyComeBackError({ businessCountry }),
   }
 }
 

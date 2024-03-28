@@ -20,8 +20,12 @@ const handleSubmitHootersForm = async (
       Recommending,
       ComeBack,
       StartTime,
-
+      ComeBackText,
+      ImproveText,    
+      RecommendingText,
+      Climate,
     }: HootersFeedbackProps, 
+    Improve: string[], 
     customerType: string,
     AttendedBy: string,
   ) => {
@@ -71,8 +75,13 @@ const handleSubmitHootersForm = async (
     Ambience,
     Courtesy,
     ComeBack,
+    ComeBackText,
     Recommending,
+    RecommendingText,
     Experience,
+    Improve,
+    ImproveText,
+    Climate,
   }
   if (waiterId && businessId && !branchId) {
     try {

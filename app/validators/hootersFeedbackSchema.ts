@@ -62,7 +62,7 @@ export const hootersFeedbackSchema = (businessCountry: string) =>
             ? "S'il te plaît, dis-nous comment nous étions aujourd'hui"
             : 'Por favor cuéntanos cómo estuvimos el día de hoy'
     }),
-    Ambience: z.nativeEnum(RatingsFiveStars, {
+    Climate: z.nativeEnum(RatingsFiveStars, {
       required_error:
         businessCountry === 'US'
           ? 'Please tell us how were we today'
@@ -85,6 +85,56 @@ export const hootersFeedbackSchema = (businessCountry: string) =>
       .date()
       .optional()
       .default(() => new Date()),
+
+    RecommendingText: z
+      .string()
+      .nonempty({
+        message:
+          businessCountry === 'US'
+            ? 'Please tell us why you would recommend us'
+            : businessCountry === 'CA' || businessCountry === 'FR'
+              ? 'Veuillez nous dire pourquoi vous nous recommanderiez'
+              : 'Por favor dinos por qué nos recomendarías'
+      })
+      .max(
+        500,
+        businessCountry === 'US'
+          ? 'You cannot exceed 500 characters'
+          : businessCountry === 'CA' || businessCountry === 'FR'
+            ? 'Vous ne pouvez pas dépasser 500 caractères'
+            : 'No puedes exceder los 500 caracteres'
+      ),
+
+      ComeBackText: z
+      .string()
+      .max(
+        500,
+        businessCountry === 'US'
+          ? 'You cannot exceed 500 characters'
+          : businessCountry === 'CA' || businessCountry === 'FR'
+            ? 'Vous ne pouvez pas dépasser 500 caractères'
+            : 'No puedes exceder los 500 caracteres'
+      ),
+
+      Food: z.boolean(),
+
+      Service: z.boolean(),
+  
+      Ambience: z.boolean(),
+
+      ImproveText: z
+      .string()
+      .max(
+        500,
+        businessCountry === 'US'
+          ? 'You cannot exceed 500 characters'
+          : businessCountry === 'CA' || businessCountry === 'FR'
+            ? 'Vous ne pouvez pas dépasser 500 caractères'
+            : 'No puedes exceder los 500 caracteres'
+      ),
+
+      hiddenInput: z.boolean().optional().nullable()
+
 
 
   })

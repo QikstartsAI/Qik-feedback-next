@@ -17,7 +17,7 @@ export default function AmbienceQuestion({ form, question, nextStep }: AmbienceQ
 		<>
 			<FormField
 				control={form.control}
-				name='Ambience'
+				name='Climate'
 				render={({ field }) => (
 					<FormItem className='md:grid md:grid-cols-4 md:space-y-0 md:items-center md:gap-12'>
 						<FormLabel className='col-span-3' >
