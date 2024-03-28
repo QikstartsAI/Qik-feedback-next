@@ -40,17 +40,20 @@ import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 
 import {useMultistepForm} from "@/app/hooks/useMultistepForm";
-import WaiterServiceQuestion from "@/app/components/feedback/questions/WaiterServiceQuestion";
 import PlaceCleannessQuestion from "@/app/components/feedback/questions/PlaceCleannessQuestion";
 import QuicknessQuestion from "@/app/components/feedback/questions/QuicknessQuestion";
 import FoodQualityQuestion from "@/app/components/feedback/questions/FoodQualityQuestion";
 import AmbienceQuestion from "@/app/components/feedback/questions/AmbienceQuestion";
 import CourtesyQuestion from "@/app/components/feedback/questions/CourtesyQuestion";
-import LatelySeenQuestion from "@/app/components/feedback/questions/LatelySeenQuestion";
-import SpendingQuestion from './questions/SpendingQuestion'
 import RecommendingQuestion from './questions/RecommendingQuestion'
 import ExperienceQuestion from "@/app/components/feedback/questions/ExperienceQuestion";
-import {styled} from "@mui/material";
+import ComeBackQuestion from "@/app/components/feedback/questions/ComeBackQuestion";
+import {Step, StepLabel, Stepper} from "@mui/material";
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
+import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
+import StorefrontOutlinedIcon from '@mui/icons-material/StorefrontOutlined';
+import {Textarea} from "@/app/components/ui/TextArea";
 
 interface HootersCustomFormProps {
   business: Business | null
@@ -61,7 +64,11 @@ interface HootersCustomFormProps {
 
 export default function HootersCustomForm({ business, setIsSubmitted, setRating, customerType }: HootersCustomFormProps) {
   const [isTermsChecked, setIsTermsChecked] = useState(true)
+  const [recommending, setRecommending] = useState<boolean | null>(null)
+  const [comeBack, setComeBack] = useState<boolean | null>(null)
+
   const businessCountry = business?.Country || 'EC'
+  const questionsNumber = 8
 
   const { toast } = useToast()
 
@@ -76,7 +83,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
       AcceptTerms: isTermsChecked,
       Email: '',
       StartTime: new Date(),
-      WaiterService: undefined,
+      Courtesy: undefined,
     }
   })
 
@@ -93,17 +100,32 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
     subTitle,
     fullNameQuestion,
     emailQuestion,
-    waiterServiceQuestion,
+    courtesyQuestion,
     placeCleannessQuestion,
     quicknessQuestion,
     foodQualityQuestion,
     ambienceQuestion,
-    courtesyQuestion,
-    latelySeenQuestion,
-    spendingQuestion,
-    recommendingQuestion,
     experienceQuestion,
+    recommendingQuestion,
+    comeBackQuestion,
+    nextButton,
+    yesButton,
+    noButton,
     submitButton,
+    whyText,
+    recommendingPlaceholder,
+    noRecommendingPlaceholder,
+    submitText1,
+    submitText2,
+    submitText3,
+    submitText4,
+    submitText5,
+    toImproveText,
+    foodButton,
+    serviceButton,
+    ambienceButton,
+    shareDetailsText,
+    shareDetailsPlaceholder,
     termsAndConditions1,
     termsAndConditions2,
     termsAndConditions3,
@@ -115,14 +137,24 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
     nextStep,
     goTo,
     currentStepIndex,
-  } = useMultistepForm(10);
+  } = useMultistepForm(questionsNumber);
+
+  const steps = ['', '', '', '', '', '', '', ''];
 
   const handleStepChange = (event: React.ChangeEvent<unknown>, value: number) => {
     goTo(value-1)
   }
 
+  const handleRecommendingQuestion = (answer: boolean) => {
+    setRecommending(answer)
+  }
+
+  const handleComeBackQuestion = (answer: boolean) => {
+    setComeBack(answer)
+  }
+
   async function onSubmit(data: HootersFeedbackProps) {
-    setRating(data.WaiterService)
+    setRating(data.Courtesy)
 
     try {
       await handleSubmitHootersForm(data, customerType, attendantName)
@@ -169,8 +201,8 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
 
                   <div className='flex flex-col gap-2' >
                     {currentStepIndex === 0 && (
-                      <WaiterServiceQuestion form={form} question={waiterServiceQuestion} nextStep={nextStep}>
-                      </WaiterServiceQuestion>
+                      <CourtesyQuestion form={form} question={courtesyQuestion} nextStep={nextStep}>
+                      </CourtesyQuestion>
                     )}
 
                     {currentStepIndex === 1 && (
@@ -194,51 +226,155 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                     )}
 
                     {currentStepIndex === 5 && (
-                      <CourtesyQuestion form={form} question={courtesyQuestion} nextStep={nextStep}>
-                      </CourtesyQuestion>
-                    )}
-
-                    {currentStepIndex === 6 && (
-                      <LatelySeenQuestion form={form} question={latelySeenQuestion} nextStep={nextStep}>
-                      </LatelySeenQuestion>
-                    )}
-
-                    {currentStepIndex === 7 && (
-                      <SpendingQuestion form={form} question={spendingQuestion} nextStep={nextStep}>
-                      </SpendingQuestion>
-                    )}
-
-                    {currentStepIndex === 8 && (
-                      <RecommendingQuestion form={form} question={recommendingQuestion} nextStep={nextStep}>
-                      </RecommendingQuestion>
-                    )}
-
-                    {currentStepIndex === 9 && (
                       <ExperienceQuestion form={form} question={experienceQuestion} nextStep={nextStep}>
                       </ExperienceQuestion>
                     )}
+
+                    {currentStepIndex === 6 && (
+                      <RecommendingQuestion
+                        form={form}
+                        question={recommendingQuestion}
+                        yesButton={yesButton}
+                        noButton={noButton}
+                        handleResponse={handleRecommendingQuestion}
+                      >
+                      </RecommendingQuestion>
+                    )}
+
+                    {currentStepIndex === 7 && (
+                      <ComeBackQuestion
+                        form={form}
+                        question={comeBackQuestion}
+                        yesButton={yesButton}
+                        noButton={noButton}
+                        handleResponse={handleComeBackQuestion}
+                      >
+                      </ComeBackQuestion>
+                    )}
                   </div>
 
-                  <Stack spacing={2}>
-                    <Pagination
-                      count={10}
-                      color={'primary'}
-                      size={'small'}
-                      page={currentStepIndex+1}
-                      boundaryCount={0}
-                      onChange={handleStepChange}
-                    />
+                  <a onClick={() => {
+                    if(currentStepIndex > 0) goTo(currentStepIndex-1);
+                  }}>
+                    <ChevronLeftIcon color={'primary'}></ChevronLeftIcon>
+                  </a>
+
+                  <Stack spacing={1}>
+                    <Stepper activeStep={0} alternativeLabel>
+                      {steps.map((label, index) => (
+                        <Step key={label} active={index <= currentStepIndex}>
+                          <StepLabel>{label}</StepLabel>
+                        </Step>
+                      ))}
+                    </Stepper>
                   </Stack>
-                </div>
-                <Button
-                  type='submit' disabled={
-                    !isTermsChecked
-                      ? true
-                      : form.formState.isSubmitting
+
+                  {
+                    currentStepIndex === 6 && recommending === true && (
+                      <div>
+                        <h2>
+                          { whyText }
+                        </h2>
+                        <Textarea
+                          aria-label="minimum height"
+                          minLength={3}
+                          placeholder={recommendingPlaceholder}
+                        />
+                      </div>
+                    )
                   }
-                >
-                  {submitButton}
-                </Button>
+
+                  {
+                    currentStepIndex === 6 && recommending === false && (
+                      <div>
+                        <h2>
+                          { whyText }
+                        </h2>
+                        <Textarea aria-label="minimum height" minLength={3} placeholder={noRecommendingPlaceholder} />
+                      </div>
+                    )
+                  }
+
+                  {
+                    currentStepIndex === 7 && comeBack === true && (
+                      <div>
+                        <h2>
+                          { whyText }
+                        </h2>
+                        <Textarea
+                          aria-label="minimum height"
+                          minLength={3}
+                          placeholder={recommendingPlaceholder}
+                        />
+
+                        <p>
+                          <b>RICARDO</b> { submitText1 } <b>{ submitButton }</b> { submitText2 } <b>Google</b>
+                          { submitText3 } <b>{ submitText4 }</b> { submitText5 }
+                        </p>
+                      </div>
+                    )
+                  }
+
+                  {
+                    currentStepIndex === 7 && comeBack === false && (
+                      <div className={'space-y-3'}>
+                        <h4>{ toImproveText }</h4>
+                        <Stack direction={'row'} spacing={1}>
+                          <Button type={'button'}>
+                            <div>
+                              <RestaurantIcon />
+                              <p>{ foodButton }</p>
+                            </div>
+                          </Button>
+                          <Button type={'button'}>
+                            <div>
+                              <PeopleOutlinedIcon />
+                              <p>{ serviceButton }</p>
+                            </div>
+                          </Button>
+                          <Button type={'button'}>
+                            <div>
+                              <StorefrontOutlinedIcon />
+                              <p>{ ambienceButton }</p>
+                            </div>
+                          </Button>
+                        </Stack>
+                        <h4>{ shareDetailsText } <b>Hooters</b></h4>
+                        <Textarea aria-label="minimum height" minLength={3} placeholder={shareDetailsPlaceholder} />
+                      </div>
+                    )
+                  }
+
+                  {
+                    // "Next" button is only shown on question 7
+                    currentStepIndex === 6 && (
+                      <div>
+                        <Button
+                          type='button'
+                          onClick={() => {nextStep()}}
+                        >
+                          {nextButton}
+                        </Button>
+                      </div>
+                    )
+                  }
+                </div>
+                {
+                  currentStepIndex === 7 && (
+                    <a href={'https://g.co/kgs/KJSCBCu'} target={'_blank'} rel={'noopener noreferrer'}>
+                      <Button
+                        type='submit' disabled={
+                        !isTermsChecked
+                          ? true
+                          : form.formState.isSubmitting
+                      }
+                      >
+                        {submitButton}
+                      </Button>
+                    </a>
+                  )
+                }
+
                 <CardFooter>
                   <FormField
                     control={form.control}

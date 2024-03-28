@@ -23,11 +23,11 @@ const translations = {
     'ES': 'Correo electrónico',
     'default': 'Correo electrónico'
   },
-  waiterServiceQuestion: {
-    'US': 'How do you rate the service of the Hooters girl?',
-    'CA': 'Comment évaluez-vous le service de la fille Hooters ?',
-    'ES': '¿Cómo calificas el servicio de la chica Hooters?',
-    'default': '¿Cómo calificas el servicio de la chica Hooters?'
+  courtesyQuestion: {
+    'US': 'How would you rate the kindness and courtesy of the Hooters staff during your visit?',
+    'CA': 'Comment évaluez-vous la gentillesse et la courtoisie du personnel de Hooters pendant votre visite ?',
+    'ES': '¿Cómo califica la amabilidad y cortesía del personal de Hooters durante su visita?',
+    'default': '¿Cómo calificas la atención y cortesía del personal de Hooters durante tu visita?'
   },
   placeCleannessQuestion: {
     'US': 'How do you rate the place cleanness?',
@@ -53,23 +53,11 @@ const translations = {
     'ES': '¿Cómo calificas el ambiente del restaurante?',
     'default': '¿Cómo calificas el ambiente del restaurante?'
   },
-  courtesyQuestion: {
-    'US': 'How would you rate the kindness and courtesy of the Hooters staff during your visit?',
-    'CA': 'Comment évaluez-vous la gentillesse et la courtoisie du personnel de Hooters pendant votre visite ?',
-    'ES': '¿Cómo califica la amabilidad y cortesía del personal de Hooters durante su visita?',
-    'default': '¿Cómo califica la amabilidad y cortesía del personal de Hooters durante su visita?'
-  },
-  latelySeenQuestion: {
-    'US': 'Where have you seen us lately?',
-    'CA': 'Où nous avez-vous vus dernièrement ?',
-    'ES': '¿Dónde nos has visto últimamente?',
-    'default': '¿Dónde nos has visto últimamente?'
-  },
-  spendingQuestion: {
-    'US': 'How much did you spend per person on average today?',
-    'CA': 'Combien avez-vous dépensé par personne en moyenne aujourd\'hui ?',
-    'ES': '¿Cuánto gastaste hoy por persona en promedio?',
-    'default': '¿Cuánto gastaste hoy por persona en promedio?'
+  experienceQuestion: {
+    'US': 'How would you rate your experience at Hooters?',
+    'CA': 'Comment évaluez-vous votre expérience chez Hooters ?',
+    'ES': '¿Cómo calificas tu experiencia en Hooters?',
+    'default': '¿Cómo calificas tu experiencia en Hooters?'
   },
   recommendingQuestion: {
     'US': 'Would you recommend Hooters to friends and family?',
@@ -77,17 +65,119 @@ const translations = {
     'ES': '¿Recomendarías a Hooters a amigos y familiares?',
     'default': '¿Recomendarías a Hooters a amigos y familiares?'
   },
-  experienceQuestion: {
-    'US': 'How would you rate your experience at Hooters?',
-    'CA': 'Comment évaluez-vous votre expérience chez Hooters ?',
-    'ES': '¿Cómo calificas tu experiencia en Hooters?',
-    'default': '¿Cómo calificas tu experiencia en Hooters?'
+  comeBackQuestion: {
+    'US': 'Would you come back to Hooters?',
+    'CA': 'Reviendriez-vous à Hooters ?',
+    'ES': '¿Regresarías a Hooters?',
+    'default': '¿Regresarías a Hooters?'
+  },
+  nextButton: {
+    'US': 'Next',
+    'CA': 'Suivant',
+    'ES': 'Siguiente',
+    'default': 'Siguiente'
+  },
+  yesButton: {
+    'US': 'Yes',
+    'CA': 'Oui',
+    'ES': 'Sí',
+    'default': 'Sí'
+  },
+  noButton: {
+    'US': 'No',
+    'CA': 'Non',
+    'ES': 'No',
+    'default': 'No'
   },
   submitButton: {
     'US': 'Submit',
     'CA': 'Envoyer',
     'ES': 'Enviar',
     'default': 'Enviar'
+  },
+  whyText: {
+    'US': 'Why?',
+    'CA': 'Pourquoi ?',
+    'ES': '¿Por qué?',
+    'default': '¿Por qué?'
+  },
+  recommendingPlaceholder: {
+    'US': 'Ex: the food was very good and the service excellent...',
+    'CA': 'Ex: la nourriture était très bonne et le service excellent...',
+    'ES': 'Ej: la comida estuvo muy deliciosa y el servicio estupendo...',
+    'default': 'Ej: la comida estuvo muy deliciosa y el servicio estupendo...'
+  },
+  noRecommendingPlaceholder: {
+    'US': 'Ex: I wouldn\'t recommend it because...',
+    'CA': 'Ex: Je ne le recommanderais pas parce que...',
+    'ES': 'Ej: No lo recomendaría porque...',
+    'default': 'Ej: No lo recomendaría porque...'
+  },
+  submitText1: {
+    'US': 'By pressing ',
+    'CA': 'En pressant ',
+    'ES': 'Al presionar ',
+    'default': 'Al presionar '
+  },
+  submitText2: {
+    'US': ', you\'ll go to ',
+    'CA': ', vous irez sur ',
+    'ES': ', irás a ',
+    'default': ', irás a ',
+  },
+  submitText3: {
+    'US': ' and if you leave us ',
+    'CA': ' et si vous nous laissez des ',
+    'ES': ' y si nos dejas ',
+    'default': ' y si nos dejas ',
+  },
+  submitText4: {
+    'US': 'stars ',
+    'CA': 'étoiles ',
+    'ES': 'estrellas ',
+    'default': 'estrellas ',
+  },
+  submitText5: {
+    'US': 'it would be great!',
+    'CA': 'ce serait génial !',
+    'ES': 'sería genial!',
+    'default': 'sería genial!',
+  },
+  toImproveText: {
+    'US': 'What do you think we could improve?',
+    'CA': 'Selon vous, que pourrions-nous améliorer ?',
+    'ES': '¿En qué crees que podemos mejorar?',
+    'default': '¿En qué crees que podemos mejorar?',
+  },
+  foodButton: {
+    'US': 'Food',
+    'CA': 'Nourriture',
+    'ES': 'Comida',
+    'default': 'Comida',
+  },
+  serviceButton: {
+    'US': 'Service',
+    'CA': 'Service',
+    'ES': 'Servicio',
+    'default': 'Servicio',
+  },
+  ambienceButton: {
+    'US': 'Ambience',
+    'CA': 'Ambiance',
+    'ES': 'Ambiente',
+    'default': 'Ambiente',
+  },
+  shareDetailsText: {
+    'US': 'Share details about your experience in ',
+    'CA': 'Partagez des détails sur votre expérience dans ',
+    'ES': 'Compártenos detalles sobre tu experiencia en ',
+    'default': 'Compártenos detalles sobre tu experiencia en ',
+  },
+  shareDetailsPlaceholder: {
+    'US': 'Ex: The food was delicious but the service was slow...',
+    'CA': 'Ex: La nourriture était délicieuse mais le service était lent. . .',
+    'ES': 'Ej: La comida estuvo rica pero el servicio estuvo lento...',
+    'default': 'Ej: La comida estuvo rica pero el servicio estuvo lento...'
   },
   termsAndConditions1: {
     'US': 'By pressing "Submit", I declare that I accept the ',

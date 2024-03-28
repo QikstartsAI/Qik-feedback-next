@@ -30,7 +30,7 @@ export const hootersFeedbackSchema = (businessCountry: string) =>
             : 'Por favor ingresa un correo electrónico válido'
       ),
 
-    WaiterService: z.nativeEnum(RatingsFiveStars, {
+    Courtesy: z.nativeEnum(RatingsFiveStars, {
       required_error:
         businessCountry === 'US'
           ? 'Please tell us how were we today'
@@ -38,7 +38,6 @@ export const hootersFeedbackSchema = (businessCountry: string) =>
             ? "S'il te plaît, dis-nous comment nous étions aujourd'hui"
             : 'Por favor cuéntanos cómo estuvimos el día de hoy'
     }),
-
     PlaceCleanness: z.nativeEnum(RatingsFiveStars, {
       required_error:
         businessCountry === 'US'
@@ -71,38 +70,6 @@ export const hootersFeedbackSchema = (businessCountry: string) =>
             ? "S'il te plaît, dis-nous comment nous étions aujourd'hui"
             : 'Por favor cuéntanos cómo estuvimos el día de hoy'
     }),
-    Courtesy: z.nativeEnum(RatingsFiveStars, {
-      required_error:
-        businessCountry === 'US'
-          ? 'Please tell us how were we today'
-          : businessCountry === 'CA' || businessCountry === 'FR'
-            ? "S'il te plaît, dis-nous comment nous étions aujourd'hui"
-            : 'Por favor cuéntanos cómo estuvimos el día de hoy'
-    }),
-    LatelySeen: z.nativeEnum(RatingsFiveStars, {
-      required_error:
-        businessCountry === 'US'
-          ? 'Please tell us how were we today'
-          : businessCountry === 'CA' || businessCountry === 'FR'
-            ? "S'il te plaît, dis-nous comment nous étions aujourd'hui"
-            : 'Por favor cuéntanos cómo estuvimos el día de hoy'
-    }),
-    Spending: z.nativeEnum(RatingsFiveStars, {
-      required_error:
-        businessCountry === 'US'
-          ? 'Please tell us how were we today'
-          : businessCountry === 'CA' || businessCountry === 'FR'
-            ? "S'il te plaît, dis-nous comment nous étions aujourd'hui"
-            : 'Por favor cuéntanos cómo estuvimos el día de hoy'
-    }),
-    Recommending: z.nativeEnum(RatingsFiveStars, {
-      required_error:
-        businessCountry === 'US'
-          ? 'Please tell us how were we today'
-          : businessCountry === 'CA' || businessCountry === 'FR'
-            ? "S'il te plaît, dis-nous comment nous étions aujourd'hui"
-            : 'Por favor cuéntanos cómo estuvimos el día de hoy'
-    }),
     Experience: z.nativeEnum(RatingsFiveStars, {
       required_error:
         businessCountry === 'US'
@@ -111,6 +78,8 @@ export const hootersFeedbackSchema = (businessCountry: string) =>
             ? "S'il te plaît, dis-nous comment nous étions aujourd'hui"
             : 'Por favor cuéntanos cómo estuvimos el día de hoy'
     }),
+    Recommending: z.boolean(),
+    ComeBack: z.boolean(),
 
     StartTime: z.coerce
       .date()
