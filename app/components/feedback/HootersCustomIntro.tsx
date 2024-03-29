@@ -16,8 +16,8 @@ function HootersCustomIntro({ business, toogleCustomerType }: HootersCustomIntro
   const isCaCountry = country === 'CA'
 
   return (
-    <div className='mx-auto py-8 lg:py-18 max-w-xl px-6'>
-      <h4 className={'text-center font-medium text-xl text-colorText'}>
+    <div className='mx-auto pt-8 pb-16 lg:py-18 max-w-xl px-6'>
+      <h4 className={'text-center font-medium text-colorText'}>
         {
           isUsCountry
             ? 'We value your opinion 😊, it will take you less than '

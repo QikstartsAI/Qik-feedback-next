@@ -25,7 +25,7 @@ export default function ComeBackQuestion({ form, question, yesButton, noButton, 
 				render={({ field }) => (
 					<FormItem className='md:grid md:space-y-0 md:items-center md:gap-12'>
 						<Stack spacing={2}>
-							<FormLabel className='col-span-3 text-question text-xl' >
+							<FormLabel className='col-span-3 text-question text-lg' >
 								{question}
 							</FormLabel>
 
