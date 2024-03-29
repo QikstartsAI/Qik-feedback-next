@@ -239,11 +239,11 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
 
   return (
     <>
-      <div className='mx-auto py-12 lg:py-24 max-w-4xl px-6 min-h-screen' id='form'>
+      <div className='mx-auto py-12 lg:py-24 max-w-4xl px-6 min-h-screen text-colorText' id='form'>
         <Card>
           <CardHeader>
             <CardTitle>
-              <h4 className={'text-center'}>
+              <h4 className={'text-center text-colorText'}>
                 {title}
                 <span className='text-hooters font-medium'>
                   <b>{subTitle}</b>

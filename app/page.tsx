@@ -9,6 +9,7 @@ import { Toaster } from './components/ui/Toaster'
 import Intro from './components/feedback/Intro';
 import { CustomerRole } from './types/customer';
 import HootersCustomForm from './components/feedback/HootersCustomForm';
+import HootersCustomIntro from "@/app/components/feedback/HootersCustomIntro";
 
 const Hero = lazy(() => import('./components/Hero'))
 const FeedbackForm = lazy(() => import('./components/feedback/FeedbackForm'))
@@ -39,7 +40,19 @@ export default function Home() {
           : (
               <>
                 <Hero business={business} />
-                {!customerType && <Intro business={business} toogleCustomerType={toggleCustomer} />}
+                {!customerType && (
+                  isHootersForm ? (
+                    <HootersCustomIntro
+                      business={business}
+                      toogleCustomerType={toggleCustomer}
+                    />
+                  ) : (
+                    <Intro
+                      business={business}
+                      toogleCustomerType={toggleCustomer}
+                    />
+                  )
+                )}
                 {customerType && (
                   isHootersForm ? (
                     <HootersCustomForm

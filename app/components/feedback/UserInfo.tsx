@@ -20,7 +20,7 @@ export default function UserInfo({ form, fullNameQuestion, emailQuestion }: User
 				name='Email'
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>
+						<FormLabel className={'text-colorText'}>
 							{emailQuestion}
 						</FormLabel>
 						<FormControl>
@@ -49,7 +49,7 @@ export default function UserInfo({ form, fullNameQuestion, emailQuestion }: User
 				name='FullName'
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>
+						<FormLabel className={'text-colorText'}>
 							{fullNameQuestion}
 						</FormLabel>
 						<FormControl>
