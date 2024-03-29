@@ -26,7 +26,7 @@ const translations = {
   courtesyQuestion: {
     'US': 'How would you rate the kindness and courtesy of the Hooters staff during your visit?',
     'CA': 'Comment évaluez-vous la gentillesse et la courtoisie du personnel de Hooters pendant votre visite ?',
-    'ES': '¿Cómo califica la amabilidad y cortesía del personal de Hooters durante su visita?',
+    'ES': '¿Cómo calificas la atención y cortesía del personal de Hooters durante tu visita?',
     'default': '¿Cómo calificas la atención y cortesía del personal de Hooters durante tu visita?'
   },
   placeCleannessQuestion: {
@@ -70,6 +70,36 @@ const translations = {
     'CA': 'Reviendriez-vous à Hooters ?',
     'ES': '¿Regresarías a Hooters?',
     'default': '¿Regresarías a Hooters?'
+  },
+  oneStarLabel: {
+    'US': 'Bad',
+    'CA': 'Mauvais',
+    'ES': 'Malo',
+    'default': 'Malo'
+  },
+  twoStarLabel: {
+    'US': 'Regular',
+    'CA': 'Régulier',
+    'ES': 'Regular',
+    'default': 'Regular'
+  },
+  threeStarLabel: {
+    'US': 'Good',
+    'CA': 'Bon',
+    'ES': 'Bueno',
+    'default': 'Bueno'
+  },
+  fourStarLabel: {
+    'US': 'Very Good',
+    'CA': 'Très Bon',
+    'ES': 'Muy Bueno',
+    'default': 'Muy Bueno'
+  },
+  fiveStarLabel: {
+    'US': 'Excellent',
+    'CA': 'Excellent',
+    'ES': 'Excelente',
+    'default': 'Excelente'
   },
   nextButton: {
     'US': 'Next',

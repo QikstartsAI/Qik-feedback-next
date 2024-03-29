@@ -25,6 +25,10 @@ const config: Config = {
           DEFAULT: 'hsl(var(--qik))',
           foreground: 'hsl(var(--qik-foreground))'
         },
+        hooters: {
+          DEFAULT: 'hsl(var(--hooters))',
+          foreground: 'hsl(var(--hooters-foreground))'
+        },
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))'

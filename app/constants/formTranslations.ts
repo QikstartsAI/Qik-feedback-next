@@ -26,6 +26,11 @@ const {
   experienceQuestion,
   recommendingQuestion,
   comeBackQuestion,
+  oneStarLabel,
+  twoStarLabel,
+  threeStarLabel,
+  fourStarLabel,
+  fiveStarLabel,
   nextButton,
   yesButton,
   noButton,
@@ -103,6 +108,26 @@ const getTranslatedRecommendingQuestion = ({ businessCountry }: { businessCountr
 
 const getTranslatedComeBackQuestion = ({ businessCountry }: { businessCountry: string }) => {
   return comeBackQuestion[businessCountry as keyof typeof comeBackQuestion] || comeBackQuestion.default
+}
+
+const getOneStarLabel = ({ businessCountry }: { businessCountry: string }) => {
+  return oneStarLabel[businessCountry as keyof typeof oneStarLabel] || oneStarLabel.default
+}
+
+const getTwoStarLabel = ({ businessCountry }: { businessCountry: string }) => {
+  return twoStarLabel[businessCountry as keyof typeof twoStarLabel] || twoStarLabel.default
+}
+
+const getThreeStarLabel = ({ businessCountry }: { businessCountry: string }) => {
+  return threeStarLabel[businessCountry as keyof typeof threeStarLabel] || threeStarLabel.default
+}
+
+const getFourStarLabel = ({ businessCountry }: { businessCountry: string }) => {
+  return fourStarLabel[businessCountry as keyof typeof fourStarLabel] || fourStarLabel.default
+}
+
+const getFiveStarLabel = ({ businessCountry }: { businessCountry: string }) => {
+  return fiveStarLabel[businessCountry as keyof typeof fiveStarLabel] || fiveStarLabel.default
 }
 
 const getNextButton = ({ businessCountry }: { businessCountry: string }) => {
@@ -232,6 +257,11 @@ const getFormTranslations = ({ businessCountry }: { businessCountry: string }) =
     experienceQuestion: getTranslatedExperienceQuestion({ businessCountry }),
     recommendingQuestion: getTranslatedRecommendingQuestion({ businessCountry }),
     comeBackQuestion: getTranslatedComeBackQuestion({ businessCountry }),
+    oneStarLabel: getOneStarLabel({ businessCountry }),
+    twoStarLabel: getTwoStarLabel({ businessCountry }),
+    threeStarLabel: getThreeStarLabel({ businessCountry }),
+    fourStarLabel: getFourStarLabel({ businessCountry }),
+    fiveStarLabel: getFiveStarLabel({ businessCountry }),
     nextButton: getNextButton({ businessCountry }),
     yesButton: getYesButton({ businessCountry }),
     noButton: getNoButton({ businessCountry }),

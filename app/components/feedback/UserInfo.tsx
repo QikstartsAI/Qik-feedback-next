@@ -14,22 +14,7 @@ interface UserInfoProps {
 export default function UserInfo({ form, fullNameQuestion, emailQuestion }: UserInfoProps) {
 	return (
 		<>
-			{/* name */}
-			<FormField
-				control={form.control}
-				name='FullName'
-				render={({ field }) => (
-					<FormItem>
-						<FormLabel>
-							{fullNameQuestion}
-						</FormLabel>
-						<FormControl>
-							<Input placeholder='Ej: Juan Pérez' {...field} />
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
+			{/* email */}
 			<FormField
 				control={form.control}
 				name='Email'
@@ -53,6 +38,22 @@ export default function UserInfo({ form, fullNameQuestion, emailQuestion }: User
 									}
 								}}
 							/>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			{/* name */}
+			<FormField
+				control={form.control}
+				name='FullName'
+				render={({ field }) => (
+					<FormItem>
+						<FormLabel>
+							{fullNameQuestion}
+						</FormLabel>
+						<FormControl>
+							<Input placeholder='Ej: Juan Pérez' {...field} />
 						</FormControl>
 						<FormMessage />
 					</FormItem>

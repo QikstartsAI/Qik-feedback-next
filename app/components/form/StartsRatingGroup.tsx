@@ -29,19 +29,26 @@ function StartsRatingGroup({ items, value, className }: StartsRatingGroupProps &
           </FormControl>
           <FormLabel
             className={cn(
-              "text-center font-normal w-full flex flex-col items-center cursor-pointer space-y-1 text-sky-400 hover:text-qik transition-all",
+              "text-center font-normal w-full flex flex-col items-center cursor-pointer space-y-1 text-gray-300 transition-all",
               {
-                "text-sky-500": selectedValue >= index + 1,
+                "text-hooters": selectedValue >= index + 1,
+                "hover:text-orange-600": selectedValue >= index + 1  || !selectedValue,
+                "text-gray-300": selectedValue < index + 1,
+                "hover:text-gray-400": selectedValue < index + 1,
               }
             )}>
             {Icon !== undefined && <Icon 
               className={cn(
-                "w-4 h-4 md:w-6 md:h-6",
+                "w-10 h-10 md:w-12 md:h-12",
                 {
-                  "fill-qik": selectedValue >= index + 1,
+                  "fill-hooters": selectedValue >= index + 1,
+                  "hover:fill-orange-600": selectedValue >= index + 1 || !selectedValue,
+                  "fill-gray-300": selectedValue < index + 1,
+                  "hover:fill-gray-400": selectedValue < index + 1
                 }
               )}
             />}
+            <small>{label}</small>
           </FormLabel>
         </FormItem>
       ))}

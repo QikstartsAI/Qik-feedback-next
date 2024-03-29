@@ -101,7 +101,7 @@ export const hootersFeedbackSchema = (businessCountry: string) =>
         businessCountry === 'US'
           ? 'You cannot exceed 500 characters'
           : businessCountry === 'CA' || businessCountry === 'FR'
-            ? 'Vous ne pouvez pas dépasser 500 caractères'
+            ? 'Vous ne pouvez pas dépasser 500 caractères'
             : 'No puedes exceder los 500 caracteres'
       ),
 
@@ -112,15 +112,15 @@ export const hootersFeedbackSchema = (businessCountry: string) =>
         businessCountry === 'US'
           ? 'You cannot exceed 500 characters'
           : businessCountry === 'CA' || businessCountry === 'FR'
-            ? 'Vous ne pouvez pas dépasser 500 caractères'
+            ? 'Vous ne pouvez pas dépasser 500 caractères'
             : 'No puedes exceder los 500 caracteres'
       ),
 
-      Food: z.boolean(),
+      Food: z.boolean().optional(),
 
-      Service: z.boolean(),
+      Service: z.boolean().optional(),
   
-      Ambience: z.boolean(),
+      Ambience: z.boolean().optional(),
 
       ImproveText: z
       .string()
@@ -129,7 +129,7 @@ export const hootersFeedbackSchema = (businessCountry: string) =>
         businessCountry === 'US'
           ? 'You cannot exceed 500 characters'
           : businessCountry === 'CA' || businessCountry === 'FR'
-            ? 'Vous ne pouvez pas dépasser 500 caractères'
+            ? 'Vous ne pouvez pas dépasser 500 caractères'
             : 'No puedes exceder los 500 caracteres'
       ),
 

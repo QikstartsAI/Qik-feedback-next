@@ -10,9 +10,6 @@ export function useMultistepForm(steps: number) {
         if (currentStepIndex < steps - 1) {
             setCurrentStepIndex((i) => i + 1)
         }
-        if (currentStepIndex === 3) {
-            setShowSuccessMsg(true)
-        }
     }
 
     const previousStep = () => {
@@ -27,6 +24,7 @@ export function useMultistepForm(steps: number) {
 
     return {
         currentStepIndex,
+        setCurrentStepIndex,
         steps,
         isFirstStep: currentStepIndex === 0,
         isLastStep: currentStepIndex === steps - 1,
