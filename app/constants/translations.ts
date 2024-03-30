@@ -26,8 +26,8 @@ const translations = {
   courtesyQuestion: {
     'US': 'How would you rate the kindness and courtesy of the Hooters staff during your visit?',
     'CA': 'Comment évaluez-vous la gentillesse et la courtoisie du personnel de Hooters pendant votre visite ?',
-    'ES': '¿Cómo calificas la atención y cortesía del personal de Hooters durante tu visita?',
-    'default': '¿Cómo calificas la atención y cortesía del personal de Hooters durante tu visita?'
+    'ES': '¿Cómo calificarías la atención y cortesía del personal de Hooters durante tu visita?',
+    'default': '¿Cómo calificarías la atención y cortesía del personal de Hooters durante tu visita?'
   },
   placeCleannessQuestion: {
     'US': 'How do you rate the place cleanness?',

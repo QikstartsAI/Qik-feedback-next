@@ -35,6 +35,7 @@ export default function RecommendingQuestion({ form, question, yesButton, noButt
 									<Button variant={isYesSelected ? 'hootersPrimary' : 'hootersSecondary'} size={'hootersPrimary'} type={'button'} onClick={() => {
 										setIsYesSelected(!isYesSelected);
 										setIsNoSelected(false);
+										isRecommendingClicked.current = true;
 										field.onChange(true);
 										handleResponse(true);
 									}}>
@@ -43,6 +44,7 @@ export default function RecommendingQuestion({ form, question, yesButton, noButt
 									<Button variant={isNoSelected ? 'hootersPrimary' : 'hootersSecondary'} size={'hootersPrimary'} type={'button'} onClick={() => {
 										setIsNoSelected(!isNoSelected);
 										setIsYesSelected(false);
+										isRecommendingClicked.current = false;
 										field.onChange(false);
 										handleResponse(false);
 									}}>
