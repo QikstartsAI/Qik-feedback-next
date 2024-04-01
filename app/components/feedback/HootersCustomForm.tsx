@@ -19,6 +19,7 @@ import {
 import 'react-phone-number-input/style.css'
 
 import { Input } from '../ui/Input'
+import * as Separator from '@radix-ui/react-separator';
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { cn } from '@/app/lib/utils'
@@ -157,6 +158,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
   const {
     nextStep,
     previousStep,
+    goTo,
     currentStepIndex,
   } = useMultistepForm(questionsNumber);
 
@@ -176,8 +178,6 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
 
 
   async function onSubmit(data: HootersFeedbackProps) {
-    console.log('data', data)
-    // setRating(data.Courtesy)
 
     const { Ambience, Service, Food, ImproveText, ComeBackText } = data
     if ((!Ambience && !Service && !Food && !isRecommendingClicked.current)) {
@@ -256,7 +256,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
             noValidate
           >
             <div
-              className={cn('space-y-3 mb-3', {})}
+              className={cn('space-y-3 mb-3 flex-row items-center justify-center', {})}
             >
               <UserInfo
                 form={form}
@@ -266,11 +266,16 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
               </UserInfo>
 
               <div className='flex flex-col gap-2 text-center items-center justify-center py-2'>
+                <Separator.Root
+                  className='SeparatorRoot bg-hooters h-1.5 rounded-full mb-4'
+                  style={{ width: '15%' }}
+                />
+
                 {currentStepIndex === 0 && (
                   <CourtesyQuestion
                     form={form}
                     question={courtesyQuestion}
-                    nextStep={handleNextStep}
+                    nextStep={nextStep}
                     businessCountry={businessCountry}
                   />
                 )}
@@ -279,7 +284,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                   <PlaceCleannessQuestion
                     form={form}
                     question={placeCleannessQuestion}
-                    nextStep={handleNextStep}
+                    nextStep={nextStep}
                     businessCountry={businessCountry}
                   />
                 )}
@@ -348,6 +353,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                 currentStepIndex > 0 && (
                   <a style={{cursor: "pointer"}} onClick={() => {
                     previousStep()
+                    console.log('New step: ', currentStepIndex)
                   }}>
                     <ChevronLeftIcon fontSize={'large'} color={'error'}></ChevronLeftIcon>
                   </a>
@@ -357,7 +363,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
               <div className={'md:grid md:space-y-0 items-center'}>
                 <Stepper activeStep={0} alternativeLabel connector={<CustomStepperConnector/>}>
                   {steps.map((label, index) => (
-                    <Step key={label} active={index <= currentStepIndex}>
+                    <Step  key={label} onClick={() => goTo(index)} active={index === currentStepIndex} completed={index < currentStepIndex}>
                       <StepLabel StepIconComponent={CustomStepperIcons}>{label}</StepLabel>
                     </Step>
                   ))}

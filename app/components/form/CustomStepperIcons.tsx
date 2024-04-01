@@ -14,6 +14,7 @@ const StepIconRoot = styled('div')<{
 	borderRadius: '50%',
 	justifyContent: 'center',
 	alignItems: 'center',
+	cursor: 'pointer',
 	...(ownerState.active && {
 		backgroundColor:
 			'hsl(var(--hooters))',
