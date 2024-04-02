@@ -14,7 +14,7 @@ import HootersThanks from "@/app/components/HootersThanks";
 
 const Hero = lazy(() => import('./components/Hero'))
 const FeedbackForm = lazy(() => import('./components/feedback/FeedbackForm'))
-const CUSTOM_HOOTERS_FORM = process.env.NEXT_PUBLIC_HOOTERS_FORM
+const CUSTOM_HOOTERS_FORM = process.env.NEXT_PUBLIC_HOOTERS_FORM || 'hooters'
 
 export default function Home() {
   const { business, loading, businessId } = useGetBusinessData()
@@ -28,8 +28,10 @@ export default function Home() {
   const [customerName, setCustomerName] = useState('')
 
   if (isSubmitted && rating !== '4' && rating !== '5') {
-    if(isHootersForm)
+    if(isHootersForm) {
       return <HootersThanks businessCountry={business?.Country || 'EC'} />
+    }
+
     else
       return <Thanks
       businessCountry={business?.Country || 'EC'}
