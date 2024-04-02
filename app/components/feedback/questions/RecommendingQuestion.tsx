@@ -5,6 +5,7 @@ import React, {useState} from "react";
 import {Button} from "@/app/components/ui/Button";
 import Stack from "@mui/material/Stack";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 interface RecommendingQuestionProps {
 	form: UseFormReturn<HootersFeedbackProps>
@@ -35,9 +36,10 @@ export default function RecommendingQuestion({ form, question, yesButton, noButt
 							<div className='flex items-start justify-center'>
 								<span className='self-start'>
 									<a style={{cursor: "pointer", marginTop: "30px"}} onClick={prevStep}>
-										<ChevronLeftIcon className='text-hooters' style={{fontSize: 50}}/>
+										<ChevronLeftIcon className='text-hooters' style={{fontSize: 54, fontWeight: 'bolder'}}/>
 									</a>
 								</span>
+
 								<FormControl>
 									<div className="flex justify-center space-x-4">
 
@@ -65,12 +67,18 @@ export default function RecommendingQuestion({ form, question, yesButton, noButt
 										</Button>
 									</div>
 								</FormControl>
+
+								<span className='self-end'>
+									<a style={{marginTop: "30px"}}>
+										<ChevronRightIcon className='text-transparent' style={{fontSize: 54, fontWeight: 'bolder'}}/>
+									</a>
+								</span>
 							</div>
 							<FormMessage/>
 						</Stack>
 					</FormItem>
-					)}
-				/>
-			</>
-			)
-			}
+				)}
+			/>
+		</>
+	)
+}
