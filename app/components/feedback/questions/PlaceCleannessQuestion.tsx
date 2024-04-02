@@ -50,9 +50,9 @@ export default function PlaceCleannessQuestion({ form, question, nextStep, prevS
 											/>
 										</RadioGroup>
 									</FormControl>
-									<FormMessage/>
 								</div>
 
+								<FormMessage/>
 							</Stack>
 
 

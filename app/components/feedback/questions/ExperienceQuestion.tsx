@@ -49,8 +49,8 @@ export default function ExperienceQuestion({ form, question, nextStep, prevStep,
 										/>
 									</RadioGroup>
 								</FormControl>
-								<FormMessage/>
 							</div>
+							<FormMessage/>
 						</Stack>
 					</FormItem>
 				)}

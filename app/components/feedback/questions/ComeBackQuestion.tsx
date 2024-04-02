@@ -64,8 +64,8 @@ export default function ComeBackQuestion({ form, question, yesButton, noButton, 
 										</Button>
 									</div>
 								</FormControl>
-								<FormMessage/>
 							</div>
+							<FormMessage/>
 						</Stack>
 					</FormItem>
 					)}

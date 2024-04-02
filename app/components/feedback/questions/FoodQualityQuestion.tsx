@@ -49,7 +49,6 @@ export default function FoodQualityQuestion({ form, question, nextStep, prevStep
 										/>
 									</RadioGroup>
 								</FormControl>
-								<FormMessage/>
 							</div>
 							<FormMessage/>
 						</Stack>

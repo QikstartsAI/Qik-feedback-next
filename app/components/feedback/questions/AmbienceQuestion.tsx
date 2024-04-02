@@ -50,8 +50,8 @@ export default function AmbienceQuestion({ form, question, nextStep, prevStep, b
 										/>
 									</RadioGroup>
 								</FormControl>
-								<FormMessage/>
 							</div>
+							<FormMessage/>
 						</Stack>
 					</FormItem>
 				)}

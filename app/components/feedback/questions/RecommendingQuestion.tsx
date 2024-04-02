@@ -65,8 +65,8 @@ export default function RecommendingQuestion({ form, question, yesButton, noButt
 										</Button>
 									</div>
 								</FormControl>
-								<FormMessage/>
 							</div>
+							<FormMessage/>
 						</Stack>
 					</FormItem>
 					)}
