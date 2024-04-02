@@ -34,7 +34,7 @@ export default function PlaceCleannessQuestion({ form, question, nextStep, prevS
 								<div className='flex items-start justify-center'>
 									<span>
 										<a style={{cursor: "pointer", marginTop: "30px"}} onClick={prevStep}>
-											<ChevronLeftIcon className='text-hooters' style={{fontSize: 50}}/>
+											<ChevronLeftIcon className='text-hooters' style={{fontSize: 54, fontWeight: "bolder"}}/>
 										</a>
 									</span>
 
@@ -55,10 +55,10 @@ export default function PlaceCleannessQuestion({ form, question, nextStep, prevS
 									</FormControl>
 
 									<span>
-									<a style={{cursor: "pointer", marginTop: "30px"}} onClick={nextStep}>
-										<ChevronRightIcon className="text-hooters" style={{fontSize: 54, fontWeight: "bolder"}}/>
-									</a>
-								</span>
+										<a style={{cursor: "pointer", marginTop: "20px"}} onClick={nextStep}>
+											<ChevronRightIcon className="text-hooters" style={{fontSize: 54, fontWeight: "bolder"}}/>
+										</a>
+									</span>
 								</div>
 
 								<FormMessage/>

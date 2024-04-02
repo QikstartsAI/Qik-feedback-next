@@ -34,7 +34,7 @@ export default function QuicknessQuestion({ form, question, nextStep, prevStep, 
 							<div className='flex items-start justify-center'>
 									<span>
 										<a style={{cursor: "pointer", marginTop: "30px"}} onClick={prevStep}>
-											<ChevronLeftIcon className='text-hooters' style={{fontSize: 50}}/>
+											<ChevronLeftIcon className='text-hooters' style={{fontSize: 54, fontWeight: "bolder"}}/>
 										</a>
 									</span>
 
