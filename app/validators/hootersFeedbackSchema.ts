@@ -30,7 +30,7 @@ export const hootersFeedbackSchema = (businessCountry: string) =>
             : 'Por favor ingresa un correo electrónico válido'
       ),
 
-    WaiterService: z.nativeEnum(RatingsFiveStars, {
+    Courtesy: z.nativeEnum(RatingsFiveStars, {
       required_error:
         businessCountry === 'US'
           ? 'Please tell us how were we today'
@@ -38,7 +38,6 @@ export const hootersFeedbackSchema = (businessCountry: string) =>
             ? "S'il te plaît, dis-nous comment nous étions aujourd'hui"
             : 'Por favor cuéntanos cómo estuvimos el día de hoy'
     }),
-
     PlaceCleanness: z.nativeEnum(RatingsFiveStars, {
       required_error:
         businessCountry === 'US'
@@ -63,39 +62,7 @@ export const hootersFeedbackSchema = (businessCountry: string) =>
             ? "S'il te plaît, dis-nous comment nous étions aujourd'hui"
             : 'Por favor cuéntanos cómo estuvimos el día de hoy'
     }),
-    Ambience: z.nativeEnum(RatingsFiveStars, {
-      required_error:
-        businessCountry === 'US'
-          ? 'Please tell us how were we today'
-          : businessCountry === 'CA' || businessCountry === 'FR'
-            ? "S'il te plaît, dis-nous comment nous étions aujourd'hui"
-            : 'Por favor cuéntanos cómo estuvimos el día de hoy'
-    }),
-    Courtesy: z.nativeEnum(RatingsFiveStars, {
-      required_error:
-        businessCountry === 'US'
-          ? 'Please tell us how were we today'
-          : businessCountry === 'CA' || businessCountry === 'FR'
-            ? "S'il te plaît, dis-nous comment nous étions aujourd'hui"
-            : 'Por favor cuéntanos cómo estuvimos el día de hoy'
-    }),
-    LatelySeen: z.nativeEnum(RatingsFiveStars, {
-      required_error:
-        businessCountry === 'US'
-          ? 'Please tell us how were we today'
-          : businessCountry === 'CA' || businessCountry === 'FR'
-            ? "S'il te plaît, dis-nous comment nous étions aujourd'hui"
-            : 'Por favor cuéntanos cómo estuvimos el día de hoy'
-    }),
-    Spending: z.nativeEnum(RatingsFiveStars, {
-      required_error:
-        businessCountry === 'US'
-          ? 'Please tell us how were we today'
-          : businessCountry === 'CA' || businessCountry === 'FR'
-            ? "S'il te plaît, dis-nous comment nous étions aujourd'hui"
-            : 'Por favor cuéntanos cómo estuvimos el día de hoy'
-    }),
-    Recommending: z.nativeEnum(RatingsFiveStars, {
+    Climate: z.nativeEnum(RatingsFiveStars, {
       required_error:
         businessCountry === 'US'
           ? 'Please tell us how were we today'
@@ -111,11 +78,63 @@ export const hootersFeedbackSchema = (businessCountry: string) =>
             ? "S'il te plaît, dis-nous comment nous étions aujourd'hui"
             : 'Por favor cuéntanos cómo estuvimos el día de hoy'
     }),
+    Recommending: z.boolean(),
+    ComeBack: z.boolean(),
 
     StartTime: z.coerce
       .date()
       .optional()
       .default(() => new Date()),
+
+    RecommendingText: z
+      .string()
+      .nonempty({
+        message:
+          businessCountry === 'US'
+            ? 'Please tell us why you would recommend us'
+            : businessCountry === 'CA' || businessCountry === 'FR'
+              ? 'Veuillez nous dire pourquoi vous nous recommanderiez'
+              : 'Por favor dinos por qué nos recomendarías'
+      })
+      .max(
+        500,
+        businessCountry === 'US'
+          ? 'You cannot exceed 500 characters'
+          : businessCountry === 'CA' || businessCountry === 'FR'
+            ? 'Vous ne pouvez pas dépasser 500 caractères'
+            : 'No puedes exceder los 500 caracteres'
+      ),
+
+      ComeBackText: z
+      .string()
+      .max(
+        500,
+        businessCountry === 'US'
+          ? 'You cannot exceed 500 characters'
+          : businessCountry === 'CA' || businessCountry === 'FR'
+            ? 'Vous ne pouvez pas dépasser 500 caractères'
+            : 'No puedes exceder los 500 caracteres'
+      ),
+
+      Food: z.boolean().optional(),
+
+      Service: z.boolean().optional(),
+  
+      Ambience: z.boolean().optional(),
+
+      ImproveText: z
+      .string()
+      .max(
+        500,
+        businessCountry === 'US'
+          ? 'You cannot exceed 500 characters'
+          : businessCountry === 'CA' || businessCountry === 'FR'
+            ? 'Vous ne pouvez pas dépasser 500 caractères'
+            : 'No puedes exceder los 500 caracteres'
+      ),
+
+      hiddenInput: z.boolean().optional().nullable()
+
 
 
   })

@@ -55,13 +55,14 @@ export interface Branch {
 }
 
 export interface Business {
+    BusinessId: string
     Address: string
     Icono: string
     MapsUrl: string
     Name: string
     Cover: string
     IconoWhite: string
-    Country: 'CO' | 'EC' | 'MX' | 'US' | 'AR' | 'CA' | 'DO' | 'HN' | 'GT' | 'ES' | 'FR'
+    Country: 'CO' | 'EC' | 'MX' | 'US' | 'AR' | 'CA' | 'DO' | 'HN' | 'GT' | 'ES' | 'FR' | 'HK'
     sucursales?: Branch[]
     meseros?: Waiter[]
     Waiter?: Waiter

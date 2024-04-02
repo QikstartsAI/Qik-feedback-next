@@ -13,7 +13,7 @@ type IntroProps = {
 function Intro({ business, toogleCustomerType }: IntroProps) {
   const country = business?.Country || 'EC'
   const waiter = business?.Waiter
-  const isUsCountry = country === 'US'
+  const isUsCountry = country === 'US' || country === 'HK'
   const isCaCountry = country === 'CA'
 
   return (
@@ -54,9 +54,9 @@ function Intro({ business, toogleCustomerType }: IntroProps) {
                   }
                   <p className='text-center text-sm sm:text-lg pb-1 font-medium'>
                     {
-                      business?.Country === 'US'
+                      isUsCountry
                         ? 'Today I attended to you:'
-                        : business?.Country === 'CA'
+                        : isCaCountry
                           ? "Aujourd'hui, je me suis occupé de vous:"
                           : 'Hoy te atendí:'
                     }

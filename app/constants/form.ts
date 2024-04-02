@@ -22,6 +22,7 @@ import { Business } from '../types/business'
 import { currencyPrices } from './prices'
 import { Improvements } from '@/app/types/feedback'
 import { CustomerRole } from '../types/customer'
+import getFormTranslations from "@/app/constants/formTranslations";
 
 const getOthersText = (business: Business | null) => {
   return business?.Country === 'US'
@@ -119,7 +120,7 @@ const improveOptions: ImproveOptions[] = [
   { value: 'Ambience', label: 'Ambiente', icon: IconBuildingStore }
 ]
 
-type IGetImprovements = ({ Ambience, Food, Service }: { Food: boolean, Service: boolean, Ambience: boolean, business: Business | null }) => string[]
+type IGetImprovements = ({ Ambience, Food, Service }: { Food: boolean | undefined, Service: boolean | undefined, Ambience: boolean | undefined, business: Business | null }) => string[]
 
 const getImprovements: IGetImprovements = ({ Ambience, Food, Service, business }) => {
   const businessCountry = business?.Country
@@ -177,11 +178,15 @@ const getOriginLabel = (
   return originLabel
 }
 
-// array of objects with the value and label of the rating from 1 to 10
-const ratingOptionsFrom1To10 = Array.from({ length: 5 }, (_, i) => {
-  const strValue = (i + 1).toString();
-  return { value: strValue, label: strValue, icon: IconStar };
-});
+// array of objects with the value and label of the rating from 1 to 5
+const getRatingOptions = (businessCountry: string) => {
+  return Array.from({ length: 5 }, (_, i) => {
+    const strValue = (i + 1).toString();
+    const {oneStarLabel, twoStarLabel, threeStarLabel, fourStarLabel, fiveStarLabel} = getFormTranslations({ businessCountry })
+    const strLabels: {[index: string]: string} = {'1': oneStarLabel, '2': twoStarLabel, '3': threeStarLabel, '4': fourStarLabel, '5': fiveStarLabel}
+    return {value: strValue, label: strLabels[strValue], icon: IconStar};
+  });
+}
 
 export {
   getKnownOrigins,
@@ -193,5 +198,5 @@ export {
   getOtherOptions,
   getOtherOriginValues,
   getOriginLabel,
-  ratingOptionsFrom1To10,
+  getRatingOptions,
 }

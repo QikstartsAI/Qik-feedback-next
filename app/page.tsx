@@ -9,10 +9,12 @@ import { Toaster } from './components/ui/Toaster'
 import Intro from './components/feedback/Intro';
 import { CustomerRole } from './types/customer';
 import HootersCustomForm from './components/feedback/HootersCustomForm';
+import HootersCustomIntro from "@/app/components/feedback/HootersCustomIntro";
+import HootersThanks from "@/app/components/HootersThanks";
 
 const Hero = lazy(() => import('./components/Hero'))
 const FeedbackForm = lazy(() => import('./components/feedback/FeedbackForm'))
-const CUSTOM_HOOTERS_FORM = process.env.NEXT_PUBLIC_HOOTERS_FORM
+const CUSTOM_HOOTERS_FORM = process.env.NEXT_PUBLIC_HOOTERS_FORM || 'hooters'
 
 export default function Home() {
   const { business, loading, businessId } = useGetBusinessData()
@@ -22,12 +24,20 @@ export default function Home() {
   }
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [rating, setRating] = useState('')
-  if (isSubmitted && rating !== '4' && rating !== '5') {
-    return <Thanks businessCountry={business?.Country || 'EC'} />
-  }
-
   const isHootersForm = businessId === CUSTOM_HOOTERS_FORM
-  console.log('isHootersForm', isHootersForm)
+  const [customerName, setCustomerName] = useState('')
+
+  if (isSubmitted && rating !== '4' && rating !== '5') {
+    if(isHootersForm) {
+      return <HootersThanks businessCountry={business?.Country || 'EC'} />
+    }
+
+    else
+      return <Thanks
+      businessCountry={business?.Country || 'EC'}
+      businessName={business?.Name || ''}
+      customerName={customerName} />
+  }
 
   return (
     <div>
@@ -39,7 +49,19 @@ export default function Home() {
           : (
               <>
                 <Hero business={business} />
-                {!customerType && <Intro business={business} toogleCustomerType={toggleCustomer} />}
+                {!customerType && (
+                  isHootersForm ? (
+                    <HootersCustomIntro
+                      business={business}
+                      toogleCustomerType={toggleCustomer}
+                    />
+                  ) : (
+                    <Intro
+                      business={business}
+                      toogleCustomerType={toggleCustomer}
+                    />
+                  )
+                )}
                 {customerType && (
                   isHootersForm ? (
                     <HootersCustomForm
@@ -54,6 +76,7 @@ export default function Home() {
                       setIsSubmitted={setIsSubmitted}
                       setRating={setRating}
                       customerType={customerType}
+                      setCustomerName={setCustomerName}
                     />
                   )  
                 )}
