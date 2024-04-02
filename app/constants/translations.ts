@@ -234,10 +234,10 @@ const translations = {
     'default': ' Políticas de Privacidad'
   },
   formErrorMessage: {
-    'US': 'An error occurred, try again',
-    'CA': "Une erreur s'est produite, réessayez",
-    'ES': 'Ocurrió un error, intenta nuevamente',
-    'default': 'Ocurrió un error, intenta nuevamente'
+    'US': 'Give us a rating before continuing',
+    'CA': "Donnez-nous une note avant de continuer",
+    'ES': 'Danos una calificación antes de seguir',
+    'default': 'Danos una calificación antes de seguir'
   },
   emptyRecommendingError: {
     'US': 'Please tell us why you would recommend Hooters',
