@@ -5,6 +5,7 @@ import { HootersFeedbackProps } from '@/app/validators/hootersFeedbackSchema'
 import { addDoc, updateDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore'
 import { findBusiness } from '../services/business'
 import { Customer } from '../types/customer'
+import { findCustomerDataByEmail } from './handleEmail'
 
 const handleSubmitHootersForm = async (
     {
@@ -28,6 +29,8 @@ const handleSubmitHootersForm = async (
     Improve: string[], 
     customerType: string,
     AttendedBy: string,
+    customerNumberOfVisits: number,
+    feedbackNumberOfVisit: number
   ) => {
   const searchParams = new URLSearchParams(document.location.search)
 
@@ -39,10 +42,11 @@ const handleSubmitHootersForm = async (
     email: Email,
     name: FullName,
     phoneNumber: '',
-    birthdayDate:  '',
-    origin:  '',
+    birthdayDate: '',
+    origin: '',
     customerType: customerType || '',
-    acceptPromotions: false
+    acceptPromotions: false,
+    lastFeedbackFilled: getTimesTampFromDate(new Date())
   }
 
   const businessFeedbackRef = collection(
@@ -219,11 +223,46 @@ const handleSubmitHootersForm = async (
 
     const businessData = await findBusiness(businessId)
 
-    const customerRef = doc(parentCustomerDataRef, Email)
-    const businessRef = doc(parentCustomerBusinessRef, businessId || '')
+    const customerData = await findCustomerDataByEmail(Email)
 
-    await setDoc(customerRef, customerContactData)
-    await setDoc(businessRef, businessData)
+    let creationDate = customerData?.creationDate;
+
+    const customerDoc = doc(parentCustomerDataRef, Email)
+    const businessDoc = doc(parentCustomerBusinessRef, businessId || '')
+
+    if (!customerData?.creationDate) {
+      creationDate = getTimesTampFromDate(new Date())
+    }
+
+    await setDoc(customerDoc, customerContactData)
+    if (customerData) {
+      await setDoc(businessDoc, { 
+        ...businessData,
+        customerType: customerData?.customerType,
+        lastFeedbackFilled: customerData?.lastFeedbackFilled,
+        customerNumberOfVisits,
+        creationDate
+      })
+    } else {
+      await setDoc(businessDoc, { 
+        ...businessData,
+        customerType: customerType,
+        lastFeedbackFilled: getTimesTampFromDate(new Date()),
+        customerNumberOfVisits,
+        creationDate
+      })
+    }
+
+    const customerBusinessFeedbackRef = collection(
+      getFirebase().db,
+      CUSTOMERS_COLLECTION_NAME || '',
+      Email,
+      'business',
+      businessId || '',
+      'feedbacks'
+    )
+    const businessFeedbackDoc = doc(customerBusinessFeedbackRef)
+    await setDoc(businessFeedbackDoc, { ...data, feedbackNumberOfVisit })
   } catch (err) {
     console.error(err)
   }

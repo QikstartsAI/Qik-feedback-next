@@ -7,14 +7,12 @@ export function useMultistepForm(steps: number) {
     const [showSuccessMsg, setShowSuccessMsg] = useState(false);
 
     const nextStep = () => {
-        console.log('current index: ', currentStepIndex)
         if (currentStepIndex < steps - 1) {
             setCurrentStepIndex((i) => i + 1)
         }
     }
 
     const previousStep = () => {
-        console.log('current index: ', currentStepIndex)
         if (currentStepIndex > 0) {
             setCurrentStepIndex((i) => i - 1)
         }

@@ -1,4 +1,6 @@
 /* eslint-disable react/jsx-handler-names */
+'use client'
+
 import { Button } from '../ui/Button'
 import {
   Form,
@@ -9,16 +11,11 @@ import {
   FormMessage
 } from '../ui/Form'
 import {
-  Card,
-  CardContent,
   CardFooter,
-  CardHeader,
-  CardTitle
 } from '../ui/Card'
 
 import 'react-phone-number-input/style.css'
 
-import { Input } from '../ui/Input'
 import * as Separator from '@radix-ui/react-separator';
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -26,7 +23,7 @@ import { cn } from '@/app/lib/utils'
 import { useToast } from '@/app/hooks/useToast'
 import { HootersFeedbackProps, hootersFeedbackSchema } from '@/app/validators/hootersFeedbackSchema';
 import handleSubmitHootersForm from '@/app/lib/handleSubmitHootersForm'
-import { findCustomerDataByEmail } from '@/app/lib/handleEmail'
+import { findCustomerFeedbackDataInBusiness } from '@/app/lib/handleEmail'
 import { Business } from '@/app/types/business'
 import React, { Dispatch, SetStateAction, useState } from 'react'
 import {
@@ -46,17 +43,15 @@ import CourtesyQuestion from "@/app/components/feedback/questions/CourtesyQuesti
 import RecommendingQuestion from './questions/RecommendingQuestion'
 import ExperienceQuestion from "@/app/components/feedback/questions/ExperienceQuestion";
 import ComeBackQuestion from "@/app/components/feedback/questions/ComeBackQuestion";
-import {makeStyles, Step, StepConnector, stepConnectorClasses, StepIconProps, StepLabel, Stepper} from "@mui/material";
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import {Step, StepLabel, Stepper} from "@mui/material";
 import {Textarea} from "@/app/components/ui/TextArea";
-import { IconUsers } from '@tabler/icons-react';
 import { Checkbox } from '../ui/Checkbox'
 import { IconToolsKitchen } from '@tabler/icons-react';
 import { IconUserScan } from '@tabler/icons-react';
 import { IconBuildingStore } from '@tabler/icons-react';
-import {fontSize, styled, useTheme} from "@mui/system";
 import CustomStepperIcons from "@/app/components/form/CustomStepperIcons";
 import CustomStepperConnector from "@/app/components/form/CustomStepperConnector";
+import { useSearchParams } from 'next/navigation'
 
 interface HootersCustomFormProps {
   business: Business | null
@@ -69,7 +64,10 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
   const [isTermsChecked, setIsTermsChecked] = useState(true)
   const [recommending, setRecommending] = useState<boolean | null>(null)
   const [comeBack, setComeBack] = useState<boolean | null>(null)
+  const [isLastFeedbackMoreThanOneDay, setIsLastFeedbackMoreThanOneDay] = useState<boolean | undefined>(false)
+  const searchParams = useSearchParams()
 
+  const businessId = searchParams.get('id')
   const businessCountry = business?.Country || 'EC'
   const questionsNumber = 8
 
@@ -108,8 +106,6 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
   const waiterName = business?.Waiter?.name || ''
   const attendantName = waiterName ? waiterName : 'Matriz';
   const watchFullName = watch('FullName');
-
-  console.log('form.state', form.formState.errors)
 
   const {
     title,
@@ -210,7 +206,18 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
       updatedData.ImproveText = !comeBack ? ImproveText : ''
       updatedData.ComeBackText = comeBack ? ComeBackText : ''
       const improveOptions = !comeBack ? getImprovements({ Ambience, Service, Food, business }) : []
-       await handleSubmitHootersForm(updatedData, improveOptions, customerType, attendantName)
+      let customerNumberOfVisits = 0
+      let feedbackNumberOfVisit = 0
+      const customerFeedbackInBusinesData = await findCustomerFeedbackDataInBusiness(data.Email, business?.BusinessId || '')
+      if (customerFeedbackInBusinesData) {
+        const feedbackVisits = customerFeedbackInBusinesData.customerNumberOfVisits
+        customerNumberOfVisits = feedbackVisits + 1
+        feedbackNumberOfVisit = feedbackVisits + 1
+      } else {
+        customerNumberOfVisits = 1
+        feedbackNumberOfVisit = 1
+      }
+      await handleSubmitHootersForm(updatedData, improveOptions, customerType, attendantName, customerNumberOfVisits, feedbackNumberOfVisit)
     if (comeBack) {
       handleRedirect()
     }
@@ -263,9 +270,10 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                 form={form}
                 emailQuestion={emailQuestion}
                 fullNameQuestion={fullNameQuestion}
-              >
-              </UserInfo>
-
+                businessCountry={businessCountry}
+                setIsLastFeedbackMoreThanOneDay={setIsLastFeedbackMoreThanOneDay}
+                businessId={businessId || ''}
+              />
               <div className='flex flex-col gap-2 text-center items-center justify-center py-2'>
                 <Separator.Root
                   className='SeparatorRoot bg-hooters h-1.5 rounded-full mb-4'
@@ -362,7 +370,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                 <Stepper activeStep={0} alternativeLabel connector={<CustomStepperConnector/>}>
                   {steps.map((label, index) => (
                     <Step
-                      key={label}
+                      key={index}
                       onClick={() => {
                         if(index < 7) goTo(index)
                       }}
@@ -588,7 +596,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                     variant={'hootersPrimary'}
                     size={'hootersLarge'}
                     type='submit' disabled={
-                    !isTermsChecked
+                    !isTermsChecked || isLastFeedbackMoreThanOneDay
                       ? true
                       : form.formState.isSubmitting
                   }

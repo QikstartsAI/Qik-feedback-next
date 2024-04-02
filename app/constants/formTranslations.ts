@@ -59,6 +59,7 @@ const {
   chooseOneOptionError,
   howToImprovementError,
   whyComeBackError,
+  feedbackLimit
  } = translations
 
 
@@ -242,6 +243,10 @@ const getWhyComeBackError = ({ businessCountry }: { businessCountry: string }) =
   return formErrorMessage[businessCountry as keyof typeof whyComeBackError] || whyComeBackError.default
 }
 
+const getFeedbackLimit = ({ businessCountry }: { businessCountry: string }) => { 
+  return formErrorMessage[businessCountry as keyof typeof feedbackLimit] || feedbackLimit.default
+}
+
 const getFormTranslations = ({ businessCountry }: { businessCountry: string }) => {
 
   return {
@@ -290,6 +295,7 @@ const getFormTranslations = ({ businessCountry }: { businessCountry: string }) =
     chooseOneOptionError: getChooseOneOptionError({ businessCountry }),
     howToImprovementError: getHowToImprovementError({ businessCountry }),
     whyComeBackError: getWhyComeBackError({ businessCountry }),
+    feedbackLimit: getFeedbackLimit({ businessCountry })
   }
 }
 

@@ -25,13 +25,16 @@ export default function Home() {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [rating, setRating] = useState('')
   const isHootersForm = businessId === CUSTOM_HOOTERS_FORM
-  console.log('isHootersForm', isHootersForm)
+  const [customerName, setCustomerName] = useState('')
 
   if (isSubmitted && rating !== '4' && rating !== '5') {
     if(isHootersForm)
       return <HootersThanks businessCountry={business?.Country || 'EC'} />
     else
-      return <Thanks businessCountry={business?.Country || 'EC'} />
+      return <Thanks
+      businessCountry={business?.Country || 'EC'}
+      businessName={business?.Name || ''}
+      customerName={customerName} />
   }
 
   return (
@@ -71,6 +74,7 @@ export default function Home() {
                       setIsSubmitted={setIsSubmitted}
                       setRating={setRating}
                       customerType={customerType}
+                      setCustomerName={setCustomerName}
                     />
                   )  
                 )}

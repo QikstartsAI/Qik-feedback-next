@@ -269,6 +269,12 @@ const translations = {
     'ES': 'Por favor dinos por qué volverías',
     'default': 'Por favor dinos por qué volverías'
   },
+  feedbackLimit: {
+    'US': 'Thank you! ✌🏻 You have reached the daily survey limit. Until your next visit! 😉',
+    'CA': "Merci! ✌🏻 Vous avez atteint la limite quotidienne d'enquêtes. A votre prochaine visite ! 😉",
+    'ES': 'Has alcanzado el límite diario de encuestas. ¡Hasta tu próxima visita! 😉',
+    'default': 'Has alcanzado el límite diario de encuestas. ¡Hasta tu próxima visita! 😉'
+  }
 };
 export default translations;
 
