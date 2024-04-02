@@ -177,26 +177,30 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
   async function onSubmit(data: HootersFeedbackProps) {
 
     const { Ambience, Service, Food, ImproveText, ComeBackText } = data
-    if ((!Ambience && !Service && !Food && !isRecommendingClicked.current)) {
-      form.setError('hiddenInput', {
-        type: 'manual',
-        message: chooseOneOptionError
+    if (( (Ambience === undefined || !Ambience) &&
+          (Service === undefined || !Service) &&
+          (Food === undefined || !Food) &&
+          comeBack === false)) {
+      toast({
+        title: chooseOneOptionError,
+        variant: 'hootersDestructive'
       })
       return
     }
 
+
     if (!comeBack && ImproveText.length === 0) {
-      form.setError('ImproveText', {
-        type: 'manual',
-        message: howToImprovementError
+      toast({
+        title: howToImprovementError,
+        variant: 'hootersDestructive'
       })
       return
     }
 
     if (comeBack && ComeBackText.length === 0) {
-      form.setError('ComeBackText', {
-        type: 'manual',
-        message: whyComeBackError
+      toast({
+        title: whyComeBackError,
+        variant: 'hootersDestructive'
       })
       return
     }
@@ -214,7 +218,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
       console.log(error)
       toast({
         title: formErrorMessage,
-        variant: 'destructive'
+        variant: 'hootersDestructive',
       })
     } finally {
       resetForm()
@@ -229,7 +233,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
     if (recommending != null && isRecommendingTextEmpty) {
       toast({
         title: recommending ? emptyRecommendingError : emptyNoRecommendingError,
-        variant: 'destructive'
+        variant: 'hootersDestructive'
       })
       return;
     }
@@ -353,8 +357,6 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                   </ComeBackQuestion>
                 )}
               </div>
-
-
 
               <div className={'md:grid md:space-y-0 items-center'}>
                 <Stepper activeStep={0} alternativeLabel connector={<CustomStepperConnector/>}>
