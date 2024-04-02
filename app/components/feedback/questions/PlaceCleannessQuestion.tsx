@@ -7,6 +7,7 @@ import {HootersFeedbackProps} from "@/app/validators/hootersFeedbackSchema";
 import Stack from "@mui/material/Stack";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import React from "react";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 interface PlaceCleannessQuestionProps {
 	form: UseFormReturn<HootersFeedbackProps>
@@ -40,8 +41,10 @@ export default function PlaceCleannessQuestion({ form, question, nextStep, prevS
 									<FormControl className='items-center justify-center'>
 										<RadioGroup
 											onValueChange={field.onChange}
-											defaultValue={field.value}
-											onChange={nextStep}
+											onChange={(e) => {
+												field.onChange(e)
+												nextStep()
+											}}
 										>
 											<StartsRatingGroup
 												value={field.value}
@@ -50,6 +53,12 @@ export default function PlaceCleannessQuestion({ form, question, nextStep, prevS
 											/>
 										</RadioGroup>
 									</FormControl>
+
+									<span>
+									<a style={{cursor: "pointer", marginTop: "30px"}} onClick={nextStep}>
+										<ChevronRightIcon className="text-hooters" style={{fontSize: 54, fontWeight: "bolder"}}/>
+									</a>
+								</span>
 								</div>
 
 								<FormMessage/>

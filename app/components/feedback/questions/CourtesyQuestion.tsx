@@ -5,6 +5,8 @@ import {getRatingOptions} from "@/app/constants/form";
 import {UseFormReturn} from "react-hook-form";
 import {HootersFeedbackProps} from "@/app/validators/hootersFeedbackSchema";
 import Stack from "@mui/material/Stack";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import React from "react";
 
 interface CourtesyQuestionProps {
 	form: UseFormReturn<HootersFeedbackProps>
@@ -23,24 +25,34 @@ export default function CourtesyQuestion({ form, question, nextStep, businessCou
 				render={({ field }) => (
 					<FormItem className='md:grid md:space-y-0 md:items-center md:gap-12'>
 						<Stack spacing={2}>
-							<FormLabel className='col-span-3 text-question text-lg' >
-								{ question }
+							<FormLabel className='col-span-3 text-question text-lg'>
+								{question}
 							</FormLabel>
 
-							<FormControl className='items-center justify-center'>
-								<RadioGroup
-									onValueChange={field.onChange}
-									defaultValue={field.value}
-									onChange={nextStep}
-								>
-									<StartsRatingGroup
-										value={field.value}
-										items={getRatingOptions(businessCountry)}
-										className='grid-cols-5'
-									/>
-								</RadioGroup>
-							</FormControl>
-							<FormMessage />
+							<div className='flex items-start justify-center'>
+								<FormControl className='items-center justify-center'>
+									<RadioGroup
+										onValueChange={field.onChange}
+										onChange={(e) => {
+											field.onChange(e)
+											nextStep()
+										}}
+									>
+										<StartsRatingGroup
+											value={field.value}
+											items={getRatingOptions(businessCountry)}
+											className='grid-cols-5'
+										/>
+									</RadioGroup>
+								</FormControl>
+
+								<span>
+									<a style={{cursor: "pointer", marginTop: "30px"}} onClick={nextStep}>
+										<ChevronRightIcon className="text-hooters" style={{fontSize: 54, fontWeight: "bolder"}}/>
+									</a>
+								</span>
+							</div>
+							<FormMessage/>
 						</Stack>
 					</FormItem>
 				)}

@@ -171,6 +171,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
 
 
   async function onSubmit(data: HootersFeedbackProps) {
+    console.log(data)
 
     const { Ambience, Service, Food, ImproveText, ComeBackText } = data
     if (( (Ambience === undefined || !Ambience) &&
@@ -202,7 +203,8 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
     }
 
     try {
-      const updatedData = data
+      const updatedData = data;
+
       updatedData.ImproveText = !comeBack ? ImproveText : ''
       updatedData.ComeBackText = comeBack ? ComeBackText : ''
       const improveOptions = !comeBack ? getImprovements({ Ambience, Service, Food, business }) : []
@@ -284,7 +286,15 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                   <CourtesyQuestion
                     form={form}
                     question={courtesyQuestion}
-                    nextStep={() => {goTo(currentStepIndex+1)}}
+                    nextStep={() => {
+                      if(form.watch('Courtesy') === undefined) {
+                        toast({
+                          title: formErrorMessage,
+                          variant: 'hootersDestructive'
+                        })
+                      }
+                      else goTo(currentStepIndex+1)
+                    }}
                     businessCountry={businessCountry}
                   />
                 )}
@@ -293,7 +303,15 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                   <PlaceCleannessQuestion
                     form={form}
                     question={placeCleannessQuestion}
-                    nextStep={() => {goTo(currentStepIndex+1)}}
+                    nextStep={() => {
+                      if(form.watch('PlaceCleanness') === undefined) {
+                        toast({
+                          title: formErrorMessage,
+                          variant: 'hootersDestructive'
+                        })
+                      }
+                      else goTo(currentStepIndex+1)
+                    }}
                     prevStep={() => {goTo(currentStepIndex-1)}}
                     businessCountry={businessCountry}
                   />
@@ -303,7 +321,16 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                   <QuicknessQuestion
                     form={form}
                     question={quicknessQuestion}
-                    nextStep={() => {goTo(currentStepIndex+1)}}
+                    nextStep={() => {
+                      if(form.watch('Quickness') === undefined) {
+                        console.log('True')
+                        toast({
+                          title: formErrorMessage,
+                          variant: 'hootersDestructive'
+                        })
+                      }
+                      else goTo(currentStepIndex+1)
+                    }}
                     prevStep={() => {goTo(currentStepIndex-1)}}
                     businessCountry={businessCountry}
                   />
@@ -313,7 +340,16 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                   <FoodQualityQuestion
                     form={form}
                     question={foodQualityQuestion}
-                    nextStep={() => {goTo(currentStepIndex+1)}}
+                    nextStep={() => {
+                      if(form.watch('FoodQuality') === undefined) {
+                        console.log('True')
+                        toast({
+                          title: formErrorMessage,
+                          variant: 'hootersDestructive'
+                        })
+                      }
+                      else goTo(currentStepIndex+1)
+                    }}
                     prevStep={() => {goTo(currentStepIndex-1)}}
                     businessCountry={businessCountry}
                   />
@@ -323,7 +359,15 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                   <AmbienceQuestion
                     form={form}
                     question={ambienceQuestion}
-                    nextStep={() => {goTo(currentStepIndex+1)}}
+                    nextStep={() => {
+                      if(form.watch('Climate') === undefined) {
+                        toast({
+                          title: formErrorMessage,
+                          variant: 'hootersDestructive'
+                        })
+                      }
+                      else goTo(currentStepIndex+1)
+                    }}
                     prevStep={() => {goTo(currentStepIndex-1)}}
                     businessCountry={businessCountry}
                   />
@@ -333,7 +377,15 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                   <ExperienceQuestion
                     form={form}
                     question={experienceQuestion}
-                    nextStep={() => {goTo(currentStepIndex+1)}}
+                    nextStep={() => {
+                      if(form.watch('Experience') === undefined) {
+                        toast({
+                          title: formErrorMessage,
+                          variant: 'hootersDestructive'
+                        })
+                      }
+                      else goTo(currentStepIndex+1)
+                    }}
                     prevStep={() => {goTo(currentStepIndex-1)}}
                     businessCountry={businessCountry}
                   />
@@ -372,7 +424,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                     <Step
                       key={index}
                       onClick={() => {
-                        if(index < 7) goTo(index)
+                        if(index < 7 && index <= currentStepIndex) goTo(index)
                       }}
                       active={index === currentStepIndex}
                       completed={index < currentStepIndex}>

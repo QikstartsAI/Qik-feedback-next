@@ -7,6 +7,7 @@ import {HootersFeedbackProps} from "@/app/validators/hootersFeedbackSchema";
 import Stack from "@mui/material/Stack";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import React from "react";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 interface AmbienceQuestionProps {
 	form: UseFormReturn<HootersFeedbackProps>
@@ -31,17 +32,19 @@ export default function AmbienceQuestion({ form, question, nextStep, prevStep, b
 							</FormLabel>
 
 							<div className='flex items-start justify-center'>
-									<span>
-										<a style={{cursor: "pointer", marginTop: "30px"}} onClick={prevStep}>
-											<ChevronLeftIcon className='text-hooters' style={{fontSize: 50}}/>
-										</a>
-									</span>
+								<span>
+									<a style={{cursor: "pointer", marginTop: "30px"}} onClick={prevStep}>
+										<ChevronLeftIcon className='text-hooters' style={{fontSize: 54, fontWeight: 'bolder'}}/>
+									</a>
+								</span>
 
 								<FormControl className='items-center justify-center'>
 									<RadioGroup
 										onValueChange={field.onChange}
-										defaultValue={field.value}
-										onChange={nextStep}
+										onChange={(e) => {
+											field.onChange(e)
+											nextStep()
+										}}
 									>
 										<StartsRatingGroup
 											value={field.value}
@@ -50,6 +53,12 @@ export default function AmbienceQuestion({ form, question, nextStep, prevStep, b
 										/>
 									</RadioGroup>
 								</FormControl>
+
+								<span>
+									<a style={{cursor: "pointer", marginTop: "30px"}} onClick={nextStep}>
+										<ChevronRightIcon className="text-hooters" style={{fontSize: 54, fontWeight: "bolder"}}/>
+									</a>
+								</span>
 							</div>
 							<FormMessage/>
 						</Stack>
