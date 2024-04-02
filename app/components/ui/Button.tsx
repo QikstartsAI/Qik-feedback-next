@@ -19,8 +19,8 @@ const buttonVariants = cva(
           'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
-        hootersPrimary: 'bg-hooters text-primary-foreground shadow font-bold hover:bg-hooters/80 hover:text-colorText',
-        hootersSecondary: 'bg-hooters-foreground text-colorText shadow border border-hooters hover:bg-hooters hover:text-primary-foreground',
+        hootersPrimary: 'bg-hooters text-primary-foreground shadow font-bold',
+        hootersSecondary: 'bg-hooters-foreground text-colorText shadow border border-hooters',
       },
       size: {
         default: 'h-9 px-4 py-2',

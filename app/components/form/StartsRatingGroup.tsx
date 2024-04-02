@@ -32,9 +32,7 @@ function StartsRatingGroup({ items, value, className }: StartsRatingGroupProps &
               "text-center font-normal w-full flex flex-col items-center cursor-pointer space-y-1 text-gray-300 transition-all",
               {
                 "text-hooters": selectedValue >= index + 1,
-                "hover:text-orange-500": selectedValue >= index + 1  || !selectedValue,
                 "text-gray-300": selectedValue < index + 1,
-                "hover:text-gray-400": selectedValue < index + 1,
               }
             )}>
             {Icon !== undefined && <Icon 
@@ -42,9 +40,7 @@ function StartsRatingGroup({ items, value, className }: StartsRatingGroupProps &
                 "w-10 h-10 md:w-12 md:h-12",
                 {
                   "fill-hooters": selectedValue >= index + 1,
-                  "hover:fill-orange-500": selectedValue >= index + 1 || !selectedValue,
                   "fill-gray-300": selectedValue < index + 1,
-                  "hover:fill-gray-400": selectedValue < index + 1
                 }
               )}
             />}

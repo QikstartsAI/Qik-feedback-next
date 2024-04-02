@@ -54,7 +54,7 @@ import { Checkbox } from '../ui/Checkbox'
 import { IconToolsKitchen } from '@tabler/icons-react';
 import { IconUserScan } from '@tabler/icons-react';
 import { IconBuildingStore } from '@tabler/icons-react';
-import {styled, useTheme} from "@mui/system";
+import {fontSize, styled, useTheme} from "@mui/system";
 import CustomStepperIcons from "@/app/components/form/CustomStepperIcons";
 import CustomStepperConnector from "@/app/components/form/CustomStepperConnector";
 
@@ -73,9 +73,8 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
   const businessCountry = business?.Country || 'EC'
   const questionsNumber = 8
 
-  // useRef to know if user clicks at least once the yes or not buttons from line 255 and 266
-  const isRecommendingClicked = React.useRef(null)
-  console.log('isRecommendingClicked', isRecommendingClicked.current)
+  const isRecommendingClicked = React.useRef(null);
+  const isComeBackClicked = React.useRef(null);
 
   const { toast } = useToast()
 
@@ -156,8 +155,6 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
   } = getFormTranslations({businessCountry})
 
   const {
-    nextStep,
-    previousStep,
     goTo,
     currentStepIndex,
   } = useMultistepForm(questionsNumber);
@@ -236,7 +233,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
       })
       return;
     }
-    nextStep()
+    goTo(currentStepIndex+1)
   }
 
   return (
@@ -275,7 +272,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                   <CourtesyQuestion
                     form={form}
                     question={courtesyQuestion}
-                    nextStep={nextStep}
+                    nextStep={() => {goTo(currentStepIndex+1)}}
                     businessCountry={businessCountry}
                   />
                 )}
@@ -284,7 +281,8 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                   <PlaceCleannessQuestion
                     form={form}
                     question={placeCleannessQuestion}
-                    nextStep={nextStep}
+                    nextStep={() => {goTo(currentStepIndex+1)}}
+                    prevStep={() => {goTo(currentStepIndex-1)}}
                     businessCountry={businessCountry}
                   />
                 )}
@@ -293,7 +291,8 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                   <QuicknessQuestion
                     form={form}
                     question={quicknessQuestion}
-                    nextStep={nextStep}
+                    nextStep={() => {goTo(currentStepIndex+1)}}
+                    prevStep={() => {goTo(currentStepIndex-1)}}
                     businessCountry={businessCountry}
                   />
                 )}
@@ -302,7 +301,8 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                   <FoodQualityQuestion
                     form={form}
                     question={foodQualityQuestion}
-                    nextStep={nextStep}
+                    nextStep={() => {goTo(currentStepIndex+1)}}
+                    prevStep={() => {goTo(currentStepIndex-1)}}
                     businessCountry={businessCountry}
                   />
                 )}
@@ -311,7 +311,8 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                   <AmbienceQuestion
                     form={form}
                     question={ambienceQuestion}
-                    nextStep={nextStep}
+                    nextStep={() => {goTo(currentStepIndex+1)}}
+                    prevStep={() => {goTo(currentStepIndex-1)}}
                     businessCountry={businessCountry}
                   />
                 )}
@@ -320,7 +321,8 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                   <ExperienceQuestion
                     form={form}
                     question={experienceQuestion}
-                    nextStep={nextStep}
+                    nextStep={() => {goTo(currentStepIndex+1)}}
+                    prevStep={() => {goTo(currentStepIndex-1)}}
                     businessCountry={businessCountry}
                   />
                 )}
@@ -332,6 +334,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                     yesButton={yesButton}
                     noButton={noButton}
                     handleResponse={handleRecommendingQuestion}
+                    prevStep={() => {goTo(currentStepIndex-1)}}
                     isRecommendingClicked={isRecommendingClicked}
                   >
                   </RecommendingQuestion>
@@ -344,26 +347,25 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                     yesButton={yesButton}
                     noButton={noButton}
                     handleResponse={handleComeBackQuestion}
+                    prevStep={() => {goTo(currentStepIndex-1)}}
+                    isComeBackClicked={isComeBackClicked}
                   >
                   </ComeBackQuestion>
                 )}
               </div>
 
-              {
-                currentStepIndex > 0 && (
-                  <a style={{cursor: "pointer"}} onClick={() => {
-                    previousStep()
-                    console.log('New step: ', currentStepIndex)
-                  }}>
-                    <ChevronLeftIcon fontSize={'large'} color={'error'}></ChevronLeftIcon>
-                  </a>
-                )
-              }
+
 
               <div className={'md:grid md:space-y-0 items-center'}>
                 <Stepper activeStep={0} alternativeLabel connector={<CustomStepperConnector/>}>
                   {steps.map((label, index) => (
-                    <Step  key={label} onClick={() => goTo(index)} active={index === currentStepIndex} completed={index < currentStepIndex}>
+                    <Step
+                      key={label}
+                      onClick={() => {
+                        if(index < 7) goTo(index)
+                      }}
+                      active={index === currentStepIndex}
+                      completed={index < currentStepIndex}>
                       <StepLabel StepIconComponent={CustomStepperIcons}>{label}</StepLabel>
                     </Step>
                   ))}
