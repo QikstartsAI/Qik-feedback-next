@@ -457,7 +457,8 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                             defaultValue={field.value}
                             className=''
                           >
-                            <CustomRadioGroup
+                            <CustomRadioGroup 
+                              className='sm:grid-cols-5'
                               value={field.value}
                               items={
                                 getKnownOrigins(business).concat(
@@ -493,7 +494,11 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                             defaultValue={field.value}
                             className=''
                           >
-                            <CustomRadioGroup value={field.value} items={getCustomersQuantity(business)} />
+                            <CustomRadioGroup 
+                              className='sm:grid-cols-5' 
+                              value={field.value} 
+                              items={getCustomersQuantity(business)} 
+                            />
                           </RadioGroup>
                         </FormControl>
                         <FormMessage />
@@ -520,7 +525,11 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                             defaultValue={field.value}
                             className=''
                           >
-                            <CustomRadioGroup value={field.value} items={getAverageTicket(business)} />
+                            <CustomRadioGroup 
+                              className='sm:grid-cols-5' 
+                              value={field.value} 
+                              items={getAverageTicket(business)} 
+                            />
                           </RadioGroup>
                         </FormControl>
                         <FormMessage />
