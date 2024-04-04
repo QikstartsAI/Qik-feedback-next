@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import Footer from './components/feedback/Footer';
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,8 +21,9 @@ export default function RootLayout({
       <link rel="icon" type="image/svg+xml" href="/qik.svg" />
       <body className={inter.className}>
         {children}
-        <Footer/>
+        <Footer />
       </body>
+      <GoogleAnalytics gaId="G-CP0EYKVVVR" />
     </html>
   )
 }

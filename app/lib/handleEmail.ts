@@ -32,7 +32,7 @@ export const findIsCustomerInBusiness = async (email: string, businessId: string
 export const findCustomerFeedbackDataInBusiness = async (email: string, businessId: string) => {
   const db = getFirebase().db
   const customerDocRef = doc(db, CUSTOMERS_COLLECTION_NAME || '', email, 'business', businessId)
-  return (await getDoc(customerDocRef)).data() as {customerNumberOfVisits: number}
+  return (await getDoc(customerDocRef)).data() as {customerNumberOfVisits: number, userApprovesLoyalty: boolean}
 }
 
 

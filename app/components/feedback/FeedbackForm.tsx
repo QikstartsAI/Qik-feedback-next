@@ -84,7 +84,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
 
   const [customerData, setCustomerData] = useState<Customer | null>();
   const [customerDataInBusiness, setCustomerDataInBusiness] = useState<Customer | null>();
-
+  const [userApprovesLoyalty, setUserApprovesLoyalty] = useState<boolean>(false)
   const businessId = searchParams.get('id')
   const branchId = searchParams.get('sucursal')
   const waiterId = searchParams.get('mesero')
@@ -138,6 +138,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
   }
 
   async function onSubmit(data: FeedbackProps) {
+    console.log('aaa')
     setRating(data.Rating)
     setCustomerName(data.FullName)
     const { Ambience, Service, Food, ImproveText } = data
@@ -334,10 +335,12 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                             placeholder='Ej: juan@gmail.com'
                             {...field}
                             type='email'
-                            onChange={async (e) => {
+                            onChange={async (e: { target: { value: any } }) => {
                               field.onChange(e)
                               const email = e.target.value
                               if (email) {
+                                const userApprovesLoyalty = (await findCustomerFeedbackDataInBusiness(email, businessId || '')).userApprovesLoyalty
+                                setUserApprovesLoyalty(userApprovesLoyalty)
                                 setCustomerData(await findCustomerDataByEmail(email))
                                 setCustomerDataInBusiness(await getCustomerDataInBusiness(email, businessId, branchId, waiterId))
                                 const lastFeedbackFilledInBusiness = customerDataInBusiness?.lastFeedbackFilled
@@ -363,8 +366,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                 </div>
                 {
 
-                  (customerData && !Object.hasOwn(customerData, 'userApprovesLoyalty')) ||
-                  (customerData && !customerDataInBusiness?.userApprovesLoyalty && customerType === 'frequent')
+                  (customerData && !userApprovesLoyalty && customerType === 'frequent')
                   || (!customerData && watchEmail.includes('@')) ? (
                     <RewardsApproval
                       handleUserApprovesLoyalty={handleUserApprovesLoyalty}
