@@ -55,6 +55,7 @@ import GoogleReviewMessage from '../form/GoogleReviewMessage'
 import { lastFeedbackFilledIsGreaterThanOneDay } from '@/app/lib/utils'
 import { getCustomerDataInBusiness } from '@/app/lib/handleEmail'
 import { useSearchParams } from 'next/navigation'
+import loyaltyBirthdayService from "@/app/services/loyaltyBirthdayService";
 
 interface FeedbackFormProps {
   business: Business | null
@@ -211,6 +212,13 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
   }
 
   useEffect(() => {
+    console.log('Getting birthday data from business')
+    loyaltyBirthdayService.getDataFromBusiness(business).then(birthdayConfig => {
+      console.log(birthdayConfig.data())
+
+    });
+
+
     if (customerData) {
       console.log(customerData);
       form.setValue('FullName', customerData.name);
