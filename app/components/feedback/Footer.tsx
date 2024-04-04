@@ -8,21 +8,12 @@ function Footer () {
             href='https://qikstarts.com/' target='_blank' rel='noopener noreferrer'
           >
             <Image
-              src='/qik.svg'
-              className='w-10 sm:w-12'
+              src='/qikstarts.png'
               alt='Qik starts'
-              width={155}
-              height={62}
+              width={220}
+              height={127}
             />
           </a>
-          <span className='text-xs text-center'>Powered by</span>
-          <Image
-            src='/google.svg'
-            alt='logo google'
-            className='w-14 h-6'
-            width={56}
-            height={24}
-            />
         </div>
       </footer>
     )
