@@ -327,7 +327,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                             placeholder='Ej: juan@gmail.com'
                             {...field}
                             type='email'
-                            onChange={async (e) => {
+                            onChange={async (e: { target: { value: any } }) => {
                               field.onChange(e)
                               const email = e.target.value
                               if (email) {
