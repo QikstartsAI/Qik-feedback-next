@@ -1,61 +1,55 @@
 /* eslint-disable react/jsx-handler-names */
-import { Button } from '../ui/Button'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '../ui/Form'
-import {
-  Card,
-  CardContent,
-  CardFooter
-} from '../ui/Card'
+import {Button} from '../ui/Button'
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from '../ui/Form'
+import {Card, CardContent, CardFooter} from '../ui/Card'
 
-import { currencyPrices } from '@/app/constants/prices'
-import { phoneNumbersPlaceholders } from '@/app/constants/placeholders'
+import {currencyPrices} from '@/app/constants/prices'
+import {phoneNumbersPlaceholders} from '@/app/constants/placeholders'
 
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 
-import { Input } from '../ui/Input'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { cn } from '@/app/lib/utils'
-import { IconToolsKitchen, IconBuildingStore, IconUsers } from '@tabler/icons-react'
-import { useToast } from '@/app/hooks/useToast'
-import { FeedbackProps, feedbackSchema } from '@/app/validators/feedbackSchema'
-import { RadioGroup } from '../ui/RadioGroup'
-import { Origins, Ratings } from '@/app/types/feedback'
+import {Input} from '../ui/Input'
+import {useForm} from 'react-hook-form'
+import {zodResolver} from '@hookform/resolvers/zod'
+import {cn, lastFeedbackFilledIsGreaterThanOneDay} from '@/app/lib/utils'
+import {IconBuildingStore, IconToolsKitchen, IconUsers} from '@tabler/icons-react'
+import {useToast} from '@/app/hooks/useToast'
+import {FeedbackProps, feedbackSchema} from '@/app/validators/feedbackSchema'
+import {RadioGroup} from '../ui/RadioGroup'
+import {Origins, Ratings} from '@/app/types/feedback'
 import handleSubmitFeedback from '@/app/lib/handleSubmit'
-import { findCustomerDataByEmail, findCustomerFeedbackDataInBusiness, findIsCustomerInBusiness } from '@/app/lib/handleEmail'
-import { Checkbox } from '../ui/Checkbox'
-import { Textarea } from '../ui/TextArea'
-import { Business } from '@/app/types/business'
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import {
+  findCustomerDataByEmail,
+  findCustomerFeedbackDataInBusiness,
+  getCustomerDataInBusiness
+} from '@/app/lib/handleEmail'
+import {Checkbox} from '../ui/Checkbox'
+import {Textarea} from '../ui/TextArea'
+import {Business} from '@/app/types/business'
+import {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react'
 import CustomRadioGroup from '../form/CustomRadioGroup'
 import Modal from '../ui/Modal'
 import {
-  getCustomersQuantity,
-  getKnownOrigins,
   getAverageTicket,
+  getCustomersQuantity,
   getImprovements,
-  getOthersText,
+  getKnownOrigins,
+  getOriginLabel,
   getOtherOptions,
   getOtherOriginValues,
-  getOriginLabel
+  getOthersText
 } from '@/app/constants/form'
 import RatingRadioGroup from '../form/RatingRadioGroup'
 import RewardsApproval from '../form/RewardsApproval';
-import { SelectedOption } from '@/app/types/general'
-import { Customer, CustomerRole } from '@/app/types/customer'
+import {SelectedOption} from '@/app/types/general'
+import {Customer, CustomerRole} from '@/app/types/customer'
 import GoogleReviewMessage from '../form/GoogleReviewMessage'
-import { lastFeedbackFilledIsGreaterThanOneDay } from '@/app/lib/utils'
-import { getCustomerDataInBusiness } from '@/app/lib/handleEmail'
-import { useSearchParams } from 'next/navigation'
-import loyaltyBirthdayService from "@/app/services/loyaltyBirthdayService";
+import {useSearchParams} from 'next/navigation'
+import loyaltyService from "@/app/services/loyaltyService";
+import {DocumentData, DocumentSnapshot} from 'firebase/firestore'
+import {BirthdayOption} from "@/app/types/loyalty";
+
 
 interface FeedbackFormProps {
   business: Business | null
@@ -89,6 +83,9 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
   const branchId = searchParams.get('sucursal')
   const waiterId = searchParams.get('mesero')
 
+  // Loyalty birthday benefits
+  const hasUserBirthdayBenefits = useRef<boolean>(false);
+
   const { toast } = useToast()
 
   const form = useForm<FeedbackProps>({
@@ -117,10 +114,6 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
     }
   })
 
-  const resetForm = () => {
-    form.reset()
-  }
-
   const { watch } = form
   const watchRating = watch('Rating')
   const watchEmail = watch('Email')
@@ -133,12 +126,103 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
   const waiterName = business?.Waiter?.name || ''
   const attendantName = waiterName ? waiterName : 'Matriz';
 
+  useEffect(() => {
+    if (customerData) {
+      form.setValue('FullName', customerData.name);
+      form.setValue('PhoneNumber', customerData.phoneNumber || '');
+      form.setValue('BirthdayDate', customerData.birthdayDate || '');
+      setIsChecked(customerData.acceptPromotions || false);
+      if (customerData.userApprovesLoyalty) {
+        setIsRewardButtonClicked(true)
+      }
+    }
+  }, [customerData, form]);
+
+  const resetForm = () => {
+    form.reset()
+  }
+
   const handleRedirect = () => {
     window.location.replace(business?.MapsUrl || '')
   }
 
+  const handleOthersSelecteOption = (option: SelectedOption) => {
+    form.setValue("Origin", option?.value as Origins)
+    setSelectedOtherOption(option)
+  }
+
+  const handleUserApprovesLoyalty = (value: boolean) => {
+    form.setValue('UserApprovesLoyalty', value)
+    setShowLoyaltyWelcomeModal(value)
+  }
+
+  const handleEmailField = async (email: string) => {
+    if (email && customerType === 'frequent') {
+      setCustomerData(await findCustomerDataByEmail(email))
+      setCustomerDataInBusiness(await getCustomerDataInBusiness(email, businessId, branchId, waiterId))
+      const lastFeedbackFilledInBusiness = customerDataInBusiness?.lastFeedbackFilled
+      const lastFeedbackGreaterThanOneDay = lastFeedbackFilledIsGreaterThanOneDay(lastFeedbackFilledInBusiness)
+      setIsCustomerInBusiness(customerDataInBusiness ? true : false)
+      setShowLastFeedbackFilledModal(lastFeedbackGreaterThanOneDay)
+      setIsLastFeedbackMoreThanOneDay(lastFeedbackGreaterThanOneDay)
+
+      if(customerData) {
+        const userApprovesLoyalty = (await findCustomerFeedbackDataInBusiness(email, businessId || '')).userApprovesLoyalty
+        setUserApprovesLoyalty(userApprovesLoyalty)
+        console.log(customerData)
+        form.setValue('FullName', customerData.name)
+        form.setValue('PhoneNumber', customerData.phoneNumber || '')
+        form.setValue('BirthdayDate', customerData.birthdayDate || '')
+        setIsChecked(customerData.acceptPromotions || false)
+      }
+    }
+  }
+
+  const verifyBirthdayBenefit = (userBirthday?: string, birthdayConfig?: DocumentData) => {
+    if(!userBirthday) return;
+    if(!birthdayConfig) return;
+
+    const birthdayOption = birthdayConfig?.birthdayOption;
+    const today = new Date();
+    const userBirthdayDate = new Date(userBirthday);
+
+    if (today.getMonth() === userBirthdayDate.getMonth() && today.getDay() === userBirthdayDate.getDay()) {
+      hasUserBirthdayBenefits.current = true;
+      return;
+    }
+    else {
+      userBirthdayDate.setFullYear(today.getFullYear());
+      const difference = today.getTime() - userBirthdayDate.getTime();
+      const differenceDays = Math.floor(difference / (1000 * 60 * 60 * 24));
+
+      if(birthdayOption === BirthdayOption.onTheDayAndthirtyDaysAfter && differenceDays <= 30) {
+        hasUserBirthdayBenefits.current = true;
+        return;
+      }
+      else if(birthdayOption === BirthdayOption.upToSixtyDaysAfter && differenceDays <= 60) {
+        hasUserBirthdayBenefits.current = true;
+        return;
+      }
+    }
+  }
+
   async function onSubmit(data: FeedbackProps) {
-    console.log('aaa')
+    console.log(data)
+    console.log('User approves loyalty? ', userApprovesLoyalty);
+
+    if(userApprovesLoyalty) {
+      loyaltyService.getBirthdayDataFromBusiness(business).then(docSnap => {
+        if(docSnap) {
+          verifyBirthdayBenefit(data.BirthdayDate, docSnap?.data());
+          console.log('Has birthday benefits? ', hasUserBirthdayBenefits.current)
+
+          if(hasUserBirthdayBenefits) {
+            console.log('Birthday benefits: ', docSnap?.data());
+          }
+        }
+      });
+    }
+
     setRating(data.Rating)
     setCustomerName(data.FullName)
     const { Ambience, Service, Food, ImproveText } = data
@@ -182,6 +266,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
         customerNumberOfVisits = 1
         feedbackNumberOfVisit = 1
       }
+
       await handleSubmitFeedback(updatedData, improveOptions, customerType, attendantName, customerNumberOfVisits, feedbackNumberOfVisit)
       if ((data.Rating === Ratings.Bueno || data.Rating === Ratings.Excelente) && business?.MapsUrl) {
         handleRedirect()
@@ -201,36 +286,6 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
       setIsSubmitted(true)
     }
   }
-
-  const handleOthersSelecteOption = (option: SelectedOption) => {
-    form.setValue("Origin", option?.value as Origins)
-    setSelectedOtherOption(option)
-  }
-
-  const handleUserApprovesLoyalty = (value: boolean) => {
-    form.setValue('UserApprovesLoyalty', value)
-    setShowLoyaltyWelcomeModal(value)
-  }
-
-  useEffect(() => {
-    console.log('Getting birthday data from business')
-    loyaltyBirthdayService.getDataFromBusiness(business).then(birthdayConfig => {
-      console.log(birthdayConfig.data())
-
-    });
-
-
-    if (customerData) {
-      console.log(customerData);
-      form.setValue('FullName', customerData.name);
-      form.setValue('PhoneNumber', customerData.phoneNumber || '');
-      form.setValue('BirthdayDate', customerData.birthdayDate || '');
-      setIsChecked(customerData.acceptPromotions || false);
-      if (customerData.userApprovesLoyalty) {
-        setIsRewardButtonClicked(true)
-      }
-    }
-  }, [customerData, form]);
 
   return (
     <>
@@ -338,24 +393,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                             onChange={async (e: { target: { value: any } }) => {
                               field.onChange(e)
                               const email = e.target.value
-                              if (email) {
-                                const userApprovesLoyalty = (await findCustomerFeedbackDataInBusiness(email, businessId || '')).userApprovesLoyalty
-                                setUserApprovesLoyalty(userApprovesLoyalty)
-                                setCustomerData(await findCustomerDataByEmail(email))
-                                setCustomerDataInBusiness(await getCustomerDataInBusiness(email, businessId, branchId, waiterId))
-                                const lastFeedbackFilledInBusiness = customerDataInBusiness?.lastFeedbackFilled
-                                const lastFeedbackGreaterThanOneDay = lastFeedbackFilledIsGreaterThanOneDay(lastFeedbackFilledInBusiness)
-                                setIsCustomerInBusiness(customerDataInBusiness ? true : false)
-                                setShowLastFeedbackFilledModal(lastFeedbackGreaterThanOneDay)
-                                setIsLastFeedbackMoreThanOneDay(lastFeedbackGreaterThanOneDay)
-                                if (customerData) {
-                                  console.log(customerData)
-                                  form.setValue('FullName', customerData.name)
-                                  form.setValue('PhoneNumber', customerData.phoneNumber || '')
-                                  form.setValue('BirthdayDate', customerData.birthdayDate || '')
-                                  setIsChecked(customerData.acceptPromotions || false)
-                                }
-                              }
+                              await handleEmailField(email)
                             }}
                           />
                         </FormControl>
