@@ -6,6 +6,7 @@ import { Textarea } from "../../ui/TextArea"
 import { Button } from "../../ui/Button"
 import { useState } from "react"
 import { CardFooter } from "../../ui/Card"
+import Image from "next/image"
 
 interface SimpleContactInfoProps {
   form: UseFormReturn<SimpleFeedbackProps>
@@ -17,7 +18,16 @@ const SimpleContactInfo = ({ form }: SimpleContactInfoProps) => {
   return (
     <div className="p-10">
       <h2 className="text-3xl font-semibold text-gray-700 text-center mb-5">
-        We value your opinion 😍, it will take you less than
+        We value your opinion {' '}
+        <span className="inline-flex items-center space-x-4">
+          <Image
+              src='/simple-excelente.webp'
+              alt='Excellent'
+              className='w-8 h-8'
+              width={32}
+              height={32}
+          />
+        </span>, it will take you less than
         <span className="text-primary"> 5 seconds</span>
       </h2>
       <FormField
@@ -64,7 +74,7 @@ const SimpleContactInfo = ({ form }: SimpleContactInfoProps) => {
         render={({ field }) => (
           <FormItem className="mt-4">
             <FormLabel className="text-xl font-semibold">
-              Share details about your experience in this place <span
+              Share details about your experience <span
                 className="text-xs text-gray-400 font-normal"
               >
                 (mandatory)
@@ -104,16 +114,16 @@ const SimpleContactInfo = ({ form }: SimpleContactInfoProps) => {
                   checked={isTermsChecked}
                 />
                 <small className='text-gray-500'>
-                  By pressing &quot;Submit&quot;, I declare that I accept the
+                  By pressing &quot;Submit&quot;, I declare that I accept the {' '}
                   <a
                     className='text-primary hover:underline'
                     href='https://qikstarts.com/terms-of-service'
                     rel='noopener noreferrer'
                     target='_blank'
                   >
-                    Terms and Cons
+                    Terms and Cons {' '}
                   </a>
-                  and the
+                  and the {' '}
                   <a className='text-primary hover:underline' href='https://qikstarts.com/privacy-policy' rel='noopener noreferrer' target='_blank'>
                     Privacy Policies
                   </a>

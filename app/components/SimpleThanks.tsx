@@ -1,5 +1,5 @@
 const SimpleThanks = () => {
-  setTimeout( () => {window.location.reload()}, 2000);
+  setTimeout( () => {window.location.reload()}, 5000);
 
   return (
     <div className={'w-full flex flex-col items-center justify-center h-screen bg-primary px-10'}>

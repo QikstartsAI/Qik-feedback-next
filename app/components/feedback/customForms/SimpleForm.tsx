@@ -61,7 +61,8 @@ const SimpleForm = ({ business, setIsSubmitted }: SimpleFormProps) => {
         data,
         businessId || '',
         branchId || '',
-        waiterId || ''
+        waiterId || '',
+        isQr ? true : false
       )
       if (isQr && ((data.Rating === Ratings.Bueno || data.Rating === Ratings.Excelente))) {
         handleRedirect()
