@@ -1,7 +1,7 @@
 import React from 'react'
-import { Button } from '../ui/Button';
+import { Button } from '../../ui/Button';
 import { Business } from '@/app/types/business';
-import ImageRounded from '../ui/ImageRounded';
+import ImageRounded from '../../ui/ImageRounded';
 import { CustomerRole } from '@/app/types/customer';
 
 type HootersCustomIntroProps = {

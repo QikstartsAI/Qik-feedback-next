@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-handler-names */
 'use client'
 
-import { Button } from '../ui/Button'
+import { Button } from '../../ui/Button'
 import {
   Form,
   FormControl,
@@ -9,10 +9,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from '../ui/Form'
+} from '../../ui/Form'
 import {
   CardFooter,
-} from '../ui/Card'
+} from '../../ui/Card'
 
 import 'react-phone-number-input/style.css'
 
@@ -40,12 +40,12 @@ import QuicknessQuestion from "@/app/components/feedback/questions/QuicknessQues
 import FoodQualityQuestion from "@/app/components/feedback/questions/FoodQualityQuestion";
 import AmbienceQuestion from "@/app/components/feedback/questions/AmbienceQuestion";
 import CourtesyQuestion from "@/app/components/feedback/questions/CourtesyQuestion";
-import RecommendingQuestion from './questions/RecommendingQuestion'
+import RecommendingQuestion from '../questions/RecommendingQuestion'
 import ExperienceQuestion from "@/app/components/feedback/questions/ExperienceQuestion";
 import ComeBackQuestion from "@/app/components/feedback/questions/ComeBackQuestion";
 import {Step, StepLabel, Stepper} from "@mui/material";
 import {Textarea} from "@/app/components/ui/TextArea";
-import { Checkbox } from '../ui/Checkbox'
+import { Checkbox } from '../../ui/Checkbox'
 import { IconToolsKitchen } from '@tabler/icons-react';
 import { IconUserScan } from '@tabler/icons-react';
 import { IconBuildingStore } from '@tabler/icons-react';
@@ -171,8 +171,6 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
 
 
   async function onSubmit(data: HootersFeedbackProps) {
-    console.log(data)
-
     const { Ambience, Service, Food, ImproveText, ComeBackText } = data
     if (( (Ambience === undefined || !Ambience) &&
           (Service === undefined || !Service) &&
@@ -323,7 +321,6 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                     question={quicknessQuestion}
                     nextStep={() => {
                       if(form.watch('Quickness') === undefined) {
-                        console.log('True')
                         toast({
                           title: formErrorMessage,
                           variant: 'hootersDestructive'
@@ -342,7 +339,6 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                     question={foodQualityQuestion}
                     nextStep={() => {
                       if(form.watch('FoodQuality') === undefined) {
-                        console.log('True')
                         toast({
                           title: formErrorMessage,
                           variant: 'hootersDestructive'
