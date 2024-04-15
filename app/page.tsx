@@ -13,11 +13,11 @@ import HootersCustomIntro from "@/app/components/feedback/customForms/HootersCus
 import HootersThanks from "@/app/components/HootersThanks";
 import SimpleForm from './components/feedback/customForms/SimpleForm';
 import SimpleThanks from './components/SimpleThanks';
+import { DSC_SOLUTIONS_ID } from './constants/general';
 
 const Hero = lazy(() => import('./components/Hero'))
 const FeedbackForm = lazy(() => import('./components/feedback/FeedbackForm'))
 const CUSTOM_HOOTERS_FORM = 'hooters'
-const DSC_SOLUTIONS_ID = 'dsc-solutions'
 
 export default function Home() {
   const { business, loading, businessId } = useGetBusinessData()
