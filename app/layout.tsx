@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import Footer from './components/feedback/Footer';
 import { GoogleAnalytics } from '@next/third-parties/google'
+import dynamic from 'next/dynamic'
 
 const inter = Inter({ subsets: ['latin'] })
+
+const DynamicFooter = dynamic(() => import('./components/feedback/Footer'), { ssr: false });
 
 export const metadata: Metadata = {
   title: 'Qik feedback',
@@ -21,7 +23,7 @@ export default function RootLayout({
       <link rel="icon" type="image/svg+xml" href="/qik.svg" />
       <body className={inter.className}>
         {children}
-        <Footer />
+        <DynamicFooter />
       </body>
       <GoogleAnalytics gaId="G-CP0EYKVVVR" />
     </html>

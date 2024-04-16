@@ -8,13 +8,16 @@ import Thanks from './components/Thanks'
 import { Toaster } from './components/ui/Toaster'
 import Intro from './components/feedback/Intro';
 import { CustomerRole } from './types/customer';
-import HootersCustomForm from './components/feedback/HootersCustomForm';
-import HootersCustomIntro from "@/app/components/feedback/HootersCustomIntro";
+import HootersCustomForm from './components/feedback/customForms/HootersCustomForm';
+import HootersCustomIntro from "@/app/components/feedback/customForms/HootersCustomIntro";
 import HootersThanks from "@/app/components/HootersThanks";
+import SimpleForm from './components/feedback/customForms/SimpleForm';
+import SimpleThanks from './components/SimpleThanks';
+import { DSC_SOLUTIONS_ID } from './constants/general';
 
 const Hero = lazy(() => import('./components/Hero'))
 const FeedbackForm = lazy(() => import('./components/feedback/FeedbackForm'))
-const CUSTOM_HOOTERS_FORM = process.env.NEXT_PUBLIC_HOOTERS_FORM || 'hooters'
+const CUSTOM_HOOTERS_FORM = 'hooters'
 
 export default function Home() {
   const { business, loading, businessId } = useGetBusinessData()
@@ -25,18 +28,22 @@ export default function Home() {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [rating, setRating] = useState('')
   const isHootersForm = businessId === CUSTOM_HOOTERS_FORM
+  const isDscSolutions = businessId === DSC_SOLUTIONS_ID
   const [customerName, setCustomerName] = useState('')
 
   if (isSubmitted && rating !== '4' && rating !== '5') {
-    if(isHootersForm) {
+    if (isHootersForm) {
       return <HootersThanks businessCountry={business?.Country || 'EC'} />
+    }
+    if (isDscSolutions) {
+      return <SimpleThanks />
     }
 
     else
       return <Thanks
-      businessCountry={business?.Country || 'EC'}
-      businessName={business?.Name || ''}
-      customerName={customerName} />
+        businessCountry={business?.Country || 'EC'}
+        businessName={business?.Name || ''}
+        customerName={customerName} />
   }
 
   return (
@@ -47,41 +54,53 @@ export default function Home() {
             <Loader />
           )
           : (
-              <>
-                <Hero business={business} />
-                {!customerType && (
-                  isHootersForm ? (
-                    <HootersCustomIntro
-                      business={business}
-                      toogleCustomerType={toggleCustomer}
-                    />
-                  ) : (
-                    <Intro
-                      business={business}
-                      toogleCustomerType={toggleCustomer}
-                    />
-                  )
-                )}
-                {customerType && (
-                  isHootersForm ? (
-                    <HootersCustomForm
-                      business={business}
-                      setIsSubmitted={setIsSubmitted}
-                      setRating={setRating}
-                      customerType={customerType}
-                    />
-                  ) : (
-                    <FeedbackForm
-                      business={business}
-                      setIsSubmitted={setIsSubmitted}
-                      setRating={setRating}
-                      customerType={customerType}
-                      setCustomerName={setCustomerName}
-                    />
-                  )  
-                )}
-              </>
-            )
+            <>
+              {
+                !isDscSolutions ? (
+                  <>
+                    <Hero business={business} />
+                    {!customerType && (
+                      isHootersForm ? (
+                        <HootersCustomIntro
+                          business={business}
+                          toogleCustomerType={toggleCustomer}
+                        />
+                      ) : (
+                        <Intro
+                          business={business}
+                          toogleCustomerType={toggleCustomer}
+                        />
+                      )
+                    )}
+                    {customerType && (
+                      isHootersForm ? (
+                        <HootersCustomForm
+                          business={business}
+                          setIsSubmitted={setIsSubmitted}
+                          setRating={setRating}
+                          customerType={customerType}
+                        />
+                      ) : (
+                        <FeedbackForm
+                          business={business}
+                          setIsSubmitted={setIsSubmitted}
+                          setRating={setRating}
+                          customerType={customerType}
+                          setCustomerName={setCustomerName}
+                        />
+                      )
+                    )}
+                  </>
+                ) : (
+                  <SimpleForm
+                    business={business}
+                    setIsSubmitted={setIsSubmitted}
+                    setRating={setRating}
+                  />
+                )
+              }
+            </>
+          )
       }
       <Toaster />
     </div>
