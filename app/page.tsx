@@ -92,7 +92,11 @@ export default function Home() {
                     )}
                   </>
                 ) : (
-                  <SimpleForm business={business} setIsSubmitted={setIsSubmitted}/>
+                  <SimpleForm
+                    business={business}
+                    setIsSubmitted={setIsSubmitted}
+                    setRating={setRating}
+                  />
                 )
               }
             </>

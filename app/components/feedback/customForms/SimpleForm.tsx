@@ -21,9 +21,10 @@ import { Ratings } from "@/app/types/feedback"
 interface SimpleFormProps {
   business: Business | null
   setIsSubmitted: Dispatch<SetStateAction<boolean>>
+  setRating: Dispatch<SetStateAction<string>>
 }
 
-const SimpleForm = ({ business, setIsSubmitted }: SimpleFormProps) => {
+const SimpleForm = ({ business, setIsSubmitted, setRating }: SimpleFormProps) => {
   const [showMoreFeedbackConfirmation, setShowMoreFeedbackConfirmation] = useState<boolean>(false)
   const [showContactInfo, setShowContactInfo] = useState<boolean>(false)
 
@@ -57,6 +58,7 @@ const SimpleForm = ({ business, setIsSubmitted }: SimpleFormProps) => {
 
   const onSubmit = async (data: SimpleFeedbackProps) => {
     try {
+      setRating(data.Rating)
       await handleSimpleFeedbackSubmit(
         data,
         businessId || '',
@@ -67,11 +69,11 @@ const SimpleForm = ({ business, setIsSubmitted }: SimpleFormProps) => {
       if (isQr && ((data.Rating === Ratings.Bueno || data.Rating === Ratings.Excelente))) {
         handleRedirect()
       }
+      setIsSubmitted(true)
     } catch (error) {
       console.log(error)
     } finally {
       form.reset()
-      setIsSubmitted(true)
     }
   }
 
