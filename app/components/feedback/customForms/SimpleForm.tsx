@@ -22,9 +22,10 @@ interface SimpleFormProps {
   business: Business | null
   setIsSubmitted: Dispatch<SetStateAction<boolean>>
   setRating: Dispatch<SetStateAction<string>>
+  setIsQr: Dispatch<SetStateAction<boolean>>
 }
 
-const SimpleForm = ({ business, setIsSubmitted, setRating }: SimpleFormProps) => {
+const SimpleForm = ({ business, setIsSubmitted, setRating, setIsQr }: SimpleFormProps) => {
   const [showMoreFeedbackConfirmation, setShowMoreFeedbackConfirmation] = useState<boolean>(false)
   const [showContactInfo, setShowContactInfo] = useState<boolean>(false)
 
@@ -67,6 +68,7 @@ const SimpleForm = ({ business, setIsSubmitted, setRating }: SimpleFormProps) =>
         isQr ? true : false
       )
       if (isQr && ((data.Rating === Ratings.Bueno || data.Rating === Ratings.Excelente))) {
+        setIsQr(true)
         handleRedirect()
       }
       setIsSubmitted(true)

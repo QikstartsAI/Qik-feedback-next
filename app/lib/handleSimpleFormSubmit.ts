@@ -18,7 +18,7 @@ const handleSimpleFeedbackSubmit = async (
   waiterId: string,
   isQr: boolean
 ) => {
-  const feedbaackData = {
+  const feedbackData = {
     CreationDate: getTimesTampFromDate(new Date()),
     FullName,
     Email,
@@ -30,19 +30,18 @@ const handleSimpleFeedbackSubmit = async (
   }
 
   try {
-    const waiterFeedbackRef = collection(
-      getFirebase().db,
-      COLLECTION_NAME || '',
-      businessId || '',
-      'sucursales',
-      branchId || '',
-      'meseros',
-      waiterId || '',
-      'customers',
-      Email ? Email : uuidv4(),
-      'feedbacks'
-    )
-    await addDoc(waiterFeedbackRef, feedbaackData)
+    let customerDocRef;
+    if (Email) {
+      customerDocRef = doc(collection(getFirebase().db, COLLECTION_NAME || '', businessId || '', 'sucursales', branchId || '', 'meseros', waiterId || '', 'customers'), Email);
+      await setDoc(customerDocRef, { FullName, Email });
+    } else {
+      const customerId = uuidv4();
+      customerDocRef = doc(collection(getFirebase().db, COLLECTION_NAME || '', businessId || '', 'sucursales', branchId || '', 'meseros', waiterId || '', 'customers'), customerId);
+      await setDoc(customerDocRef, { FullName, Email });
+    }
+
+    const feedbacksCollectionRef = collection(customerDocRef, 'feedbacks');
+    await addDoc(feedbacksCollectionRef, feedbackData);
   } catch (error) {
     console.log(error)
   }
