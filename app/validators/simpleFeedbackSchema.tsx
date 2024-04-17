@@ -16,7 +16,7 @@ export const simpleFeedbackSchema = () =>
       required_error: 'Please tell us how were we today'
     }),
     ProvideMoreFeedback: z.boolean(),
-    ExperienceText: z
+    ImproveText: z
       .string()
       .max(
         500,
@@ -31,11 +31,11 @@ export const simpleFeedbackSchema = () =>
     AcceptTerms: z.boolean()
   })
     .superRefine((values, context) => {
-      if (values.ProvideMoreFeedback && !values.ExperienceText) {
+      if (values.ProvideMoreFeedback && !values.ImproveText) {
         context.addIssue({
           code: z.ZodIssueCode.custom,
           message: 'Please tell us your experience',
-          path: ['ExperienceText']
+          path: ['ImproveText']
         })
       }
     })

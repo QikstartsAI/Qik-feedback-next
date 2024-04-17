@@ -47,7 +47,7 @@ const SimpleForm = ({ business, setIsSubmitted, setRating, setIsQr }: SimpleForm
       Email: '',
       Rating: undefined,
       ProvideMoreFeedback: false,
-      ExperienceText: '',
+      ImproveText: '',
       AcceptTerms: true,
       StartTime: new Date(),
     }

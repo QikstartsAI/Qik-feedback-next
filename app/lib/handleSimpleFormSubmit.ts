@@ -10,7 +10,7 @@ const handleSimpleFeedbackSubmit = async (
     Email,
     Rating,
     ProvideMoreFeedback,
-    ExperienceText,
+    ImproveText,
     StartTime
   }: SimpleFeedbackProps,
   businessId: string,
@@ -24,7 +24,7 @@ const handleSimpleFeedbackSubmit = async (
     Email,
     Rating: parseInt(Rating),
     ProvideMoreFeedback,
-    ExperienceText,
+    ImproveText,
     StartTime: getTimesTampFromDate(StartTime),
     FromQr: isQr
   }

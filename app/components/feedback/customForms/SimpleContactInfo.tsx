@@ -70,7 +70,7 @@ const SimpleContactInfo = ({ form }: SimpleContactInfoProps) => {
       />
       <FormField
         control={form.control}
-        name='ExperienceText'
+        name='ImproveText'
         render={({ field }) => (
           <FormItem className="mt-4">
             <FormLabel className="text-xl font-semibold">
