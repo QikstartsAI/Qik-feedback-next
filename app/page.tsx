@@ -26,12 +26,13 @@ export default function Home() {
     setCustomerType(customerType)
   }
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isQr, setIsQr] = useState(false)
   const [rating, setRating] = useState('')
   const isHootersForm = businessId === CUSTOM_HOOTERS_FORM
   const isDscSolutions = businessId === DSC_SOLUTIONS_ID
   const [customerName, setCustomerName] = useState('')
 
-  if (isSubmitted && rating !== '4' && rating !== '5') {
+  if ((!isQr && isSubmitted) || (isSubmitted && rating !== '4' && rating !== '5')) {
     if (isHootersForm) {
       return <HootersThanks businessCountry={business?.Country || 'EC'} />
     }
@@ -96,6 +97,7 @@ export default function Home() {
                     business={business}
                     setIsSubmitted={setIsSubmitted}
                     setRating={setRating}
+                    setIsQr={setIsQr}
                   />
                 )
               }
