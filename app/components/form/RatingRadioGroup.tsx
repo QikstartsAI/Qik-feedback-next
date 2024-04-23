@@ -33,7 +33,7 @@ function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
             className={cn('text-center w-full font-normal flex flex-col items-center cursor-pointer space-y-1')}
           >
             <Image
-              src='/mal.webp'
+              src='/simple-mal.webp'
               alt='experiencia mal'
               className='w-8 h-8 sm:w-10 sm:h-10'
               width={668}
@@ -65,7 +65,7 @@ function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
             className={cn('text-center w-full font-normal flex flex-col items-center cursor-pointer space-y-1')}
           >
             <Image
-              src='/regular.webp'
+              src='/simple-regular.webp'
               alt='experiencia regular'
               className='w-8 h-8 sm:w-10 sm:h-10'
               width={668}
@@ -98,7 +98,7 @@ function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
             className={cn('text-center w-full font-normal flex flex-col items-center cursor-pointer space-y-1')}
           >
             <Image
-              src='/bueno.webp'
+              src='/simple-bueno.webp'
               alt='experiencia bueno'
               className='w-8 h-8 sm:w-10 sm:h-10'
               width={668}
@@ -131,7 +131,7 @@ function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
             className={cn('text-center w-full font-normal flex flex-col items-center cursor-pointer space-y-1')}
           >
             <Image
-              src='/excelente.webp'
+              src='/simple-excelente.webp'
               alt='experiencia excelente'
               className='w-8 h-8 sm:w-10 sm:h-10'
               width={668}
