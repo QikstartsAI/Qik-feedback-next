@@ -27,7 +27,7 @@ function SimpleRatingRadioGroup({ value }: RatingRadioGroupProps) {
             className={cn('text-center font-normal flex flex-col items-center cursor-pointer space-y-1')}
           >
             <Image
-              src='/simple-mal.webp'
+              src='/mal.png'
               alt='Bad'
               className='w-8 h-8 md:w-52 md:h-52'
               width={668}
@@ -54,7 +54,7 @@ function SimpleRatingRadioGroup({ value }: RatingRadioGroupProps) {
             className={cn('text-center font-normal flex flex-col items-center cursor-pointer space-y-1')}
           >
             <Image
-              src='/simple-regular.webp'
+              src='/regular.png'
               alt='Regular'
               className='w-8 h-8 md:w-52 md:h-52'
               width={668}
@@ -82,7 +82,7 @@ function SimpleRatingRadioGroup({ value }: RatingRadioGroupProps) {
             className={cn('text-center font-normal flex flex-col items-center cursor-pointer space-y-1')}
           >
             <Image
-              src='/simple-bueno.webp'
+              src='/bueno.png'
               alt='Good'
               className='w-8 h-8 md:w-52 md:h-52'
               width={668}
@@ -110,7 +110,7 @@ function SimpleRatingRadioGroup({ value }: RatingRadioGroupProps) {
             className={cn('text-center font-normal flex flex-col items-center cursor-pointer space-y-1')}
           >
             <Image
-              src='/simple-excelente.webp'
+              src='/excelente.png'
               alt='Excellent'
               className='w-8 h-8 md:w-52 md:h-52'
               width={668}

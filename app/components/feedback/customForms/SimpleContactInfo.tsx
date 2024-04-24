@@ -21,7 +21,7 @@ const SimpleContactInfo = ({ form }: SimpleContactInfoProps) => {
         We value your opinion {' '}
         <span className="inline-flex items-center space-x-4">
           <Image
-              src='/simple-excelente.webp'
+              src='/excelente.png'
               alt='Excellent'
               className='w-8 h-8'
               width={32}
