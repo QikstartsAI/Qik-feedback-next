@@ -32,19 +32,18 @@ export default function Home() {
   const isDscSolutions = businessId === DSC_SOLUTIONS_ID
   const [customerName, setCustomerName] = useState('')
 
-  if ((!isQr && isSubmitted) || (isSubmitted && rating !== '4' && rating !== '5')) {
+  if ((isSubmitted && rating !== '4' && rating !== '5') && !isDscSolutions) {
     if (isHootersForm) {
       return <HootersThanks businessCountry={business?.Country || 'EC'} />
     }
-    if (isDscSolutions) {
-      return <SimpleThanks />
-    }
-
     else
       return <Thanks
         businessCountry={business?.Country || 'EC'}
         businessName={business?.Name || ''}
         customerName={customerName} />
+  }
+  if (!isQr && isSubmitted && isDscSolutions) {
+    return <SimpleThanks />
   }
 
   return (
