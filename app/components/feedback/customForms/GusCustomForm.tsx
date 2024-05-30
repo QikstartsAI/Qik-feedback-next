@@ -42,7 +42,7 @@ import { Checkbox } from '../../ui/Checkbox'
 import { IconToolsKitchen } from '@tabler/icons-react';
 import { IconUserScan } from '@tabler/icons-react';
 import { IconBuildingStore } from '@tabler/icons-react';
-import CustomStepperIcons from "@/app/components/form/CustomStepperIcons";
+import CustomStepperIcons, { CustomStepperIconsGus } from "@/app/components/form/CustomStepperIcons";
 import CustomStepperConnector from "@/app/components/form/CustomStepperConnector";
 import StarRatingQuestion from '../questions/StarRatingQuestion'
 import BooleanQuestion from '../questions/BooleanQuestion'
@@ -59,7 +59,7 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
   const [isTermsChecked, setIsTermsChecked] = useState(true)
   const [recommending, setRecommending] = useState<boolean | null>(null)
   const [comeBack, setComeBack] = useState<boolean | null>(null)
-  const [reception, setReception] = useState<boolean | null>(null)
+  const [reception, setReception] = useState<boolean | null>(true)
   const [isLastFeedbackMoreThanOneDay, setIsLastFeedbackMoreThanOneDay] = useState<boolean | undefined>(false)
   const searchParams = useSearchParams()
 
@@ -228,27 +228,14 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
   }
 
   // validate if RecommendingText is empty cannot go to next step
-  const isReceptionTextEmpty = form.watch('ReceptionText') == ''
   const isRecommendingTextEmpty = form.watch('RecommendingText') === ''
-
-  const handleNextStep = () => {
-    if (recommending != null && isRecommendingTextEmpty) {
-      toast({
-        title: recommending ? emptyRecommendingError : emptyNoRecommendingError,
-        variant: 'hootersDestructive'
-      })
-      return;
-    }
-    goTo(currentStepIndex + 1)
-  }
-
   return (
     <>
       <div className='mx-auto py-8 lg:py-18 max-w-xl px-6 min-h-screen text-colorText' id='form'>
         <h4 className={'text-center font-medium text-colorText'}>
           Valoramos tu opinión 😊, te llevará menos de
-          <span className='text-hooters font-medium'>
-            <b>1 minuto</b>
+          <span className='text-gus font-medium'>
+            <b> 1 minuto</b>
           </span>
         </h4>
 
@@ -261,17 +248,21 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
             <div
               className={cn('space-y-3 mb-3 flex-row items-center justify-center', {})}
             >
-              <UserInfo<GusFeedbackProps>
-                form={form}
-                emailQuestion={emailQuestion}
-                fullNameQuestion={fullNameQuestion}
-                businessCountry={businessCountry}
-                setIsLastFeedbackMoreThanOneDay={setIsLastFeedbackMoreThanOneDay}
-                businessId={businessId || ''}
-              />
+              {
+                currentStepIndex === 0 && (
+                  <UserInfo<GusFeedbackProps>
+                    form={form}
+                    emailQuestion={emailQuestion}
+                    fullNameQuestion={fullNameQuestion}
+                    businessCountry={businessCountry}
+                    setIsLastFeedbackMoreThanOneDay={setIsLastFeedbackMoreThanOneDay}
+                    businessId={businessId || ''}
+                  />
+                )
+              }
               <div className='flex flex-col gap-2 text-center items-center justify-center py-2'>
                 <Separator.Root
-                  className='SeparatorRoot bg-hooters h-1.5 rounded-full mb-4'
+                  className='SeparatorRoot bg-gus h-1.5 rounded-full mb-4'
                   style={{ width: '15%' }}
                 />
 
@@ -280,9 +271,15 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                     form={form}
                     question='¿Cómo califica el trato recibido el dia de hoy?'
                     nextStep={() => {
-                      if (form.watch('Treatment') === undefined) {
+                      if (!form.watch('Treatment')) {
                         toast({
                           title: formErrorMessage,
+                          variant: 'hootersDestructive'
+                        })
+                      }
+                      if (!form.watch('FullName') || !form.watch('Email')) {
+                        toast({
+                          title: 'Ayúdanos con tus datos antes de seguir',
                           variant: 'hootersDestructive'
                         })
                       }
@@ -290,6 +287,7 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                     }}
                     businessCountry={businessCountry}
                     formName='Treatment'
+                    variant='gus'
                   />
                 )}
                 {currentStepIndex === 1 && (
@@ -300,7 +298,7 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                     noButton='No'
                     handleResponse={handleReceptionQuestion}
                     nextStep={() => {
-                      if (form.watch('Reception') === undefined) {
+                      if (!form.watch('Reception')) {
                         toast({
                           title: formErrorMessage,
                           variant: 'hootersDestructive'
@@ -314,7 +312,7 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                   />
                 )}
                 {
-                  currentStepIndex === 1 && reception && !reception && (
+                  currentStepIndex === 1 && !reception && (
                     <FormField
                       control={form.control}
                       name='ReceptionText'
@@ -322,7 +320,7 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                         <FormItem className='pt-5 md:grid md:space-y-0 items-center text-center md:gap-12'>
                           <Stack spacing={2}>
                             <FormLabel className='col-span-3 text-xl'>
-                              <h4 className={'text-hooters'}>
+                              <h4 className={'text-gus'}>
                                 <b>¿Que no recibió correctamente?</b>
                               </h4>
                             </FormLabel>
@@ -345,7 +343,7 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                     form={form}
                     question='¿Cuánto le gustó el producto que consumió?'
                     nextStep={() => {
-                      if (form.watch('ProductTaste') === undefined) {
+                      if (!form.watch('ProductTaste')) {
                         toast({
                           title: formErrorMessage,
                           variant: 'hootersDestructive'
@@ -356,6 +354,7 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                     prevStep={() => { goTo(currentStepIndex - 1) }}
                     businessCountry={businessCountry}
                     formName='ProductTaste'
+                    variant='gus'
                   />
                 )}
 
@@ -364,7 +363,7 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                     form={form}
                     question='¿Cómo califica la velocidad del servicio en caja?'
                     nextStep={() => {
-                      if (form.watch('CashServiceSpeed') === undefined) {
+                      if (!form.watch('CashServiceSpeed')) {
                         toast({
                           title: formErrorMessage,
                           variant: 'hootersDestructive'
@@ -375,6 +374,7 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                     prevStep={() => { goTo(currentStepIndex - 1) }}
                     businessCountry={businessCountry}
                     formName='CashServiceSpeed'
+                    variant='gus'
                   />
                 )}
 
@@ -383,7 +383,7 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                     form={form}
                     question='¿Cómo califica la velocidad en la entrega del producto (despacho)?'
                     nextStep={() => {
-                      if (form.watch('ProductDeliverySpeed') === undefined) {
+                      if (!form.watch('ProductDeliverySpeed')) {
                         toast({
                           title: formErrorMessage,
                           variant: 'hootersDestructive'
@@ -394,6 +394,7 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                     prevStep={() => { goTo(currentStepIndex - 1) }}
                     businessCountry={businessCountry}
                     formName='ProductDeliverySpeed'
+                    variant='gus'
                   />
                 )}
                 {currentStepIndex === 5 && (
@@ -401,7 +402,7 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                     form={form}
                     question='¿Cómo califica la limpieza general del local? (salón, suelo, mesas y sillas, baños)'
                     nextStep={() => {
-                      if (form.watch('PlaceCleanness') === undefined) {
+                      if (!form.watch('PlaceCleanness')) {
                         toast({
                           title: formErrorMessage,
                           variant: 'hootersDestructive'
@@ -412,6 +413,7 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                     prevStep={() => { goTo(currentStepIndex - 1) }}
                     businessCountry={businessCountry}
                     formName='PlaceCleanness'
+                    variant='gus'
                   />
                 )}
                 {currentStepIndex === 6 && (
@@ -419,7 +421,7 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                     form={form}
                     question='En base a sus experiencia en Gus ¿Cuán satisfecho se encuentra?'
                     nextStep={() => {
-                      if (form.watch('Satisfaction') === undefined) {
+                      if (!form.watch('Satisfaction')) {
                         toast({
                           title: formErrorMessage,
                           variant: 'hootersDestructive'
@@ -430,6 +432,7 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                     prevStep={() => { goTo(currentStepIndex - 1) }}
                     businessCountry={businessCountry}
                     formName='Satisfaction'
+                    variant='gus'
                   />
                 )}
                 {currentStepIndex === 7 && (
@@ -440,7 +443,7 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                     noButton='No'
                     handleResponse={handleRecommendingQuestion}
                     nextStep={() => {
-                      if (form.watch('Recommending') === undefined) {
+                      if (!form.watch('Recommending')) {
                         toast({
                           title: formErrorMessage,
                           variant: 'hootersDestructive'
@@ -453,7 +456,31 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                     formName='Recommending'
                   />
                 )}
-
+                {
+                  currentStepIndex === 7 && recommending != null && (
+                    <FormField
+                      control={form.control}
+                      name='RecommendingText'
+                      render={({ field }) => (
+                        <FormItem className='pt-5 md:grid md:space-y-0 items-center text-center md:gap-12 w-full'>
+                          <Stack spacing={2}>
+                            <FormLabel className='col-span-3 text-xl'>
+                              <h4 className={'text-gus'}><b>{whyText}</b></h4>
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder={recommending ? recommendingPlaceholder : noRecommendingPlaceholder}
+                                className={'border-2 border-gray-300 rounded-lg focus:border-gray-500'}
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </Stack>
+                        </FormItem>
+                      )}
+                    />
+                  )
+                }
                 {currentStepIndex === 8 && (
                   <BooleanQuestion
                     form={form}
@@ -477,37 +504,13 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                       }}
                       active={index === currentStepIndex}
                       completed={index < currentStepIndex}>
-                      <StepLabel StepIconComponent={CustomStepperIcons}>{label}</StepLabel>
+                      <StepLabel StepIconComponent={CustomStepperIconsGus}>
+                        {label}
+                      </StepLabel>
                     </Step>
                   ))}
                 </Stepper>
               </div>
-              {
-                currentStepIndex === 7 && recommending != null && (
-                  <FormField
-                    control={form.control}
-                    name='RecommendingText'
-                    render={({ field }) => (
-                      <FormItem className='pt-5 md:grid md:space-y-0 items-center text-center md:gap-12'>
-                        <Stack spacing={2}>
-                          <FormLabel className='col-span-3 text-xl'>
-                            <h4 className={'text-hooters'}><b>{whyText}</b></h4>
-                          </FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder={recommending ? recommendingPlaceholder : noRecommendingPlaceholder}
-                              className={'border-2 border-gray-300 rounded-lg focus:border-gray-500'}
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </Stack>
-                      </FormItem>
-                    )}
-                  />
-                )
-              }
-
               {
                 currentStepIndex === 8 && comeBack === true && (
                   <>
@@ -518,7 +521,7 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                         <FormItem className='pt-5 md:grid md:space-y-0 items-center text-center md:gap-12'>
                           <Stack spacing={2}>
                             <FormLabel className='col-span-3 text-xl'>
-                              <h4 className={'text-hooters'}><b>{whyText}</b></h4>
+                              <h4 className={'text-gus'}><b>{whyText}</b></h4>
                             </FormLabel>
                             <FormControl>
                               <Textarea
@@ -534,10 +537,10 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                     />
                     {watchFullName && (
                       <p className='text-center mt-2 text-lg'>
-                        <b className={'text-hooters uppercase'}>{watchFullName}</b>, {submitText1}
-                        <b className={'text-hooters uppercase'}>{submitButton}</b>{submitText2}
-                        <b className={'text-hooters uppercase'}>Google</b> {submitText3}
-                        <b className={'text-hooters uppercase'}>{submitText4}</b> {submitText5}
+                        <b className={'text-gus uppercase'}>{watchFullName}</b>, {submitText1}
+                        <b className={'text-gus uppercase'}>{submitButton}</b>{submitText2}
+                        <b className={'text-gus uppercase'}>Google</b> {submitText3}
+                        <b className={'text-gus uppercase'}>{submitText4}</b> {submitText5}
                       </p>
                     )}
                   </>
@@ -561,8 +564,8 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                           name='Food'
                           render={({ field }) => (
                             <FormItem
-                              className={cn(' items-center rounded-md border py-1 sm:py-2 shadow hover:border-hooters hover:text-hooters transition-all', {
-                                'border-hooters text-hooters': field.value
+                              className={cn(' items-center rounded-md border py-1 sm:py-2 shadow hover:border-hooters hover:text-gus transition-all', {
+                                'border-hooters text-gus': field.value
                               })}
                             >
                               <FormControl>
@@ -573,8 +576,8 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                                 />
                               </FormControl>
                               <FormLabel
-                                className={cn('text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-hooters hover:text-hooters transition-all', {
-                                  'border-hooters text-hooters': field.value
+                                className={cn('text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-hooters hover:text-gus transition-all', {
+                                  'border-hooters text-gus': field.value
                                 })}
                               >
                                 <IconToolsKitchen />
@@ -590,8 +593,8 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                           name='Service'
                           render={({ field }) => (
                             <FormItem
-                              className={cn(' items-center rounded-md border py-1 sm:py-2 shadow hover:border-hooters hover:text-hooters transition-all', {
-                                'border-hooters text-hooters': field.value
+                              className={cn(' items-center rounded-md border py-1 sm:py-2 shadow hover:border-hooters hover:text-gus transition-all', {
+                                'border-hooters text-gus': field.value
                               })}
                             >
                               <FormControl>
@@ -602,8 +605,8 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                                 />
                               </FormControl>
                               <FormLabel
-                                className={cn('text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-hooters hover:text-hooters transition-all', {
-                                  'border-hooters text-hooters': field.value
+                                className={cn('text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-hooters hover:text-gus transition-all', {
+                                  'border-hooters text-gus': field.value
                                 })}
                               >
                                 <IconUserScan />
@@ -619,8 +622,8 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                           name='Ambience'
                           render={({ field }) => (
                             <FormItem
-                              className={cn(' items-center rounded-md border py-1 sm:py-2 shadow hover:border-hooters hover:text-hooters transition-all', {
-                                'border-hooters text-hooters': field.value
+                              className={cn(' items-center rounded-md border py-1 sm:py-2 shadow hover:border-hooters hover:text-gus transition-all', {
+                                'border-hooters text-gus': field.value
                               })}
                             >
                               <FormControl>
@@ -631,8 +634,8 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                                 />
                               </FormControl>
                               <FormLabel
-                                className={cn('text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-hooters hover:text-hooters transition-all', {
-                                  'border-hooters text-hooters': field.value
+                                className={cn('text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-hooters hover:text-gus transition-all', {
+                                  'border-hooters text-gus': field.value
                                 })}
                               >
                                 <IconBuildingStore />
@@ -655,7 +658,7 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className='col-span-3 text-question text-lg'>
-                              {shareDetailsText} <b className={'text-hooters'}>Hooters</b>
+                              {shareDetailsText} <b className={'text-gus'}>Hooters</b>
                             </FormLabel>
                             <FormControl>
                               <Textarea
@@ -669,22 +672,6 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                         )}
                       />
                     </>
-                  </div>
-                )
-              }
-
-              {
-                // "Next" button is only shown on question 7
-                currentStepIndex === 7 && isRecommendingClicked.current != null && (
-                  <div>
-                    <Button
-                      type='button'
-                      variant={'hootersPrimary'}
-                      size={'hootersLarge'}
-                      onClick={handleNextStep}
-                    >
-                      {nextButton}
-                    </Button>
                   </div>
                 )
               }

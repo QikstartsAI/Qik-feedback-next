@@ -34,7 +34,7 @@ import getFormTranslations from '@/app/constants/formTranslations';
 import UserInfo from "@/app/components/feedback/UserInfo";
 import Stack from '@mui/material/Stack';
 
-import {useMultistepForm} from "@/app/hooks/useMultistepForm";
+import { useMultistepForm } from "@/app/hooks/useMultistepForm";
 import PlaceCleannessQuestion from "@/app/components/feedback/questions/PlaceCleannessQuestion";
 import QuicknessQuestion from "@/app/components/feedback/questions/QuicknessQuestion";
 import FoodQualityQuestion from "@/app/components/feedback/questions/FoodQualityQuestion";
@@ -43,15 +43,16 @@ import CourtesyQuestion from "@/app/components/feedback/questions/CourtesyQuesti
 import RecommendingQuestion from '../questions/RecommendingQuestion'
 import ExperienceQuestion from "@/app/components/feedback/questions/ExperienceQuestion";
 import ComeBackQuestion from "@/app/components/feedback/questions/ComeBackQuestion";
-import {Step, StepLabel, Stepper} from "@mui/material";
-import {Textarea} from "@/app/components/ui/TextArea";
+import { Step, StepLabel, Stepper } from "@mui/material";
+import { Textarea } from "@/app/components/ui/TextArea";
 import { Checkbox } from '../../ui/Checkbox'
 import { IconToolsKitchen } from '@tabler/icons-react';
 import { IconUserScan } from '@tabler/icons-react';
 import { IconBuildingStore } from '@tabler/icons-react';
-import CustomStepperIcons from "@/app/components/form/CustomStepperIcons";
+import CustomStepperIcons, { CustomStepperIconsHooters } from "@/app/components/form/CustomStepperIcons";
 import CustomStepperConnector from "@/app/components/form/CustomStepperConnector";
 import { useSearchParams } from 'next/navigation'
+import StarRatingQuestion from '../questions/StarRatingQuestion'
 
 interface HootersCustomFormProps {
   business: Business | null
@@ -143,12 +144,13 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
     termsAndConditions3,
     termsAndConditions4,
     formErrorMessage,
+    formUserDataErrorMessage,
     emptyRecommendingError,
     emptyNoRecommendingError,
     chooseOneOptionError,
     howToImprovementError,
     whyComeBackError,
-  } = getFormTranslations({businessCountry})
+  } = getFormTranslations({ businessCountry })
 
   const {
     goTo,
@@ -172,10 +174,10 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
 
   async function onSubmit(data: HootersFeedbackProps) {
     const { Ambience, Service, Food, ImproveText, ComeBackText } = data
-    if (( (Ambience === undefined || !Ambience) &&
-          (Service === undefined || !Service) &&
-          (Food === undefined || !Food) &&
-          comeBack === false)) {
+    if (((Ambience === undefined || !Ambience) &&
+      (Service === undefined || !Service) &&
+      (Food === undefined || !Food) &&
+      comeBack === false)) {
       toast({
         title: chooseOneOptionError,
         variant: 'hootersDestructive'
@@ -218,9 +220,9 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
         feedbackNumberOfVisit = 1
       }
       await handleSubmitHootersForm(updatedData, improveOptions, customerType, attendantName, customerNumberOfVisits, feedbackNumberOfVisit)
-    if (comeBack) {
-      handleRedirect()
-    }
+      if (comeBack) {
+        handleRedirect()
+      }
     } catch (error) {
       console.log(error)
       toast({
@@ -244,7 +246,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
       })
       return;
     }
-    goTo(currentStepIndex+1)
+    goTo(currentStepIndex + 1)
   }
 
   return (
@@ -266,14 +268,18 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
             <div
               className={cn('space-y-3 mb-3 flex-row items-center justify-center', {})}
             >
-              <UserInfo<HootersFeedbackProps>
-                form={form}
-                emailQuestion={emailQuestion}
-                fullNameQuestion={fullNameQuestion}
-                businessCountry={businessCountry}
-                setIsLastFeedbackMoreThanOneDay={setIsLastFeedbackMoreThanOneDay}
-                businessId={businessId || ''}
-              />
+              {
+                currentStepIndex === 0 && (
+                  <UserInfo<HootersFeedbackProps>
+                    form={form}
+                    emailQuestion={emailQuestion}
+                    fullNameQuestion={fullNameQuestion}
+                    businessCountry={businessCountry}
+                    setIsLastFeedbackMoreThanOneDay={setIsLastFeedbackMoreThanOneDay}
+                    businessId={businessId || ''}
+                  />
+                )
+              }
               <div className='flex flex-col gap-2 text-center items-center justify-center py-2'>
                 <Separator.Root
                   className='SeparatorRoot bg-hooters h-1.5 rounded-full mb-4'
@@ -281,109 +287,128 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                 />
 
                 {currentStepIndex === 0 && (
-                  <CourtesyQuestion
+                  <StarRatingQuestion<HootersFeedbackProps>
                     form={form}
                     question={courtesyQuestion}
                     nextStep={() => {
-                      if(form.watch('Courtesy') === undefined) {
+                      if (!form.watch('Courtesy')) {
                         toast({
                           title: formErrorMessage,
                           variant: 'hootersDestructive'
                         })
                       }
-                      else goTo(currentStepIndex+1)
+                      if (!form.watch('FullName') || !form.watch('Email')) {
+                        console.log(formUserDataErrorMessage)
+                        toast({
+                          title: formUserDataErrorMessage,
+                          variant: 'hootersDestructive'
+                        })
+                      }
+                      else goTo(currentStepIndex + 1)
                     }}
                     businessCountry={businessCountry}
+                    formName='Courtesy'
+                    variant='hooters'
                   />
                 )}
 
                 {currentStepIndex === 1 && (
-                  <PlaceCleannessQuestion
+                  <StarRatingQuestion<HootersFeedbackProps>
                     form={form}
-                    question={placeCleannessQuestion}
+                    question={courtesyQuestion}
                     nextStep={() => {
-                      if(form.watch('PlaceCleanness') === undefined) {
+                      if (!form.watch('PlaceCleanness')) {
                         toast({
                           title: formErrorMessage,
                           variant: 'hootersDestructive'
                         })
                       }
-                      else goTo(currentStepIndex+1)
+                      else goTo(currentStepIndex + 1)
                     }}
-                    prevStep={() => {goTo(currentStepIndex-1)}}
+                    prevStep={() => { goTo(currentStepIndex - 1) }}
                     businessCountry={businessCountry}
+                    formName='PlaceCleanness'
+                    variant='hooters'
                   />
                 )}
 
                 {currentStepIndex === 2 && (
-                  <QuicknessQuestion
+                  <StarRatingQuestion<HootersFeedbackProps>
                     form={form}
-                    question={quicknessQuestion}
+                    question={courtesyQuestion}
                     nextStep={() => {
-                      if(form.watch('Quickness') === undefined) {
+                      if (!form.watch('Quickness')) {
                         toast({
                           title: formErrorMessage,
                           variant: 'hootersDestructive'
                         })
                       }
-                      else goTo(currentStepIndex+1)
+                      else goTo(currentStepIndex + 1)
                     }}
-                    prevStep={() => {goTo(currentStepIndex-1)}}
+                    prevStep={() => { goTo(currentStepIndex - 1) }}
                     businessCountry={businessCountry}
+                    formName='Quickness'
+                    variant='hooters'
                   />
                 )}
 
                 {currentStepIndex === 3 && (
-                  <FoodQualityQuestion
+                  <StarRatingQuestion<HootersFeedbackProps>
                     form={form}
-                    question={foodQualityQuestion}
+                    question={courtesyQuestion}
                     nextStep={() => {
-                      if(form.watch('FoodQuality') === undefined) {
+                      if (!form.watch('FoodQuality')) {
                         toast({
                           title: formErrorMessage,
                           variant: 'hootersDestructive'
                         })
                       }
-                      else goTo(currentStepIndex+1)
+                      else goTo(currentStepIndex + 1)
                     }}
-                    prevStep={() => {goTo(currentStepIndex-1)}}
+                    prevStep={() => { goTo(currentStepIndex - 1) }}
                     businessCountry={businessCountry}
+                    formName='FoodQuality'
+                    variant='hooters'
                   />
                 )}
 
                 {currentStepIndex === 4 && (
-                  <AmbienceQuestion
+                  <StarRatingQuestion<HootersFeedbackProps>
                     form={form}
-                    question={ambienceQuestion}
+                    question={courtesyQuestion}
                     nextStep={() => {
-                      if(form.watch('Climate') === undefined) {
+                      if (!form.watch('Climate')) {
                         toast({
                           title: formErrorMessage,
                           variant: 'hootersDestructive'
                         })
                       }
-                      else goTo(currentStepIndex+1)
+                      else goTo(currentStepIndex + 1)
                     }}
-                    prevStep={() => {goTo(currentStepIndex-1)}}
+                    prevStep={() => { goTo(currentStepIndex - 1) }}
                     businessCountry={businessCountry}
+                    formName='Climate'
+                    variant='hooters'
                   />
                 )}
 
                 {currentStepIndex === 5 && (
-                  <ExperienceQuestion
+                  <StarRatingQuestion<HootersFeedbackProps>
                     form={form}
-                    question={experienceQuestion}
+                    question={courtesyQuestion}
                     nextStep={() => {
-                      if(form.watch('Experience') === undefined) {
+                      if (!form.watch('Experience')) {
                         toast({
                           title: formErrorMessage,
                           variant: 'hootersDestructive'
                         })
                       }
-                      else goTo(currentStepIndex+1)
+                      else goTo(currentStepIndex + 1)
                     }}
-                    prevStep={() => {goTo(currentStepIndex-1)}}
+                    prevStep={() => { goTo(currentStepIndex - 1) }}
                     businessCountry={businessCountry}
+                    formName='Experience'
+                    variant='hooters'
                   />
                 )}
 
@@ -394,7 +419,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                     yesButton={yesButton}
                     noButton={noButton}
                     handleResponse={handleRecommendingQuestion}
-                    prevStep={() => {goTo(currentStepIndex-1)}}
+                    prevStep={() => { goTo(currentStepIndex - 1) }}
                     isRecommendingClicked={isRecommendingClicked}
                   >
                   </RecommendingQuestion>
@@ -407,7 +432,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                     yesButton={yesButton}
                     noButton={noButton}
                     handleResponse={handleComeBackQuestion}
-                    prevStep={() => {goTo(currentStepIndex-1)}}
+                    prevStep={() => { goTo(currentStepIndex - 1) }}
                     isComeBackClicked={isComeBackClicked}
                   >
                   </ComeBackQuestion>
@@ -415,16 +440,18 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
               </div>
 
               <div className={'md:grid md:space-y-0 items-center'}>
-                <Stepper activeStep={0} alternativeLabel connector={<CustomStepperConnector/>}>
+                <Stepper activeStep={0} alternativeLabel connector={<CustomStepperConnector />}>
                   {steps.map((label, index) => (
                     <Step
                       key={index}
                       onClick={() => {
-                        if(index < 7 && index <= currentStepIndex) goTo(index)
+                        if (index < 7 && index <= currentStepIndex) goTo(index)
                       }}
                       active={index === currentStepIndex}
                       completed={index < currentStepIndex}>
-                      <StepLabel StepIconComponent={CustomStepperIcons}>{label}</StepLabel>
+                      <StepLabel StepIconComponent={CustomStepperIconsHooters}>
+                        {label}
+                      </StepLabel>
                     </Step>
                   ))}
                 </Stepper>
@@ -435,7 +462,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                   <FormField
                     control={form.control}
                     name='RecommendingText'
-                    render={({field}) => (
+                    render={({ field }) => (
                       <FormItem className='pt-5 md:grid md:space-y-0 items-center text-center md:gap-12'>
                         <Stack spacing={2}>
                           <FormLabel className='col-span-3 text-xl'>
@@ -448,21 +475,20 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                               {...field}
                             />
                           </FormControl>
-                          <FormMessage/>
+                          <FormMessage />
                         </Stack>
                       </FormItem>
                     )}
                   />
                 )
               }
-
               {
                 currentStepIndex === 7 && comeBack === true && (
                   <>
                     <FormField
                       control={form.control}
                       name='ComeBackText'
-                      render={({field}) => (
+                      render={({ field }) => (
                         <FormItem className='pt-5 md:grid md:space-y-0 items-center text-center md:gap-12'>
                           <Stack spacing={2}>
                             <FormLabel className='col-span-3 text-xl'>
@@ -475,7 +501,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                                 {...field}
                               />
                             </FormControl>
-                            <FormMessage/>
+                            <FormMessage />
                           </Stack>
                         </FormItem>
                       )}
@@ -491,7 +517,6 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                   </>
                 )
               }
-
               {
                 currentStepIndex === 7 && comeBack === false && (
                   <div
@@ -507,7 +532,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                         <FormField
                           control={form.control}
                           name='Food'
-                          render={({field}) => (
+                          render={({ field }) => (
                             <FormItem
                               className={cn(' items-center rounded-md border py-1 sm:py-2 shadow hover:border-hooters hover:text-hooters transition-all', {
                                 'border-hooters text-hooters': field.value
@@ -525,7 +550,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                                   'border-hooters text-hooters': field.value
                                 })}
                               >
-                                <IconToolsKitchen/>
+                                <IconToolsKitchen />
                                 <p className='w-full text-[10px] sm:text-[11px]'>
                                   {foodButton}
                                 </p>
@@ -536,7 +561,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                         <FormField
                           control={form.control}
                           name='Service'
-                          render={({field}) => (
+                          render={({ field }) => (
                             <FormItem
                               className={cn(' items-center rounded-md border py-1 sm:py-2 shadow hover:border-hooters hover:text-hooters transition-all', {
                                 'border-hooters text-hooters': field.value
@@ -554,7 +579,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                                   'border-hooters text-hooters': field.value
                                 })}
                               >
-                                <IconUserScan/>
+                                <IconUserScan />
                                 <p className='w-full text-[10px] sm:text-[11px]'>
                                   {serviceButton}
                                 </p>
@@ -565,7 +590,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                         <FormField
                           control={form.control}
                           name='Ambience'
-                          render={({field}) => (
+                          render={({ field }) => (
                             <FormItem
                               className={cn(' items-center rounded-md border py-1 sm:py-2 shadow hover:border-hooters hover:text-hooters transition-all', {
                                 'border-hooters text-hooters': field.value
@@ -583,7 +608,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                                   'border-hooters text-hooters': field.value
                                 })}
                               >
-                                <IconBuildingStore/>
+                                <IconBuildingStore />
                                 <p className='w-full text-[10px] sm:text-[11px]'>
                                   {ambienceButton}
                                 </p>
@@ -600,7 +625,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                       <FormField
                         control={form.control}
                         name='ImproveText'
-                        render={({field}) => (
+                        render={({ field }) => (
                           <FormItem>
                             <FormLabel className='col-span-3 text-question text-lg'>
                               {shareDetailsText} <b className={'text-hooters'}>Hooters</b>
@@ -612,7 +637,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                                 {...field}
                               />
                             </FormControl>
-                            <FormMessage/>
+                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -620,7 +645,6 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                   </div>
                 )
               }
-
               {
                 // "Next" button is only shown on question 7
                 currentStepIndex === 6 && isRecommendingClicked.current != null && (
@@ -644,10 +668,10 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                     variant={'hootersPrimary'}
                     size={'hootersLarge'}
                     type='submit' disabled={
-                    !isTermsChecked || isLastFeedbackMoreThanOneDay
-                      ? true
-                      : form.formState.isSubmitting
-                  }
+                      !isTermsChecked || isLastFeedbackMoreThanOneDay
+                        ? true
+                        : form.formState.isSubmitting
+                    }
                   >
                     {submitButton}
                   </Button>
@@ -675,9 +699,9 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                               >
                                 {termsAndConditions2}
                               </a> {termsAndConditions3} <a className='text-primary hover:underline'
-                                                            href='https://qikstarts.com/privacy-policy'
-                                                            rel='noopener noreferrer'
-                                                            target='_blank'>{termsAndConditions4}</a>.
+                                href='https://qikstarts.com/privacy-policy'
+                                rel='noopener noreferrer'
+                                target='_blank'>{termsAndConditions4}</a>.
                             </small>
                           </>
                         </FormControl>

@@ -274,6 +274,12 @@ const translations = {
     'CA': "Merci! ✌🏻 Vous avez atteint la limite quotidienne d'enquêtes. A votre prochaine visite ! 😉",
     'ES': 'Has alcanzado el límite diario de encuestas. ¡Hasta tu próxima visita! 😉',
     'default': 'Has alcanzado el límite diario de encuestas. ¡Hasta tu próxima visita! 😉'
+  },
+  formUserDataErrorMessage: {
+    'US': 'Please, fill the user data fields before continuing',
+    'CA': "Veuillez remplir les champs de données utilisateur avant de continuer",
+    'ES': 'Por favor, llena tus datos antes de continuar',
+    'default': 'Por favor, llena tus datos antes de continuar'
   }
 };
 export default translations;

@@ -8,23 +8,26 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import React from "react";
 import { GusFeedbackProps } from "@/app/validators/gusFeedbackSchema";
+import { HootersFeedbackProps } from "@/app/validators/hootersFeedbackSchema";
 
-interface StarRatingQuestionProps<T extends GusFeedbackProps> {
+interface StarRatingQuestionProps<T extends HootersFeedbackProps | GusFeedbackProps> {
   form: UseFormReturn<T>
   question: string
   nextStep: () => void
   prevStep?: () => void
   businessCountry: string,
   formName: Path<T>
+  variant: "hooters" | "gus"
 }
 
-export default function StarRatingQuestion<T extends GusFeedbackProps>({
+export default function StarRatingQuestion<T extends HootersFeedbackProps | GusFeedbackProps>({
   form,
   question,
   nextStep,
   prevStep,
   businessCountry,
-  formName
+  formName,
+  variant
 }: StarRatingQuestionProps<T>) {
 
   return (
@@ -44,7 +47,7 @@ export default function StarRatingQuestion<T extends GusFeedbackProps>({
                   prevStep && (
                     <span>
                       <a style={{ cursor: "pointer", marginTop: "30px" }} onClick={prevStep}>
-                        <ChevronLeftIcon className='text-hooters' style={{ fontSize: 54, fontWeight: 'bolder' }} />
+                        <ChevronLeftIcon className={`text-${variant}`} style={{ fontSize: 54, fontWeight: 'bolder' }} />
                       </a>
                     </span>
                   )
@@ -61,13 +64,14 @@ export default function StarRatingQuestion<T extends GusFeedbackProps>({
                       value={field.value as string}
                       items={getRatingOptions(businessCountry)}
                       className='grid-cols-5'
+                      variant={variant}
                     />
                   </RadioGroup>
                 </FormControl>
 
                 <span>
                   <a style={{ cursor: "pointer", marginTop: "30px" }} onClick={nextStep}>
-                    <ChevronRightIcon className="text-hooters" style={{ fontSize: 54, fontWeight: "bolder" }} />
+                    <ChevronRightIcon className={`text-${variant}`} style={{ fontSize: 54, fontWeight: "bolder" }} />
                   </a>
                 </span>
               </div>

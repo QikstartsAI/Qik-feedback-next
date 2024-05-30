@@ -10,7 +10,7 @@ import Intro from './components/feedback/Intro';
 import { CustomerRole } from './types/customer';
 import GusCustomForm from './components/feedback/customForms/GusCustomForm';
 import HootersCustomForm from './components/feedback/customForms/HootersCustomForm';
-import HootersCustomIntro from "@/app/components/feedback/customForms/HootersCustomIntro";
+import CustomIntro from "@/app/components/feedback/customForms/CustomIntro";
 import HootersThanks from "@/app/components/HootersThanks";
 import SimpleForm from './components/feedback/customForms/SimpleForm';
 import SimpleThanks from './components/SimpleThanks';
@@ -36,7 +36,7 @@ export default function Home() {
   const [customerName, setCustomerName] = useState('')
 
   if ((isSubmitted && rating !== '4' && rating !== '5') && !isDscSolutions) {
-    if (isHootersForm) {
+    if (isHootersForm || isGusForm) {
       return <HootersThanks businessCountry={business?.Country || 'EC'} />
     }
     else
@@ -64,9 +64,10 @@ export default function Home() {
                     <Hero business={business} />
                     {!customerType && (
                       isHootersForm || isGusForm ? (
-                        <HootersCustomIntro
+                        <CustomIntro
                           business={business}
                           toogleCustomerType={toggleCustomer}
+                          variant={isHootersForm ? 'hooters' : 'gus'}
                         />
                       ) : (
                         <Intro

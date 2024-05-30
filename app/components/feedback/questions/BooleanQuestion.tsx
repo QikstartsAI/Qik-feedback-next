@@ -45,19 +45,16 @@ export default function BooleanQuestion<T extends GusFeedbackProps>({
               <FormLabel className='col-span-3 text-question text-lg'>
                 {question}
               </FormLabel>
-
               <div className='flex items-start justify-center'>
                 <span className='self-start'>
                   <a style={{ cursor: "pointer", marginTop: "30px" }} onClick={prevStep}>
-                    <ChevronLeftIcon className='text-hooters' style={{ fontSize: 54, fontWeight: 'bolder' }} />
+                    <ChevronLeftIcon className='text-gus' style={{ fontSize: 54, fontWeight: 'bolder' }} />
                   </a>
                 </span>
-
                 <FormControl>
                   <div className="flex justify-center space-x-4">
-
                     <Button
-                      variant={isQuestionClicked.current !== null && isQuestionClicked.current ? 'hootersPrimary' : 'hootersSecondary'}
+                      variant={isQuestionClicked.current !== null && isQuestionClicked.current ? 'gusPrimary' : 'gusSecondary'}
                       size={'hootersPrimary'} type={'button'} onClick={() => {
                         setIsYesSelected(!isYesSelected);
                         setIsNoSelected(false);
@@ -68,7 +65,7 @@ export default function BooleanQuestion<T extends GusFeedbackProps>({
                       {yesButton}
                     </Button>
                     <Button
-                      variant={isQuestionClicked.current !== null && !isQuestionClicked.current ? 'hootersPrimary' : 'hootersSecondary'}
+                      variant={isQuestionClicked.current !== null && !isQuestionClicked.current ? 'gusPrimary' : 'gusSecondary'}
                       size={'hootersPrimary'} type={'button'} onClick={() => {
                         setIsNoSelected(!isNoSelected);
                         setIsYesSelected(false);
@@ -84,7 +81,7 @@ export default function BooleanQuestion<T extends GusFeedbackProps>({
                   nextStep && (
                     <span>
                       <a style={{ cursor: "pointer", marginTop: "30px" }} onClick={nextStep}>
-                        <ChevronRightIcon className="text-hooters" style={{ fontSize: 54, fontWeight: "bolder" }} />
+                        <ChevronRightIcon className="text-gus" style={{ fontSize: 54, fontWeight: "bolder" }} />
                       </a>
                     </span>
                   )

@@ -54,6 +54,7 @@ const {
   termsAndConditions3,
   termsAndConditions4,
   formErrorMessage,
+  formUserDataErrorMessage,
   emptyRecommendingError,
   emptyNoRecommendingError,
   chooseOneOptionError,
@@ -223,6 +224,10 @@ const getFormErrorMessage = ({ businessCountry }: { businessCountry: string }) =
   return formErrorMessage[businessCountry as keyof typeof formErrorMessage] || formErrorMessage.default
 }
 
+const getFormUserDataErrorMessage = ({ businessCountry }: { businessCountry: string }) => {
+  return formUserDataErrorMessage[businessCountry as keyof typeof formErrorMessage] || formUserDataErrorMessage.default
+}
+
 const getRecommendingError = ({ businessCountry }: { businessCountry: string }) => {
   return formErrorMessage[businessCountry as keyof typeof emptyRecommendingError] || emptyRecommendingError.default
 }
@@ -290,6 +295,7 @@ const getFormTranslations = ({ businessCountry }: { businessCountry: string }) =
     termsAndConditions3: getTermsAndConditions3({ businessCountry }),
     termsAndConditions4: getTermsAndConditions4({ businessCountry }),
     formErrorMessage: getFormErrorMessage({ businessCountry }),
+    formUserDataErrorMessage: getFormUserDataErrorMessage({ businessCountry }),
     emptyRecommendingError: getRecommendingError({ businessCountry }),
     emptyNoRecommendingError: getNoRecommendingError({ businessCountry }),
     chooseOneOptionError: getChooseOneOptionError({ businessCountry }),
