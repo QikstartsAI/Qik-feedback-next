@@ -8,6 +8,7 @@ import Thanks from './components/Thanks'
 import { Toaster } from './components/ui/Toaster'
 import Intro from './components/feedback/Intro';
 import { CustomerRole } from './types/customer';
+import GusCustomForm from './components/feedback/customForms/GusCustomForm';
 import HootersCustomForm from './components/feedback/customForms/HootersCustomForm';
 import HootersCustomIntro from "@/app/components/feedback/customForms/HootersCustomIntro";
 import HootersThanks from "@/app/components/HootersThanks";
@@ -17,7 +18,8 @@ import { DSC_SOLUTIONS_ID } from './constants/general';
 
 const Hero = lazy(() => import('./components/Hero'))
 const FeedbackForm = lazy(() => import('./components/feedback/FeedbackForm'))
-const CUSTOM_HOOTERS_FORM = 'hooters'
+const CUSTOM_HOOTERS_FORM_ID = 'hooters'
+const CUSTOM_GUS_FORM_ID = 'pollo-gus'
 
 export default function Home() {
   const { business, loading, businessId } = useGetBusinessData()
@@ -28,7 +30,8 @@ export default function Home() {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isQr, setIsQr] = useState(false)
   const [rating, setRating] = useState('')
-  const isHootersForm = businessId === CUSTOM_HOOTERS_FORM
+  const isHootersForm = businessId === CUSTOM_HOOTERS_FORM_ID
+  const isGusForm = businessId === CUSTOM_GUS_FORM_ID
   const isDscSolutions = businessId === DSC_SOLUTIONS_ID
   const [customerName, setCustomerName] = useState('')
 
@@ -60,7 +63,7 @@ export default function Home() {
                   <>
                     <Hero business={business} />
                     {!customerType && (
-                      isHootersForm ? (
+                      isHootersForm || isGusForm ? (
                         <HootersCustomIntro
                           business={business}
                           toogleCustomerType={toggleCustomer}
@@ -80,7 +83,16 @@ export default function Home() {
                           setRating={setRating}
                           customerType={customerType}
                         />
-                      ) : (
+                      ) : isGusForm
+                        ? (
+                          <GusCustomForm
+                            business={business}
+                            setIsSubmitted={setIsSubmitted}
+                            setRating={setRating}
+                            customerType={customerType}
+                          />
+                        )
+                        : (
                         <FeedbackForm
                           business={business}
                           setIsSubmitted={setIsSubmitted}
