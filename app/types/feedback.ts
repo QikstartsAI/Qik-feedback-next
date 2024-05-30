@@ -30,6 +30,15 @@ export enum Ratings {
     'Excelente' = '5',
   }
 
+// Five starts rating system
+export enum RatingsFiveStars {
+  'UnaEstrella' = '1',
+  'DosEstrellas' = '2',
+  'TresEstrellas' = '3',
+  'CuatroEstrellas' = '4',
+  'CincoEstrellas' = '5',
+}
+
 export enum Improvements {
     'Food' = 'Food',
     'Service' = 'Service',

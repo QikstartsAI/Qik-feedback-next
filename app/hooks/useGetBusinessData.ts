@@ -8,10 +8,11 @@ function useGetBusinessData () {
   const [business, setBusiness] = useState<Business | null>(null)
   const searchParams = useSearchParams()
 
+  const businessId = searchParams.get('id')
+  const branchId = searchParams.get('sucursal')
+  const waiterId = searchParams.get('mesero')
+
   useEffect(() => {
-    const businessId = searchParams.get('id')
-    const branchId = searchParams.get('sucursal')
-    const waiterId = searchParams.get('mesero')
 
     if (!businessId) return
     const fetchData = async () => {
@@ -27,11 +28,16 @@ function useGetBusinessData () {
       }
     }
     fetchData()
-  }, [])
+  }, [
+    businessId,
+    branchId,
+    waiterId,
+ ])
 
   return {
     loading,
-    business
+    business,
+    businessId,
   }
 }
 

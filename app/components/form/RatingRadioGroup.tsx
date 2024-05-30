@@ -12,10 +12,14 @@ type RatingRadioGroupProps = {
 }
 
 function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
+  const isUsCountry = business?.Country === 'US' || business?.Country === 'HK'
+  const isCaCountry = business?.Country === 'CA'
+  const isFrCountry = business?.Country === 'FR'
+
   return (
     <ul className='grid grid-cols-4 text-sm font-medium text-gray-900'>
-      <li className={cn('w-full py-1 sm:py-2 cursor-pointer hover:scale-110 hover:sm:scale-125 filter grayscale hover:grayscale-0 transition-all', {
-        'grayscale-0 scale-110 sm:scale-125': value === Ratings.Mal
+      <li className={cn('w-full py-1 sm:py-2 cursor-pointer hover:scale-110 hover:sm:scale-125  transition-all', {
+        ' scale-110 sm:scale-125': value === Ratings.Mal
       })}
       >
         <FormItem className='flex flex-col items-center '>
@@ -29,16 +33,16 @@ function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
             className={cn('text-center w-full font-normal flex flex-col items-center cursor-pointer space-y-1')}
           >
             <Image
-              src='/mal.webp'
+              src='/mal.png'
               alt='experiencia mal'
               className='w-8 h-8 sm:w-10 sm:h-10'
               width={668}
               height={657}
             />
             <p className='w-full text-[10px] sm:text-[11px]'>  {
-              business?.Country === 'US'
+              isUsCountry
                 ? 'Bad'
-                : business?.Country === 'CA' || business?.Country === 'FR'
+                : isCaCountry || isFrCountry
                   ? 'Mal'
                   : 'Mal'
             }
@@ -46,8 +50,8 @@ function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
           </FormLabel>
         </FormItem>
       </li>
-      <li className={cn('w-full py-1 sm:py-2 cursor-pointer hover:scale-110 hover:sm:scale-125 filter grayscale hover:grayscale-0 transition-all', {
-        'grayscale-0 scale-110 sm:scale-125': value === Ratings.Regular
+      <li className={cn('w-full py-1 sm:py-2 cursor-pointer hover:scale-110 hover:sm:scale-125  transition-all', {
+        ' scale-110 sm:scale-125': value === Ratings.Regular
       })}
       >
         <FormItem className='flex flex-col items-center '>
@@ -61,16 +65,16 @@ function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
             className={cn('text-center w-full font-normal flex flex-col items-center cursor-pointer space-y-1')}
           >
             <Image
-              src='/regular.webp'
+              src='/regular.png'
               alt='experiencia regular'
               className='w-8 h-8 sm:w-10 sm:h-10'
               width={668}
               height={657}
             />
             <p className='w-full text-[10px] sm:text-[11px]'> {
-              business?.Country === 'US'
+              isUsCountry
                 ? 'Fair'
-                : business?.Country === 'CA' || business?.Country === 'FR'
+                : isCaCountry || isFrCountry
                   ? 'Régulière'
                   : 'Regular'
             }
@@ -79,8 +83,8 @@ function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
           </FormLabel>
         </FormItem>
       </li>
-      <li className={cn('w-full py-1 sm:py-2 cursor-pointer hover:scale-110 hover:sm:scale-125 filter grayscale hover:grayscale-0 transition-all', {
-        'grayscale-0 scale-110 sm:scale-125': value === Ratings.Bueno
+      <li className={cn('w-full py-1 sm:py-2 cursor-pointer hover:scale-110 hover:sm:scale-125  transition-all', {
+        ' scale-110 sm:scale-125': value === Ratings.Bueno
       })}
       >
         <FormItem className='flex flex-col items-center '>
@@ -94,16 +98,16 @@ function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
             className={cn('text-center w-full font-normal flex flex-col items-center cursor-pointer space-y-1')}
           >
             <Image
-              src='/bueno.webp'
+              src='/bueno.png'
               alt='experiencia bueno'
               className='w-8 h-8 sm:w-10 sm:h-10'
               width={668}
               height={657}
             />
             <p className='w-full text-[10px] sm:text-[11px]'>    {
-              business?.Country === 'US'
+              isUsCountry
                 ? 'Good'
-                : business?.Country === 'CA' || business?.Country === 'FR'
+                : isCaCountry || isFrCountry
                   ? 'Bon'
                   : 'Bueno'
             }
@@ -112,8 +116,8 @@ function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
           </FormLabel>
         </FormItem>
       </li>
-      <li className={cn('w-full py-1 sm:py-2 cursor-pointer hover:scale-110 hover:sm:scale-125 filter grayscale hover:grayscale-0 transition-all', {
-        'grayscale-0 scale-110 sm:scale-125': value === Ratings.Excelente
+      <li className={cn('w-full py-1 sm:py-2 cursor-pointer hover:scale-110 hover:sm:scale-125  transition-all', {
+        ' scale-110 sm:scale-125': value === Ratings.Excelente
       })}
       >
         <FormItem className='flex flex-col items-center '>
@@ -127,16 +131,16 @@ function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
             className={cn('text-center w-full font-normal flex flex-col items-center cursor-pointer space-y-1')}
           >
             <Image
-              src='/excelente.webp'
+              src='/excelente.png'
               alt='experiencia excelente'
               className='w-8 h-8 sm:w-10 sm:h-10'
               width={668}
               height={657}
             />
             <p className='w-full text-[10px] sm:text-[11px]'> {
-              business?.Country === 'US'
+              isUsCountry
                 ? 'Excellent'
-                : business?.Country === 'CA' || business?.Country === 'FR'
+                : isCaCountry || isFrCountry
                   ? 'Excellent'
                   : 'Excelente'
             }

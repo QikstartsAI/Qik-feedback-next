@@ -32,10 +32,9 @@ import { FeedbackProps, feedbackSchema } from '@/app/validators/feedbackSchema'
 import { RadioGroup } from '../ui/RadioGroup'
 import { Origins, Ratings } from '@/app/types/feedback'
 import handleSubmitFeedback from '@/app/lib/handleSubmit'
-import { findCustomerDataByEmail } from '@/app/lib/handleEmail'
+import { findCustomerDataByEmail, findCustomerFeedbackDataInBusiness, findIsCustomerInBusiness } from '@/app/lib/handleEmail'
 import { Checkbox } from '../ui/Checkbox'
 import { Textarea } from '../ui/TextArea'
-import { Alert, AlertDescription, AlertTitle } from '../ui/Alert'
 import { Business } from '@/app/types/business'
 import { Dispatch, SetStateAction, useState } from 'react'
 import CustomRadioGroup from '../form/CustomRadioGroup'
@@ -53,20 +52,35 @@ import {
 import RatingRadioGroup from '../form/RatingRadioGroup'
 import { SelectedOption } from '@/app/types/general'
 import { CustomerRole } from '@/app/types/customer'
+import GoogleReviewMessage from '../form/GoogleReviewMessage'
+import { lastFeedbackFilledIsGreaterThanOneDay } from '@/app/lib/utils'
+import { getCustomerDataInBusiness } from '@/app/lib/handleEmail'
+import { useSearchParams } from 'next/navigation'
 
 interface FeedbackFormProps {
   business: Business | null
   setIsSubmitted: Dispatch<SetStateAction<boolean>>
   setRating: Dispatch<SetStateAction<string>>
   customerType: CustomerRole
+  setCustomerName: Dispatch<SetStateAction<string>>
 }
 
-export default function FeedbackForm({ business, setIsSubmitted, setRating, customerType }: FeedbackFormProps) {
+export default function FeedbackForm({ business, setIsSubmitted, setRating, setCustomerName, customerType }: FeedbackFormProps) {
+  const searchParams = useSearchParams()
+
   const [isChecked, setIsChecked] = useState(false)
   const [isTermsChecked, setIsTermsChecked] = useState(true)
 
-  const [showOtherOptionsModal, setShowOtherOptionsModal] = useState(false)
+  const [showOtherOptionsModal, setShowOtherOptionsModal] = useState<boolean>(false)
   const [selectedOtherOption, setSelectedOtherOption] = useState<SelectedOption | null>(null)
+
+  const [isCustomerInBusiness, setIsCustomerInBusiness] = useState<boolean>(false)
+  const [isLastFeedbackMoreThanOneDay, setIsLastFeedbackMoreThanOneDay] = useState<boolean | undefined>(false)
+  const [showLastFeedbackFilledModal, setShowLastFeedbackFilledModal] = useState<boolean | undefined>(false)
+
+  const businessId = searchParams.get('id')
+  const branchId = searchParams.get('sucursal')
+  const waiterId = searchParams.get('mesero')
 
   const { toast } = useToast()
 
@@ -102,7 +116,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, cust
   const { watch } = form
   const watchRating = watch('Rating')
   const isLowRating = watchRating === Ratings.Mal || watchRating === Ratings.Regular
-  const isUsCountry = business?.Country === 'US'
+  const isUsCountry = business?.Country === 'US' || business?.Country === 'HK'
   const isCaCountry = business?.Country === 'CA'
   const isFrCountry = business?.Country === 'FR'
   const watchFullName = watch('FullName')
@@ -115,6 +129,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, cust
 
   async function onSubmit(data: FeedbackProps) {
     setRating(data.Rating)
+    setCustomerName(data.FullName)
     const { Ambience, Service, Food, ImproveText } = data
     if (isLowRating && (!Ambience && !Service && !Food)) {
       form.setError('hiddenInput', {
@@ -145,7 +160,18 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, cust
       updatedData.ImproveText = isLowRating ? ImproveText : ''
       updatedData.AcceptPromotions = isChecked
       const improveOptions = isLowRating ? getImprovements({ Ambience, Service, Food, business }) : []
-      await handleSubmitFeedback(updatedData, improveOptions, customerType, attendantName)
+      let customerNumberOfVisits = 0
+      let feedbackNumberOfVisit = 0
+      const customerFeedbackInBusinesData = await findCustomerFeedbackDataInBusiness(data.Email, businessId || '')
+      if (customerFeedbackInBusinesData) {
+        const feedbackVisits = customerFeedbackInBusinesData.customerNumberOfVisits
+        customerNumberOfVisits = feedbackVisits + 1
+        feedbackNumberOfVisit = feedbackVisits + 1
+      } else {
+        customerNumberOfVisits = 1
+        feedbackNumberOfVisit = 1
+      }
+      await handleSubmitFeedback(updatedData, improveOptions, customerType, attendantName, customerNumberOfVisits, feedbackNumberOfVisit)
       if ((data.Rating === Ratings.Bueno || data.Rating === Ratings.Excelente) && business?.MapsUrl) {
         handleRedirect()
       }
@@ -200,6 +226,32 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, cust
             </ul>
           </Modal>
         )}
+        {
+          showLastFeedbackFilledModal && (
+            <Modal isOpen={true} onClose={() => setShowLastFeedbackFilledModal(false)}>
+              <div className='text-center'>
+                <p>
+                  {
+                    isUsCountry
+                      ? 'Thank you! '
+                      : isCaCountry || isFrCountry
+                        ? 'Merci!'
+                        : '¡Gracias!'
+                  }
+                </p>
+                <p>
+                  {
+                    isUsCountry
+                      ? '✌🏻 You have reached the daily survey limit. Until your next visit! 😉'
+                      : isCaCountry || isFrCountry
+                        ? "✌🏻 Vous avez atteint la limite quotidienne d'enquêtes. A votre prochaine visite ! 😉"
+                        : '✌🏻 Has alcanzado el límite diario de encuestas. ¡Hasta tu próxima visita! 😉'
+                  }
+                </p>
+              </div>
+            </Modal>
+          )
+        }
         <Card>
           <CardHeader>
             <CardTitle>
@@ -254,6 +306,12 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, cust
                               const email = field.value
                               if (email) {
                                 const customerData = await findCustomerDataByEmail(email)
+                                const customerDataInBusiness = await getCustomerDataInBusiness(email, businessId, branchId, waiterId)
+                                const lastFeedbackFilledInBusiness = customerDataInBusiness?.lastFeedbackFilled
+                                const lastFeedbackGreaterThanOneDay = lastFeedbackFilledIsGreaterThanOneDay(lastFeedbackFilledInBusiness)
+                                setIsCustomerInBusiness(await findIsCustomerInBusiness(email, business?.BusinessId || ''))
+                                setShowLastFeedbackFilledModal(lastFeedbackGreaterThanOneDay)
+                                setIsLastFeedbackMoreThanOneDay(lastFeedbackGreaterThanOneDay)
                                 if (customerData) {
                                   form.setValue('FullName', customerData.name)
                                   form.setValue('PhoneNumber', customerData.phoneNumber || '')
@@ -309,7 +367,12 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, cust
                             {...field}
                             placeholder={`Ej: ${phoneNumbersPlaceholders[business?.Country || 'EC']}`}
                             defaultCountry={business?.Country}
-                            onChange={(value) => setIsChecked(!!value)}
+                            onChange={
+                              (value) => {
+                                form.setValue("PhoneNumber", value)
+                                setIsChecked(!!value)
+                              }
+                            }
                           />
                         </FormControl>
                         <FormMessage />
@@ -319,26 +382,32 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, cust
                   <FormField
                     control={form.control}
                     name='AcceptPromotions'
-                    render={() => (
-                      <FormControl>
-                        <>
-                          <input
-                            type='checkbox'
-                            className='form-checkbox h-3 w-3 text-green-500'
-                            onChange={() => setIsChecked(!isChecked)}
-                            checked={isChecked}
-                          />
-                          <span className='ml-2 text-gray-700 text-xs'>
-                            {
-                              isUsCountry
-                                ? 'I agree to receive promotions'
-                                : isCaCountry || isFrCountry
-                                  ? "J'accepte de recevoir des promotions"
-                                  : 'Acepto recibir promociones'
-                            }
-                          </span>
-                        </>
-                      </FormControl>
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <>
+                            <input
+                              type='checkbox'
+                              className='form-checkbox h-3 w-3 text-green-500'
+                              onChange={() => {
+                                const newChecked = !isChecked
+                                setIsChecked(newChecked)
+                                form.setValue("AcceptPromotions", newChecked)
+                              }}
+                              checked={isChecked}
+                            />
+                            <span className='ml-2 text-gray-700 text-xs'>
+                              {
+                                isUsCountry
+                                  ? 'I agree to receive promotions'
+                                  : isCaCountry || isFrCountry
+                                    ? "J'accepte de recevoir des promotions"
+                                    : 'Acepto recibir promociones'
+                              }
+                            </span>
+                          </>
+                        </FormControl>
+                      </FormItem>
                     )}
                   />
                   <FormField
@@ -388,7 +457,8 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, cust
                             defaultValue={field.value}
                             className=''
                           >
-                            <CustomRadioGroup
+                            <CustomRadioGroup 
+                              className='sm:grid-cols-5'
                               value={field.value}
                               items={
                                 getKnownOrigins(business).concat(
@@ -424,7 +494,11 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, cust
                             defaultValue={field.value}
                             className=''
                           >
-                            <CustomRadioGroup value={field.value} items={getCustomersQuantity(business)} />
+                            <CustomRadioGroup 
+                              className='sm:grid-cols-5' 
+                              value={field.value} 
+                              items={getCustomersQuantity(business)} 
+                            />
                           </RadioGroup>
                         </FormControl>
                         <FormMessage />
@@ -451,7 +525,11 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, cust
                             defaultValue={field.value}
                             className=''
                           >
-                            <CustomRadioGroup value={field.value} items={getAverageTicket(business)} />
+                            <CustomRadioGroup 
+                              className='sm:grid-cols-5' 
+                              value={field.value} 
+                              items={getAverageTicket(business)} 
+                            />
                           </RadioGroup>
                         </FormControl>
                         <FormMessage />
@@ -639,41 +717,23 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, cust
                     )
                     : null}
                 </div>
-                {!isLowRating && watchFullName
-                  ? (
-                    <Alert>
-                      <AlertTitle className={cn('text-xs sm:text-sm')}>
-                        {
-                          isUsCountry
-                            ? 'Last favor'
-                            : isCaCountry || isFrCountry
-                              ? 'Une dernière faveur'
-                              : 'Un último favor'
-                        }, {watchFullName}!
-                      </AlertTitle>
-                      <AlertDescription className={cn('text-xs sm:text-sm')}>
-                        {
-                          isUsCountry
-                            ? 'When you submit, you will be directed to Google to rate our business with stars 🌟.'
-                            : isCaCountry || isFrCountry
-                              ? "L'envoyer sera dirigé vers Google pour améliorer notre emploi avec des étoiles 🌟."
-                              : 'Al enviar, serás dirigido a Google, para calificar nuestro emprendimiento con estrellas 🌟.'
-                        }
-                        <br />
-                        {
-                          isUsCountry
-                            ? 'Your opinion helps us so that more people know about us and we stand out in the sector. Thank you! 😍'
-                            : isCaCountry || isFrCountry
-                              ? 'Votre avis nous aide à ce que les plus grandes personnes connaissent nos gens et nous dévastent le secteur. Merci ! 😍'
-                              : 'Tu opinión nos ayuda a que más personas conozcan de nosotros y destaquemos en el sector. ¡Gracias! 😍'
-                        }
-                      </AlertDescription>
-                    </Alert>
-                  )
-                  : null}
+                {!isCustomerInBusiness
+                  ? (watchRating == Ratings.Excelente || watchRating === Ratings.Bueno) && watchFullName
+                    ? (
+                      <GoogleReviewMessage
+                        customerFullName={watchFullName}
+                        isCaCountry={isCaCountry}
+                        isFrCountry={isFrCountry}
+                        isUsCountry={isUsCountry}
+                      />
+                    )
+                    : null
+                  : null
+                }
                 <Button
+                  className='w-full'
                   type='submit' disabled={
-                    isTermsChecked === false
+                    isTermsChecked === false || isLastFeedbackMoreThanOneDay
                       ? true
                       : form.formState.isSubmitting
                   }
