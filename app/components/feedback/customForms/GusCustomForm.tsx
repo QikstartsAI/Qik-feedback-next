@@ -525,7 +525,7 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                 )}
               </div>
               <div className={'md:grid md:space-y-0 items-center'}>
-                <Stepper activeStep={0} alternativeLabel connector={<CustomStepperConnector />}>
+                <Stepper activeStep={0} alternativeLabel connector={<CustomStepperConnector variant='gus'/>}>
                   {steps.map((label, index) => (
                     <Step
                       key={index}

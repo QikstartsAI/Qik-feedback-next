@@ -433,7 +433,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
               </div>
 
               <div className={'md:grid md:space-y-0 items-center'}>
-                <Stepper activeStep={0} alternativeLabel connector={<CustomStepperConnector />}>
+                <Stepper activeStep={0} alternativeLabel connector={<CustomStepperConnector variant='hooters'/>}>
                   {steps.map((label, index) => (
                     <Step
                       key={index}

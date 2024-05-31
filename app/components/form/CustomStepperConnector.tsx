@@ -1,20 +1,31 @@
 import {styled} from "@mui/system";
 import {StepConnector, stepConnectorClasses} from "@mui/material";
 
-const CustomStepperConnector = styled(StepConnector)(({ theme }) => ({
+type CustomStepperConnectorProps = {
+  variant: "hooters" | "gus";
+};
+
+const CustomStepperConnector = styled(
+  ({ variant, ...other }: CustomStepperConnectorProps & React.ComponentProps<typeof StepConnector>) => (
+    <StepConnector {...other} />
+  )
+)(({ theme, variant }) => ({
 	[`&.${stepConnectorClasses.alternativeLabel}`]: {
 		top: 9,
+		'@media (max-width: 529px)': {
+			right: 12,
+		},
 	},
 	[`&.${stepConnectorClasses.active}`]: {
 		[`& .${stepConnectorClasses.line}`]: {
 			backgroundColor:
-				'hsl(var(--hooters))',
+				`hsl(var(--${variant}))`,
 		},
 	},
 	[`&.${stepConnectorClasses.completed}`]: {
 		[`& .${stepConnectorClasses.line}`]: {
 			backgroundColor:
-				'hsl(var(--hooters))',
+				`hsl(var(--${variant}))`,
 		},
 	},
 	[`& .${stepConnectorClasses.line}`]: {
