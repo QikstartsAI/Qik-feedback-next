@@ -4,12 +4,13 @@ import { Business } from '@/app/types/business';
 import ImageRounded from '../../ui/ImageRounded';
 import { CustomerRole } from '@/app/types/customer';
 
-type HootersCustomIntroProps = {
+type CustomIntroProps = {
   business: Business | null
+  variant: 'hooters' | 'gus'
   toogleCustomerType: (customer: CustomerRole) => void
 }
 
-function HootersCustomIntro({ business, toogleCustomerType }: HootersCustomIntroProps) {
+function CustomIntro({ business, toogleCustomerType, variant }: CustomIntroProps) {
   const country = business?.Country || 'EC'
   const waiter = business?.Waiter
   const isUsCountry = country === 'US'
@@ -25,7 +26,7 @@ function HootersCustomIntro({ business, toogleCustomerType }: HootersCustomIntro
               ? 'Nous apprécions votre avis 😊, cela vous prendra moins de '
               : 'Valoramos tu opinión 😊, te llevará menos de '
         }
-        <span className='text-hooters font-bold'>
+        <span className={`text-${variant} font-bold`}>
           {
             isUsCountry
               ? '1 minute'
@@ -65,7 +66,8 @@ function HootersCustomIntro({ business, toogleCustomerType }: HootersCustomIntro
       }
 
       <div className='flex flex-row justify-center items-center space-x-4 my-8'>
-        <Button variant={'hootersPrimary'}
+        <Button
+          variant={`${variant}Primary`}
           onClick={() => toogleCustomerType("new")}
         >
           {
@@ -76,7 +78,9 @@ function HootersCustomIntro({ business, toogleCustomerType }: HootersCustomIntro
                 : 'Nuevo cliente'
           }
         </Button>
-        <Button variant='hootersSecondary' onClick={() => toogleCustomerType("frequent")}>
+        <Button
+          variant={`${variant}Secondary`}
+          onClick={() => toogleCustomerType("frequent")}>
           {
             isUsCountry
               ? 'I am already a client'
@@ -90,4 +94,4 @@ function HootersCustomIntro({ business, toogleCustomerType }: HootersCustomIntro
   )
 }
 
-export default HootersCustomIntro
+export default CustomIntro

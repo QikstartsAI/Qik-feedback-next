@@ -13,10 +13,13 @@ type Items = {
 type StartsRatingGroupProps = {
   value: string;
   items: Items[];
+  variant: "hooters" | "gus"
 };
 
-function StartsRatingGroup({ items, value, className }: StartsRatingGroupProps & HTMLAttributes<HTMLDivElement>) {
+function StartsRatingGroup({ items, value, className, variant }: StartsRatingGroupProps & HTMLAttributes<HTMLDivElement>) {
   const selectedValue = parseInt(value);
+  const textStyleColor = `text-${variant}`
+  const fillStyleColor = `fill-${variant}`
 
   return (
     <ul className={cn(className, 'grid gap-1 sm:gap-2 text-sm font-medium text-gray-900 pb-3')}>
@@ -30,18 +33,12 @@ function StartsRatingGroup({ items, value, className }: StartsRatingGroupProps &
           <FormLabel
             className={cn(
               "text-center font-normal w-full flex flex-col items-center cursor-pointer space-y-1 text-gray-300 transition-all",
-              {
-                "text-hooters": selectedValue >= index + 1,
-                "text-gray-300": selectedValue < index + 1,
-              }
+              selectedValue >= index + 1 ? textStyleColor : 'text-gray-300'
             )}>
             {Icon !== undefined && <Icon 
               className={cn(
                 "w-10 h-10 md:w-12 md:h-12",
-                {
-                  "fill-hooters": selectedValue >= index + 1,
-                  "fill-gray-300": selectedValue < index + 1,
-                }
+                selectedValue >= index + 1 ? fillStyleColor : 'fill-gray-300'
               )}
             />}
             <small className={'text-question font-medium'}>{label}</small>
