@@ -292,7 +292,6 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                         })
                       }
                       if (!form.watch('FullName') || !form.watch('Email')) {
-                        console.log(formUserDataErrorMessage)
                         toast({
                           title: formUserDataErrorMessage,
                           variant: 'hootersDestructive'
