@@ -680,7 +680,7 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
               currentStepIndex === 8 && comeBack != null && (
                 <>
                   <Button
-                    variant={'hootersPrimary'}
+                    variant={'gusPrimary'}
                     size={'hootersLarge'}
                     type='submit' disabled={
                       !isTermsChecked || isLastFeedbackMoreThanOneDay

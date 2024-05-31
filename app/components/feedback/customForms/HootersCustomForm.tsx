@@ -35,13 +35,7 @@ import UserInfo from "@/app/components/feedback/UserInfo";
 import Stack from '@mui/material/Stack';
 
 import { useMultistepForm } from "@/app/hooks/useMultistepForm";
-import PlaceCleannessQuestion from "@/app/components/feedback/questions/PlaceCleannessQuestion";
-import QuicknessQuestion from "@/app/components/feedback/questions/QuicknessQuestion";
-import FoodQualityQuestion from "@/app/components/feedback/questions/FoodQualityQuestion";
-import AmbienceQuestion from "@/app/components/feedback/questions/AmbienceQuestion";
-import CourtesyQuestion from "@/app/components/feedback/questions/CourtesyQuestion";
 import RecommendingQuestion from '../questions/RecommendingQuestion'
-import ExperienceQuestion from "@/app/components/feedback/questions/ExperienceQuestion";
 import ComeBackQuestion from "@/app/components/feedback/questions/ComeBackQuestion";
 import { Step, StepLabel, Stepper } from "@mui/material";
 import { Textarea } from "@/app/components/ui/TextArea";
