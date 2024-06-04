@@ -132,11 +132,24 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
       form.setValue('PhoneNumber', customerData.phoneNumber || '');
       form.setValue('BirthdayDate', customerData.birthdayDate || '');
       setIsChecked(customerData.acceptPromotions || false);
+      setUserApprovesLoyalty(customerData?.userApprovesLoyalty || false)
       if (customerData.userApprovesLoyalty) {
         setIsRewardButtonClicked(true)
       }
+      if(userApprovesLoyalty) {
+        loyaltyService.getBirthdayDataFromBusiness(business).then(docSnap => {
+          if(docSnap) {
+            verifyBirthdayBenefit(customerData.birthdayDate, docSnap?.data());
+            console.log('Has birthday benefits? ', hasUserBirthdayBenefits.current)
+  
+            if(hasUserBirthdayBenefits) {
+              console.log('Birthday benefits: ', docSnap?.data());
+            }
+          }
+        });
+      }
     }
-  }, [customerData, form]);
+  }, [business, customerData, form, userApprovesLoyalty]);
 
   const resetForm = () => {
     form.reset()
@@ -158,23 +171,13 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
 
   const handleEmailField = async (email: string) => {
     if (email && customerType === 'frequent') {
-      setCustomerData(await findCustomerDataByEmail(email))
+      setCustomerData(await findCustomerDataByEmail(email, businessId || ''))
       setCustomerDataInBusiness(await getCustomerDataInBusiness(email, businessId, branchId, waiterId))
       const lastFeedbackFilledInBusiness = customerDataInBusiness?.lastFeedbackFilled
       const lastFeedbackGreaterThanOneDay = lastFeedbackFilledIsGreaterThanOneDay(lastFeedbackFilledInBusiness)
       setIsCustomerInBusiness(customerDataInBusiness ? true : false)
       setShowLastFeedbackFilledModal(lastFeedbackGreaterThanOneDay)
       setIsLastFeedbackMoreThanOneDay(lastFeedbackGreaterThanOneDay)
-
-      if(customerData) {
-        const userApprovesLoyalty = (await findCustomerFeedbackDataInBusiness(email, businessId || '')).userApprovesLoyalty
-        setUserApprovesLoyalty(userApprovesLoyalty)
-        console.log(customerData)
-        form.setValue('FullName', customerData.name)
-        form.setValue('PhoneNumber', customerData.phoneNumber || '')
-        form.setValue('BirthdayDate', customerData.birthdayDate || '')
-        setIsChecked(customerData.acceptPromotions || false)
-      }
     }
   }
 
@@ -207,9 +210,6 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
   }
 
   async function onSubmit(data: FeedbackProps) {
-    console.log(data)
-    console.log('User approves loyalty? ', userApprovesLoyalty);
-
     if(userApprovesLoyalty) {
       loyaltyService.getBirthdayDataFromBusiness(business).then(docSnap => {
         if(docSnap) {
@@ -257,9 +257,8 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
       const improveOptions = isLowRating ? getImprovements({ Ambience, Service, Food, business }) : []
       let customerNumberOfVisits = 0
       let feedbackNumberOfVisit = 0
-      const customerFeedbackInBusinesData = await findCustomerFeedbackDataInBusiness(data.Email, businessId || '')
-      if (customerFeedbackInBusinesData) {
-        const feedbackVisits = customerFeedbackInBusinesData.customerNumberOfVisits
+      if (customerData) {
+        const feedbackVisits = customerData.customerNumberOfVisits || 0
         customerNumberOfVisits = feedbackVisits + 1
         feedbackNumberOfVisit = feedbackVisits + 1
       } else {

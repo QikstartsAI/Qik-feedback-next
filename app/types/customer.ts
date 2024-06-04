@@ -11,6 +11,7 @@ export type Customer = {
   acceptPromotions?: boolean
   lastFeedbackFilled: Timestamp | undefined
   creationDate?: Timestamp
+  customerNumberOfVisits: number
 }
 
 export type CustomerRole = 'new' | 'frequent'

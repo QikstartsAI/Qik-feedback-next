@@ -30,6 +30,7 @@ const handleSubmitFeedback = async (
     feedbackNumberOfVisit: number
   ) => {
   const searchParams = new URLSearchParams(document.location.search)
+  const lastFeedbackFilledValue = getTimesTampFromDate(new Date())
 
   const businessId = searchParams.get('id')
   const branchId = searchParams.get('sucursal')
@@ -42,7 +43,7 @@ const handleSubmitFeedback = async (
     origin: Origin || '',
     customerType: customerType || '',
     acceptPromotions: !PhoneNumber ? false : true,
-    lastFeedbackFilled: getTimesTampFromDate(new Date())
+    lastFeedbackFilled: lastFeedbackFilledValue
   }
 
   const businessFeedbackRef = collection(
@@ -230,7 +231,7 @@ const handleSubmitFeedback = async (
       await setDoc(businessDoc, { 
         ...businessData,
         customerType: customerData?.customerType,
-        lastFeedbackFilled: customerData?.lastFeedbackFilled,
+        lastFeedbackFilled: lastFeedbackFilledValue,
         acceptPromotions: customerData?.acceptPromotions,
         lastOrigin: customerData?.origin,
         userApprovesLoyalty: UserApprovesLoyalty,
@@ -241,7 +242,7 @@ const handleSubmitFeedback = async (
       await setDoc(businessDoc, { 
         ...businessData,
         customerType: customerType,
-        lastFeedbackFilled: getTimesTampFromDate(new Date()),
+        lastFeedbackFilled: lastFeedbackFilledValue,
         acceptPromotions: AcceptPromotions,
         lastOrigin: Origin,
         userApprovesLoyalty: UserApprovesLoyalty,
