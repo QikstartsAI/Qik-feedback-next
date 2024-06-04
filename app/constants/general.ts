@@ -4,6 +4,7 @@ const DASHBOARD_COLLECTION_NAME = 'qik_feedback'
 const USERS_COLLECTION_NAME = 'businessUsers'
 const BUCKET_NAME = 'qik_feedback_test'
 const BUCKET_URL = `gs://${COLLECTION_NAME}`
+const DSC_SOLUTIONS_ID = 'dsc-solutions'
 const ASSETS_FOLDER = {
     icons: 'business/icons',
     background: 'business/background'
@@ -37,4 +38,5 @@ export {
     STORE_SUBCOLLECTION_NAME,
     ALLIES_SUBCOLLECTION_NAME,
     CALCULATOR_SUBCOLLECTION_NAME
+    DSC_SOLUTIONS_ID
 }

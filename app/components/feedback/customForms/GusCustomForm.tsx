@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-handler-names */
 'use client'
 
-import { Button } from '../ui/Button'
+import { Button } from '../../ui/Button'
 import {
   Form,
   FormControl,
@@ -9,10 +9,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from '../ui/Form'
+} from '../../ui/Form'
 import {
   CardFooter,
-} from '../ui/Card'
+} from '../../ui/Card'
 
 import 'react-phone-number-input/style.css'
 
@@ -21,8 +21,8 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { cn } from '@/app/lib/utils'
 import { useToast } from '@/app/hooks/useToast'
-import { HootersFeedbackProps, hootersFeedbackSchema } from '@/app/validators/hootersFeedbackSchema';
-import handleSubmitHootersForm from '@/app/lib/handleSubmitHootersForm'
+import { GusFeedbackProps, gusFeedbackSchema } from '@/app/validators/gusFeedbackSchema';
+import handleGusFeedbackSubmit from '@/app/lib/handleGusFeedbackSubmit'
 import { findCustomerFeedbackDataInBusiness } from '@/app/lib/handleEmail'
 import { Business } from '@/app/types/business'
 import React, { Dispatch, SetStateAction, useState } from 'react'
@@ -34,60 +34,61 @@ import getFormTranslations from '@/app/constants/formTranslations';
 import UserInfo from "@/app/components/feedback/UserInfo";
 import Stack from '@mui/material/Stack';
 
-import {useMultistepForm} from "@/app/hooks/useMultistepForm";
-import PlaceCleannessQuestion from "@/app/components/feedback/questions/PlaceCleannessQuestion";
-import QuicknessQuestion from "@/app/components/feedback/questions/QuicknessQuestion";
-import FoodQualityQuestion from "@/app/components/feedback/questions/FoodQualityQuestion";
-import AmbienceQuestion from "@/app/components/feedback/questions/AmbienceQuestion";
-import CourtesyQuestion from "@/app/components/feedback/questions/CourtesyQuestion";
-import RecommendingQuestion from './questions/RecommendingQuestion'
-import ExperienceQuestion from "@/app/components/feedback/questions/ExperienceQuestion";
-import ComeBackQuestion from "@/app/components/feedback/questions/ComeBackQuestion";
-import {Step, StepLabel, Stepper} from "@mui/material";
-import {Textarea} from "@/app/components/ui/TextArea";
-import { Checkbox } from '../ui/Checkbox'
+import { useMultistepForm } from "@/app/hooks/useMultistepForm";
+import { Step, StepLabel, Stepper } from "@mui/material";
+import { Textarea } from "@/app/components/ui/TextArea";
+import { Checkbox } from '../../ui/Checkbox'
 import { IconToolsKitchen } from '@tabler/icons-react';
 import { IconUserScan } from '@tabler/icons-react';
 import { IconBuildingStore } from '@tabler/icons-react';
-import CustomStepperIcons from "@/app/components/form/CustomStepperIcons";
+import CustomStepperIcons, { CustomStepperIconsGus } from "@/app/components/form/CustomStepperIcons";
 import CustomStepperConnector from "@/app/components/form/CustomStepperConnector";
+import StarRatingQuestion from '../questions/StarRatingQuestion'
+import BooleanQuestion from '../questions/BooleanQuestion'
 import { useSearchParams } from 'next/navigation'
 
-interface HootersCustomFormProps {
+interface GusCustomFormProps {
   business: Business | null
   setIsSubmitted: Dispatch<SetStateAction<boolean>>
   setRating: Dispatch<SetStateAction<string>>
   customerType: CustomerRole
 }
 
-export default function HootersCustomForm({ business, setIsSubmitted, setRating, customerType }: HootersCustomFormProps) {
+export default function GusCustomForm({ business, setIsSubmitted, setRating, customerType }: GusCustomFormProps) {
   const [isTermsChecked, setIsTermsChecked] = useState(true)
   const [recommending, setRecommending] = useState<boolean | null>(null)
   const [comeBack, setComeBack] = useState<boolean | null>(null)
+  const [reception, setReception] = useState<boolean | null>(true)
   const [isLastFeedbackMoreThanOneDay, setIsLastFeedbackMoreThanOneDay] = useState<boolean | undefined>(false)
   const searchParams = useSearchParams()
 
   const businessId = searchParams.get('id')
   const businessCountry = business?.Country || 'EC'
-  const questionsNumber = 8
+  const questionsNumber = 9
 
+  const isReceptiongClicked = React.useRef(null);
   const isRecommendingClicked = React.useRef(null);
   const isComeBackClicked = React.useRef(null);
 
   const { toast } = useToast()
 
-  const form = useForm<HootersFeedbackProps>({
-    resolver: zodResolver(
-      hootersFeedbackSchema(
-        businessCountry
-      )
-    ),
+  const form = useForm<GusFeedbackProps>({
+    resolver: zodResolver(gusFeedbackSchema()),
     defaultValues: {
       FullName: '',
       AcceptTerms: isTermsChecked,
       Email: '',
+      Treatment: undefined,
+      Reception: undefined,
+      ReceptionText: '',
+      ProductTaste: undefined,
+      CashServiceSpeed: undefined,
+      ProductDeliverySpeed: undefined,
+      PlaceCleanness: undefined,
+      Satisfaction: undefined,
+      Recommending: undefined,
+      ComeBack: undefined,
       StartTime: new Date(),
-      Courtesy: undefined,
       RecommendingText: '',
       ComeBackText: '',
       ImproveText: '',
@@ -108,21 +109,8 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
   const watchFullName = watch('FullName');
 
   const {
-    title,
-    subTitle,
     fullNameQuestion,
     emailQuestion,
-    courtesyQuestion,
-    placeCleannessQuestion,
-    quicknessQuestion,
-    foodQualityQuestion,
-    ambienceQuestion,
-    experienceQuestion,
-    recommendingQuestion,
-    comeBackQuestion,
-    nextButton,
-    yesButton,
-    noButton,
     submitButton,
     whyText,
     recommendingPlaceholder,
@@ -143,19 +131,21 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
     termsAndConditions3,
     termsAndConditions4,
     formErrorMessage,
-    emptyRecommendingError,
-    emptyNoRecommendingError,
     chooseOneOptionError,
     howToImprovementError,
     whyComeBackError,
-  } = getFormTranslations({businessCountry})
+  } = getFormTranslations({ businessCountry })
 
   const {
     goTo,
     currentStepIndex,
   } = useMultistepForm(questionsNumber);
 
-  const steps = ['', '', '', '', '', '', '', ''];
+  const steps = ['', '', '', '', '', '', '', '', ''];
+
+  const handleReceptionQuestion = (answer: boolean) => {
+    setReception(answer)
+  }
 
   const handleRecommendingQuestion = (answer: boolean) => {
     setRecommending(answer)
@@ -169,18 +159,37 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
     window.location.replace(business?.MapsUrl || '')
   }
 
+  const handleNextStepReception = () => {
+    if (!reception && isReceptionTextEmpty) {
+      toast({
+        title: 'Por favor dinos qué no recibiste correctamente',
+        variant: 'gusDestructive'
+      })
+      return;
+    }
+    goTo(currentStepIndex + 1)
+  }
+  const handleNextStepRecommending = () => {
+    if (recommending != null && isRecommendingTextEmpty) {
+      toast({
+        title: recommendingToastMessage,
+        variant: 'gusDestructive'
+      })
+      return;
+    }
+    goTo(currentStepIndex + 1)
+  }
 
-  async function onSubmit(data: HootersFeedbackProps) {
-    console.log(data)
 
-    const { Ambience, Service, Food, ImproveText, ComeBackText } = data
-    if (( (Ambience === undefined || !Ambience) &&
-          (Service === undefined || !Service) &&
-          (Food === undefined || !Food) &&
-          comeBack === false)) {
+  async function onSubmit(data: GusFeedbackProps) {
+    const { Ambience, Service, Food, ImproveText, ComeBackText, } = data
+    if (((Ambience === undefined || !Ambience) &&
+      (Service === undefined || !Service) &&
+      (Food === undefined || !Food) &&
+      comeBack === false)) {
       toast({
         title: chooseOneOptionError,
-        variant: 'hootersDestructive'
+        variant: 'gusDestructive'
       })
       return
     }
@@ -189,7 +198,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
     if (!comeBack && ImproveText.length === 0) {
       toast({
         title: howToImprovementError,
-        variant: 'hootersDestructive'
+        variant: 'gusDestructive'
       })
       return
     }
@@ -197,7 +206,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
     if (comeBack && ComeBackText.length === 0) {
       toast({
         title: whyComeBackError,
-        variant: 'hootersDestructive'
+        variant: 'gusDestructive'
       })
       return
     }
@@ -219,15 +228,15 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
         customerNumberOfVisits = 1
         feedbackNumberOfVisit = 1
       }
-      await handleSubmitHootersForm(updatedData, improveOptions, customerType, attendantName, customerNumberOfVisits, feedbackNumberOfVisit)
-    if (comeBack) {
-      handleRedirect()
-    }
+      await handleGusFeedbackSubmit(updatedData, improveOptions, customerType, attendantName, customerNumberOfVisits, feedbackNumberOfVisit)
+      if (comeBack) {
+        handleRedirect()
+      }
     } catch (error) {
       console.log(error)
       toast({
         title: formErrorMessage,
-        variant: 'hootersDestructive',
+        variant: 'gusDestructive',
       })
     } finally {
       resetForm()
@@ -236,26 +245,17 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
   }
 
   // validate if RecommendingText is empty cannot go to next step
-  const isRecommendingTextEmpty = form.watch('RecommendingText') === '';
+  const isReceptionTextEmpty = form.watch('ReceptionText') === ''
+  const isRecommendingTextEmpty = form.watch('RecommendingText') === ''
 
-  const handleNextStep = () => {
-    if (recommending != null && isRecommendingTextEmpty) {
-      toast({
-        title: recommending ? emptyRecommendingError : emptyNoRecommendingError,
-        variant: 'hootersDestructive'
-      })
-      return;
-    }
-    goTo(currentStepIndex+1)
-  }
-
+  const recommendingToastMessage = `Por favor dinos por qué ${!recommending ? 'no' : ''} recomendarias GUS`
   return (
     <>
       <div className='mx-auto py-8 lg:py-18 max-w-xl px-6 min-h-screen text-colorText' id='form'>
         <h4 className={'text-center font-medium text-colorText'}>
-          {title}
-          <span className='text-hooters font-medium'>
-            <b>{subTitle}</b>
+          Valoramos tu opinión 😊, te llevará menos de
+          <span className='text-gus font-medium'>
+            <b> 1 minuto</b>
           </span>
         </h4>
 
@@ -268,209 +268,290 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
             <div
               className={cn('space-y-3 mb-3 flex-row items-center justify-center', {})}
             >
-              <UserInfo
-                form={form}
-                emailQuestion={emailQuestion}
-                fullNameQuestion={fullNameQuestion}
-                businessCountry={businessCountry}
-                setIsLastFeedbackMoreThanOneDay={setIsLastFeedbackMoreThanOneDay}
-                businessId={businessId || ''}
-              />
+              {
+                currentStepIndex === 0 && (
+                  <UserInfo<GusFeedbackProps>
+                    form={form}
+                    emailQuestion={emailQuestion}
+                    fullNameQuestion={fullNameQuestion}
+                    businessCountry={businessCountry}
+                    setIsLastFeedbackMoreThanOneDay={setIsLastFeedbackMoreThanOneDay}
+                    businessId={businessId || ''}
+                  />
+                )
+              }
               <div className='flex flex-col gap-2 text-center items-center justify-center py-2'>
                 <Separator.Root
-                  className='SeparatorRoot bg-hooters h-1.5 rounded-full mb-4'
+                  className='SeparatorRoot bg-gus h-1.5 rounded-full mb-4'
                   style={{ width: '15%' }}
                 />
 
                 {currentStepIndex === 0 && (
-                  <CourtesyQuestion
+                  <StarRatingQuestion<GusFeedbackProps>
                     form={form}
-                    question={courtesyQuestion}
+                    question='¿Cómo califica el trato recibido el dia de hoy?'
                     nextStep={() => {
-                      if(form.watch('Courtesy') === undefined) {
+                      if (!form.watch('Treatment')) {
                         toast({
                           title: formErrorMessage,
-                          variant: 'hootersDestructive'
+                          variant: 'gusDestructive'
                         })
                       }
-                      else goTo(currentStepIndex+1)
+                      if (!form.watch('FullName') || !form.watch('Email')) {
+                        toast({
+                          title: 'Ayúdanos con tus datos antes de seguir',
+                          variant: 'gusDestructive'
+                        })
+                      }
+                      else goTo(currentStepIndex + 1)
                     }}
                     businessCountry={businessCountry}
+                    formName='Treatment'
+                    variant='gus'
                   />
                 )}
-
                 {currentStepIndex === 1 && (
-                  <PlaceCleannessQuestion
+                  <BooleanQuestion
                     form={form}
-                    question={placeCleannessQuestion}
+                    question='¿Recibió correctamente todo lo que solicitó? (evaluar todo: producto, servilletas, salsas, sabor y tamaño de bebidas, etc.)'
+                    yesButton='Sí'
+                    noButton='No'
+                    handleResponse={handleReceptionQuestion}
                     nextStep={() => {
-                      if(form.watch('PlaceCleanness') === undefined) {
+                      if (form.watch('Reception') === undefined) {
                         toast({
                           title: formErrorMessage,
-                          variant: 'hootersDestructive'
+                          variant: 'gusDestructive'
+                        })
+                      } else if (!form.watch('Reception') && isReceptionTextEmpty) {
+                        toast({
+                          title: 'Por favor dinos qué no recibiste correctamente',
+                          variant: 'gusDestructive'
                         })
                       }
-                      else goTo(currentStepIndex+1)
+                      else goTo(currentStepIndex + 1)
                     }}
-                    prevStep={() => {goTo(currentStepIndex-1)}}
-                    businessCountry={businessCountry}
+                    prevStep={() => { goTo(currentStepIndex - 1) }}
+                    isQuestionClicked={isReceptiongClicked}
+                    formName='Reception'
                   />
                 )}
-
+                {
+                  currentStepIndex === 1 && !reception && (
+                    <FormField
+                      control={form.control}
+                      name='ReceptionText'
+                      render={({ field }) => (
+                        <FormItem className='pt-5 md:grid md:space-y-0 items-center text-center md:gap-12'>
+                          <Stack spacing={2}>
+                            <FormLabel className='col-span-3 text-xl'>
+                              <h4 className={'text-gus'}>
+                                <b>¿Que no recibió correctamente?</b>
+                              </h4>
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder='Ej: se equivocaron en el tamaño de...'
+                                className={'border-2 border-gray-300 rounded-lg focus:border-gray-500'}
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </Stack>
+                        </FormItem>
+                      )}
+                    />
+                  )
+                }
                 {currentStepIndex === 2 && (
-                  <QuicknessQuestion
+                  <StarRatingQuestion<GusFeedbackProps>
                     form={form}
-                    question={quicknessQuestion}
+                    question='¿Cuánto le gustó el producto que consumió?'
                     nextStep={() => {
-                      if(form.watch('Quickness') === undefined) {
-                        console.log('True')
+                      if (!form.watch('ProductTaste')) {
                         toast({
                           title: formErrorMessage,
-                          variant: 'hootersDestructive'
+                          variant: 'gusDestructive'
                         })
                       }
-                      else goTo(currentStepIndex+1)
+                      else goTo(currentStepIndex + 1)
                     }}
-                    prevStep={() => {goTo(currentStepIndex-1)}}
+                    prevStep={() => { goTo(currentStepIndex - 1) }}
                     businessCountry={businessCountry}
+                    formName='ProductTaste'
+                    variant='gus'
                   />
                 )}
 
                 {currentStepIndex === 3 && (
-                  <FoodQualityQuestion
+                  <StarRatingQuestion<GusFeedbackProps>
                     form={form}
-                    question={foodQualityQuestion}
+                    question='¿Cómo califica la velocidad del servicio en caja?'
                     nextStep={() => {
-                      if(form.watch('FoodQuality') === undefined) {
-                        console.log('True')
+                      if (!form.watch('CashServiceSpeed')) {
                         toast({
                           title: formErrorMessage,
-                          variant: 'hootersDestructive'
+                          variant: 'gusDestructive'
                         })
                       }
-                      else goTo(currentStepIndex+1)
+                      else goTo(currentStepIndex + 1)
                     }}
-                    prevStep={() => {goTo(currentStepIndex-1)}}
+                    prevStep={() => { goTo(currentStepIndex - 1) }}
                     businessCountry={businessCountry}
+                    formName='CashServiceSpeed'
+                    variant='gus'
                   />
                 )}
 
                 {currentStepIndex === 4 && (
-                  <AmbienceQuestion
+                  <StarRatingQuestion<GusFeedbackProps>
                     form={form}
-                    question={ambienceQuestion}
+                    question='¿Cómo califica la velocidad en la entrega del producto (despacho)?'
                     nextStep={() => {
-                      if(form.watch('Climate') === undefined) {
+                      if (!form.watch('ProductDeliverySpeed')) {
                         toast({
                           title: formErrorMessage,
-                          variant: 'hootersDestructive'
+                          variant: 'gusDestructive'
                         })
                       }
-                      else goTo(currentStepIndex+1)
+                      else goTo(currentStepIndex + 1)
                     }}
-                    prevStep={() => {goTo(currentStepIndex-1)}}
+                    prevStep={() => { goTo(currentStepIndex - 1) }}
                     businessCountry={businessCountry}
+                    formName='ProductDeliverySpeed'
+                    variant='gus'
                   />
                 )}
-
                 {currentStepIndex === 5 && (
-                  <ExperienceQuestion
+                  <StarRatingQuestion<GusFeedbackProps>
                     form={form}
-                    question={experienceQuestion}
+                    question='¿Cómo califica la limpieza general del local? (salón, suelo, mesas y sillas, baños)'
                     nextStep={() => {
-                      if(form.watch('Experience') === undefined) {
+                      if (!form.watch('PlaceCleanness')) {
                         toast({
                           title: formErrorMessage,
-                          variant: 'hootersDestructive'
+                          variant: 'gusDestructive'
                         })
                       }
-                      else goTo(currentStepIndex+1)
+                      else goTo(currentStepIndex + 1)
                     }}
-                    prevStep={() => {goTo(currentStepIndex-1)}}
+                    prevStep={() => { goTo(currentStepIndex - 1) }}
                     businessCountry={businessCountry}
+                    formName='PlaceCleanness'
+                    variant='gus'
                   />
                 )}
-
                 {currentStepIndex === 6 && (
-                  <RecommendingQuestion
+                  <StarRatingQuestion<GusFeedbackProps>
                     form={form}
-                    question={recommendingQuestion}
-                    yesButton={yesButton}
-                    noButton={noButton}
-                    handleResponse={handleRecommendingQuestion}
-                    prevStep={() => {goTo(currentStepIndex-1)}}
-                    isRecommendingClicked={isRecommendingClicked}
-                  >
-                  </RecommendingQuestion>
+                    question='En base a sus experiencia en GUS ¿Cuán satisfecho se encuentra?'
+                    nextStep={() => {
+                      if (!form.watch('Satisfaction')) {
+                        toast({
+                          title: formErrorMessage,
+                          variant: 'gusDestructive'
+                        })
+                      }
+                      else goTo(currentStepIndex + 1)
+                    }}
+                    prevStep={() => { goTo(currentStepIndex - 1) }}
+                    businessCountry={businessCountry}
+                    formName='Satisfaction'
+                    variant='gus'
+                  />
                 )}
-
                 {currentStepIndex === 7 && (
-                  <ComeBackQuestion
+                  <BooleanQuestion
                     form={form}
-                    question={comeBackQuestion}
-                    yesButton={yesButton}
-                    noButton={noButton}
+                    question='¿Recomendaría a GUS a amigos y familiares?'
+                    yesButton='Sí'
+                    noButton='No'
+                    handleResponse={handleRecommendingQuestion}
+                    nextStep={() => {
+                      if (form.watch('Recommending') === undefined) {
+                        toast({
+                          title: formErrorMessage,
+                          variant: 'gusDestructive'
+                        })
+                      } else if (isRecommendingTextEmpty) {
+                        toast({
+                          title: recommendingToastMessage,
+                          variant: 'gusDestructive'
+                        })
+                      }
+                      else goTo(currentStepIndex + 1)
+                    }}
+                    prevStep={() => { goTo(currentStepIndex - 1) }}
+                    isQuestionClicked={isRecommendingClicked}
+                    formName='Recommending'
+                  />
+                )}
+                {
+                  currentStepIndex === 7 && recommending != null && (
+                    <FormField
+                      control={form.control}
+                      name='RecommendingText'
+                      render={({ field }) => (
+                        <FormItem className='pt-5 md:grid md:space-y-0 items-center text-center md:gap-12 w-full'>
+                          <Stack spacing={2}>
+                            <FormLabel className='col-span-3 text-xl'>
+                              <h4 className={'text-gus'}><b>{whyText}</b></h4>
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder={recommending ? recommendingPlaceholder : noRecommendingPlaceholder}
+                                className={'border-2 border-gray-300 rounded-lg focus:border-gray-500'}
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </Stack>
+                        </FormItem>
+                      )}
+                    />
+                  )
+                }
+                {currentStepIndex === 8 && (
+                  <BooleanQuestion
+                    form={form}
+                    question='¿Regresaría a GUS?'
+                    yesButton='Sí'
+                    noButton='No'
                     handleResponse={handleComeBackQuestion}
-                    prevStep={() => {goTo(currentStepIndex-1)}}
-                    isComeBackClicked={isComeBackClicked}
-                  >
-                  </ComeBackQuestion>
+                    prevStep={() => { goTo(currentStepIndex - 1) }}
+                    isQuestionClicked={isComeBackClicked}
+                    formName='ComeBack'
+                  />
                 )}
               </div>
-
               <div className={'md:grid md:space-y-0 items-center'}>
-                <Stepper activeStep={0} alternativeLabel connector={<CustomStepperConnector/>}>
+                <Stepper activeStep={0} alternativeLabel connector={<CustomStepperConnector variant='gus'/>}>
                   {steps.map((label, index) => (
                     <Step
                       key={index}
                       onClick={() => {
-                        if(index < 7 && index <= currentStepIndex) goTo(index)
+                        if (index < 8 && index <= currentStepIndex) goTo(index)
                       }}
                       active={index === currentStepIndex}
                       completed={index < currentStepIndex}>
-                      <StepLabel StepIconComponent={CustomStepperIcons}>{label}</StepLabel>
+                      <StepLabel StepIconComponent={CustomStepperIconsGus}>
+                        {label}
+                      </StepLabel>
                     </Step>
                   ))}
                 </Stepper>
               </div>
-
               {
-                currentStepIndex === 6 && recommending != null && (
-                  <FormField
-                    control={form.control}
-                    name='RecommendingText'
-                    render={({field}) => (
-                      <FormItem className='pt-5 md:grid md:space-y-0 items-center text-center md:gap-12'>
-                        <Stack spacing={2}>
-                          <FormLabel className='col-span-3 text-xl'>
-                            <h4 className={'text-hooters'}><b>{whyText}</b></h4>
-                          </FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder={recommending ? recommendingPlaceholder : noRecommendingPlaceholder}
-                              className={'border-2 border-gray-300 rounded-lg focus:border-gray-500'}
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage/>
-                        </Stack>
-                      </FormItem>
-                    )}
-                  />
-                )
-              }
-
-              {
-                currentStepIndex === 7 && comeBack === true && (
+                currentStepIndex === 8 && comeBack === true && (
                   <>
                     <FormField
                       control={form.control}
                       name='ComeBackText'
-                      render={({field}) => (
+                      render={({ field }) => (
                         <FormItem className='pt-5 md:grid md:space-y-0 items-center text-center md:gap-12'>
                           <Stack spacing={2}>
                             <FormLabel className='col-span-3 text-xl'>
-                              <h4 className={'text-hooters'}><b>{whyText}</b></h4>
+                              <h4 className={'text-gus'}><b>{whyText}</b></h4>
                             </FormLabel>
                             <FormControl>
                               <Textarea
@@ -479,17 +560,17 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                                 {...field}
                               />
                             </FormControl>
-                            <FormMessage/>
+                            <FormMessage />
                           </Stack>
                         </FormItem>
                       )}
                     />
                     {watchFullName && (
                       <p className='text-center mt-2 text-lg'>
-                        <b className={'text-hooters uppercase'}>{watchFullName}</b>, {submitText1}
-                        <b className={'text-hooters uppercase'}>{submitButton}</b>{submitText2}
-                        <b className={'text-hooters uppercase'}>Google</b> {submitText3}
-                        <b className={'text-hooters uppercase'}>{submitText4}</b> {submitText5}
+                        <b className={'text-gus uppercase'}>{watchFullName}</b>, {submitText1}
+                        <b className={'text-gus uppercase'}>{submitButton}</b>{submitText2}
+                        <b className={'text-gus uppercase'}>Google</b> {submitText3}
+                        <b className={'text-gus uppercase'}>{submitText4}</b> {submitText5}
                       </p>
                     )}
                   </>
@@ -497,7 +578,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
               }
 
               {
-                currentStepIndex === 7 && comeBack === false && (
+                currentStepIndex === 8 && comeBack === false && (
                   <div
                     className='pt-5 grid-rows-3 sm:space-y-1 items-center text-center gap-5 md:gap-4 sm:gap-5 justify-center text-gray-900'>
                     <>
@@ -511,10 +592,10 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                         <FormField
                           control={form.control}
                           name='Food'
-                          render={({field}) => (
+                          render={({ field }) => (
                             <FormItem
-                              className={cn(' items-center rounded-md border py-1 sm:py-2 shadow hover:border-hooters hover:text-hooters transition-all', {
-                                'border-hooters text-hooters': field.value
+                              className={cn(' items-center rounded-md border py-1 sm:py-2 shadow hover:border-gus hover:text-gus transition-all', {
+                                'border-gus text-gus': field.value
                               })}
                             >
                               <FormControl>
@@ -525,11 +606,11 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                                 />
                               </FormControl>
                               <FormLabel
-                                className={cn('text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-hooters hover:text-hooters transition-all', {
-                                  'border-hooters text-hooters': field.value
+                                className={cn('text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-gus hover:text-gus transition-all', {
+                                  'border-gus text-gus': field.value
                                 })}
                               >
-                                <IconToolsKitchen/>
+                                <IconToolsKitchen />
                                 <p className='w-full text-[10px] sm:text-[11px]'>
                                   {foodButton}
                                 </p>
@@ -540,10 +621,10 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                         <FormField
                           control={form.control}
                           name='Service'
-                          render={({field}) => (
+                          render={({ field }) => (
                             <FormItem
-                              className={cn(' items-center rounded-md border py-1 sm:py-2 shadow hover:border-hooters hover:text-hooters transition-all', {
-                                'border-hooters text-hooters': field.value
+                              className={cn(' items-center rounded-md border py-1 sm:py-2 shadow hover:border-gus hover:text-gus transition-all', {
+                                'border-gus text-gus': field.value
                               })}
                             >
                               <FormControl>
@@ -554,11 +635,11 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                                 />
                               </FormControl>
                               <FormLabel
-                                className={cn('text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-hooters hover:text-hooters transition-all', {
-                                  'border-hooters text-hooters': field.value
+                                className={cn('text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-gus hover:text-gus transition-all', {
+                                  'border-gus text-gus': field.value
                                 })}
                               >
-                                <IconUserScan/>
+                                <IconUserScan />
                                 <p className='w-full text-[10px] sm:text-[11px]'>
                                   {serviceButton}
                                 </p>
@@ -569,10 +650,10 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                         <FormField
                           control={form.control}
                           name='Ambience'
-                          render={({field}) => (
+                          render={({ field }) => (
                             <FormItem
-                              className={cn(' items-center rounded-md border py-1 sm:py-2 shadow hover:border-hooters hover:text-hooters transition-all', {
-                                'border-hooters text-hooters': field.value
+                              className={cn(' items-center rounded-md border py-1 sm:py-2 shadow hover:border-gus hover:text-gus transition-all', {
+                                'border-gus text-gus': field.value
                               })}
                             >
                               <FormControl>
@@ -583,11 +664,11 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                                 />
                               </FormControl>
                               <FormLabel
-                                className={cn('text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-hooters hover:text-hooters transition-all', {
-                                  'border-hooters text-hooters': field.value
+                                className={cn('text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-gus hover:text-gus transition-all', {
+                                  'border-gus text-gus': field.value
                                 })}
                               >
-                                <IconBuildingStore/>
+                                <IconBuildingStore />
                                 <p className='w-full text-[10px] sm:text-[11px]'>
                                   {ambienceButton}
                                 </p>
@@ -604,10 +685,10 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                       <FormField
                         control={form.control}
                         name='ImproveText'
-                        render={({field}) => (
+                        render={({ field }) => (
                           <FormItem>
                             <FormLabel className='col-span-3 text-question text-lg'>
-                              {shareDetailsText} <b className={'text-hooters'}>Hooters</b>
+                              {shareDetailsText} <b className={'text-gus'}>GUS</b>
                             </FormLabel>
                             <FormControl>
                               <Textarea
@@ -616,7 +697,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                                 {...field}
                               />
                             </FormControl>
-                            <FormMessage/>
+                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -624,34 +705,46 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                   </div>
                 )
               }
-
               {
-                // "Next" button is only shown on question 7
-                currentStepIndex === 6 && isRecommendingClicked.current != null && (
+                currentStepIndex === 1 && isReceptiongClicked.current != null && (
                   <div>
                     <Button
                       type='button'
-                      variant={'hootersPrimary'}
+                      variant={'gusPrimary'}
                       size={'hootersLarge'}
-                      onClick={handleNextStep}
+                      onClick={handleNextStepReception}
                     >
-                      {nextButton}
+                      Siguiente
+                    </Button>
+                  </div>
+                )
+              }
+              {
+                currentStepIndex === 7 && isRecommendingClicked.current != null && (
+                  <div>
+                    <Button
+                      type='button'
+                      variant={'gusPrimary'}
+                      size={'hootersLarge'}
+                      onClick={handleNextStepRecommending}
+                    >
+                      Siguiente
                     </Button>
                   </div>
                 )
               }
             </div>
             {
-              currentStepIndex === 7 && comeBack != null && (
+              currentStepIndex === 8 && comeBack != null && (
                 <>
                   <Button
-                    variant={'hootersPrimary'}
+                    variant={'gusPrimary'}
                     size={'hootersLarge'}
                     type='submit' disabled={
-                    !isTermsChecked || isLastFeedbackMoreThanOneDay
-                      ? true
-                      : form.formState.isSubmitting
-                  }
+                      !isTermsChecked || isLastFeedbackMoreThanOneDay
+                        ? true
+                        : form.formState.isSubmitting
+                    }
                   >
                     {submitButton}
                   </Button>
@@ -679,9 +772,9 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                               >
                                 {termsAndConditions2}
                               </a> {termsAndConditions3} <a className='text-primary hover:underline'
-                                                            href='https://qikstarts.com/privacy-policy'
-                                                            rel='noopener noreferrer'
-                                                            target='_blank'>{termsAndConditions4}</a>.
+                                href='https://qikstarts.com/privacy-policy'
+                                rel='noopener noreferrer'
+                                target='_blank'>{termsAndConditions4}</a>.
                             </small>
                           </>
                         </FormControl>

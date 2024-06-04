@@ -21,6 +21,8 @@ const buttonVariants = cva(
         link: 'text-primary underline-offset-4 hover:underline',
         hootersPrimary: 'bg-hooters text-primary-foreground shadow font-bold',
         hootersSecondary: 'bg-hooters-foreground text-colorText shadow border border-hooters',
+        gusPrimary: 'bg-gus text-primary-foreground shadow font-bold',
+        gusSecondary: 'bg-gus-foreground text-colorText shadow border border-gus',
       },
       size: {
         default: 'h-9 px-4 py-2',
