@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/qik-feedback-next-ft-hooters-custom-form.iml" filepath="$PROJECT_DIR$/.idea/qik-feedback-next-ft-hooters-custom-form.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/qik-feedback-next.iml" filepath="$PROJECT_DIR$/.idea/qik-feedback-next.iml" />
     </modules>
   </component>
 </project>
