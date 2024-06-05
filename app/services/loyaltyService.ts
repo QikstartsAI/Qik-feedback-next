@@ -1,4 +1,4 @@
-import {collection, doc, getDoc, getDocs, setDoc} from 'firebase/firestore';
+import {doc, getDoc } from 'firebase/firestore';
 import {getFirebase} from '@/app/lib/firebase'
 import {
 	DASHBOARD_COLLECTION_NAME,

@@ -36,11 +36,8 @@ export const findCustomerFeedbackDataInBusiness = async (email: string, business
   console.log(email)
   const db = getFirebase().db
   const customerDocRef = doc(db, CUSTOMERS_COLLECTION_NAME || '', email, 'business', businessId)
-  if (customerDocRef.id) {
-    const data = (await getDoc(customerDocRef)).data() as {customerNumberOfVisits: number, userApprovesLoyalty: boolean}
-    return data
-  }
-  return {}
+  const data = (await getDoc(customerDocRef)).data() as {customerNumberOfVisits: number, userApprovesLoyalty: boolean}
+  return data
 }
 
 

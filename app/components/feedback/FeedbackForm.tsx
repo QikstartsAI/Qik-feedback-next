@@ -21,7 +21,6 @@ import {Origins, Ratings} from '@/app/types/feedback'
 import handleSubmitFeedback from '@/app/lib/handleSubmit'
 import {
   findCustomerDataByEmail,
-  findCustomerFeedbackDataInBusiness,
   getCustomerDataInBusiness
 } from '@/app/lib/handleEmail'
 import {Checkbox} from '../ui/Checkbox'
@@ -47,8 +46,9 @@ import {Customer, CustomerRole} from '@/app/types/customer'
 import GoogleReviewMessage from '../form/GoogleReviewMessage'
 import {useSearchParams} from 'next/navigation'
 import loyaltyService from "@/app/services/loyaltyService";
-import {DocumentData, DocumentSnapshot} from 'firebase/firestore'
+import {DocumentData} from 'firebase/firestore'
 import {BirthdayOption} from "@/app/types/loyalty";
+import { userHasBirthdayBenefits } from '@/app/lib/loyalty/birthdayBenefits'
 
 
 interface FeedbackFormProps {
@@ -57,9 +57,17 @@ interface FeedbackFormProps {
   setRating: Dispatch<SetStateAction<string>>
   customerType: CustomerRole
   setCustomerName: Dispatch<SetStateAction<string>>
+  setUserHasBirthdayBenefit: Dispatch<SetStateAction<boolean>>
 }
 
-export default function FeedbackForm({ business, setIsSubmitted, setRating, setCustomerName, customerType }: FeedbackFormProps) {
+export default function FeedbackForm({
+  business,
+  setIsSubmitted,
+  setRating,
+  setCustomerName,
+  customerType,
+  setUserHasBirthdayBenefit
+}: FeedbackFormProps) {
   const searchParams = useSearchParams()
 
   const [isChecked, setIsChecked] = useState(false)
@@ -136,18 +144,6 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
       if (customerData.userApprovesLoyalty) {
         setIsRewardButtonClicked(true)
       }
-      if(userApprovesLoyalty) {
-        loyaltyService.getBirthdayDataFromBusiness(business).then(docSnap => {
-          if(docSnap) {
-            verifyBirthdayBenefit(customerData.birthdayDate, docSnap?.data());
-            console.log('Has birthday benefits? ', hasUserBirthdayBenefits.current)
-  
-            if(hasUserBirthdayBenefits) {
-              console.log('Birthday benefits: ', docSnap?.data());
-            }
-          }
-        });
-      }
     }
   }, [business, customerData, form, userApprovesLoyalty]);
 
@@ -172,10 +168,10 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
   const handleEmailField = async (email: string) => {
     if (email && customerType === 'frequent') {
       setCustomerData(await findCustomerDataByEmail(email, businessId || ''))
-      setCustomerDataInBusiness(await getCustomerDataInBusiness(email, businessId, branchId, waiterId))
-      const lastFeedbackFilledInBusiness = customerDataInBusiness?.lastFeedbackFilled
+      const lastFeedbackFilledInBusiness = customerData?.lastFeedbackFilled
+      console.log(await findCustomerDataByEmail(email, businessId || ''))
       const lastFeedbackGreaterThanOneDay = lastFeedbackFilledIsGreaterThanOneDay(lastFeedbackFilledInBusiness)
-      setIsCustomerInBusiness(customerDataInBusiness ? true : false)
+      setIsCustomerInBusiness(customerData?.lastFeedbackFilled ? true : false)
       setShowLastFeedbackFilledModal(lastFeedbackGreaterThanOneDay)
       setIsLastFeedbackMoreThanOneDay(lastFeedbackGreaterThanOneDay)
     }
@@ -211,16 +207,13 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
 
   async function onSubmit(data: FeedbackProps) {
     if(userApprovesLoyalty) {
-      loyaltyService.getBirthdayDataFromBusiness(business).then(docSnap => {
-        if(docSnap) {
-          verifyBirthdayBenefit(data.BirthdayDate, docSnap?.data());
-          console.log('Has birthday benefits? ', hasUserBirthdayBenefits.current)
-
-          if(hasUserBirthdayBenefits) {
-            console.log('Birthday benefits: ', docSnap?.data());
-          }
+      const response = await userHasBirthdayBenefits(
+        {
+          userBirthday: customerData?.birthdayDate,
+          business
         }
-      });
+      )
+      setUserHasBirthdayBenefit(response)
     }
 
     setRating(data.Rating)
@@ -266,7 +259,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
         feedbackNumberOfVisit = 1
       }
 
-      await handleSubmitFeedback(updatedData, improveOptions, customerType, attendantName, customerNumberOfVisits, feedbackNumberOfVisit)
+      await handleSubmitFeedback(updatedData, improveOptions, customerType, attendantName, customerNumberOfVisits, feedbackNumberOfVisit, customerData)
       if ((data.Rating === Ratings.Bueno || data.Rating === Ratings.Excelente) && business?.MapsUrl) {
         handleRedirect()
       }

@@ -27,7 +27,8 @@ const handleSubmitFeedback = async (
     customerType: string,
     AttendedBy: string,
     customerNumberOfVisits: number,
-    feedbackNumberOfVisit: number
+    feedbackNumberOfVisit: number,
+    customerData: Customer | null | undefined
   ) => {
   const searchParams = new URLSearchParams(document.location.search)
   const lastFeedbackFilledValue = getTimesTampFromDate(new Date())
@@ -43,7 +44,8 @@ const handleSubmitFeedback = async (
     origin: Origin || '',
     customerType: customerType || '',
     acceptPromotions: !PhoneNumber ? false : true,
-    lastFeedbackFilled: lastFeedbackFilledValue
+    lastFeedbackFilled: lastFeedbackFilledValue,
+    customerNumberOfVisits: customerNumberOfVisits
   }
 
   const businessFeedbackRef = collection(
@@ -215,8 +217,6 @@ const handleSubmitFeedback = async (
     )
 
     const businessData = await findBusiness(businessId)
-    const customerData = await findCustomerDataByEmail(Email)
-
     let creationDate = customerData?.creationDate;
 
     const customerDoc = doc(parentCustomerDataRef, Email)
