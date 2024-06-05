@@ -21,6 +21,7 @@ const handleGusFeedbackSubmit = async (
     PlaceCleanness,
     Satisfaction,
     Recommending,
+    RecommendingText,
     ComeBack,
     ComeBackText,
     ImproveText,
@@ -83,6 +84,7 @@ const handleGusFeedbackSubmit = async (
     PlaceCleanness: parseInt(PlaceCleanness),
     Satisfaction: parseInt(Satisfaction),
     Recommending,
+    RecommendingText,
     ComeBack,
     ComeBackText,
   }
