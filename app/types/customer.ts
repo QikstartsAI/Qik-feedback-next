@@ -1,6 +1,7 @@
 import { Timestamp } from "firebase/firestore"
 
 export type Customer = {
+  userApprovesLoyalty?: boolean
   email: string
   name: string
   phoneNumber?: string
@@ -10,6 +11,7 @@ export type Customer = {
   acceptPromotions?: boolean
   lastFeedbackFilled: Timestamp | undefined
   creationDate?: Timestamp
+  customerNumberOfVisits: number
 }
 
 export type CustomerRole = 'new' | 'frequent'

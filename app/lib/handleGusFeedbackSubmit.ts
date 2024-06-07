@@ -34,6 +34,7 @@ const handleGusFeedbackSubmit = async (
   feedbackNumberOfVisit: number
 ) => {
   const searchParams = new URLSearchParams(document.location.search)
+  const lastFeedbackFilledValue = getTimesTampFromDate(new Date())
 
   const businessId = searchParams.get('id')
   const branchId = searchParams.get('sucursal')
@@ -46,7 +47,7 @@ const handleGusFeedbackSubmit = async (
     origin: '',
     customerType: customerType || '',
     acceptPromotions: false,
-    lastFeedbackFilled: getTimesTampFromDate(new Date())
+    lastFeedbackFilled: lastFeedbackFilledValue
   }
 
   const businessFeedbackRef = collection(
@@ -227,7 +228,7 @@ const handleGusFeedbackSubmit = async (
       await setDoc(businessDoc, { 
         ...businessData,
         customerType: customerData?.customerType,
-        lastFeedbackFilled: customerData?.lastFeedbackFilled,
+        lastFeedbackFilled: lastFeedbackFilledValue,
         acceptPromotions: customerData?.acceptPromotions,
         lastOrigin: customerData?.origin,
         customerNumberOfVisits,
@@ -237,7 +238,7 @@ const handleGusFeedbackSubmit = async (
       await setDoc(businessDoc, { 
         ...businessData,
         customerType: customerType,
-        lastFeedbackFilled: getTimesTampFromDate(new Date()),
+        lastFeedbackFilled: lastFeedbackFilledValue,
         customerNumberOfVisits,
         creationDate
       })

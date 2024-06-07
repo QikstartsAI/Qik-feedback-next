@@ -34,6 +34,11 @@ export default function Home() {
   const isGusForm = businessId === CUSTOM_GUS_FORM_ID
   const isDscSolutions = businessId === DSC_SOLUTIONS_ID
   const [customerName, setCustomerName] = useState('')
+  const [userHasBirthdayBenefit, setUserHasBirthdayBenefit] = useState(false)
+
+  if (userHasBirthdayBenefit) {
+    return <div>User has benefit</div>
+  }
 
   if ((isSubmitted && rating !== '4' && rating !== '5') && !isDscSolutions) {
     if (isHootersForm || isGusForm) {
@@ -48,7 +53,6 @@ export default function Home() {
   if (!isQr && isSubmitted && isDscSolutions) {
     return <SimpleThanks />
   }
-
   return (
     <div>
       {
@@ -100,6 +104,7 @@ export default function Home() {
                           setRating={setRating}
                           customerType={customerType}
                           setCustomerName={setCustomerName}
+                          setUserHasBirthdayBenefit={setUserHasBirthdayBenefit}
                         />
                       )
                     )}

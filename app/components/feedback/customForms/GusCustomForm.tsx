@@ -41,7 +41,7 @@ import { Checkbox } from '../../ui/Checkbox'
 import { IconToolsKitchen } from '@tabler/icons-react';
 import { IconUserScan } from '@tabler/icons-react';
 import { IconBuildingStore } from '@tabler/icons-react';
-import CustomStepperIcons, { CustomStepperIconsGus } from "@/app/components/form/CustomStepperIcons";
+import { CustomStepperIconsGus } from "@/app/components/form/CustomStepperIcons";
 import CustomStepperConnector from "@/app/components/form/CustomStepperConnector";
 import StarRatingQuestion from '../questions/StarRatingQuestion'
 import BooleanQuestion from '../questions/BooleanQuestion'

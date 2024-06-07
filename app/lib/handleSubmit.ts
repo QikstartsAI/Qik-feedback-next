@@ -8,27 +8,30 @@ import { Customer } from '../types/customer'
 import { findCustomerDataByEmail } from './handleEmail'
 
 const handleSubmitFeedback = async (
-  {
-    FullName,
-    ImproveText,
-    Origin,
-    PhoneNumber,
-    Rating,
-    StartTime,
-    Dinners,
-    AverageTicket,
-    Email,
-    AcceptPromotions,
-    AcceptTerms,
-    BirthdayDate,
-  }: FeedbackProps,
-  Improve: string[],
-  customerType: string,
-  AttendedBy: string,
-  customerNumberOfVisits: number,
-  feedbackNumberOfVisit: number
-) => {
+    {
+      UserApprovesLoyalty,
+      FullName,
+      ImproveText,
+      Origin,
+      PhoneNumber,
+      Rating,
+      StartTime,
+      Dinners,
+      AverageTicket,
+      Email,
+      AcceptPromotions,
+      AcceptTerms,
+      BirthdayDate,
+    }: FeedbackProps,
+    Improve: string[],
+    customerType: string,
+    AttendedBy: string,
+    customerNumberOfVisits: number,
+    feedbackNumberOfVisit: number,
+    customerData: Customer | null | undefined
+  ) => {
   const searchParams = new URLSearchParams(document.location.search)
+  const lastFeedbackFilledValue = getTimesTampFromDate(new Date())
 
   const businessId = searchParams.get('id')
   const branchId = searchParams.get('sucursal')
@@ -41,7 +44,8 @@ const handleSubmitFeedback = async (
     origin: Origin || '',
     customerType: customerType || '',
     acceptPromotions: !PhoneNumber ? false : true,
-    lastFeedbackFilled: getTimesTampFromDate(new Date())
+    lastFeedbackFilled: lastFeedbackFilledValue,
+    customerNumberOfVisits: customerNumberOfVisits
   }
 
   const businessFeedbackRef = collection(
@@ -61,7 +65,7 @@ const handleSubmitFeedback = async (
   )
   const businessDocRef = doc(getFirebase().db, COLLECTION_NAME || '', businessId || '')
 
-  const feedbaackData = {
+  const feedbackData = {
     CreationDate: getTimesTampFromDate(new Date()),
     FullName,
     AcceptPromotions,
@@ -112,7 +116,7 @@ const handleSubmitFeedback = async (
       const ratingAverage = (waiterRating / (numberOfSurveys + 1)).toFixed(1)
       const customerRef = doc(waiterCustomerRef, Email)
       await setDoc(customerRef, customerContactData)
-      await addDoc(waiterFeedbackRef, feedbaackData)
+      await addDoc(waiterFeedbackRef, feedbackData)
 
       await updateDoc(waitersRef, {
         numberOfSurveys: numberOfSurveys + 1,
@@ -161,7 +165,7 @@ const handleSubmitFeedback = async (
       const ratingAverage = (waiterRating / (numberOfSurveys + 1)).toFixed(1)
       const customerRef = doc(waiterBranchCustomerRef, Email)
       await setDoc(customerRef, customerContactData)
-      await addDoc(waiterFeedbackRef, feedbaackData)
+      await addDoc(waiterFeedbackRef, feedbackData)
       await updateDoc(waitersRef, {
         numberOfSurveys: numberOfSurveys + 1,
         latestSum: waiterRating,
@@ -194,11 +198,11 @@ const handleSubmitFeedback = async (
       )
       const customerRef = doc(branchCustomerRef, Email)
       await setDoc(customerRef, customerContactData)
-      await addDoc(branchFeedbackRef, feedbaackData)
+      await addDoc(branchFeedbackRef, feedbackData)
     } else if (businessId && !waiterId) {
       const customerRef = doc(businessCustomerRef, Email)
       await setDoc(customerRef, customerContactData)
-      await addDoc(businessFeedbackRef, feedbaackData)
+      await addDoc(businessFeedbackRef, feedbackData)
     }
 
     const parentCustomerDataRef = collection(
@@ -213,8 +217,6 @@ const handleSubmitFeedback = async (
     )
 
     const businessData = await findBusiness(businessId)
-    const customerData = await findCustomerDataByEmail(Email)
-
     let creationDate = customerData?.creationDate;
 
     const customerDoc = doc(parentCustomerDataRef, Email)
@@ -229,9 +231,10 @@ const handleSubmitFeedback = async (
       await setDoc(businessDoc, { 
         ...businessData,
         customerType: customerData?.customerType,
-        lastFeedbackFilled: customerData?.lastFeedbackFilled,
+        lastFeedbackFilled: lastFeedbackFilledValue,
         acceptPromotions: customerData?.acceptPromotions,
         lastOrigin: customerData?.origin,
+        userApprovesLoyalty: UserApprovesLoyalty,
         customerNumberOfVisits,
         creationDate
       })
@@ -239,9 +242,10 @@ const handleSubmitFeedback = async (
       await setDoc(businessDoc, { 
         ...businessData,
         customerType: customerType,
-        lastFeedbackFilled: getTimesTampFromDate(new Date()),
+        lastFeedbackFilled: lastFeedbackFilledValue,
         acceptPromotions: AcceptPromotions,
         lastOrigin: Origin,
+        userApprovesLoyalty: UserApprovesLoyalty,
         customerNumberOfVisits,
         creationDate
       })
@@ -256,7 +260,7 @@ const handleSubmitFeedback = async (
       'feedbacks'
     )
     const businessFeedbackDoc = doc(customerBusinessFeedbackRef)
-    await setDoc(businessFeedbackDoc, { ...feedbaackData, feedbackNumberOfVisit })
+    await setDoc(businessFeedbackDoc, { ...feedbackData, feedbackNumberOfVisit })
   } catch (err) {
     console.error(err)
   }

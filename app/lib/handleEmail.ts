@@ -4,16 +4,19 @@ import { getFirebase } from '@/app/lib/firebase'
 import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore'
 import { Feedback } from "../types/business";
 
-export const findCustomerDataByEmail = async (email: string): Promise<Customer | null> => {
+export const findCustomerDataByEmail = async (email: string, businessId: string): Promise<Customer | null> => {
   const db = getFirebase().db;
   const customerDocRef = doc(db, CUSTOMERS_COLLECTION_NAME || '', email);
+  const customerBusinessDocRef = doc(db, CUSTOMERS_COLLECTION_NAME || '', email, 'business', businessId);
 
   try {
     const customerDocSnapshot = await getDoc(customerDocRef);
+    const customerBusinessDocSnapshot = await getDoc(customerBusinessDocRef);
 
-    if (customerDocSnapshot.exists()) {
+    if (customerDocSnapshot.exists() && customerBusinessDocSnapshot.exists()) {
       const customerData = customerDocSnapshot.data() as Customer;
-      return customerData;
+      const customerBusinessData = customerBusinessDocSnapshot.data() as Customer
+      return {...customerData, ...customerBusinessData};
     } else {
       return null;
     }
@@ -30,9 +33,11 @@ export const findIsCustomerInBusiness = async (email: string, businessId: string
 }
 
 export const findCustomerFeedbackDataInBusiness = async (email: string, businessId: string) => {
+  console.log(email)
   const db = getFirebase().db
   const customerDocRef = doc(db, CUSTOMERS_COLLECTION_NAME || '', email, 'business', businessId)
-  return (await getDoc(customerDocRef)).data() as {customerNumberOfVisits: number}
+  const data = (await getDoc(customerDocRef)).data() as {customerNumberOfVisits: number, userApprovesLoyalty: boolean}
+  return data
 }
 
 

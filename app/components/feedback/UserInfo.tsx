@@ -47,7 +47,7 @@ export default function UserInfo<T extends HootersFeedbackProps | GusFeedbackPro
         }
 			<FormField
 				control={form.control}
-				name={'Email' as Path<T>} 
+				name={'Email' as Path<T>}
 				render={({ field }) => (
 					<FormItem>
 						<FormLabel className={'text-colorText'}>
@@ -62,7 +62,7 @@ export default function UserInfo<T extends HootersFeedbackProps | GusFeedbackPro
 								onBlur={async () => {
 									const email = field.value
 									if (email) {
-										const customerData = await findCustomerDataByEmail(email as string)
+										const customerData = await findCustomerDataByEmail(email as string, businessId || '')
                     const customerDataInBusiness = await getCustomerDataInBusiness(email as string, businessId, branchId, waiterId)
                     const lastFeedbackFilledInBusiness = customerDataInBusiness?.lastFeedbackFilled
                     const lastFeedbackGreaterThanOneDay = lastFeedbackFilledIsGreaterThanOneDay(lastFeedbackFilledInBusiness)

@@ -3,6 +3,7 @@ import { z } from 'zod'
 
 export const feedbackSchema = (averageTicket: [string, ...string[]], businessCountry: string) =>
   z.object({
+    UserApprovesLoyalty: z.boolean().optional(),
     FullName: z.string().nonempty({
       message:
         businessCountry === 'US' || businessCountry === 'HK'
@@ -120,18 +121,40 @@ export const feedbackSchema = (averageTicket: [string, ...string[]], businessCou
 
     hiddenInput: z.boolean().optional().nullable()
   })
-    .superRefine((values, context) => {
-      if (values.AcceptPromotions && !values.PhoneNumber) {
-        context.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: businessCountry === 'US' || businessCountry === 'HK'
-            ? 'Please tell us your phone number'
-            : businessCountry === 'CA' || businessCountry === 'FR'
-              ? "S'il vous plaît dites-nous votre numéro de téléphone"
-              : 'Por favor dinos tu número de teléfono',
-          path: ["PhoneNumber"]
-        })
-      }
-    })
+  .superRefine((values, context) => {
+    if (values.AcceptPromotions && !values.PhoneNumber) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: businessCountry === 'US'
+        ? 'Please tell us your phone number'
+        : businessCountry === 'CA' || businessCountry === 'FR'
+          ? "S'il vous plaît dites-nous votre numéro de téléphone"
+          : 'Por favor dinos tu número de teléfono',
+        path: ["PhoneNumber"]
+      })
+    }
+    if (values.UserApprovesLoyalty && !values.PhoneNumber) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: businessCountry === 'US'
+        ? 'Please tell us your phone number to be part of the loyalty program'
+        : businessCountry === 'CA' || businessCountry === 'FR'
+          ? "Merci de nous indiquer votre numéro de téléphone pour faire partie du programme de fidélité"
+          : 'Por favor dinos tu número de teléfono para formar parte del programa de lealtad',
+        path: ["UserApprovesLoyalty"]
+      })
+    }
+    if (values.UserApprovesLoyalty && !values.BirthdayDate) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: businessCountry === 'US'
+        ? 'Please tell us your birthday to be part of the loyalty program'
+        : businessCountry === 'CA' || businessCountry === 'FR'
+          ? "Merci de nous communiquer votre anniversaire pour faire partie du programme de fidélité"
+          : 'Por favor dinos tu fecha de cumpleaños para formar parte del programa de lealtad',
+        path: ["UserApprovesLoyalty"]
+      })
+    }
+  })
 
 export type FeedbackProps = z.infer<ReturnType<typeof feedbackSchema>>
