@@ -30,7 +30,8 @@ const handleSubmitHootersForm = async (
     customerType: string,
     AttendedBy: string,
     customerNumberOfVisits: number,
-    feedbackNumberOfVisit: number
+    feedbackNumberOfVisit: number,
+    customerData: Customer | null
   ) => {
   const searchParams = new URLSearchParams(document.location.search)
 
@@ -222,8 +223,6 @@ const handleSubmitHootersForm = async (
     )
 
     const businessData = await findBusiness(businessId)
-
-    const customerData = await findCustomerDataByEmail(Email)
 
     let creationDate = customerData?.creationDate;
 

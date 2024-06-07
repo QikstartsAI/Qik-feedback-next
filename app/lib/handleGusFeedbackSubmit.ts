@@ -1,11 +1,9 @@
 import { COLLECTION_NAME, CUSTOMERS_COLLECTION_NAME } from '@/app/constants/general'
 import { getFirebase, getTimesTampFromDate } from '@/app/lib/firebase'
-import { Waiter } from '@/app/types/business'
-import { addDoc, updateDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore'
-import { findBusiness } from '../services/business'
+import { addDoc, collection, doc, setDoc } from 'firebase/firestore'
 import { Customer } from '../types/customer'
-import { findCustomerDataByEmail } from './handleEmail'
 import { GusFeedbackProps } from '../validators/gusFeedbackSchema'
+import { Business } from '../types/business'
 
 const handleGusFeedbackSubmit = async (
   {
@@ -31,13 +29,15 @@ const handleGusFeedbackSubmit = async (
   customerType: string,
   AttendedBy: string,
   customerNumberOfVisits: number,
-  feedbackNumberOfVisit: number
+  feedbackNumberOfVisit: number,
+  businessId: string | null,
+  brandId: string | null,
+  brandBranchId: string | null,
+  customerData: Customer | null,
+  businessData: Business | null
 ) => {
+  const lastFeedbackFilled = getTimesTampFromDate(new Date())
   const searchParams = new URLSearchParams(document.location.search)
-
-  const businessId = searchParams.get('id')
-  const branchId = searchParams.get('sucursal')
-  const waiterId = searchParams.get('mesero')
   const customerContactData: Customer = {
     email: Email,
     name: FullName,
@@ -52,7 +52,9 @@ const handleGusFeedbackSubmit = async (
   const businessFeedbackRef = collection(
     getFirebase().db,
     COLLECTION_NAME || '',
-    businessId ? businessId : '',
+    businessId || '',
+    'brand',
+    brandId || '',
     'customers',
     Email,
     'feedbacks'
@@ -61,10 +63,11 @@ const handleGusFeedbackSubmit = async (
   const businessCustomerRef = collection(
     getFirebase().db,
     COLLECTION_NAME || '',
-    businessId ? businessId : '',
+    businessId || '',
+    'brand',
+    brandId || '',
     'customers',
   )
-  const businessDocRef = doc(getFirebase().db, COLLECTION_NAME || '', businessId || '')
 
   const feedbackData = {
     CreationDate: getTimesTampFromDate(new Date()),
@@ -88,96 +91,99 @@ const handleGusFeedbackSubmit = async (
     ComeBack,
     ComeBackText,
   }
-  if (waiterId && businessId && !branchId) {
-    try {
-      const waiterFeedbackRef = collection(
-        getFirebase().db,
-        COLLECTION_NAME || '',
-        businessId || '',
-        'meseros',
-        waiterId || '',
-        'customers',
-        Email,
-        'feedbacks'
-      )
-      const waiterCustomerRef = collection(
-        getFirebase().db,
-        COLLECTION_NAME || '',
-        businessId || '',
-        'meseros',
-        waiterId || '',
-        'customers',
-      )
-      const waitersRef = doc(collection(businessDocRef, 'meseros'), waiterId || '')
-      const waitersDocSnap = await getDoc(waitersRef)
-      const waiterData = waitersDocSnap.data() as Waiter
-      const numberOfSurveys = waiterData.numberOfSurveys || 0
-      let waiterRating = waiterData.ratingAverage || 0
-      const ratingAverage = (waiterRating / (numberOfSurveys + 1)).toFixed(1)
-      const customerRef = doc(waiterCustomerRef, Email)
-      await setDoc(customerRef, customerContactData)
-      await addDoc(waiterFeedbackRef, feedbackData)
+  // if (waiterId && businessId && !branchId) {
+  //   try {
+  //     const waiterFeedbackRef = collection(
+  //       getFirebase().db,
+  //       COLLECTION_NAME || '',
+  //       businessId || '',
+  //       'meseros',
+  //       waiterId || '',
+  //       'customers',
+  //       Email,
+  //       'feedbacks'
+  //     )
+  //     const waiterCustomerRef = collection(
+  //       getFirebase().db,
+  //       COLLECTION_NAME || '',
+  //       businessId || '',
+  //       'meseros',
+  //       waiterId || '',
+  //       'customers',
+  //     )
+  //     const waitersRef = doc(collection(businessDocRef, 'meseros'), waiterId || '')
+  //     const waitersDocSnap = await getDoc(waitersRef)
+  //     const waiterData = waitersDocSnap.data() as Waiter
+  //     const numberOfSurveys = waiterData.numberOfSurveys || 0
+  //     let waiterRating = waiterData.ratingAverage || 0
+  //     const ratingAverage = (waiterRating / (numberOfSurveys + 1)).toFixed(1)
+  //     const customerRef = doc(waiterCustomerRef, Email)
+  //     await setDoc(customerRef, customerContactData)
+  //     await addDoc(waiterFeedbackRef, feedbackData)
 
-      await updateDoc(waitersRef, {
-        numberOfSurveys: numberOfSurveys + 1,
-        latestSum: waiterRating,
-        ratingAverage
-      })
-    } catch (err) {
-      console.error(err)
-    }
-  } else if (waiterId && businessId && branchId) {
-    try {
-      const waiterFeedbackRef = collection(
-        getFirebase().db,
-        COLLECTION_NAME || '',
-        businessId || '',
-        'sucursales',
-        branchId || '',
-        'meseros',
-        waiterId || '',
-        'customers',
-        Email,
-        'feedbacks'
-      )
-      const waiterBranchCustomerRef = collection(
-        getFirebase().db,
-        COLLECTION_NAME || '',
-        businessId || '',
-        'sucursales',
-        branchId || '',
-        'meseros',
-        waiterId || '',
-        'customers',
-      )
-      const branchDocRef = doc(collection(businessDocRef, 'sucursales'), branchId || '')
-      const waitersRef = doc(collection(branchDocRef, 'meseros'), waiterId || '')
-      const waitersDocSnap = await getDoc(waitersRef)
-      const waiterData = waitersDocSnap.data() as Waiter
-      const numberOfSurveys = waiterData.numberOfSurveys || 0
-      let waiterRating = waiterData.ratingAverage || 0
-      const ratingAverage = (waiterRating / (numberOfSurveys + 1)).toFixed(1)
-      const customerRef = doc(waiterBranchCustomerRef, Email)
-      await setDoc(customerRef, customerContactData)
-      await addDoc(waiterFeedbackRef, feedbackData)
-      await updateDoc(waitersRef, {
-        numberOfSurveys: numberOfSurveys + 1,
-        latestSum: waiterRating,
-        ratingAverage
-      })
-    } catch (err) {
-      console.error(err)
-    }
-  }
+  //     await updateDoc(waitersRef, {
+  //       numberOfSurveys: numberOfSurveys + 1,
+  //       latestSum: waiterRating,
+  //       ratingAverage
+  //     })
+  //   } catch (err) {
+  //     console.error(err)
+  //   }
+  // } else if (waiterId && businessId && branchId) {
+  //   try {
+  //     const waiterFeedbackRef = collection(
+  //       getFirebase().db,
+  //       COLLECTION_NAME || '',
+  //       businessId || '',
+  //       'branch',
+  //       branchId || '',
+  //       'meseros',
+  //       waiterId || '',
+  //       'customers',
+  //       Email,
+  //       'feedbacks'
+  //     )
+  //     const waiterBranchCustomerRef = collection(
+  //       getFirebase().db,
+  //       COLLECTION_NAME || '',
+  //       businessId || '',
+  //       'branch',
+  //       branchId || '',
+  //       'meseros',
+  //       waiterId || '',
+  //       'customers',
+  //     )
+  //     const branchDocRef = doc(collection(businessDocRef, 'branch'), branchId || '')
+  //     const waitersRef = doc(collection(branchDocRef, 'meseros'), waiterId || '')
+  //     const waitersDocSnap = await getDoc(waitersRef)
+  //     const waiterData = waitersDocSnap.data() as Waiter
+  //     const numberOfSurveys = waiterData.numberOfSurveys || 0
+  //     let waiterRating = waiterData.ratingAverage || 0
+  //     const ratingAverage = (waiterRating / (numberOfSurveys + 1)).toFixed(1)
+  //     const customerRef = doc(waiterBranchCustomerRef, Email)
+  //     await setDoc(customerRef, customerContactData)
+  //     await addDoc(waiterFeedbackRef, feedbackData)
+  //     await updateDoc(waitersRef, {
+  //       numberOfSurveys: numberOfSurveys + 1,
+  //       latestSum: waiterRating,
+  //       ratingAverage
+  //     })
+  //   } catch (err) {
+  //     console.error(err)
+  //   }
+  // }
 
   try {
-    if (branchId && !waiterId) {
+    if (brandBranchId) {
+      console.log(brandBranchId)
       const branchFeedbackRef = collection(
         getFirebase().db,
         COLLECTION_NAME || '',
         businessId || '',
-        'sucursales',
-        branchId || '',
+        'brand',
+        brandId || '',
+        'branch',
+        brandBranchId || '',
         'customers',
         Email,
         'feedbacks'
@@ -186,14 +192,16 @@ const handleGusFeedbackSubmit = async (
         getFirebase().db,
         COLLECTION_NAME || '',
         businessId || '',
-        'sucursales',
-        branchId || '',
+        'brand',
+        brandId || '',
+        'branch',
+        brandBranchId || '',
         'customers',
       )
       const customerRef = doc(branchCustomerRef, Email)
       await setDoc(customerRef, customerContactData)
       await addDoc(branchFeedbackRef, feedbackData)
-    } else if (businessId && !waiterId) {
+    } else if (brandId && !brandBranchId) {
       const customerRef = doc(businessCustomerRef, Email)
       await setDoc(customerRef, customerContactData)
       await addDoc(businessFeedbackRef, feedbackData)
@@ -210,13 +218,15 @@ const handleGusFeedbackSubmit = async (
       'business',
     )
 
-    const businessData = await findBusiness(businessId)
-    const customerData = await findCustomerDataByEmail(Email)
-
     let creationDate = customerData?.creationDate;
 
     const customerDoc = doc(parentCustomerDataRef, Email)
-    const businessDoc = doc(parentCustomerBusinessRef, businessId || '')
+    const businessDoc = doc(
+      parentCustomerBusinessRef,
+      businessId || '',
+      'brand',
+      brandId || ''
+    )
 
     if (!customerData?.creationDate) {
       creationDate = getTimesTampFromDate(new Date())
@@ -224,20 +234,20 @@ const handleGusFeedbackSubmit = async (
 
     await setDoc(customerDoc, customerContactData)
     if (customerData) {
-      await setDoc(businessDoc, { 
+      await setDoc(businessDoc, {
         ...businessData,
         customerType: customerData?.customerType,
-        lastFeedbackFilled: customerData?.lastFeedbackFilled,
+        lastFeedbackFilled: lastFeedbackFilled,
         acceptPromotions: customerData?.acceptPromotions,
         lastOrigin: customerData?.origin,
         customerNumberOfVisits,
         creationDate
       })
     } else {
-      await setDoc(businessDoc, { 
+      await setDoc(businessDoc, {
         ...businessData,
         customerType: customerType,
-        lastFeedbackFilled: getTimesTampFromDate(new Date()),
+        lastFeedbackFilled: lastFeedbackFilled,
         customerNumberOfVisits,
         creationDate
       })
@@ -249,6 +259,8 @@ const handleGusFeedbackSubmit = async (
       Email,
       'business',
       businessId || '',
+      'brand',
+      brandId || '',
       'feedbacks'
     )
     const businessFeedbackDoc = doc(customerBusinessFeedbackRef)

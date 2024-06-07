@@ -51,10 +51,9 @@ import {
 } from '@/app/constants/form'
 import RatingRadioGroup from '../form/RatingRadioGroup'
 import { SelectedOption } from '@/app/types/general'
-import { CustomerRole } from '@/app/types/customer'
+import { Customer, CustomerRole } from '@/app/types/customer'
 import GoogleReviewMessage from '../form/GoogleReviewMessage'
 import { lastFeedbackFilledIsGreaterThanOneDay } from '@/app/lib/utils'
-import { getCustomerDataInBusiness } from '@/app/lib/handleEmail'
 import { useSearchParams } from 'next/navigation'
 
 interface FeedbackFormProps {
@@ -63,10 +62,22 @@ interface FeedbackFormProps {
   setRating: Dispatch<SetStateAction<string>>
   customerType: CustomerRole
   setCustomerName: Dispatch<SetStateAction<string>>
+  branchId: string | null
+  waiterId: string | null
 }
 
-export default function FeedbackForm({ business, setIsSubmitted, setRating, setCustomerName, customerType }: FeedbackFormProps) {
+export default function FeedbackForm({
+  business,
+  setIsSubmitted,
+  setRating,
+  setCustomerName,
+  customerType,
+  branchId,
+  waiterId
+}: FeedbackFormProps) {
   const searchParams = useSearchParams()
+
+  const [customerData, setCustomerData] = useState<Customer | null>(null)
 
   const [isChecked, setIsChecked] = useState(false)
   const [isTermsChecked, setIsTermsChecked] = useState(true)
@@ -78,9 +89,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
   const [isLastFeedbackMoreThanOneDay, setIsLastFeedbackMoreThanOneDay] = useState<boolean | undefined>(false)
   const [showLastFeedbackFilledModal, setShowLastFeedbackFilledModal] = useState<boolean | undefined>(false)
 
-  const businessId = searchParams.get('id')
-  const branchId = searchParams.get('sucursal')
-  const waiterId = searchParams.get('mesero')
+  const businessId = business?.BusinessId
 
   const { toast } = useToast()
 
@@ -171,7 +180,18 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
         customerNumberOfVisits = 1
         feedbackNumberOfVisit = 1
       }
-      await handleSubmitFeedback(updatedData, improveOptions, customerType, attendantName, customerNumberOfVisits, feedbackNumberOfVisit)
+      await handleSubmitFeedback(
+        updatedData,
+        improveOptions,
+        customerType,
+        attendantName,
+        customerNumberOfVisits,
+        feedbackNumberOfVisit,
+        customerData,
+        business,
+        branchId,
+        waiterId
+      )
       if ((data.Rating === Ratings.Bueno || data.Rating === Ratings.Excelente) && business?.MapsUrl) {
         handleRedirect()
       }
@@ -305,11 +325,11 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                             onBlur={async () => {
                               const email = field.value
                               if (email) {
-                                const customerData = await findCustomerDataByEmail(email)
-                                const customerDataInBusiness = await getCustomerDataInBusiness(email, businessId, branchId, waiterId)
-                                const lastFeedbackFilledInBusiness = customerDataInBusiness?.lastFeedbackFilled
+                                const customerData = await findCustomerDataByEmail(email, businessId || '')
+                                const lastFeedbackFilledInBusiness = customerData?.lastFeedbackFilled
                                 const lastFeedbackGreaterThanOneDay = lastFeedbackFilledIsGreaterThanOneDay(lastFeedbackFilledInBusiness)
-                                setIsCustomerInBusiness(await findIsCustomerInBusiness(email, business?.BusinessId || ''))
+                                setCustomerData(customerData)
+                                setIsCustomerInBusiness(customerData?.lastFeedbackFilled ? true : false)
                                 setShowLastFeedbackFilledModal(lastFeedbackGreaterThanOneDay)
                                 setIsLastFeedbackMoreThanOneDay(lastFeedbackGreaterThanOneDay)
                                 if (customerData) {

@@ -15,14 +15,22 @@ import HootersThanks from "@/app/components/HootersThanks";
 import SimpleForm from './components/feedback/customForms/SimpleForm';
 import SimpleThanks from './components/SimpleThanks';
 import { DSC_SOLUTIONS_ID } from './constants/general';
+import { CUSTOM_KFC_ID } from './constants/general';
 
 const Hero = lazy(() => import('./components/Hero'))
 const FeedbackForm = lazy(() => import('./components/feedback/FeedbackForm'))
 const CUSTOM_HOOTERS_FORM_ID = 'hooters'
-const CUSTOM_GUS_FORM_ID = 'pollo-gus'
 
 export default function Home() {
-  const { business, loading, businessId } = useGetBusinessData()
+  const {
+    business,
+    loading,
+    businessId,
+    brandId,
+    brandBranchId,
+    waiterId,
+    branchId
+  } = useGetBusinessData()
   const [customerType, setCustomerType] = useState<CustomerRole | null>(null)
   const toggleCustomer = (customerType: CustomerRole) => {
     setCustomerType(customerType)
@@ -31,7 +39,7 @@ export default function Home() {
   const [isQr, setIsQr] = useState(false)
   const [rating, setRating] = useState('')
   const isHootersForm = businessId === CUSTOM_HOOTERS_FORM_ID
-  const isGusForm = businessId === CUSTOM_GUS_FORM_ID
+  const isGusForm = businessId === CUSTOM_KFC_ID
   const isDscSolutions = businessId === DSC_SOLUTIONS_ID
   const [customerName, setCustomerName] = useState('')
 
@@ -91,6 +99,8 @@ export default function Home() {
                             setIsSubmitted={setIsSubmitted}
                             setRating={setRating}
                             customerType={customerType}
+                            brandBranchId={brandBranchId}
+                            brandId={brandId}
                           />
                         )
                         : (
@@ -100,6 +110,8 @@ export default function Home() {
                           setRating={setRating}
                           customerType={customerType}
                           setCustomerName={setCustomerName}
+                          branchId={branchId}
+                          waiterId={waiterId}
                         />
                       )
                     )}
