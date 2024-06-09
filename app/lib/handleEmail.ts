@@ -52,33 +52,8 @@ export const findIsCustomerInBusiness = async (email: string, businessId: string
 }
 
 export const findCustomerFeedbackDataInBusiness = async (email: string, businessId: string) => {
-  console.log(email)
   const db = getFirebase().db
   const customerDocRef = doc(db, CUSTOMERS_COLLECTION_NAME || '', email, 'business', businessId)
   const data = (await getDoc(customerDocRef)).data() as {customerNumberOfVisits: number, userApprovesLoyalty: boolean}
   return data
-}
-
-
-
-export const getCustomerDataInBusiness = async (email: string, businessId: string | null, branchId: string | null, waiterId: string | null) => {
-  const db = getFirebase().db;
-  let basePath = `/${businessId}/customers/${email}`;
-
-  if (branchId) {
-    basePath = `/${businessId}/sucursales/${branchId}/customers/${email}`;
-    if (waiterId) {
-      basePath = `/${businessId}/sucursales/${branchId}/meseros/${waiterId}/customers/${email}`;
-    }
-  } else if (waiterId) {
-    basePath = `/${businessId}/meseros/${waiterId}/customers/${email}`;
-  }
-
-  const customerDocRef = doc(db, COLLECTION_NAME + basePath);
-  const customerDocSnapshot = await getDoc(customerDocRef);
-  if (customerDocSnapshot.exists()) {
-    return customerDocSnapshot.data() as Customer;
-  } else {
-    return null;
-  }
 }

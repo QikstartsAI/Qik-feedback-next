@@ -45,7 +45,8 @@ import CustomStepperIcons, { CustomStepperIconsGus } from "@/app/components/form
 import CustomStepperConnector from "@/app/components/form/CustomStepperConnector";
 import StarRatingQuestion from '../questions/StarRatingQuestion'
 import BooleanQuestion from '../questions/BooleanQuestion'
-import { useSearchParams } from 'next/navigation'
+import handleGusFeedbackSubmitOldVersion from '@/app/lib/handleGusFeedbackSubmitOldVersion'
+import { CUSTOM_KFC_ID } from '@/app/constants/general'
 
 interface GusCustomFormProps {
   business: Business | null
@@ -54,6 +55,7 @@ interface GusCustomFormProps {
   customerType: CustomerRole
   brandId: string | null
   brandBranchId: string | null
+  branchId: string | null
 }
 
 export default function GusCustomForm({
@@ -62,7 +64,8 @@ export default function GusCustomForm({
   setRating,
   customerType,
   brandId,
-  brandBranchId
+  brandBranchId,
+  branchId
 }: GusCustomFormProps) {
   const [customerData, setCustomerData] = useState<Customer | null>(null)
   const [isTermsChecked, setIsTermsChecked] = useState(true)
@@ -238,19 +241,34 @@ export default function GusCustomForm({
         customerNumberOfVisits = 1
         feedbackNumberOfVisit = 1
       }
-      await handleGusFeedbackSubmit(
-        updatedData,
-        improveOptions,
-        customerType,
-        attendantName,
-        customerNumberOfVisits,
-        feedbackNumberOfVisit,
-        businessId || '',
-        brandId,
-        brandBranchId,
-        customerData,
-        business
-      )
+      if (businessId == CUSTOM_KFC_ID) {
+        await handleGusFeedbackSubmit(
+          updatedData,
+          improveOptions,
+          customerType,
+          attendantName,
+          customerNumberOfVisits,
+          feedbackNumberOfVisit,
+          businessId || '',
+          brandId,
+          brandBranchId,
+          customerData,
+          business
+        )
+      } else {
+        await handleGusFeedbackSubmitOldVersion(
+          updatedData,
+          improveOptions,
+          customerType,
+          attendantName,
+          customerNumberOfVisits,
+          feedbackNumberOfVisit,
+          businessId || '',
+          branchId,
+          customerData,
+          business
+        )
+      }
       if (comeBack) {
         handleRedirect()
       }

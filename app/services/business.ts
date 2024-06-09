@@ -41,9 +41,8 @@ export const findBusiness = async (businessId: string | null, branchId?: string 
       }
     }
 
-    addBusinessBranding(businessData)
+    await addBusinessBranding(businessData)
     businessData.BusinessId = businessId || ''
-
     return businessData
   } else {
     console.info('No such document!')

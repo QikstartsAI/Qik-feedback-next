@@ -39,7 +39,7 @@ export default function Home() {
   const [isQr, setIsQr] = useState(false)
   const [rating, setRating] = useState('')
   const isHootersForm = businessId === CUSTOM_HOOTERS_FORM_ID
-  const isGusForm = businessId === CUSTOM_KFC_ID
+  const isGusForm = businessId === CUSTOM_KFC_ID || businessId === 'pollo-gus'
   const isDscSolutions = businessId === DSC_SOLUTIONS_ID
   const [customerName, setCustomerName] = useState('')
 
@@ -101,6 +101,7 @@ export default function Home() {
                             customerType={customerType}
                             brandBranchId={brandBranchId}
                             brandId={brandId}
+                            branchId={branchId}
                           />
                         )
                         : (

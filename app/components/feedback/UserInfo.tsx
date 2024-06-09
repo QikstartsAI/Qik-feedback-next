@@ -1,11 +1,11 @@
 'use client'
 
-import {cn, lastFeedbackFilledIsGreaterThanOneDay} from "@/app/lib/utils";
-import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/app/components/ui/Form";
-import {Input} from "@/app/components/ui/Input";
+import { lastFeedbackFilledIsGreaterThanOneDay } from "@/app/lib/utils";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/app/components/ui/Form";
+import { Input } from "@/app/components/ui/Input";
 import { HootersFeedbackProps } from '@/app/validators/hootersFeedbackSchema';
-import {findCustomerDataByEmail, findIsCustomerInBusiness, getCustomerDataInBusiness} from "@/app/lib/handleEmail";
-import {FieldValues, Path, PathValue, UseFormReturn} from "react-hook-form";
+import {findCustomerDataByEmail } from "@/app/lib/handleEmail";
+import { Path, PathValue, UseFormReturn } from "react-hook-form";
 import { useState } from "react";
 import Modal from "../ui/Modal";
 import { useSearchParams } from "next/navigation";
@@ -39,11 +39,6 @@ export default function UserInfo<T extends HootersFeedbackProps | GusFeedbackPro
   const {
     feedbackLimit
   } = getFormTranslations({businessCountry})
-
-  const searchParams = useSearchParams()
-  const branchId = searchParams.get('sucursal')
-  const waiterId = searchParams.get('mesero')
-
 	return (
 		<>
 			{

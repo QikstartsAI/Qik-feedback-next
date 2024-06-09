@@ -46,10 +46,8 @@ export const findBrandInBusiness = async (
     //     businessData.Waiter = waitersDocSnap.data() as Waiter
     //   }
     // }
-    // console.log(businessData)
     await addBusinessBranding(businessData)
     businessData.BusinessId = businessId || ''
-    console.log(businessData)
     return businessData
   } else {
     console.info('No such document!')
