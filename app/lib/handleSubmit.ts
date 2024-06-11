@@ -1,6 +1,6 @@
 import { COLLECTION_NAME, CUSTOMERS_COLLECTION_NAME } from '@/app/constants/general'
 import { getFirebase, getTimesTampFromDate } from '@/app/lib/firebase'
-import { Waiter } from '@/app/types/business'
+import { Business, Waiter } from '@/app/types/business'
 import { FeedbackProps } from '@/app/validators/feedbackSchema'
 import { addDoc, updateDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore'
 import { findBusiness } from '../services/business'
@@ -28,14 +28,15 @@ const handleSubmitFeedback = async (
     AttendedBy: string,
     customerNumberOfVisits: number,
     feedbackNumberOfVisit: number,
-    customerData: Customer | null | undefined
+    customerData: Customer | null | undefined,
+    businessData: Business | null,
+    branchId: string | null,
+    waiterId: string | null
   ) => {
-  const searchParams = new URLSearchParams(document.location.search)
   const lastFeedbackFilledValue = getTimesTampFromDate(new Date())
 
-  const businessId = searchParams.get('id')
-  const branchId = searchParams.get('sucursal')
-  const waiterId = searchParams.get('mesero')
+  const businessId = businessData?.BusinessId
+
   const customerContactData: Customer = {
     email: Email,
     name: FullName,
@@ -216,7 +217,6 @@ const handleSubmitFeedback = async (
       'business',
     )
 
-    const businessData = await findBusiness(businessId)
     let creationDate = customerData?.creationDate;
 
     const customerDoc = doc(parentCustomerDataRef, Email)

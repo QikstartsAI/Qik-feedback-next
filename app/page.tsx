@@ -22,7 +22,13 @@ const CUSTOM_HOOTERS_FORM_ID = 'hooters'
 const CUSTOM_GUS_FORM_ID = 'pollo-gus'
 
 export default function Home() {
-  const { business, loading, businessId } = useGetBusinessData()
+  const {
+    business,
+    loading,
+    businessId,
+    branchId,
+    waiterId
+  } = useGetBusinessData()
   const [customerType, setCustomerType] = useState<CustomerRole | null>(null)
   const toggleCustomer = (customerType: CustomerRole) => {
     setCustomerType(customerType)
@@ -87,6 +93,8 @@ export default function Home() {
                           setIsSubmitted={setIsSubmitted}
                           setRating={setRating}
                           customerType={customerType}
+                          branchId={branchId}
+                          waiterId={waiterId}
                         />
                       ) : isGusForm
                         ? (
@@ -95,6 +103,7 @@ export default function Home() {
                             setIsSubmitted={setIsSubmitted}
                             setRating={setRating}
                             customerType={customerType}
+                            branchId={branchId}
                           />
                         )
                         : (
@@ -105,6 +114,8 @@ export default function Home() {
                           customerType={customerType}
                           setCustomerName={setCustomerName}
                           setUserHasBirthdayBenefit={setUserHasBirthdayBenefit}
+                          branchId={branchId}
+                          waiterId={waiterId}
                         />
                       )
                     )}

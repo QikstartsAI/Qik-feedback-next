@@ -1,11 +1,9 @@
 import { COLLECTION_NAME, CUSTOMERS_COLLECTION_NAME } from '@/app/constants/general'
 import { getFirebase, getTimesTampFromDate } from '@/app/lib/firebase'
-import { Waiter } from '@/app/types/business'
+import { Business, Waiter } from '@/app/types/business'
 import { HootersFeedbackProps } from '@/app/validators/hootersFeedbackSchema'
 import { addDoc, updateDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore'
-import { findBusiness } from '../services/business'
 import { Customer } from '../types/customer'
-import { findCustomerDataByEmail } from './handleEmail'
 
 const handleSubmitHootersForm = async (
     {
@@ -30,13 +28,14 @@ const handleSubmitHootersForm = async (
     customerType: string,
     AttendedBy: string,
     customerNumberOfVisits: number,
-    feedbackNumberOfVisit: number
+    feedbackNumberOfVisit: number,
+    businessData: Business | null,
+    branchId: string | null,
+    waiterId: string | null,
+    customerData: Customer | null
   ) => {
-  const searchParams = new URLSearchParams(document.location.search)
-
-  const businessId = searchParams.get('id')
-  const branchId = searchParams.get('sucursal')
-  const waiterId = searchParams.get('mesero')
+  const lastFeedbackFilledValue = getTimesTampFromDate(new Date())
+  const businessId = businessData?.BusinessId
 
   const customerContactData:Customer = {
     email: Email,
@@ -46,7 +45,8 @@ const handleSubmitHootersForm = async (
     origin: '',
     customerType: customerType || '',
     acceptPromotions: false,
-    lastFeedbackFilled: getTimesTampFromDate(new Date())
+    lastFeedbackFilled: lastFeedbackFilledValue,
+    customerNumberOfVisits: feedbackNumberOfVisit
   }
 
   const businessFeedbackRef = collection(
@@ -221,10 +221,6 @@ const handleSubmitHootersForm = async (
       'business',
     )
 
-    const businessData = await findBusiness(businessId)
-
-    const customerData = await findCustomerDataByEmail(Email)
-
     let creationDate = customerData?.creationDate;
 
     const customerDoc = doc(parentCustomerDataRef, Email)
@@ -239,7 +235,7 @@ const handleSubmitHootersForm = async (
       await setDoc(businessDoc, { 
         ...businessData,
         customerType: customerData?.customerType,
-        lastFeedbackFilled: customerData?.lastFeedbackFilled,
+        lastFeedbackFilled: lastFeedbackFilledValue,
         customerNumberOfVisits,
         creationDate
       })
@@ -247,7 +243,7 @@ const handleSubmitHootersForm = async (
       await setDoc(businessDoc, { 
         ...businessData,
         customerType: customerType,
-        lastFeedbackFilled: getTimesTampFromDate(new Date()),
+        lastFeedbackFilled: lastFeedbackFilledValue,
         customerNumberOfVisits,
         creationDate
       })

@@ -19,14 +19,11 @@ import {FeedbackProps, feedbackSchema} from '@/app/validators/feedbackSchema'
 import {RadioGroup} from '../ui/RadioGroup'
 import {Origins, Ratings} from '@/app/types/feedback'
 import handleSubmitFeedback from '@/app/lib/handleSubmit'
-import {
-  findCustomerDataByEmail,
-  getCustomerDataInBusiness
-} from '@/app/lib/handleEmail'
+import { findCustomerDataByEmail } from '@/app/lib/handleEmail'
 import {Checkbox} from '../ui/Checkbox'
 import {Textarea} from '../ui/TextArea'
 import {Business} from '@/app/types/business'
-import {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react'
+import {Dispatch, SetStateAction, useEffect, useState} from 'react'
 import CustomRadioGroup from '../form/CustomRadioGroup'
 import Modal from '../ui/Modal'
 import {
@@ -44,10 +41,6 @@ import RewardsApproval from '../form/RewardsApproval';
 import {SelectedOption} from '@/app/types/general'
 import {Customer, CustomerRole} from '@/app/types/customer'
 import GoogleReviewMessage from '../form/GoogleReviewMessage'
-import {useSearchParams} from 'next/navigation'
-import loyaltyService from "@/app/services/loyaltyService";
-import {DocumentData} from 'firebase/firestore'
-import {BirthdayOption} from "@/app/types/loyalty";
 import { userHasBirthdayBenefits } from '@/app/lib/loyalty/birthdayBenefits'
 
 
@@ -58,6 +51,8 @@ interface FeedbackFormProps {
   customerType: CustomerRole
   setCustomerName: Dispatch<SetStateAction<string>>
   setUserHasBirthdayBenefit: Dispatch<SetStateAction<boolean>>
+  branchId: string | null
+  waiterId: string | null
 }
 
 export default function FeedbackForm({
@@ -66,10 +61,10 @@ export default function FeedbackForm({
   setRating,
   setCustomerName,
   customerType,
-  setUserHasBirthdayBenefit
+  setUserHasBirthdayBenefit,
+  branchId,
+  waiterId
 }: FeedbackFormProps) {
-  const searchParams = useSearchParams()
-
   const [isChecked, setIsChecked] = useState(false)
   const [isTermsChecked, setIsTermsChecked] = useState(true)
 
@@ -85,14 +80,8 @@ export default function FeedbackForm({
   const [isRewardButtonClicked, setIsRewardButtonClicked] = useState<boolean>(false)
 
   const [customerData, setCustomerData] = useState<Customer | null>();
-  const [customerDataInBusiness, setCustomerDataInBusiness] = useState<Customer | null>();
   const [userApprovesLoyalty, setUserApprovesLoyalty] = useState<boolean>(false)
-  const businessId = searchParams.get('id')
-  const branchId = searchParams.get('sucursal')
-  const waiterId = searchParams.get('mesero')
-
-  // Loyalty birthday benefits
-  const hasUserBirthdayBenefits = useRef<boolean>(false);
+  const businessId = business?.BusinessId
 
   const { toast } = useToast()
 
@@ -176,35 +165,6 @@ export default function FeedbackForm({
       setIsLastFeedbackMoreThanOneDay(lastFeedbackGreaterThanOneDay)
     }
   }
-
-  const verifyBirthdayBenefit = (userBirthday?: string, birthdayConfig?: DocumentData) => {
-    if(!userBirthday) return;
-    if(!birthdayConfig) return;
-
-    const birthdayOption = birthdayConfig?.birthdayOption;
-    const today = new Date();
-    const userBirthdayDate = new Date(userBirthday);
-
-    if (today.getMonth() === userBirthdayDate.getMonth() && today.getDay() === userBirthdayDate.getDay()) {
-      hasUserBirthdayBenefits.current = true;
-      return;
-    }
-    else {
-      userBirthdayDate.setFullYear(today.getFullYear());
-      const difference = today.getTime() - userBirthdayDate.getTime();
-      const differenceDays = Math.floor(difference / (1000 * 60 * 60 * 24));
-
-      if(birthdayOption === BirthdayOption.onTheDayAndthirtyDaysAfter && differenceDays <= 30) {
-        hasUserBirthdayBenefits.current = true;
-        return;
-      }
-      else if(birthdayOption === BirthdayOption.upToSixtyDaysAfter && differenceDays <= 60) {
-        hasUserBirthdayBenefits.current = true;
-        return;
-      }
-    }
-  }
-
   async function onSubmit(data: FeedbackProps) {
     if(userApprovesLoyalty) {
       const response = await userHasBirthdayBenefits(
@@ -259,7 +219,18 @@ export default function FeedbackForm({
         feedbackNumberOfVisit = 1
       }
 
-      await handleSubmitFeedback(updatedData, improveOptions, customerType, attendantName, customerNumberOfVisits, feedbackNumberOfVisit, customerData)
+      await handleSubmitFeedback(
+        updatedData,
+        improveOptions,
+        customerType,
+        attendantName,
+        customerNumberOfVisits,
+        feedbackNumberOfVisit,
+        customerData,
+        business,
+        branchId,
+        waiterId
+      )
       if ((data.Rating === Ratings.Bueno || data.Rating === Ratings.Excelente) && business?.MapsUrl) {
         handleRedirect()
       }

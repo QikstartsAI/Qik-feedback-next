@@ -29,7 +29,7 @@ import React, { Dispatch, SetStateAction, useState } from 'react'
 import {
   getImprovements,
 } from '@/app/constants/form'
-import { CustomerRole } from '@/app/types/customer'
+import { Customer, CustomerRole } from '@/app/types/customer'
 import getFormTranslations from '@/app/constants/formTranslations';
 import UserInfo from "@/app/components/feedback/UserInfo";
 import Stack from '@mui/material/Stack';
@@ -52,17 +52,24 @@ interface GusCustomFormProps {
   setIsSubmitted: Dispatch<SetStateAction<boolean>>
   setRating: Dispatch<SetStateAction<string>>
   customerType: CustomerRole
+  branchId: string | null
 }
 
-export default function GusCustomForm({ business, setIsSubmitted, setRating, customerType }: GusCustomFormProps) {
+export default function GusCustomForm({
+  business,
+  setIsSubmitted,
+  setRating,
+  customerType,
+  branchId
+}: GusCustomFormProps) {
+  const [customerData, setCustomerData] = useState<Customer | null>(null)
   const [isTermsChecked, setIsTermsChecked] = useState(true)
   const [recommending, setRecommending] = useState<boolean | null>(null)
   const [comeBack, setComeBack] = useState<boolean | null>(null)
   const [reception, setReception] = useState<boolean | null>(true)
   const [isLastFeedbackMoreThanOneDay, setIsLastFeedbackMoreThanOneDay] = useState<boolean | undefined>(false)
-  const searchParams = useSearchParams()
 
-  const businessId = searchParams.get('id')
+  const businessId = business?.BusinessId
   const businessCountry = business?.Country || 'EC'
   const questionsNumber = 9
 
@@ -228,7 +235,17 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
         customerNumberOfVisits = 1
         feedbackNumberOfVisit = 1
       }
-      await handleGusFeedbackSubmit(updatedData, improveOptions, customerType, attendantName, customerNumberOfVisits, feedbackNumberOfVisit)
+      await handleGusFeedbackSubmit(
+        updatedData,
+        improveOptions,
+        customerType,
+        attendantName,
+        customerNumberOfVisits,
+        feedbackNumberOfVisit,
+        business,
+        branchId,
+        customerData
+      )
       if (comeBack) {
         handleRedirect()
       }
@@ -277,6 +294,7 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                     businessCountry={businessCountry}
                     setIsLastFeedbackMoreThanOneDay={setIsLastFeedbackMoreThanOneDay}
                     businessId={businessId || ''}
+                    setCustomerData={setCustomerData}
                   />
                 )
               }
