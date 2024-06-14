@@ -239,7 +239,7 @@ const handleSubmitFeedback = async (
         creationDate
       })
     } else {
-      await setDoc(businessDoc, { 
+      await setDoc(businessDoc, {
         ...businessData,
         customerType: customerType,
         lastFeedbackFilled: lastFeedbackFilledValue,

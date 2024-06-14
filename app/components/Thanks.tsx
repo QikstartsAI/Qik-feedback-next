@@ -5,7 +5,7 @@ import Image from 'next/image'
 interface Props {
   businessCountry: string
   businessName: string
-  customerName: string
+  customerName: string | null
 }
 
 function Thanks({ businessCountry, businessName, customerName }: Props) {

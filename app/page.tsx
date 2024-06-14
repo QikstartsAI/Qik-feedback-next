@@ -1,23 +1,16 @@
 'use client';
 
-import { lazy, useState } from 'react'
+import { useState } from 'react'
 
 import useGetBusinessData from './hooks/useGetBusinessData'
 import Loader from './components/Loader'
-import Thanks from './components/Thanks'
 import { Toaster } from './components/ui/Toaster'
-import Intro from './components/feedback/Intro';
-import { CustomerRole } from './types/customer';
-import GusCustomForm from './components/feedback/customForms/GusCustomForm';
-import HootersCustomForm from './components/feedback/customForms/HootersCustomForm';
-import CustomIntro from "@/app/components/feedback/customForms/CustomIntro";
-import HootersThanks from "@/app/components/HootersThanks";
-import SimpleForm from './components/feedback/customForms/SimpleForm';
-import SimpleThanks from './components/SimpleThanks';
+import { Customer, CustomerRole } from './types/customer';
 import { DSC_SOLUTIONS_ID } from './constants/general';
+import FormsHandler from './components/handlers/FormsHandler';
+import ThanksHandler from './components/handlers/ThanksHandler';
+import LoyaltyHandler from './components/handlers/LoyaltyHandler';
 
-const Hero = lazy(() => import('./components/Hero'))
-const FeedbackForm = lazy(() => import('./components/feedback/FeedbackForm'))
 const CUSTOM_HOOTERS_FORM_ID = 'hooters'
 const CUSTOM_GUS_FORM_ID = 'pollo-gus'
 
@@ -40,98 +33,48 @@ export default function Home() {
   const isGusForm = businessId === CUSTOM_GUS_FORM_ID
   const isDscSolutions = businessId === DSC_SOLUTIONS_ID
   const [customerName, setCustomerName] = useState('')
+  const [customerData, setCustomerData] = useState<Customer | null>(null)
   const [userHasBirthdayBenefit, setUserHasBirthdayBenefit] = useState(false)
 
-  if (userHasBirthdayBenefit) {
-    return <div>User has benefit</div>
-  }
-
-  if ((isSubmitted && rating !== '4' && rating !== '5') && !isDscSolutions) {
-    if (isHootersForm || isGusForm) {
-      return <HootersThanks businessCountry={business?.Country || 'EC'} />
-    }
-    else
-      return <Thanks
-        businessCountry={business?.Country || 'EC'}
-        businessName={business?.Name || ''}
-        customerName={customerName} />
-  }
-  if (!isQr && isSubmitted && isDscSolutions) {
-    return <SimpleThanks />
+  if (loading === 'loading' || loading === 'requesting') {
+    return <Loader />;
   }
   return (
     <div>
-      {
-        loading === 'loading' || loading === 'requesting'
-          ? (
-            <Loader />
-          )
-          : (
-            <>
-              {
-                !isDscSolutions ? (
-                  <>
-                    <Hero business={business} />
-                    {!customerType && (
-                      isHootersForm || isGusForm ? (
-                        <CustomIntro
-                          business={business}
-                          toogleCustomerType={toggleCustomer}
-                          variant={isHootersForm ? 'hooters' : 'gus'}
-                        />
-                      ) : (
-                        <Intro
-                          business={business}
-                          toogleCustomerType={toggleCustomer}
-                        />
-                      )
-                    )}
-                    {customerType && (
-                      isHootersForm ? (
-                        <HootersCustomForm
-                          business={business}
-                          setIsSubmitted={setIsSubmitted}
-                          setRating={setRating}
-                          customerType={customerType}
-                          branchId={branchId}
-                          waiterId={waiterId}
-                        />
-                      ) : isGusForm
-                        ? (
-                          <GusCustomForm
-                            business={business}
-                            setIsSubmitted={setIsSubmitted}
-                            setRating={setRating}
-                            customerType={customerType}
-                            branchId={branchId}
-                          />
-                        )
-                        : (
-                        <FeedbackForm
-                          business={business}
-                          setIsSubmitted={setIsSubmitted}
-                          setRating={setRating}
-                          customerType={customerType}
-                          setCustomerName={setCustomerName}
-                          setUserHasBirthdayBenefit={setUserHasBirthdayBenefit}
-                          branchId={branchId}
-                          waiterId={waiterId}
-                        />
-                      )
-                    )}
-                  </>
-                ) : (
-                  <SimpleForm
-                    business={business}
-                    setIsSubmitted={setIsSubmitted}
-                    setRating={setRating}
-                    setIsQr={setIsQr}
-                  />
-                )
-              }
-            </>
-          )
-      }
+      <LoyaltyHandler
+        userHasBirthdayBenefit={userHasBirthdayBenefit}
+        customerData={customerData}
+      />
+      <ThanksHandler
+        business={business}
+        customerName={customerName}
+        isDscSolutions={isDscSolutions}
+        isGusForm={isGusForm}
+        isHootersForm={isHootersForm}
+        isQr={isQr}
+        isSubmitted={isSubmitted}
+        rating={rating}
+        userHasBirthdayBenefit={userHasBirthdayBenefit}
+      />
+      {!isSubmitted && !userHasBirthdayBenefit && (
+        <FormsHandler
+          business={business}
+          branchId={branchId}
+          waiterId={waiterId}
+          customerType={customerType}
+          isDscSolutions={isDscSolutions}
+          isGusForm={isGusForm}
+          isHootersForm={isHootersForm}
+          rating={rating}
+          setCustomerName={setCustomerName}
+          setCustomerData={setCustomerData}
+          setIsQr={setIsQr}
+          setIsSubmitted={setIsSubmitted}
+          setRating={setRating}
+          setUserHasBirthdayBenefit={setUserHasBirthdayBenefit}
+          toggleCustomer={toggleCustomer}
+        />
+      )}
       <Toaster />
     </div>
   )

@@ -50,6 +50,7 @@ interface FeedbackFormProps {
   setRating: Dispatch<SetStateAction<string>>
   customerType: CustomerRole
   setCustomerName: Dispatch<SetStateAction<string>>
+  setCustomerData: Dispatch<SetStateAction<Customer | null>>
   setUserHasBirthdayBenefit: Dispatch<SetStateAction<boolean>>
   branchId: string | null
   waiterId: string | null
@@ -62,6 +63,7 @@ export default function FeedbackForm({
   setCustomerName,
   customerType,
   setUserHasBirthdayBenefit,
+  setCustomerData,
   branchId,
   waiterId
 }: FeedbackFormProps) {
@@ -79,8 +81,9 @@ export default function FeedbackForm({
 
   const [isRewardButtonClicked, setIsRewardButtonClicked] = useState<boolean>(false)
 
-  const [customerData, setCustomerData] = useState<Customer | null>();
+  const [customerData, setCustomerDataForm] = useState<Customer | null>();
   const [userApprovesLoyalty, setUserApprovesLoyalty] = useState<boolean>(false)
+
   const businessId = business?.BusinessId
 
   const { toast } = useToast()
@@ -125,11 +128,13 @@ export default function FeedbackForm({
 
   useEffect(() => {
     if (customerData) {
+      console.log(customerData)
       form.setValue('FullName', customerData.name);
       form.setValue('PhoneNumber', customerData.phoneNumber || '');
       form.setValue('BirthdayDate', customerData.birthdayDate || '');
       setIsChecked(customerData.acceptPromotions || false);
       setUserApprovesLoyalty(customerData?.userApprovesLoyalty || false)
+      form.setValue('UserApprovesLoyalty', customerData.userApprovesLoyalty)
       if (customerData.userApprovesLoyalty) {
         setIsRewardButtonClicked(true)
       }
@@ -156,9 +161,10 @@ export default function FeedbackForm({
 
   const handleEmailField = async (email: string) => {
     if (email && customerType === 'frequent') {
-      setCustomerData(await findCustomerDataByEmail(email, businessId || ''))
+      const customerResponse = await findCustomerDataByEmail(email, businessId || '')
+      setCustomerDataForm(customerResponse)
+      setCustomerData(customerResponse)
       const lastFeedbackFilledInBusiness = customerData?.lastFeedbackFilled
-      console.log(await findCustomerDataByEmail(email, businessId || ''))
       const lastFeedbackGreaterThanOneDay = lastFeedbackFilledIsGreaterThanOneDay(lastFeedbackFilledInBusiness)
       setIsCustomerInBusiness(customerData?.lastFeedbackFilled ? true : false)
       setShowLastFeedbackFilledModal(lastFeedbackGreaterThanOneDay)
@@ -231,7 +237,8 @@ export default function FeedbackForm({
         branchId,
         waiterId
       )
-      if ((data.Rating === Ratings.Bueno || data.Rating === Ratings.Excelente) && business?.MapsUrl) {
+      if ((data.Rating === Ratings.Bueno || data.Rating === Ratings.Excelente)
+        && !userApprovesLoyalty && business?.MapsUrl) {
         handleRedirect()
       }
     } catch (error) {

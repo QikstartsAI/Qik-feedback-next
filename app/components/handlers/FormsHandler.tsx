@@ -1,18 +1,17 @@
-import { Dispatch, SetStateAction } from 'react';
-import Hero from '../Hero';
+import { Dispatch, SetStateAction, lazy } from 'react';
 import Intro from '../feedback/Intro';
 import CustomIntro from '../feedback/customForms/CustomIntro';
 import FeedbackForm from '../feedback/FeedbackForm';
 import GusCustomForm from '../feedback/customForms/GusCustomForm';
 import HootersCustomForm from '../feedback/customForms/HootersCustomForm';
 import SimpleForm from '../feedback/customForms/SimpleForm';
-import { CustomerRole } from '../../types/customer';
+import { Customer, CustomerRole } from '../../types/customer';
 import { Business } from '@/app/types/business';
 
 interface FormsHandlerProps {
-  business: Business;
-  branchId: string;
-  waiterId: string;
+  business: Business | null;
+  branchId: string | null;
+  waiterId: string | null;
   setIsSubmitted: Dispatch<SetStateAction<boolean>>
   rating: string;
   setRating: Dispatch<SetStateAction<string>>
@@ -21,10 +20,13 @@ interface FormsHandlerProps {
   setCustomerName: Dispatch<SetStateAction<string>>
   setUserHasBirthdayBenefit: Dispatch<SetStateAction<boolean>>
   setIsQr: Dispatch<SetStateAction<boolean>>
+  setCustomerData: Dispatch<SetStateAction<Customer | null>>
   isHootersForm: boolean
   isGusForm: boolean
   isDscSolutions: boolean
 }
+
+const Hero = lazy(() => import('../Hero'))
 
 const FormsHandler = ({
   business,
@@ -35,6 +37,7 @@ const FormsHandler = ({
   customerType,
   toggleCustomer,
   setCustomerName,
+  setCustomerData,
   setUserHasBirthdayBenefit,
   setIsQr,
   isHootersForm,
@@ -91,6 +94,7 @@ const FormsHandler = ({
                   setUserHasBirthdayBenefit={setUserHasBirthdayBenefit}
                   branchId={branchId}
                   waiterId={waiterId}
+                  setCustomerData={setCustomerData}
                 />
               )
             )}

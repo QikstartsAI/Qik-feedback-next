@@ -8,10 +8,11 @@ interface ThanksHandlerProps {
   isSubmitted: boolean;
   rating: string;
   isQr: boolean;
-  customerName: string;
+  customerName: string | null;
   isHootersForm: boolean
   isGusForm: boolean
   isDscSolutions: boolean
+  userHasBirthdayBenefit: boolean
 }
 
 const ThanksHandler = ({
@@ -22,9 +23,10 @@ const ThanksHandler = ({
   customerName,
   isHootersForm,
   isGusForm,
-  isDscSolutions
+  isDscSolutions,
+  userHasBirthdayBenefit
 }: ThanksHandlerProps) => {
-  if (isSubmitted && rating !== '4' && rating !== '5' && !isDscSolutions) {
+  if (isSubmitted && rating !== '4' && rating !== '5' && !isDscSolutions && !userHasBirthdayBenefit) {
     if (isHootersForm || isGusForm) {
       return <HootersThanks businessCountry={business?.Country || 'EC'} />;
     }
