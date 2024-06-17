@@ -44,6 +44,7 @@ export default function Home() {
       <LoyaltyHandler
         userHasBirthdayBenefit={userHasBirthdayBenefit}
         customerData={customerData}
+        businessIcon={business?.Icono || ''}
       />
       <ThanksHandler
         business={business}

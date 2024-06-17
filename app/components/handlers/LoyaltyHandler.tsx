@@ -3,13 +3,17 @@ import CongratulationsBirthday from '../loyalty/qik-cumple/CongratulationsBirthd
 import { Customer } from '@/app/types/customer';
 
 interface LoyaltyHandlerProps {
-  userHasBirthdayBenefit: boolean;
+  userHasBirthdayBenefit: boolean
   customerData: Customer | null
+  businessIcon: string
 }
 
-const LoyaltyHandler = ({ userHasBirthdayBenefit, customerData }: LoyaltyHandlerProps) => {
+const LoyaltyHandler = ({ userHasBirthdayBenefit, customerData, businessIcon }: LoyaltyHandlerProps) => {
   if (userHasBirthdayBenefit) {
-    return <CongratulationsBirthday customerData={customerData} />
+    return <CongratulationsBirthday
+    customerData={customerData}
+    businessIcon={businessIcon}
+    />
   }
   return null;
 };
