@@ -52,6 +52,7 @@ interface FeedbackFormProps {
   setCustomerName: Dispatch<SetStateAction<string>>
   setCustomerData: Dispatch<SetStateAction<Customer | null>>
   setUserHasBirthdayBenefit: Dispatch<SetStateAction<boolean>>
+  setBusinessSelectedGifts: Dispatch<SetStateAction<string[] | null>>
   branchId: string | null
   waiterId: string | null
 }
@@ -64,6 +65,7 @@ export default function FeedbackForm({
   customerType,
   setUserHasBirthdayBenefit,
   setCustomerData,
+  setBusinessSelectedGifts,
   branchId,
   waiterId
 }: FeedbackFormProps) {
@@ -173,13 +175,14 @@ export default function FeedbackForm({
   }
   async function onSubmit(data: FeedbackProps) {
     if(userApprovesLoyalty) {
-      const response = await userHasBirthdayBenefits(
+      const [userHasBenefits, selectedGifts] = await userHasBirthdayBenefits(
         {
           userBirthday: customerData?.birthdayDate,
           business
         }
       )
-      setUserHasBirthdayBenefit(response)
+      setUserHasBirthdayBenefit(userHasBenefits as boolean)
+      setBusinessSelectedGifts(selectedGifts as string[])
     }
 
     setRating(data.Rating)

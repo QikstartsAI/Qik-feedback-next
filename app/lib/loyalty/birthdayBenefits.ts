@@ -1,7 +1,7 @@
 import { Business } from "@/app/types/business"
 import loyaltyService from "@/app/services/loyaltyService";
 import { DocumentData } from "firebase/firestore";
-import { BirthdayOption } from "@/app/types/loyalty";
+import { BirthdayConfiguration, BirthdayOption } from "@/app/types/loyalty";
 
 type Benefits = {
   userBirthday?: string
@@ -10,19 +10,24 @@ type Benefits = {
 
 type VerifyBenefits = {
   userBirthday?: string
-  loyaltyConfigurationData?: DocumentData
+  loyaltyConfigurationData?: BirthdayConfiguration
 }
 
-export const userHasBirthdayBenefits = async ({ userBirthday, business }: Benefits) => {
+export const userHasBirthdayBenefits = async ({ userBirthday, business }: Benefits): Promise<[boolean, string[]]> => {
   try {
-    const loyaltyConfigurationData = (await loyaltyService.getBirthdayDataFromBusiness(business)).data()
-    const response = verifyBirthdayBenefit({userBirthday, loyaltyConfigurationData})
-    return response
+    const loyaltyConfigurationData = (await loyaltyService.getBirthdayDataFromBusiness(business)).data() as BirthdayConfiguration;
+    if (!loyaltyConfigurationData) {
+      throw new Error('Loyalty configuration data not found');
+    }
+    const selectedGifts = loyaltyConfigurationData.selectedGifts || [];
+    const userHasBenefits = verifyBirthdayBenefit({ userBirthday, loyaltyConfigurationData });
+    return [userHasBenefits, selectedGifts];
   } catch (error) {
-    console.log(error)
+    console.error('Error fetching birthday benefits:', error);
+    return [false, []];
   }
-  return false
 }
+
 
 const verifyBirthdayBenefit = ({ userBirthday, loyaltyConfigurationData }: VerifyBenefits) => {
   if (!userBirthday || !loyaltyConfigurationData) return false;

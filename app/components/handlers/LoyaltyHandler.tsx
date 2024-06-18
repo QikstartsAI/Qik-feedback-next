@@ -6,13 +6,20 @@ interface LoyaltyHandlerProps {
   userHasBirthdayBenefit: boolean
   customerData: Customer | null
   businessIcon: string
+  businessSelectedGifts: string[] | null
 }
 
-const LoyaltyHandler = ({ userHasBirthdayBenefit, customerData, businessIcon }: LoyaltyHandlerProps) => {
+const LoyaltyHandler = ({
+  userHasBirthdayBenefit,
+  customerData,
+  businessIcon,
+  businessSelectedGifts
+}: LoyaltyHandlerProps) => {
   if (userHasBirthdayBenefit) {
     return <CongratulationsBirthday
     customerData={customerData}
     businessIcon={businessIcon}
+    businessSelectedGifts={businessSelectedGifts}
     />
   }
   return null;

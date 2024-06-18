@@ -35,6 +35,7 @@ export default function Home() {
   const [customerName, setCustomerName] = useState('')
   const [customerData, setCustomerData] = useState<Customer | null>(null)
   const [userHasBirthdayBenefit, setUserHasBirthdayBenefit] = useState(false)
+  const [businessSelectedGifts, setBusinessSelectedGifts] = useState<string[] | null>(null)
 
   if (loading === 'loading' || loading === 'requesting') {
     return <Loader />;
@@ -43,6 +44,7 @@ export default function Home() {
     <div>
       <LoyaltyHandler
         userHasBirthdayBenefit={userHasBirthdayBenefit}
+        businessSelectedGifts={businessSelectedGifts}
         customerData={customerData}
         businessIcon={business?.Icono || ''}
       />
@@ -74,6 +76,7 @@ export default function Home() {
           setRating={setRating}
           setUserHasBirthdayBenefit={setUserHasBirthdayBenefit}
           toggleCustomer={toggleCustomer}
+          setBusinessSelectedGifts={setBusinessSelectedGifts}
         />
       )}
       <Toaster />

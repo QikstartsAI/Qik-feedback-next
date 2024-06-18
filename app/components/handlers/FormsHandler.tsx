@@ -21,6 +21,7 @@ interface FormsHandlerProps {
   setUserHasBirthdayBenefit: Dispatch<SetStateAction<boolean>>
   setIsQr: Dispatch<SetStateAction<boolean>>
   setCustomerData: Dispatch<SetStateAction<Customer | null>>
+  setBusinessSelectedGifts: Dispatch<SetStateAction<string[] | null>>
   isHootersForm: boolean
   isGusForm: boolean
   isDscSolutions: boolean
@@ -40,6 +41,7 @@ const FormsHandler = ({
   setCustomerData,
   setUserHasBirthdayBenefit,
   setIsQr,
+  setBusinessSelectedGifts,
   isHootersForm,
   isGusForm,
   isDscSolutions
@@ -95,6 +97,7 @@ const FormsHandler = ({
                   branchId={branchId}
                   waiterId={waiterId}
                   setCustomerData={setCustomerData}
+                  setBusinessSelectedGifts={setBusinessSelectedGifts}
                 />
               )
             )}

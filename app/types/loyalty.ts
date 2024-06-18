@@ -3,3 +3,12 @@ export enum BirthdayOption {
 	'onTheDayAndthirtyDaysAfter' = 'onTheDayAndthirtyDaysAfter',
 	'upToSixtyDaysAfter' = 'upToSixtyDaysAfter'
 }
+
+export interface BirthdayConfiguration {
+  birthdayOption: BirthdayOption
+  enableBirthdayNotification: boolean
+  enableRenewal: boolean
+  mailNotificationOption: "dayBeforeMail"
+  selectedGifts: string[]
+  whatsappNotificationOptions: string[]
+}
