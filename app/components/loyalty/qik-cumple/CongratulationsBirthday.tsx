@@ -1,6 +1,7 @@
 import { Customer } from "@/app/types/customer"
 import Image from "next/image"
 import { Button } from "../../ui/Button"
+import { giftData } from "@/app/constants/loyalty/qik-birthday"
 
 interface Props {
   customerData: Customer | null
@@ -44,11 +45,41 @@ const CongratulationsBirthday = ({ customerData, businessIcon, businessSelectedG
           <h3 className="text-white text-center font-semibold text-xl px-6">
             PREMIOS Y BENEFICIOS DISPONIBLES HOY PARA TÍ EN TU CUMPLEAÑOS
           </h3>
-          {
-            businessSelectedGifts?.map((val, idx) => (
-              <p key={idx}>{val}</p>
-            ))
-          }
+          <div className="grid grid-cols-3 gap-3 mb-6">
+            {
+              businessSelectedGifts?.map((value: string, index) => {
+                const indexValue = Number(value)
+                const starValue = giftData[Number(value)].starValue
+                return (
+                  <div key={index} className="w-full md:auto lg:auto mb-[2rem] relative">
+                    <div className="mx-auto flex justify-center">
+                      <div className="relative h-28 w-28 border-white border-[2px] rounded-lg cursor-pointer">
+                        <Image
+                          className="w-full h-full"
+                          src={giftData[indexValue].image}
+                          alt={giftData[indexValue].text}
+                          layout="fill"
+                          objectFit="contain"
+                        />
+                      </div>
+                      {
+                        starValue && (
+                          <div
+                            className={`absolute text-primary text-xl font-bold pl-2 pt-0.5 pr-2 top-[40px] md:top-[40px] md:left-[55px] md:scale-125 ${starValue && parseInt(starValue) > 9
+                                ? `left-[29px] md:left-[60px]`
+                                : `left-[55px]`
+                              }`}
+                          >
+                            {starValue}
+                          </div>
+                        )
+                      }
+                    </div>
+                  </div>
+                )
+              })
+            }
+          </div>
         </div>
       </div>
     </div>
