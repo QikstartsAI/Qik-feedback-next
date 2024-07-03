@@ -2,6 +2,8 @@ import { Customer } from "@/app/types/customer"
 import Image from "next/image"
 import { Button } from "../../ui/Button"
 import { giftData } from "@/app/constants/loyalty/qik-birthday"
+import { GiftData } from "@/app/types/loyalty"
+import { useEffect, useState } from "react"
 
 interface Props {
   customerData: Customer | null
@@ -10,6 +12,22 @@ interface Props {
 }
 
 const CongratulationsBirthday = ({ customerData, businessIcon, businessSelectedGifts }: Props) => {
+  const [selectedOption, setSelectedOption] = useState<GiftData | null>(null)
+  const [showRedeemInformation, setShowRedeemInformation] = useState<boolean>(false)
+
+  const handleGiftClick = (gift: GiftData) => {
+    setSelectedOption(gift)
+  };
+  useEffect(() => {
+    if (selectedOption) {
+      console.log(selectedOption);
+    }
+  }, [selectedOption]);
+
+  const handleRedeemGiftClick = () => {
+    setShowRedeemInformation(true)
+  }
+
   return (
     <div className="relative">
       <Image
@@ -42,44 +60,85 @@ const CongratulationsBirthday = ({ customerData, businessIcon, businessSelectedG
             height={90}
             loading='eager'
           />
-          <h3 className="text-white text-center font-semibold text-xl px-6">
-            PREMIOS Y BENEFICIOS DISPONIBLES HOY PARA TÍ EN TU CUMPLEAÑOS
-          </h3>
-          <div className="grid grid-cols-3 gap-3 mb-6">
-            {
-              businessSelectedGifts?.map((value: string, index) => {
-                const indexValue = Number(value)
-                const starValue = giftData[Number(value)].starValue
-                return (
-                  <div key={index} className="w-full md:auto lg:auto mb-[2rem] relative">
-                    <div className="mx-auto flex justify-center">
-                      <div className="relative h-28 w-28 border-white border-[2px] rounded-lg cursor-pointer">
-                        <Image
-                          className="w-full h-full"
-                          src={giftData[indexValue].image}
-                          alt={giftData[indexValue].text}
-                          layout="fill"
-                          objectFit="contain"
-                        />
-                      </div>
-                      {
-                        starValue && (
-                          <div
-                            className={`absolute text-primary text-xl font-bold pl-2 pt-0.5 pr-2 top-[40px] md:top-[40px] md:left-[55px] md:scale-125 ${starValue && parseInt(starValue) > 9
-                                ? `left-[29px] md:left-[60px]`
-                                : `left-[55px]`
-                              }`}
-                          >
-                            {starValue}
+          {
+            !showRedeemInformation && (
+              <>
+                <h3 className="text-white text-center font-semibold text-xl px-6">
+                  PREMIOS Y BENEFICIOS DISPONIBLES HOY PARA TÍ EN TU CUMPLEAÑOS
+                </h3>
+                <div className="grid grid-cols-3 gap-3 mb-2">
+                  {
+                    businessSelectedGifts?.map((value: string, index) => {
+                      const indexValue = Number(value)
+                      const gift = giftData[indexValue]
+                      const starValue = gift.starValue
+                      return (
+                        <div
+                          key={index}
+                          className="w-full md:auto lg:auto mb-[2rem] relative"
+                          onClick={() => handleGiftClick(gift)}
+                        >
+                          <div className="mx-auto flex justify-center">
+                            <div className={`relative h-28 w-28 rounded-lg cursor-pointer
+                        ${selectedOption && selectedOption.id == gift.id ? 'bg-primary' : 'border-white border-[2px]'}`}
+                            >
+                              <Image
+                                className="w-full h-full"
+                                src={gift.image}
+                                alt={gift.text}
+                                layout="fill"
+                                objectFit="contain"
+                              />
+                            </div>
+                            {
+                              starValue && (
+                                <div
+                                  className={`absolute text-xl font-bold pl-2 pt-0.5 pr-2 top-[40px] md:top-[40px] md:left-[55px] md:scale-125 ${starValue && parseInt(starValue) > 9
+                                    ? `left-[29px] md:left-[60px]`
+                                    : `left-[55px]`
+                                    } ${selectedOption && selectedOption.id == gift.id ? 'text-white' : 'text-primary'}`}
+                                >
+                                  {starValue}
+                                </div>
+                              )
+                            }
                           </div>
-                        )
-                      }
+                        </div>
+                      )
+                    })
+                  }
+                </div>
+                {
+                  selectedOption && (
+                    <div className="flex justify-center items-center mb-6">
+                      <button
+                        className="flex flex-row justify-center items-center
+                  py-2 px-1 rounded-2xl bg-primary w-3/4"
+                        onClick={handleRedeemGiftClick}
+                      >
+                        <span className="w-2/4 text-center text-white font-bold text-xl">
+                          CANJEAR BENEFICIO
+                        </span>
+                        <Image
+                          src="/arrow.svg"
+                          alt="Canjear beneficio"
+                          width={110}
+                          height={110}
+                        />
+                      </button>
                     </div>
-                  </div>
-                )
-              })
-            }
-          </div>
+                  )
+                }
+              </>
+            )
+          }
+          {
+            showRedeemInformation && (
+              <div>
+                <p>{selectedOption?.text}</p>
+              </div>
+            )
+          }
         </div>
       </div>
     </div>

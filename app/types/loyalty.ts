@@ -12,3 +12,11 @@ export interface BirthdayConfiguration {
   selectedGifts: string[]
   whatsappNotificationOptions: string[]
 }
+
+export interface GiftData {
+  id: number
+  value: string
+  image: string
+  text: string
+  starValue?: string
+}

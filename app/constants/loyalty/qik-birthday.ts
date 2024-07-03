@@ -1,4 +1,6 @@
-export const giftData = [
+import { GiftData } from "@/app/types/loyalty";
+
+export const giftData: GiftData[] = [
   { id: 0, value: "discount", image: "/trayIcon.webp", text: "Descuento" },
   { id: 1, value: "freeDessert", image: "/dessertIcon.webp", text: "Postre" },
   { id: 2, value: "freeDring", image: "/drinkIcon.webp", text: "Bebida" },
