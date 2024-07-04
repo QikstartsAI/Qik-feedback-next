@@ -308,7 +308,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                 {currentStepIndex === 1 && (
                   <StarRatingQuestion<HootersFeedbackProps>
                     form={form}
-                    question={courtesyQuestion}
+                    question={placeCleannessQuestion}
                     nextStep={() => {
                       if (!form.watch('PlaceCleanness')) {
                         toast({
@@ -328,7 +328,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                 {currentStepIndex === 2 && (
                   <StarRatingQuestion<HootersFeedbackProps>
                     form={form}
-                    question={courtesyQuestion}
+                    question={quicknessQuestion}
                     nextStep={() => {
                       if (!form.watch('Quickness')) {
                         toast({
@@ -348,7 +348,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                 {currentStepIndex === 3 && (
                   <StarRatingQuestion<HootersFeedbackProps>
                     form={form}
-                    question={courtesyQuestion}
+                    question={foodQualityQuestion}
                     nextStep={() => {
                       if (!form.watch('FoodQuality')) {
                         toast({
@@ -368,7 +368,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                 {currentStepIndex === 4 && (
                   <StarRatingQuestion<HootersFeedbackProps>
                     form={form}
-                    question={courtesyQuestion}
+                    question={ambienceQuestion}
                     nextStep={() => {
                       if (!form.watch('Climate')) {
                         toast({
@@ -388,7 +388,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                 {currentStepIndex === 5 && (
                   <StarRatingQuestion<HootersFeedbackProps>
                     form={form}
-                    question={courtesyQuestion}
+                    question={experienceQuestion}
                     nextStep={() => {
                       if (!form.watch('Experience')) {
                         toast({
