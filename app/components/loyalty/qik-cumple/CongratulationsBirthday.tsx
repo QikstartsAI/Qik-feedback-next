@@ -4,6 +4,7 @@ import { Button } from "../../ui/Button"
 import { giftData } from "@/app/constants/loyalty/qik-birthday"
 import { GiftData } from "@/app/types/loyalty"
 import { useEffect, useState } from "react"
+import { Input } from "../../ui/Input"
 
 interface Props {
   customerData: Customer | null
@@ -134,8 +135,14 @@ const CongratulationsBirthday = ({ customerData, businessIcon, businessSelectedG
           }
           {
             showRedeemInformation && (
-              <div>
-                <p>{selectedOption?.text}</p>
+              <div className="flex justify-center items-center flex-col w-1/2">
+                <p className="text-white text-center font-medium text-xl mb-4">
+                Solicita al mesero el PIN de tu beneficio
+                </p>
+                <Input className="text-white border-[2px]"/>
+                <Button className="text-center text-white mt-4 w-full">
+                  Canjear
+                </Button>
               </div>
             )
           }
