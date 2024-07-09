@@ -4,17 +4,20 @@ import { Button } from "../../ui/Button"
 import { giftData } from "@/app/constants/loyalty/qik-birthday"
 import { GiftData } from "@/app/types/loyalty"
 import { useEffect, useState } from "react"
-import { Input } from "../../ui/Input"
+import loyaltyService from "@/app/services/loyaltyService"
+import { QIK_CUMPLE_SUBCOLLECTION_NAME } from "@/app/constants/general"
 
 interface Props {
   customerData: Customer | null
   businessIcon: string
   businessSelectedGifts: string[] | null
+  businessId: string | null
 }
 
-const CongratulationsBirthday = ({ customerData, businessIcon, businessSelectedGifts }: Props) => {
+const CongratulationsBirthday = ({ customerData, businessIcon, businessSelectedGifts, businessId }: Props) => {
   const [selectedOption, setSelectedOption] = useState<GiftData | null>(null)
   const [showRedeemInformation, setShowRedeemInformation] = useState<boolean>(false)
+  const [pinText, setPinText] = useState<string>("001QIK")
 
   const handleGiftClick = (gift: GiftData) => {
     setSelectedOption(gift)
@@ -27,6 +30,14 @@ const CongratulationsBirthday = ({ customerData, businessIcon, businessSelectedG
 
   const handleRedeemGiftClick = () => {
     setShowRedeemInformation(true)
+  }
+
+  const handleRedeemPinClick = async () => {
+    await loyaltyService.sendBenefitDataRedeem({
+      businessId,
+      customerData,
+      qikLoyaltySubcollection: QIK_CUMPLE_SUBCOLLECTION_NAME
+    }, selectedOption, pinText)
   }
 
   return (
@@ -139,8 +150,16 @@ const CongratulationsBirthday = ({ customerData, businessIcon, businessSelectedG
                 <p className="text-white text-center font-medium text-xl mb-4">
                 Solicita al mesero el PIN de tu beneficio
                 </p>
-                <Input className="text-white border-[2px]"/>
-                <Button className="text-center text-white mt-4 w-full">
+                <p
+                  className="border-white border-[2px] rounded-lg text-white w-full
+                  text-center text-xl py-1 px-4"
+                >
+                  {pinText}
+                </p>
+                <Button
+                  className="text-center text-white mt-4 w-full"
+                  onClick={handleRedeemPinClick}
+                >
                   Canjear
                 </Button>
               </div>

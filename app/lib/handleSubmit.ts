@@ -3,9 +3,7 @@ import { getFirebase, getTimesTampFromDate } from '@/app/lib/firebase'
 import { Business, Waiter } from '@/app/types/business'
 import { FeedbackProps } from '@/app/validators/feedbackSchema'
 import { addDoc, updateDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore'
-import { findBusiness } from '../services/business'
 import { Customer } from '../types/customer'
-import { findCustomerDataByEmail } from './handleEmail'
 
 const handleSubmitFeedback = async (
     {

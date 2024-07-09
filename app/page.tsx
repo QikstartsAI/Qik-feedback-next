@@ -47,6 +47,7 @@ export default function Home() {
         businessSelectedGifts={businessSelectedGifts}
         customerData={customerData}
         businessIcon={business?.Icono || ''}
+        businessId={businessId}
       />
       <ThanksHandler
         business={business}
