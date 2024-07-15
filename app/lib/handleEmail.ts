@@ -1,19 +1,41 @@
 import { Customer } from "../types/customer";
 import { CUSTOMERS_COLLECTION_NAME, COLLECTION_NAME } from '@/app/constants/general'
 import { getFirebase } from '@/app/lib/firebase'
-import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore'
-import { Feedback } from "../types/business";
+import { doc, getDoc } from 'firebase/firestore'
+import { CUSTOM_KFC_ID } from "@/app/constants/general";
 
-export const findCustomerDataByEmail = async (email: string): Promise<Customer | null> => {
+export const findCustomerDataByEmail = async (email: string, businessId: string, brandId?: string | null): Promise<Customer | null> => {
   const db = getFirebase().db;
-  const customerDocRef = doc(db, CUSTOMERS_COLLECTION_NAME || '', email);
+  const customerDocRef = doc(
+    db,
+    CUSTOMERS_COLLECTION_NAME || '',
+    email
+  );
+  const customerBusinessDocRef = businessId !== CUSTOM_KFC_ID
+  ? doc(
+    db,
+    CUSTOMERS_COLLECTION_NAME || '',
+    email,
+    'business',
+    businessId
+  ): doc(
+    db,
+    CUSTOMERS_COLLECTION_NAME || '',
+    email,
+    'business',
+    businessId,
+    'brand',
+    brandId || ''
+  )
 
   try {
     const customerDocSnapshot = await getDoc(customerDocRef);
+    const customerBusinessDocSnapshot = await getDoc(customerBusinessDocRef);
 
-    if (customerDocSnapshot.exists()) {
+    if (customerDocSnapshot.exists() || customerBusinessDocSnapshot.exists()) {
       const customerData = customerDocSnapshot.data() as Customer;
-      return customerData;
+      const customerBusinessData = customerBusinessDocSnapshot.data() as Customer
+      return {...customerData, ...customerBusinessData};
     } else {
       return null;
     }
@@ -32,29 +54,6 @@ export const findIsCustomerInBusiness = async (email: string, businessId: string
 export const findCustomerFeedbackDataInBusiness = async (email: string, businessId: string) => {
   const db = getFirebase().db
   const customerDocRef = doc(db, CUSTOMERS_COLLECTION_NAME || '', email, 'business', businessId)
-  return (await getDoc(customerDocRef)).data() as {customerNumberOfVisits: number}
-}
-
-
-
-export const getCustomerDataInBusiness = async (email: string, businessId: string | null, branchId: string | null, waiterId: string | null) => {
-  const db = getFirebase().db;
-  let basePath = `/${businessId}/customers/${email}`;
-
-  if (branchId) {
-    basePath = `/${businessId}/sucursales/${branchId}/customers/${email}`;
-    if (waiterId) {
-      basePath = `/${businessId}/sucursales/${branchId}/meseros/${waiterId}/customers/${email}`;
-    }
-  } else if (waiterId) {
-    basePath = `/${businessId}/meseros/${waiterId}/customers/${email}`;
-  }
-
-  const customerDocRef = doc(db, COLLECTION_NAME + basePath);
-  const customerDocSnapshot = await getDoc(customerDocRef);
-  if (customerDocSnapshot.exists()) {
-    return customerDocSnapshot.data() as Customer;
-  } else {
-    return null;
-  }
+  const data = (await getDoc(customerDocRef)).data() as {customerNumberOfVisits: number, userApprovesLoyalty: boolean}
+  return data
 }

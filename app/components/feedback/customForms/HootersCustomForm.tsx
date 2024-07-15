@@ -29,7 +29,7 @@ import React, { Dispatch, SetStateAction, useState } from 'react'
 import {
   getImprovements,
 } from '@/app/constants/form'
-import { CustomerRole } from '@/app/types/customer'
+import { Customer, CustomerRole } from '@/app/types/customer'
 import getFormTranslations from '@/app/constants/formTranslations';
 import UserInfo from "@/app/components/feedback/UserInfo";
 import Stack from '@mui/material/Stack';
@@ -43,7 +43,7 @@ import { Checkbox } from '../../ui/Checkbox'
 import { IconToolsKitchen } from '@tabler/icons-react';
 import { IconUserScan } from '@tabler/icons-react';
 import { IconBuildingStore } from '@tabler/icons-react';
-import CustomStepperIcons, { CustomStepperIconsHooters } from "@/app/components/form/CustomStepperIcons";
+import { CustomStepperIconsHooters } from "@/app/components/form/CustomStepperIcons";
 import CustomStepperConnector from "@/app/components/form/CustomStepperConnector";
 import { useSearchParams } from 'next/navigation'
 import StarRatingQuestion from '../questions/StarRatingQuestion'
@@ -56,6 +56,7 @@ interface HootersCustomFormProps {
 }
 
 export default function HootersCustomForm({ business, setIsSubmitted, setRating, customerType }: HootersCustomFormProps) {
+  const [customerData, setCustomerData] = useState<Customer | null>(null)
   const [isTermsChecked, setIsTermsChecked] = useState(true)
   const [recommending, setRecommending] = useState<boolean | null>(null)
   const [comeBack, setComeBack] = useState<boolean | null>(null)
@@ -213,7 +214,15 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
         customerNumberOfVisits = 1
         feedbackNumberOfVisit = 1
       }
-      await handleSubmitHootersForm(updatedData, improveOptions, customerType, attendantName, customerNumberOfVisits, feedbackNumberOfVisit)
+      await handleSubmitHootersForm(
+        updatedData,
+        improveOptions,
+        customerType,
+        attendantName,
+        customerNumberOfVisits,
+        feedbackNumberOfVisit,
+        customerData
+      )
       if (comeBack) {
         handleRedirect()
       }
@@ -271,6 +280,8 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                     businessCountry={businessCountry}
                     setIsLastFeedbackMoreThanOneDay={setIsLastFeedbackMoreThanOneDay}
                     businessId={businessId || ''}
+                    brandId={''}
+                    setCustomerData={setCustomerData}
                   />
                 )
               }

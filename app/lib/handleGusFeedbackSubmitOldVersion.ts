@@ -1,11 +1,11 @@
 import { COLLECTION_NAME, CUSTOMERS_COLLECTION_NAME } from '@/app/constants/general'
 import { getFirebase, getTimesTampFromDate } from '@/app/lib/firebase'
+import { Business } from '@/app/types/business'
 import { addDoc, collection, doc, setDoc } from 'firebase/firestore'
 import { Customer } from '../types/customer'
 import { GusFeedbackProps } from '../validators/gusFeedbackSchema'
-import { Business } from '../types/business'
 
-const handleGusFeedbackSubmit = async (
+const handleGusFeedbackSubmitOldVersion = async (
   {
     FullName,
     AcceptTerms,
@@ -31,8 +31,7 @@ const handleGusFeedbackSubmit = async (
   customerNumberOfVisits: number,
   feedbackNumberOfVisit: number,
   businessId: string | null,
-  brandId: string | null,
-  brandBranchId: string | null,
+  branchId: string | null,
   customerData: Customer | null,
   businessData: Business | null
 ) => {
@@ -45,15 +44,13 @@ const handleGusFeedbackSubmit = async (
     origin: '',
     customerType: customerType || '',
     acceptPromotions: false,
-    lastFeedbackFilled: getTimesTampFromDate(new Date())
+    lastFeedbackFilled: lastFeedbackFilled
   }
 
   const businessFeedbackRef = collection(
     getFirebase().db,
     COLLECTION_NAME || '',
-    businessId || '',
-    'brand',
-    brandId || '',
+    businessId ? businessId : '',
     'customers',
     Email,
     'feedbacks'
@@ -62,11 +59,10 @@ const handleGusFeedbackSubmit = async (
   const businessCustomerRef = collection(
     getFirebase().db,
     COLLECTION_NAME || '',
-    businessId || '',
-    'brand',
-    brandId || '',
+    businessId ? businessId : '',
     'customers',
   )
+  // const businessDocRef = doc(getFirebase().db, COLLECTION_NAME || '', businessId || '')
 
   const feedbackData = {
     CreationDate: getTimesTampFromDate(new Date()),
@@ -134,7 +130,7 @@ const handleGusFeedbackSubmit = async (
   //       getFirebase().db,
   //       COLLECTION_NAME || '',
   //       businessId || '',
-  //       'branch',
+  //       'sucursales',
   //       branchId || '',
   //       'meseros',
   //       waiterId || '',
@@ -146,13 +142,13 @@ const handleGusFeedbackSubmit = async (
   //       getFirebase().db,
   //       COLLECTION_NAME || '',
   //       businessId || '',
-  //       'branch',
+  //       'sucursales',
   //       branchId || '',
   //       'meseros',
   //       waiterId || '',
   //       'customers',
   //     )
-  //     const branchDocRef = doc(collection(businessDocRef, 'branch'), branchId || '')
+  //     const branchDocRef = doc(collection(businessDocRef, 'sucursales'), branchId || '')
   //     const waitersRef = doc(collection(branchDocRef, 'meseros'), waiterId || '')
   //     const waitersDocSnap = await getDoc(waitersRef)
   //     const waiterData = waitersDocSnap.data() as Waiter
@@ -173,15 +169,13 @@ const handleGusFeedbackSubmit = async (
   // }
 
   try {
-    if (brandBranchId) {
+    if (branchId) {
       const branchFeedbackRef = collection(
         getFirebase().db,
         COLLECTION_NAME || '',
         businessId || '',
-        'brand',
-        brandId || '',
-        'branch',
-        brandBranchId || '',
+        'sucursales',
+        branchId || '',
         'customers',
         Email,
         'feedbacks'
@@ -190,16 +184,14 @@ const handleGusFeedbackSubmit = async (
         getFirebase().db,
         COLLECTION_NAME || '',
         businessId || '',
-        'brand',
-        brandId || '',
-        'branch',
-        brandBranchId || '',
+        'sucursales',
+        branchId || '',
         'customers',
       )
       const customerRef = doc(branchCustomerRef, Email)
       await setDoc(customerRef, customerContactData)
       await addDoc(branchFeedbackRef, feedbackData)
-    } else if (brandId && !brandBranchId) {
+    } else if (businessId && !branchId) {
       const customerRef = doc(businessCustomerRef, Email)
       await setDoc(customerRef, customerContactData)
       await addDoc(businessFeedbackRef, feedbackData)
@@ -219,12 +211,7 @@ const handleGusFeedbackSubmit = async (
     let creationDate = customerData?.creationDate;
 
     const customerDoc = doc(parentCustomerDataRef, Email)
-    const businessDoc = doc(
-      parentCustomerBusinessRef,
-      businessId || '',
-      'brand',
-      brandId || ''
-    )
+    const businessDoc = doc(parentCustomerBusinessRef, businessId || '')
 
     if (!customerData?.creationDate) {
       creationDate = getTimesTampFromDate(new Date())
@@ -232,7 +219,7 @@ const handleGusFeedbackSubmit = async (
 
     await setDoc(customerDoc, customerContactData)
     if (customerData) {
-      await setDoc(businessDoc, {
+      await setDoc(businessDoc, { 
         ...businessData,
         customerType: customerData?.customerType,
         lastFeedbackFilled: lastFeedbackFilled,
@@ -257,8 +244,6 @@ const handleGusFeedbackSubmit = async (
       Email,
       'business',
       businessId || '',
-      'brand',
-      brandId || '',
       'feedbacks'
     )
     const businessFeedbackDoc = doc(customerBusinessFeedbackRef)
@@ -268,4 +253,4 @@ const handleGusFeedbackSubmit = async (
   }
 }
 
-export default handleGusFeedbackSubmit
+export default handleGusFeedbackSubmitOldVersion

@@ -1,16 +1,17 @@
 'use client'
 
-import {cn, lastFeedbackFilledIsGreaterThanOneDay} from "@/app/lib/utils";
-import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/app/components/ui/Form";
-import {Input} from "@/app/components/ui/Input";
+import { lastFeedbackFilledIsGreaterThanOneDay } from "@/app/lib/utils";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/app/components/ui/Form";
+import { Input } from "@/app/components/ui/Input";
 import { HootersFeedbackProps } from '@/app/validators/hootersFeedbackSchema';
-import {findCustomerDataByEmail, findIsCustomerInBusiness, getCustomerDataInBusiness} from "@/app/lib/handleEmail";
-import {FieldValues, Path, PathValue, UseFormReturn} from "react-hook-form";
+import {findCustomerDataByEmail } from "@/app/lib/handleEmail";
+import { Path, PathValue, UseFormReturn } from "react-hook-form";
 import { useState } from "react";
 import Modal from "../ui/Modal";
 import { useSearchParams } from "next/navigation";
 import getFormTranslations from "@/app/constants/formTranslations";
 import { GusFeedbackProps } from "@/app/validators/gusFeedbackSchema";
+import { Customer } from "@/app/types/customer";
 
 interface UserInfoProps<T extends HootersFeedbackProps | GusFeedbackProps> {
 	form: UseFormReturn<T>
@@ -19,19 +20,25 @@ interface UserInfoProps<T extends HootersFeedbackProps | GusFeedbackProps> {
   businessCountry: string
   businessId: string
   setIsLastFeedbackMoreThanOneDay: (value: boolean) => void
+  setCustomerData: (value: Customer | null) => void
+  brandId?: string | null
 }
 
-export default function UserInfo<T extends HootersFeedbackProps | GusFeedbackProps>({ form, fullNameQuestion, emailQuestion, setIsLastFeedbackMoreThanOneDay, businessCountry, businessId }: UserInfoProps<T>) {
+export default function UserInfo<T extends HootersFeedbackProps | GusFeedbackProps>({
+  form,
+  fullNameQuestion,
+  emailQuestion,
+  setIsLastFeedbackMoreThanOneDay,
+  businessCountry,
+  businessId,
+  setCustomerData,
+  brandId
+}: UserInfoProps<T>) {
   const [showLastFeedbackFilledModal, setShowLastFeedbackFilledModal] = useState<boolean | undefined>(false)
 
   const {
     feedbackLimit
   } = getFormTranslations({businessCountry})
-
-  const searchParams = useSearchParams()
-  const branchId = searchParams.get('sucursal')
-  const waiterId = searchParams.get('mesero')
-
 	return (
 		<>
 			{
@@ -47,7 +54,7 @@ export default function UserInfo<T extends HootersFeedbackProps | GusFeedbackPro
         }
 			<FormField
 				control={form.control}
-				name={'Email' as Path<T>} 
+				name={'Email' as Path<T>}
 				render={({ field }) => (
 					<FormItem>
 						<FormLabel className={'text-colorText'}>
@@ -62,12 +69,12 @@ export default function UserInfo<T extends HootersFeedbackProps | GusFeedbackPro
 								onBlur={async () => {
 									const email = field.value
 									if (email) {
-										const customerData = await findCustomerDataByEmail(email as string)
-                    const customerDataInBusiness = await getCustomerDataInBusiness(email as string, businessId, branchId, waiterId)
-                    const lastFeedbackFilledInBusiness = customerDataInBusiness?.lastFeedbackFilled
+										const customerData = await findCustomerDataByEmail(email as string, businessId, brandId)
+                    const lastFeedbackFilledInBusiness = customerData?.lastFeedbackFilled
                     const lastFeedbackGreaterThanOneDay = lastFeedbackFilledIsGreaterThanOneDay(lastFeedbackFilledInBusiness)
                     setShowLastFeedbackFilledModal(lastFeedbackGreaterThanOneDay)
                     setIsLastFeedbackMoreThanOneDay(lastFeedbackGreaterThanOneDay)
+                    setCustomerData(customerData)
 										if (customerData) {
 											form.setValue('FullName' as Path<T>, customerData.name as PathValue<T, Path<T>>)
 										}

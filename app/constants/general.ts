@@ -5,6 +5,7 @@ const USERS_COLLECTION_NAME = 'businessUsers'
 const BUCKET_NAME = 'qik_feedback_test'
 const BUCKET_URL = `gs://${COLLECTION_NAME}`
 const DSC_SOLUTIONS_ID = 'dsc-solutions'
+const CUSTOM_KFC_ID = 'grupo-kfc'
 const ASSETS_FOLDER = {
     icons: 'business/icons',
     background: 'business/background'
@@ -18,5 +19,6 @@ export {
     ASSETS_FOLDER,
     USERS_COLLECTION_NAME,
     DASHBOARD_COLLECTION_NAME,
-    DSC_SOLUTIONS_ID
+    DSC_SOLUTIONS_ID,
+    CUSTOM_KFC_ID
 }
