@@ -70,6 +70,23 @@ export const useGetCurrentBusinessSucursalesImmutable = () => {
   return response;
 };
 
+export const useGetCurrentBusinessAndSucursalesImmutable = () => {
+  const searchParams = useSearchParams();
+  const businessId = searchParams.get("id");
+  const { data: business, isLoading: loadingBusiness } =
+    useGetBusinessByIdImmutable({ businessId: businessId as string });
+  const { data: sucursales, isLoading: loadingSucursales } =
+    useGetBusinessSucursalesImmutable({
+      businessId: businessId as string,
+    });
+  return {
+    business,
+    sucursales,
+    loadingBusiness,
+    loadingSucursales,
+  };
+};
+
 export const useGetCurrentSucursalImmutable = () => {
   const searchParams = useSearchParams();
   const businessId = searchParams.get("id") as string;

@@ -14,7 +14,9 @@ export const getStorageFromBucket = () => {
   return storage;
 };
 
-export const parseBusinessIconAndCover = async (business: BusinessI) => {
+export const parseBusinessIconAndCover = async (
+  business: BusinessI | BusinessSucursalI
+) => {
   const storage = getStorageFromBucket();
   business["IconoWhite"] = await getDownloadURL(
     ref(storage, `${ASSETS_FOLDER.icons}/${business.IconoWhite}`)

@@ -61,10 +61,9 @@ interface FeedbackFormProps {
 
 export default function FeedbackForm() {
   const { t } = useTranslation("form");
-  const { setIsSubmitted, setRating } = useFormStore();
+  const { setIsSubmitted, setRating, business } = useFormStore();
 
-  const { data: business, isLoading: loadingBusiness } =
-    useGetCurrentBusinessByIdImmutable();
+  const { isLoading: loadingBusiness } = useGetCurrentBusinessByIdImmutable();
 
   const [isChecked, setIsChecked] = useState(true);
   const [isTermsChecked, setIsTermsChecked] = useState(true);
@@ -102,8 +101,7 @@ export default function FeedbackForm() {
   const watchRating = watch("Rating");
   const isLowRating =
     watchRating === Ratings.Mal || watchRating === Ratings.Regular;
-  const isUsCountry = business?.Country === "US";
-  const isCaCountry = business?.Country === "CA";
+
   const watchFullName = watch("FullName");
 
   const handleRedirect = () => {

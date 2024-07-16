@@ -8,12 +8,14 @@ import { useGetCurrentBusinessByIdImmutable } from "@/app/hooks/services/busines
 import { useGetWaiterByBusinessOrSucursalImmutable } from "@/app/hooks/services/waiters";
 import { useFormStore } from "@/app/stores/form";
 import { useGetNearestSucursalOrBusiness } from "./hooks/geo/map";
-import { RestaurantSelector } from "./components/restaurants/Selector";
+import { BusinessSelector } from "./components/business/Selector";
 
 const Hero = lazy(() => import("./components/Hero"));
 const FeedbackForm = lazy(() => import("./components/feedback/FeedbackForm"));
 
 export default function Home() {
+  const { setBusiness } = useFormStore();
+
   const { data: business, isLoading: loadingBusiness } =
     useGetCurrentBusinessByIdImmutable(); // global state
   const { sucursal } = useGetNearestSucursalOrBusiness();
@@ -21,7 +23,10 @@ export default function Home() {
     useGetWaiterByBusinessOrSucursalImmutable(); // global state
   const { rating, isSubmitted } = useFormStore(); // global state
 
-  console.log("🚀 ~ Home ~ waiter:", waiter);
+  useEffect(() => {
+    if (!business) return;
+    setBusiness(business);
+  }, [business]);
 
   useEffect(() => {
     if (!!sucursal) {
@@ -42,7 +47,7 @@ export default function Home() {
           <FeedbackForm />
         </>
       )}
-      <RestaurantSelector />
+      <BusinessSelector />
       <Toaster />
     </div>
   );

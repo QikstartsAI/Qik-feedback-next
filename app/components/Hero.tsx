@@ -1,18 +1,20 @@
+/* eslint-disable @next/next/no-img-element */
 import { Business } from "@/app/types/business";
 import { Button } from "./ui/Button";
-import { IconChevronsDown, IconMapPin } from "@tabler/icons-react";
+import { IconChevronsDown, IconMapPin, IconMap } from "@tabler/icons-react";
 import ImageRounded from "./ui/ImageRounded";
 import Banner from "./Banner";
 import Image from "next/image";
 import { useGetCurrentBusinessByIdImmutable } from "@/app/hooks/services/businesses";
 import { useGetWaiterByBusinessOrSucursalImmutable } from "@/app/hooks/services/waiters";
 import { useTranslation } from "react-i18next";
+import { useFormStore } from "@/app/stores/form";
 
 function Hero() {
   const { t } = useTranslation("hero");
+  const { business, showBusinessSelector, setShowBusinessSelector } =
+    useFormStore();
 
-  const { data: business, isLoading: loadingBusiness } =
-    useGetCurrentBusinessByIdImmutable();
   const { data: waiter } = useGetWaiterByBusinessOrSucursalImmutable();
 
   const handleScrollToForm = () => {
@@ -20,9 +22,11 @@ function Hero() {
     form?.scrollIntoView({ behavior: "smooth" });
   };
 
+  if (!business) return <></>;
+
   return (
     <div className="relative">
-      <Image
+      <img
         src={business?.Cover || ""}
         className="absolute inset-0 object-cover w-full h-full animate-in"
         alt="cover del negocio"
@@ -37,14 +41,14 @@ function Hero() {
               businessCountry={business?.Country || "EC"}
             />
             <div className="flex flex-col items-center space-y-4 lg:space-y-6">
-              <Image
+              <img
                 src="/googleqik.webp"
                 alt="logo google"
                 className="w-32 sm:w-40"
                 width={1584}
                 height={958}
               />
-              <Image
+              <img
                 src={business?.Icono || ""}
                 className="w-32 lg:w-40 animate-in"
                 alt={business?.Name || "Icono del negocio"}
@@ -67,9 +71,9 @@ function Hero() {
             </p>
             {waiter && (
               <div className="flex flex-col justify-center items-center my-2">
-                {waiter.gender === "masculino" ||
-                waiter.gender === "male" ||
-                waiter.gender === "mâle" ? (
+                {waiter?.gender === "masculino" ||
+                waiter?.gender === "male" ||
+                waiter?.gender === "mâle" ? (
                   <ImageRounded
                     imageUrl="/waiter_male.gif"
                     imageAlt="Icono de mesero"
@@ -84,13 +88,19 @@ function Hero() {
                   {t(`attendTitle`)}
                 </p>
                 <p className="text-center text-base text-white/90 sm:text-lg pb-1 font-semibold">
-                  {waiter.name}
+                  {waiter?.name}
                 </p>
               </div>
             )}
             <Button variant="secondary" onClick={handleScrollToForm}>
               {t(`startButton`)}{" "}
               <IconChevronsDown className="w-4 h-4 ml-2 animate-bounce" />
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => setShowBusinessSelector(true)}
+            >
+              <IconMap />
             </Button>
           </>
         </div>

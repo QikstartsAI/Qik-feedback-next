@@ -75,10 +75,12 @@ class BusinessServices {
     const item = await getDoc(sucursalRef);
     if (!item?.exists()) return null;
     const data = item?.data();
+
     const sucursal = {
       id: item?.id,
       ...data,
     };
+    await parseBusinessIconAndCover(sucursal as BusinessSucursalI);
     return sucursal as BusinessSucursalI;
   };
 }

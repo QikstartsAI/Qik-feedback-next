@@ -14,7 +14,7 @@ function Thanks({ businessCountry }: Props) {
         "w-full min-h-screen items-center flex justify-center bg-qik shadow z-10"
       )}
     >
-      <Image
+      <img
         src={t(`image`)}
         alt={t(`imageAlt`)}
         className="h-auto max-w-sm px-4 md:px-0"

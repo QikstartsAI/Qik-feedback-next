@@ -16,7 +16,7 @@ function Banner({ className, businessCountry }: Props) {
         className
       )}
     >
-      <Image
+      <img
         src={t(`banner.image`)}
         alt={t(`banner.imageAlt`)}
         className="h-12 md:h-14"
