@@ -38,6 +38,8 @@ function useGetBusinessData () {
     loading,
     business,
     businessId,
+    branchId,
+    waiterId
   }
 }
 

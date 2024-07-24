@@ -10,26 +10,42 @@ import Image from "next/image"
 
 interface SimpleContactInfoProps {
   form: UseFormReturn<SimpleFeedbackProps>
+  feedbackType?: string
 }
 
-const SimpleContactInfo = ({ form }: SimpleContactInfoProps) => {
+const SimpleFeedbackHeader = () => (
+  <h2 className="text-3xl font-semibold text-gray-700 text-center mb-5">
+    We value your opinion {' '}
+    <span className="inline-flex items-center space-x-4">
+      <Image
+        src='/excelente.png'
+        alt='Excellent'
+        className='w-8 h-8'
+        width={32}
+        height={32}
+      />
+    </span>, it will take you less than
+    <span className="text-primary"> 5 seconds</span>
+  </h2>
+)
+
+const InspectionFeedbackHeader = () => (
+  <h2 className="text-3xl font-semibold text-gray-700 text-center mb-5">
+  Complete the information for this inspection
+  </h2>
+)
+
+const SimpleContactInfo = ({ form, feedbackType }: SimpleContactInfoProps) => {
   const [isTermsChecked, setIsTermsChecked] = useState<boolean>(true)
+  const isInspection = feedbackType === "inspection"
 
   return (
     <div className="p-10">
-      <h2 className="text-3xl font-semibold text-gray-700 text-center mb-5">
-        We value your opinion {' '}
-        <span className="inline-flex items-center space-x-4">
-          <Image
-              src='/excelente.png'
-              alt='Excellent'
-              className='w-8 h-8'
-              width={32}
-              height={32}
-          />
-        </span>, it will take you less than
-        <span className="text-primary"> 5 seconds</span>
-      </h2>
+      {
+        isInspection
+          ? (<InspectionFeedbackHeader />)
+          : (<SimpleFeedbackHeader />)
+      }
       <FormField
         control={form.control}
         name='FullName'
@@ -39,7 +55,11 @@ const SimpleContactInfo = ({ form }: SimpleContactInfoProps) => {
               Your name <span
                 className="text-xs text-gray-400 font-normal"
               >
-                (important but optional)
+                {
+                  isInspection
+                    ? "(Mandatory)"
+                    : "(important but optional)"
+                }
               </span>
             </FormLabel>
             <FormControl>
@@ -58,7 +78,11 @@ const SimpleContactInfo = ({ form }: SimpleContactInfoProps) => {
               Your email <span
                 className="text-xs text-gray-400 font-normal"
               >
-                (important but optional)
+                {
+                  isInspection
+                    ? "(Mandatory)"
+                    : "(important but optional)"
+                }
               </span>
             </FormLabel>
             <FormControl>
@@ -74,7 +98,7 @@ const SimpleContactInfo = ({ form }: SimpleContactInfoProps) => {
         render={({ field }) => (
           <FormItem className="mt-4">
             <FormLabel className="text-xl font-semibold">
-              Share details about your experience <span
+              Share details about {isInspection ? "this inspection" : "your experience"} <span
                 className="text-xs text-gray-400 font-normal"
               >
                 (mandatory)
