@@ -54,8 +54,9 @@ selectedBenefit: GiftData | null,
 pin: string
 ) => {
   const redeemedBenefitData = {
-    "pin": pin,
-    "benefit": selectedBenefit
+    pin: pin,
+    benefit: selectedBenefit,
+    redeemed: false
   }
   await sendCustomerDataToCustomersRedeem({
     businessId,
