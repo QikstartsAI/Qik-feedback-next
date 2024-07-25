@@ -1,36 +1,36 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 
-import { cn } from '../lib/utils';
-import { Button } from './ui/Button';
+import { cn } from '../lib/utils'
+import { Button } from './ui/Button'
 
-import Image from 'next/image';
-import { Branch } from '../types/business';
+import Image from 'next/image'
+import { Branch } from '../types/business'
 import {
   IconCircle,
   IconCircleCheck,
   IconLocation,
   IconPinned,
-} from '@tabler/icons-react';
+} from '@tabler/icons-react'
 const RequestLocationDialog = ({
   branches = [],
   open = false,
   getLocation,
   denyLocation,
 }: {
-  branches?: Branch[];
-  open?: boolean;
-  getLocation?: () => void;
-  denyLocation?: () => void;
+  branches?: (Branch | undefined)[]
+  open?: boolean
+  getLocation?: () => void
+  denyLocation?: () => void
 }) => {
-  const [currentView, setCurrentView] = React.useState('grantPermissions');
+  const [currentView, setCurrentView] = React.useState('grantPermissions')
 
   const toggleView = () => {
     setCurrentView(
       currentView == 'grantPermissions'
         ? 'suggestedLocations'
         : 'grantPermissions'
-    );
-  };
+    )
+  }
 
   return (
     <div
@@ -41,39 +41,39 @@ const RequestLocationDialog = ({
       )}>
       {currentView == 'grantPermissions' && (
         <>
-          <div className="grow"></div>
+          <div className='grow'></div>
 
           <Image
             src={'/location.svg'}
             alt={'Permisos de ubicación'}
-            className="animate-bounce delay-[2000ms]"
+            className='animate-bounce delay-[2000ms]'
             width={120}
             height={120}
           />
 
-          <div className="flex flex-col items-center gap-3">
-            <h2 className="font-bold text-[1.5rem] text-sky-500 text-center">
+          <div className='flex flex-col items-center gap-3'>
+            <h2 className='font-bold text-[1.5rem] text-sky-500 text-center'>
               Mejora tu experiencia
             </h2>
-            <p className="text-center text-sky-900">
+            <p className='text-center text-sky-900'>
               Inicia compartiendo tu ubicación
             </p>
           </div>
-          <div className="grow"></div>
-          <div className="flex flex-col gap-3 w-full">
+          <div className='grow'></div>
+          <div className='flex flex-col gap-3 w-full'>
             <Button
               onClick={() => {
-                // getLocation!();
-                toggleView();
+                getLocation!()
+                //toggleView()
               }}
-              className="w-full"
-              type="button">
+              className='w-full'
+              type='button'>
               Compartir ubicación
             </Button>
             <Button
               onClick={denyLocation}
-              className="w-full"
-              type="button"
+              className='w-full'
+              type='button'
               variant={'secondary'}>
               Tal vez después
             </Button>
@@ -88,77 +88,77 @@ const RequestLocationDialog = ({
         />
       )}
     </div>
-  );
-};
+  )
+}
 
 const SuggestedLocations = ({
   getLocation,
   toggleView,
   branches,
 }: {
-  getLocation?: () => void;
-  toggleView?: () => void;
-  branches: Branch[];
+  getLocation?: () => void
+  toggleView?: () => void
+  branches: (Branch | undefined)[]
 }) => {
   const getNormalizedBusinessName = (name: string) => {
-    return name.toLocaleLowerCase().split(' ').join('-');
-  };
+    return name.toLocaleLowerCase().split(' ').join('-')
+  }
 
-  const [selected, setSelected] = useState('la-toma');
+  const [selected, setSelected] = useState('la-toma')
   return (
-    <div className="flex flex-col w-full h-full justify-between items-center ">
-      <div className="grow"></div>
-      <div className="flex flex-col items-center gap-3">
+    <div className='flex flex-col w-full h-full justify-between items-center '>
+      <div className='grow'></div>
+      <div className='flex flex-col items-center gap-3'>
         <Image
           src={'/location.svg'}
           alt={'Permisos de ubicación'}
-          className="animate-bounce delay-[2000ms]"
+          className='animate-bounce delay-[2000ms]'
           width={120}
           height={120}
         />
-        <h2 className="font-bold text-[1.5rem] text-sky-500 text-center">
+        <h2 className='font-bold text-[1.5rem] text-sky-500 text-center'>
           ¿Dónde te encuentras?
         </h2>
-        <p className="text-center text-sky-900">
+        <p className='text-center text-sky-900'>
           Selecciona en qué sucursal estás
         </p>
       </div>
-      <div className="grow"></div>
+      <div className='grow'></div>
 
-      <div className="flex flex-col gap-3 w-full">
+      <div className='flex flex-col gap-3 w-full'>
         {branches.map((branch) => {
           return (
             <div
-              className="flex items-center gap-4 border py-2 px-3 rounded-lg"
-              key={branch.Name}>
-              {selected == getNormalizedBusinessName(branch.Name) ? (
-                <IconCircleCheck size={14} className="text-qik" />
+              className='flex items-center gap-4 border py-2 px-3 rounded-lg'
+              key={branch?.Name}>
+              {selected == getNormalizedBusinessName(branch?.Name ?? '') ? (
+                <IconCircleCheck size={14} className='text-qik' />
               ) : (
                 <IconCircle size={14} />
               )}
-              <div className="flex flex-col">
-                <h4 className="text-qik text-[1rem] font-bold">
-                  {branch.Name}
+              <div className='flex flex-col'>
+                <h4 className='text-qik text-[1rem] font-bold'>
+                  {branch?.Name}
                 </h4>
-                <div className="flex items-center gap-1">
+                <div className='flex items-center gap-1'>
                   <IconPinned size={10} />
-                  <p className="text-sky-900 text-[0.7rem] font-light">
-                    {branch.Address}
+                  <p className='text-sky-900 text-[0.7rem] font-light'>
+                    {branch?.Address}
                   </p>
                 </div>
               </div>
             </div>
-          );
+          )
         })}
       </div>
 
-      <div className="flex flex-col gap-3 w-full mt-10">
-        <Button onClick={toggleView} className="w-full" type="button">
+      <div className='flex flex-col gap-3 w-full mt-10'>
+        <Button onClick={toggleView} className='w-full' type='button'>
           ¡Aquí estoy!
         </Button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default RequestLocationDialog;
+export default RequestLocationDialog
