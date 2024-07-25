@@ -38,6 +38,7 @@ export interface Waiter {
   latestSum?: number
   feedbacks?: Feedback[]
   numberOfFeedbackPerRating: FeedbackPerRating
+  feedbackType?: string
 }
 
 export interface Branch {

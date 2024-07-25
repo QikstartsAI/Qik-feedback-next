@@ -20,27 +20,27 @@ import { Ratings } from "@/app/types/feedback"
 
 interface SimpleFormProps {
   business: Business | null
+  branchId: string | null
+  waiterId: string | null
   setIsSubmitted: Dispatch<SetStateAction<boolean>>
   setRating: Dispatch<SetStateAction<string>>
   setIsQr: Dispatch<SetStateAction<boolean>>
 }
 
-const SimpleForm = ({ business, setIsSubmitted, setRating, setIsQr }: SimpleFormProps) => {
+const SimpleForm = ({ business, setIsSubmitted, setRating, setIsQr, branchId, waiterId }: SimpleFormProps) => {
   const [showMoreFeedbackConfirmation, setShowMoreFeedbackConfirmation] = useState<boolean>(false)
   const [showContactInfo, setShowContactInfo] = useState<boolean>(false)
 
-  const router = useRouter();
+  const feedbackType = business?.Waiter?.feedbackType
 
   const searchParams = new URLSearchParams(document.location.search)
 
-  const businessId = searchParams.get('id')
-  const branchId = searchParams.get('sucursal')
-  const waiterId = searchParams.get('mesero')
+  const businessId = business?.BusinessId
   const isQr = searchParams.get('isQr')
 
   const form = useForm<SimpleFeedbackProps>({
     resolver: zodResolver(
-      simpleFeedbackSchema()
+      simpleFeedbackSchema(feedbackType)
     ),
     defaultValues: {
       FullName: '',
@@ -65,7 +65,8 @@ const SimpleForm = ({ business, setIsSubmitted, setRating, setIsQr }: SimpleForm
         businessId || '',
         branchId || '',
         waiterId || '',
-        isQr ? true : false
+        isQr ? true : false,
+        feedbackType
       )
       if (isQr && ((data.Rating === Ratings.Bueno || data.Rating === Ratings.Excelente))) {
         setIsQr(true)
@@ -88,7 +89,7 @@ const SimpleForm = ({ business, setIsSubmitted, setRating, setIsQr }: SimpleForm
             className='space-y-4 md:space-y-6 my-6'
             noValidate
           >
-            {showMoreFeedbackConfirmation && (
+            {showMoreFeedbackConfirmation && feedbackType !== "inspection" && (
               <Modal isOpen={true} onClose={() => setShowMoreFeedbackConfirmation(false)}>
                 <FormField
                   control={form.control}
@@ -126,15 +127,21 @@ const SimpleForm = ({ business, setIsSubmitted, setRating, setIsQr }: SimpleForm
               </Modal>
             )}
             {
-              showContactInfo ? (
-                <SimpleContactInfo form={form} />
+              (showContactInfo || feedbackType === "inspection") && (showMoreFeedbackConfirmation) ? (
+                <SimpleContactInfo
+                  form={form}
+                  feedbackType={feedbackType}
+                />
               ) : (
                 <div
                   className={cn('space-y-3 mb-3 flex-row items-center justify-center', {})}
                 >
                   <CardHeader>
                     <h1 className="text-center font-bold text-5xl md:text-8xl">
-                      Please rate our services today
+                      {feedbackType === "inspection"
+                        ? "Please rate this inspection point"
+                        : "Please rate our services today"
+                      }
                     </h1>
                   </CardHeader>
                   <FormField

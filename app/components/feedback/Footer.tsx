@@ -24,12 +24,20 @@ function Footer() {
         </a>
         {
           isDscSolutions && (
+            <>
             <Image
               src='/dsc-solutions.webp'
               alt='DSC Solutions'
               width={113}
               height={110}
             />
+              <Image
+                src='/inspectify.webp'
+                alt='DSC Solutions'
+                width={113}
+                height={110}
+              />
+            </>
           )
         }
       </div>

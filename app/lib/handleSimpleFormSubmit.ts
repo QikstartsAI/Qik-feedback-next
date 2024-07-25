@@ -16,7 +16,8 @@ const handleSimpleFeedbackSubmit = async (
   businessId: string,
   branchId: string,
   waiterId: string,
-  isQr: boolean
+  isQr: boolean,
+  feedbackType?: string,
 ) => {
   const feedbackData = {
     CreationDate: getTimesTampFromDate(new Date()),
@@ -26,7 +27,8 @@ const handleSimpleFeedbackSubmit = async (
     ProvideMoreFeedback,
     ImproveText,
     StartTime: getTimesTampFromDate(StartTime),
-    FromQr: isQr
+    FromQr: isQr,
+    FeedbackType: feedbackType
   }
 
   try {
