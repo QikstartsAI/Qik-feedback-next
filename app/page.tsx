@@ -18,6 +18,7 @@ import { DSC_SOLUTIONS_ID } from './constants/general'
 import RequestLocationDialog from './components/RequestLocationDialog'
 import { getCookie, setCookie } from './lib/utils'
 import { useDistanceMatrix } from './hooks/useDistanceMatrix'
+import { APIProvider } from '@vis.gl/react-google-maps'
 
 const Hero = lazy(() => import('./components/Hero'))
 const FeedbackForm = lazy(() => import('./components/feedback/FeedbackForm'))
@@ -39,7 +40,10 @@ export default function Home() {
   const [customerName, setCustomerName] = useState('')
   const [requestLocation, setRequestLocation] = useState(false)
   const [locationPermission, setLocationPermission] = useState(false)
-  const [originPosition, setOriginPosition] = useState('')
+  const [originPosition, setOriginPosition] = useState<{
+    latitude: number | null
+    longitude: number | null
+  }>({ latitude: null, longitude: null })
 
   function getLocation() {
     console.log('GETTING LOCATION', navigator.geolocation)
@@ -51,7 +55,7 @@ export default function Home() {
     } else {
       console.log('Geolocation is not supported by this browser.')
     }
-    setRequestLocation(false)
+    //setRequestLocation(false)
   }
 
   function denyLocation() {
@@ -62,9 +66,12 @@ export default function Home() {
   function grantPositionPermission(position: any) {
     console.log('PERMISSIONS GRANTED', position)
     setLocationPermission(true)
-    setRequestLocation(false)
+    //setRequestLocation(false)
     setCookie('grantedLocation', 'yes', 365)
-    const origin = position.coords.latitude + ',' + position.coords.longitude
+    const origin = {
+      latitude: position.coords.latitude,
+      longitude: position.coords.longitude,
+    }
     setOriginPosition(origin)
   }
 
@@ -78,12 +85,16 @@ export default function Home() {
   }
 
   const getBestOption = () => {
-    return [business?.sucursales![0]]
+    return [closestDestination]
   }
 
   useEffect(() => {
     console.log(originPosition, business)
-    if (originPosition == '' || !business) {
+    if (
+      originPosition.latitude == null ||
+      originPosition.longitude == null ||
+      !business
+    ) {
       return
     }
     setDistanceMatrix({
@@ -97,9 +108,8 @@ export default function Home() {
       var c = getCookie('grantedLocation')
       if (c === 'yes') {
         getLocation()
-      } else {
-        setRequestLocation(true)
       }
+      setRequestLocation(true)
     }
 
     if (loading === 'loaded') {
@@ -108,6 +118,8 @@ export default function Home() {
   }, [loading])
 
   const { closestDestination, setDistanceMatrix } = useDistanceMatrix()
+  console.log('el mas cercano', [closestDestination])
+  console.log('sucursales', business?.sucursales)
 
   if (isSubmitted && rating !== '4' && rating !== '5' && !isDscSolutions) {
     if (isHootersForm || isGusForm) {
@@ -126,7 +138,9 @@ export default function Home() {
   }
 
   return (
-    <>
+    <APIProvider
+      apiKey={process.env.NEXT_PUBLIC_VITE_APP_GOOGLE_API_KEY ?? ''}
+      solutionChannel='GMP_devsite_samples_v3_rgmautocomplete'>
       <div>
         {loading === 'loading' || loading === 'requesting' ? (
           <Loader />
@@ -194,6 +208,6 @@ export default function Home() {
         getLocation={getLocation}
         denyLocation={denyLocation}
       />
-    </>
+    </APIProvider>
   )
 }

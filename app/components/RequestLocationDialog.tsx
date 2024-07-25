@@ -64,7 +64,7 @@ const RequestLocationDialog = ({
             <Button
               onClick={() => {
                 getLocation!()
-                //toggleView()
+                toggleView()
               }}
               className='w-full'
               type='button'>
@@ -100,11 +100,18 @@ const SuggestedLocations = ({
   toggleView?: () => void
   branches: (Branch | undefined)[]
 }) => {
-  const getNormalizedBusinessName = (name: string) => {
+  const getNormalizedBusinessName = (name: string | undefined) => {
+    if (!name) {
+      return ''
+    }
     return name.toLocaleLowerCase().split(' ').join('-')
   }
 
-  const [selected, setSelected] = useState('la-toma')
+  const [selected, setSelected] = useState('san-pedro')
+
+  const handleClickSelected = (branchName: string | undefined) => {
+    setSelected(getNormalizedBusinessName(branchName))
+  }
   return (
     <div className='flex flex-col w-full h-full justify-between items-center '>
       <div className='grow'></div>
@@ -129,7 +136,8 @@ const SuggestedLocations = ({
         {branches.map((branch) => {
           return (
             <div
-              className='flex items-center gap-4 border py-2 px-3 rounded-lg'
+              onClick={() => handleClickSelected(branch?.Name)}
+              className='flex items-center gap-4 border py-2 px-3 rounded-lg cursor-pointer focus:ring'
               key={branch?.Name}>
               {selected == getNormalizedBusinessName(branch?.Name ?? '') ? (
                 <IconCircleCheck size={14} className='text-qik' />
