@@ -6,6 +6,7 @@ import Image from 'next/image';
 interface HeroProps {
   business: Business | null;
   locationPermission: boolean;
+  branchIndex?: number;
 }
 
 function Hero({ business, locationPermission }: HeroProps) {

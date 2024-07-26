@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 function useGetBusinessData() {
   const [loading, setLoading] = useState('loading');
   const [business, setBusiness] = useState<Business | null>(null);
+  const [sucursalId, setSucursalId] = useState<string | null>(null);
   const searchParams = useSearchParams();
 
   const businessId = searchParams.get('id');
@@ -19,7 +20,8 @@ function useGetBusinessData() {
       setLoading('requesting');
       try {
         const res =
-          (await findBusiness(businessId, branchId, waiterId)) || null;
+          (await findBusiness(businessId, sucursalId ?? branchId, waiterId)) ||
+          null;
 
         setBusiness(res);
       } catch (error) {
@@ -29,12 +31,13 @@ function useGetBusinessData() {
       }
     };
     fetchData();
-  }, [businessId, branchId, waiterId]);
+  }, [businessId, branchId, waiterId, sucursalId]);
 
   return {
     loading,
     business,
     businessId,
+    setSucursalId,
   };
 }
 
