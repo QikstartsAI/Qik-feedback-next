@@ -38,7 +38,9 @@ function useGetBusinessData() {
     business,
     businessId,
     setSucursalId,
-  };
+    branchId,
+    waiterId
+  }
 }
 
 export default useGetBusinessData;

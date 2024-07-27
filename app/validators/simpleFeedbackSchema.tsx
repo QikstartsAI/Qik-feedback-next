@@ -1,7 +1,7 @@
-import { Origins, Ratings } from '@/app/types/feedback'
+import { Ratings } from '@/app/types/feedback'
 import { z } from 'zod'
 
-export const simpleFeedbackSchema = () =>
+export const simpleFeedbackSchema = (feedbackType: string | undefined) =>
   z.object({
     FullName: z.string()
     .optional(),
@@ -35,6 +35,27 @@ export const simpleFeedbackSchema = () =>
         context.addIssue({
           code: z.ZodIssueCode.custom,
           message: 'Please tell us your experience',
+          path: ['ImproveText']
+        })
+      }
+      if (feedbackType && feedbackType === "inspection" && !values.FullName) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Please tell us your name',
+          path: ['FullName']
+        })
+      }
+      if (feedbackType && feedbackType === "inspection" && !values.Email) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Please tell us your email',
+          path: ['Email']
+        })
+      }
+      if (feedbackType && feedbackType === "inspection" && !values.ImproveText) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Please share details about this inspection',
           path: ['ImproveText']
         })
       }
