@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import { findBusiness } from '@/app/services/business';
 import { Business } from '@/app/types/business';

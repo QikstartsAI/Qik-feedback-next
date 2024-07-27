@@ -10,7 +10,7 @@ interface HeroProps {
 }
 
 function Hero({ business, locationPermission }: HeroProps) {
-  console.log(business);
+  const businessBranches = business?.sucursales || []
   return (
     <div className="relative">
       <Image
@@ -37,8 +37,8 @@ function Hero({ business, locationPermission }: HeroProps) {
             </h2>
             <p className="max-w-xl text-xs sm:text-base text-white/80">
               <IconMapPin className="w-4 h-4 sm:w-6 sm:h-6 inline-block" />{' '}
-              {!locationPermission && business?.sucursales
-                ? business?.sucursales[0].Address
+              {!locationPermission && businessBranches.length >= 1
+                ? businessBranches[0].Address
                 : business?.Address}
             </p>
           </div>
