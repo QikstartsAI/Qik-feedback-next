@@ -1,18 +1,22 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Branch } from '../types/business';
+import React, { useCallback, useEffect, useState } from 'react'
+import { Branch } from '../types/business'
+import useGetBusinessData from './useGetBusinessData'
+import { Console } from 'console'
 
 export const useDistanceMatrix = () => {
   // Coordenada de origen del cliente en este caso
   const [origin, setOrigin] = useState<{
     latitude: number | null
     longitude: number | null
-  }>({ latitude: null, longitude: null });
+  }>({ latitude: null, longitude: null })
   // Coordenadas de las sucursales
-  const [destinations, setDestinations] = useState<Branch[]>([]);
+  const [destinations, setDestinations] = useState<Branch[]>([])
   // Se escoge la sucursal más cercana al cliente
-  const [closestDestination, setClosestDestination] = useState<Branch>();
-  const coordenates = destinations.map((destination) => destination.Address);
-  const [data, setData] = useState<google.maps.DistanceMatrixResponse | null>(null);
+  const [closestDestination, setClosestDestination] = useState<Branch>()
+  const coordenates = destinations.map((destination) => destination.Address)
+  const [data, setData] = useState<google.maps.DistanceMatrixResponse | null>(
+    null
+  )
 
   const setDistanceMatrix = ({
     origin,
@@ -23,20 +27,20 @@ export const useDistanceMatrix = () => {
     destinations?: Branch[]
     quantity?: number
   }) => {
-    setOrigin(origin);
-    setDestinations(destinations);
-  };
+    setOrigin(origin)
+    setDestinations(destinations)
+  }
 
   const getDistanceMatrix = useCallback(async () => {
     try {
       if (origin.latitude === null || origin.longitude === null) {
-        return;
+        return
       }
       const originInCoordinates = new google.maps.LatLng(
         origin.latitude,
         origin.longitude
-      );
-      const service = new google.maps.DistanceMatrixService();
+      )
+      const service = new google.maps.DistanceMatrixService()
       service.getDistanceMatrix(
         {
           origins: [originInCoordinates],
@@ -45,43 +49,47 @@ export const useDistanceMatrix = () => {
           unitSystem: google.maps.UnitSystem.METRIC,
         },
         (response, status) => {
-          setData(response);
-          console.log('datos', response);
+          setData(response)
+
           if (response === null) {
-            return;
+            return
           }
-          // Array para almacenar los valores
+
+          //si no hay resultados retorna
+          const withOutResults = response.rows[0].elements[0].status
+          if (withOutResults === 'ZERO_RESULTS') {
+            throw new Error(
+              'Si hay origen pero por la lejania no se puede obtener las distancias de las demas sucursales'
+            )
+          }
+          // logica si la respuesta es correcta - Array para almacenar los valores
           const distanceArr: number[] = response.rows[0].elements.map(
             (element: google.maps.DistanceMatrixResponseElement) =>
               element.distance.value
-          );
+          )
           // Encontrar el valor más pequeño en el arreglo de distancias
-          const minDistance: number = Math.min(...distanceArr);
+          const minDistance: number = Math.min(...distanceArr)
           const closerBranchIndex = distanceArr.findIndex(
             (distance) => distance === minDistance
-          );
-          setClosestDestination(destinations[closerBranchIndex]);
-          console.log('minDistance', minDistance);
-          console.log('todas las distancias', distanceArr);
-          console.log('response', response, status);
+          )
+          setClosestDestination(destinations[closerBranchIndex])
         }
-      );
+      )
     } catch (err) {
-      throw new Error('error al hacer el fetching de datos: ' + err);
+      throw new Error('error al hacer el fetching de datos: ' + err)
     }
-  }, [origin, coordenates, destinations]);
+  }, [origin, coordenates, destinations])
 
   useEffect(() => {
-    console.log(origin, destinations);
     if (
       origin.latitude == null ||
       origin.longitude == null ||
       destinations.length === 0
     ) {
-      return;
+      return
     }
-    getDistanceMatrix();
-  }, [origin, destinations, getDistanceMatrix]);
+    getDistanceMatrix()
+  }, [origin, destinations])
 
-  return { closestDestination, setDistanceMatrix };
-};
+  return { closestDestination, setDistanceMatrix }
+}
