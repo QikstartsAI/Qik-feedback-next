@@ -27,7 +27,7 @@ const CUSTOM_HOOTERS_FORM_ID = 'hooters';
 const CUSTOM_GUS_FORM_ID = 'pollo-gus';
 
 export default function Home() {
-  const { business, loading, businessId, branchId, setSucursalId } = useGetBusinessData();
+  const { business, loading, businessId, branchId, waiterId, setSucursalId } = useGetBusinessData();
   const [customerType, setCustomerType] = useState<CustomerRole | null>(null);
   const toggleCustomer = (customerType: CustomerRole) => {
     setCustomerType(customerType);
@@ -202,6 +202,7 @@ export default function Home() {
                 setRating={setRating}
                 setIsQr={setIsQr}
                 branchId={branchId}
+                waiterId={waiterId}
               />
             )}
           </>
@@ -217,3 +218,4 @@ export default function Home() {
       />
     </APIProvider>
   );
+}
