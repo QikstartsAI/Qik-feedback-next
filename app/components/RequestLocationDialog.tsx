@@ -148,16 +148,26 @@ const SuggestedLocations = ({
               className='flex items-center gap-4 border py-2 px-3 rounded-lg cursor-pointer focus:ring'
               key={branch?.Name}>
               {selected == getNormalizedBusinessName(branch?.Name ?? '') ? (
-                <IconCircleCheck size={14} className='text-qik' />
+                <span>
+                  <IconCircleCheck
+                    size={18}
+                    strokeWidth={3}
+                    className='text-qik'
+                  />
+                </span>
               ) : (
-                <IconCircle size={14} />
+                <span>
+                  <IconCircle size={18} />
+                </span>
               )}
               <div className='flex flex-col'>
                 <h4 className='text-qik text-[1rem] font-bold'>
                   {branch?.Name}
                 </h4>
                 <div className='flex items-center gap-1'>
-                  <IconPinned size={10} />
+                  <span>
+                    <IconPinned size={10} />
+                  </span>
                   <p className='text-sky-900 text-[0.7rem] font-light'>
                     {branch?.Address}
                   </p>
