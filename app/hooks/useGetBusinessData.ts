@@ -1,46 +1,47 @@
-import { useEffect, useState } from 'react'
-import { findBusiness } from '@/app/services/business'
-import { Business } from '@/app/types/business'
-import { useSearchParams } from 'next/navigation'
+'use client';
 
-function useGetBusinessData () {
-  const [loading, setLoading] = useState('loading')
-  const [business, setBusiness] = useState<Business | null>(null)
-  const searchParams = useSearchParams()
+import { useEffect, useState } from 'react';
+import { findBusiness } from '@/app/services/business';
+import { Business } from '@/app/types/business';
+import { useSearchParams } from 'next/navigation';
 
-  const businessId = searchParams.get('id')
-  const branchId = searchParams.get('sucursal')
-  const waiterId = searchParams.get('mesero')
+function useGetBusinessData() {
+  const [loading, setLoading] = useState('loading');
+  const [business, setBusiness] = useState<Business | null>(null);
+  const [sucursalId, setSucursalId] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+
+  const businessId = searchParams.get('id');
+  const branchId = searchParams.get('sucursal');
+  const waiterId = searchParams.get('mesero');
 
   useEffect(() => {
-
-    if (!businessId) return
+    if (!businessId) return;
     const fetchData = async () => {
-      setLoading('requesting')
+      setLoading('requesting');
       try {
-        const res = await findBusiness(businessId, branchId, waiterId) || null
+        const res =
+          (await findBusiness(businessId, sucursalId ?? branchId, waiterId)) ||
+          null;
 
-        setBusiness(res)
+        setBusiness(res);
       } catch (error) {
-        console.error(error)
+        console.error(error);
       } finally {
-        setLoading('loaded')
+        setLoading('loaded');
       }
-    }
-    fetchData()
-  }, [
-    businessId,
-    branchId,
-    waiterId,
- ])
+    };
+    fetchData();
+  }, [businessId, branchId, waiterId, sucursalId]);
 
   return {
     loading,
     business,
     businessId,
+    setSucursalId,
     branchId,
     waiterId
   }
 }
 
-export default useGetBusinessData
+export default useGetBusinessData;
