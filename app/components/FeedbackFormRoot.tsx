@@ -50,7 +50,6 @@ export default function FeedbackFormRoot() {
   const { closestDestination, setDistanceMatrix } = useDistanceMatrix()
 
   function getLocation() {
-    console.log('GETTING LOCATION', navigator.geolocation)
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         grantPositionPermission,
@@ -67,7 +66,6 @@ export default function FeedbackFormRoot() {
   }
 
   function grantPositionPermission(position: any) {
-    console.log('PERMISSIONS GRANTED', position)
     setLocationPermission(true)
     setCookie('grantedLocation', 'yes', 365)
     const origin = {
@@ -91,7 +89,6 @@ export default function FeedbackFormRoot() {
   }
 
   const handleConfirmLocation = (branch: Branch | undefined) => {
-    console.log('branch:', branch)
     setRequestLocation(false)
     if (!branch) return
     setSucursalId(branch.Name)
@@ -121,11 +118,6 @@ export default function FeedbackFormRoot() {
       checkFirstTime()
     }
   }, [loading, locationConfirmated])
-
-  // console.log('businessId:::: ', businessId, business);
-
-  // console.log('el mas cercano', [closestDestination]);
-  // console.log('sucursales', business?.sucursales);
 
   if (isSubmitted && rating !== '4' && rating !== '5' && !isDscSolutions) {
     if (isHootersForm || isGusForm) {
@@ -211,13 +203,17 @@ export default function FeedbackFormRoot() {
           )}
           <Toaster />
         </div>
-        <RequestLocationDialog
-          branches={getBranchesListByPermission()}
-          open={requestLocation}
-          getLocation={getLocation}
-          denyLocation={denyLocation}
-          onConfirm={handleConfirmLocation}
-        />
+        {
+          isHootersForm && (
+            <RequestLocationDialog
+              branches={getBranchesListByPermission()}
+              open={requestLocation}
+              getLocation={getLocation}
+              denyLocation={denyLocation}
+              onConfirm={handleConfirmLocation}
+            />
+          )
+        }
       </Suspense>
     </APIProvider>
   )

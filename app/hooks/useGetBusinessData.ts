@@ -16,7 +16,6 @@ function useGetBusinessData() {
   const waiterId = searchParams.get('mesero');
 
   useEffect(() => {
-    console.log('businessId::: ', businessId);
     if (!businessId) return;
     const fetchData = async () => {
       setLoading('requesting');
