@@ -30,13 +30,11 @@ const handleSubmitHootersForm = async (
     customerType: string,
     AttendedBy: string,
     customerNumberOfVisits: number,
-    feedbackNumberOfVisit: number
+    feedbackNumberOfVisit: number,
+    businessId: string | null,
+    branchId: string | null,
+    waiterId: string | null
   ) => {
-  const searchParams = new URLSearchParams(document.location.search)
-
-  const businessId = searchParams.get('id')
-  const branchId = searchParams.get('sucursal')
-  const waiterId = searchParams.get('mesero')
 
   const customerContactData:Customer = {
     email: Email,

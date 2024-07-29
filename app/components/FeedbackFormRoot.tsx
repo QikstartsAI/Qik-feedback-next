@@ -27,7 +27,7 @@ const CUSTOM_HOOTERS_FORM_ID = 'hooters'
 const CUSTOM_GUS_FORM_ID = 'pollo-gus'
 
 export default function FeedbackFormRoot() {
-  const { business, loading, businessId, branchId, waiterId, setSucursalId } =
+  const { business, loading, businessId, branchId, waiterId, setSucursalId, sucursalId } =
     useGetBusinessData()
   const [customerType, setCustomerType] = useState<CustomerRole | null>(null)
   const toggleCustomer = (customerType: CustomerRole) => {
@@ -58,7 +58,6 @@ export default function FeedbackFormRoot() {
     } else {
       console.log('Geolocation is not supported by this browser.')
     }
-    //setRequestLocation(false)
   }
 
   function denyLocation() {
@@ -81,7 +80,10 @@ export default function FeedbackFormRoot() {
   }
 
   const getBranchesListByPermission = () => {
-    return locationPermission ? getBestOption() : business?.sucursales ?? []
+    const branchesPlusBrand = business?.sucursales ?? [];
+    const matrizInfo = business ? [business as Branch] : [];
+  
+    return locationPermission ? getBestOption() : branchesPlusBrand.concat(matrizInfo);
   }
 
   const getBestOption = () => {
@@ -91,7 +93,7 @@ export default function FeedbackFormRoot() {
   const handleConfirmLocation = (branch: Branch | undefined) => {
     setRequestLocation(false)
     if (!branch) return
-    setSucursalId(branch.Name)
+    setSucursalId(branch.BusinessId)
     setLocationConfirmated(true)
   }
 
@@ -171,6 +173,8 @@ export default function FeedbackFormRoot() {
                         setIsSubmitted={setIsSubmitted}
                         setRating={setRating}
                         customerType={customerType}
+                        branchId={sucursalId}
+                        waiterId={waiterId}
                       />
                     ) : isGusForm ? (
                       <GusCustomForm

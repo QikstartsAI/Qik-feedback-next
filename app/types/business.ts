@@ -42,6 +42,7 @@ export interface Waiter {
 }
 
 export interface Branch {
+  BusinessId:string 
   Address: string
   Icono: string
   MapsUrl: string

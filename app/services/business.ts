@@ -78,7 +78,6 @@ export const findBusiness = async (
     }
     businessData.BusinessId = businessId || '';
     businessData.sucursales = await getBranchesByBusiness(docRef);
-
     return businessData;
   } else {
     console.info('No such document!');
@@ -112,7 +111,7 @@ async function getBranchesByBusiness(businessDataReference: DocumentReference) {
 
   const branchesData = await Promise.all(
     branchesSnapshot.docs.map(async (branchDoc) => {
-      const branchData = branchDoc.data() as Branch;
+      const branchData = {...branchDoc.data(), BusinessId: branchDoc.id} as Branch;
 
       const branch = {
         ...branchData,

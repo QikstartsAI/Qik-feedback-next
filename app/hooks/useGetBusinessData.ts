@@ -21,7 +21,7 @@ function useGetBusinessData() {
       setLoading('requesting');
       try {
         const res =
-          (await findBusiness(businessId, sucursalId ?? branchId, waiterId)) ||
+          (await findBusiness(businessId, sucursalId || branchId, waiterId)) ||
           null;
 
         setBusiness(res);
@@ -39,6 +39,7 @@ function useGetBusinessData() {
     business,
     businessId,
     setSucursalId,
+    sucursalId,
     branchId,
     waiterId
   }

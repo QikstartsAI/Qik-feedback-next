@@ -53,9 +53,11 @@ interface HootersCustomFormProps {
   setIsSubmitted: Dispatch<SetStateAction<boolean>>
   setRating: Dispatch<SetStateAction<string>>
   customerType: CustomerRole
+  branchId: string | null
+  waiterId: string | null
 }
 
-export default function HootersCustomForm({ business, setIsSubmitted, setRating, customerType }: HootersCustomFormProps) {
+export default function HootersCustomForm({ business, setIsSubmitted, setRating, customerType, branchId, waiterId }: HootersCustomFormProps) {
   const [isTermsChecked, setIsTermsChecked] = useState(true)
   const [recommending, setRecommending] = useState<boolean | null>(null)
   const [comeBack, setComeBack] = useState<boolean | null>(null)
@@ -213,7 +215,17 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
         customerNumberOfVisits = 1
         feedbackNumberOfVisit = 1
       }
-      await handleSubmitHootersForm(updatedData, improveOptions, customerType, attendantName, customerNumberOfVisits, feedbackNumberOfVisit)
+      await handleSubmitHootersForm(
+        updatedData,
+        improveOptions,
+        customerType,
+        attendantName,
+        customerNumberOfVisits,
+        feedbackNumberOfVisit,
+        businessId,
+        branchId !== 'hooters' ? branchId : '',
+        waiterId
+      )
       if (comeBack) {
         handleRedirect()
       }
