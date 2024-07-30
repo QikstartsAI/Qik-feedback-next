@@ -108,7 +108,7 @@ export default function FeedbackFormRoot() {
     }
     setDistanceMatrix({
       origin: originPosition,
-      destinations: business?.sucursales,
+      destinations: business?.sucursales?.concat([business as Branch]),
     })
   }, [originPosition, business, setDistanceMatrix])
 
