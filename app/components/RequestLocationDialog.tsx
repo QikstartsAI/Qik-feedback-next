@@ -70,20 +70,20 @@ const RequestLocationDialog = ({
               Mejora tu experiencia
             </h2>
             <p className='text-center text-sky-900'>
-              Inicia compartiendo tu ubicación
+              Cuéntanos en qué sucursales te encuentras
             </p>
           </div>
           <div className='grow'></div>
           <div className='flex flex-col gap-3 w-full'>
-            <Button onClick={handleOnGrant} className='w-full' type='button'>
+            {/* <Button onClick={handleOnGrant} className='w-full' type='button'>
               Compartir ubicación
-            </Button>
+            </Button> */}
             <Button
               onClick={handleOnDeny}
               className='w-full'
               type='button'
-              variant={'secondary'}>
-              Tal vez después
+              variant={'default'}>
+              Ver sucursales
             </Button>
           </div>
         </>
