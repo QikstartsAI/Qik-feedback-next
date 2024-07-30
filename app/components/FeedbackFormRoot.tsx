@@ -36,7 +36,7 @@ export default function FeedbackFormRoot() {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isQr, setIsQr] = useState(false)
   const [rating, setRating] = useState('')
-  const isHootersForm = businessId === "SGMxhRUBZfHw2F82XYyI"
+  const isHootersForm = businessId === CUSTOM_HOOTERS_FORM_ID
   const isGusForm = businessId === CUSTOM_GUS_FORM_ID
   const isDscSolutions = businessId === DSC_SOLUTIONS_ID
   const [customerName, setCustomerName] = useState('')
