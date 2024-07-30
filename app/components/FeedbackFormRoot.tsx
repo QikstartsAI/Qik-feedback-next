@@ -1,7 +1,6 @@
 'use client'
 
 import { lazy, useEffect, useState, Suspense } from 'react'
-
 import useGetBusinessData from '../hooks/useGetBusinessData'
 import Loader from './Loader'
 import Thanks from './Thanks'
@@ -27,8 +26,7 @@ const CUSTOM_HOOTERS_FORM_ID = 'hooters'
 const CUSTOM_GUS_FORM_ID = 'pollo-gus'
 
 export default function FeedbackFormRoot() {
-  const { business, loading, businessId, branchId, waiterId, setSucursalId, sucursalId } =
-    useGetBusinessData()
+  const { business, loading, businessId, branchId, waiterId, setSucursalId, sucursalId } = useGetBusinessData()
   const [customerType, setCustomerType] = useState<CustomerRole | null>(null)
   const toggleCustomer = (customerType: CustomerRole) => {
     setCustomerType(customerType)
@@ -42,19 +40,13 @@ export default function FeedbackFormRoot() {
   const [customerName, setCustomerName] = useState('')
   const [requestLocation, setRequestLocation] = useState(false)
   const [locationPermission, setLocationPermission] = useState(false)
-  const [originPosition, setOriginPosition] = useState<{
-    latitude: number | null
-    longitude: number | null
-  }>({ latitude: null, longitude: null })
+  const [originPosition, setOriginPosition] = useState<{ latitude: number | null; longitude: number | null }>({ latitude: null, longitude: null })
   const [locationConfirmated, setLocationConfirmated] = useState(false)
   const { closestDestination, setDistanceMatrix } = useDistanceMatrix()
 
   function getLocation() {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        grantPositionPermission,
-        denyPositionPermission
-      )
+      navigator.geolocation.getCurrentPosition(grantPositionPermission, denyPositionPermission)
     } else {
       console.log('Geolocation is not supported by this browser.')
     }
@@ -81,10 +73,9 @@ export default function FeedbackFormRoot() {
   }
 
   const getBranchesListByPermission = () => {
-    const branchesPlusBrand = business?.sucursales ?? [];
-    const matrizInfo = business ? [business as Branch] : [];
-  
-    return locationPermission ? getBestOption() : branchesPlusBrand.concat(matrizInfo);
+    const branchesPlusBrand = business?.sucursales ?? []
+    const matrizInfo = business ? [business as Branch] : []
+    return locationPermission ? getBestOption() : branchesPlusBrand.concat(matrizInfo)
   }
 
   const getBestOption = () => {
@@ -99,11 +90,7 @@ export default function FeedbackFormRoot() {
   }
 
   useEffect(() => {
-    if (
-      originPosition.latitude == null ||
-      originPosition.longitude == null ||
-      !business
-    ) {
+    if (originPosition.latitude == null || originPosition.longitude == null || !business) {
       return
     }
     setDistanceMatrix({
@@ -125,7 +112,7 @@ export default function FeedbackFormRoot() {
   if (isSubmitted && rating !== '4' && rating !== '5' && !isDscSolutions) {
     if (isHootersForm || isGusForm) {
       return <HootersThanks businessCountry={business?.Country || 'EC'} />
-    } else
+    } else {
       return (
         <Thanks
           businessCountry={business?.Country || 'EC'}
@@ -133,15 +120,14 @@ export default function FeedbackFormRoot() {
           customerName={customerName}
         />
       )
+    }
   }
   if (!isQr && isSubmitted && isDscSolutions) {
     return <SimpleThanks />
   }
 
   return (
-    <APIProvider
-      apiKey={process.env.NEXT_PUBLIC_VITE_APP_GOOGLE_API_KEY ?? ''}
-      solutionChannel='GMP_devsite_samples_v3_rgmautocomplete'>
+    <APIProvider apiKey={process.env.NEXT_PUBLIC_VITE_APP_GOOGLE_API_KEY ?? ''} solutionChannel='GMP_devsite_samples_v3_rgmautocomplete'>
       <Suspense fallback={<Loader />}>
         <div>
           {loading === 'loading' || loading === 'requesting' ? (
@@ -150,22 +136,12 @@ export default function FeedbackFormRoot() {
             <>
               {!isDscSolutions ? (
                 <div className='min-h-[calc(100vh-103px)]'>
-                  <Hero
-                    business={business}
-                    locationPermission={locationPermission}
-                  />
+                  <Hero business={business} locationPermission={locationPermission} />
                   {!customerType &&
                     (isHootersForm || isGusForm ? (
-                      <CustomIntro
-                        business={business}
-                        toogleCustomerType={toggleCustomer}
-                        variant={isHootersForm ? 'hooters' : 'gus'}
-                      />
+                      <CustomIntro business={business} toogleCustomerType={toggleCustomer} variant={isHootersForm ? 'hooters' : 'gus'} />
                     ) : (
-                      <Intro
-                        business={business}
-                        toogleCustomerType={toggleCustomer}
-                      />
+                      <Intro business={business} toogleCustomerType={toggleCustomer} />
                     ))}
                   {customerType &&
                     (isHootersForm ? (
@@ -178,12 +154,7 @@ export default function FeedbackFormRoot() {
                         waiterId={waiterId}
                       />
                     ) : isGusForm ? (
-                      <GusCustomForm
-                        business={business}
-                        setIsSubmitted={setIsSubmitted}
-                        setRating={setRating}
-                        customerType={customerType}
-                      />
+                      <GusCustomForm business={business} setIsSubmitted={setIsSubmitted} setRating={setRating} customerType={customerType} />
                     ) : (
                       <FeedbackForm
                         business={business}
@@ -195,30 +166,21 @@ export default function FeedbackFormRoot() {
                     ))}
                 </div>
               ) : (
-                <SimpleForm
-                  business={business}
-                  setIsSubmitted={setIsSubmitted}
-                  setRating={setRating}
-                  setIsQr={setIsQr}
-                  branchId={branchId}
-                  waiterId={waiterId}
-                />
+                <SimpleForm business={business} setIsSubmitted={setIsSubmitted} setRating={setRating} setIsQr={setIsQr} branchId={branchId} waiterId={waiterId} />
               )}
             </>
           )}
           <Toaster />
         </div>
-        {
-          isHootersForm && (
-            <RequestLocationDialog
-              branches={getBranchesListByPermission()}
-              open={requestLocation}
-              getLocation={getLocation}
-              denyLocation={denyLocation}
-              onConfirm={handleConfirmLocation}
-            />
-          )
-        }
+        {isHootersForm && (
+          <RequestLocationDialog
+            branches={getBranchesListByPermission()}
+            open={requestLocation}
+            getLocation={getLocation}
+            denyLocation={denyLocation}
+            onConfirm={handleConfirmLocation}
+          />
+        )}
       </Suspense>
     </APIProvider>
   )

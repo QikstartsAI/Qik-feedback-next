@@ -1,46 +1,25 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Branch } from '../types/business'
-import useGetBusinessData from './useGetBusinessData'
-import { Console } from 'console'
 
 export const useDistanceMatrix = () => {
-  // Coordenada de origen del cliente en este caso
-  const [origin, setOrigin] = useState<{
-    latitude: number | null
-    longitude: number | null
-  }>({ latitude: null, longitude: null })
-  // Coordenadas de las sucursales
+  const [origin, setOrigin] = useState<{ latitude: number | null; longitude: number | null }>({ latitude: null, longitude: null })
   const [destinations, setDestinations] = useState<Branch[]>([])
-  // Se escoge la sucursal más cercana al cliente
   const [closestDestination, setClosestDestination] = useState<Branch>()
   const coordenates = destinations.map((destination) => destination.Address)
-  const [data, setData] = useState<google.maps.DistanceMatrixResponse | null>(
-    null
-  )
+  const [data, setData] = useState<google.maps.DistanceMatrixResponse | null>(null)
 
-  const setDistanceMatrix = ({
-    origin,
-    destinations = [],
-    quantity = 1,
-  }: {
-    origin: { latitude: number | null; longitude: number | null }
-    destinations?: Branch[]
-    quantity?: number
-  }) => {
+  const setDistanceMatrix = useCallback(({ origin, destinations = [] }: { origin: { latitude: number | null; longitude: number | null }; destinations?: Branch[] }) => {
     setOrigin(origin)
     setDestinations(destinations)
-  }
+  }, [])
 
   const getDistanceMatrix = useCallback(async () => {
     try {
       if (origin.latitude === null || origin.longitude === null) {
         return
       }
-      const originInCoordinates = new google.maps.LatLng(
-        origin.latitude,
-        origin.longitude
-      )
-      console.log(originInCoordinates)
+
+      const originInCoordinates = new google.maps.LatLng(origin.latitude, origin.longitude)
       const service = new google.maps.DistanceMatrixService()
       service.getDistanceMatrix(
         {
@@ -55,38 +34,51 @@ export const useDistanceMatrix = () => {
             return
           }
 
-          //si no hay resultados retorna
-          console.log(response)
-          const withOutResults = response.rows[0].elements[0].status
-          if (withOutResults === 'ZERO_RESULTS' || withOutResults === 'NOT_FOUND') {
-            throw new Error(
-              'Si hay origen pero por la lejania no se puede obtener las distancias de las demas sucursales'
-            )
+          const elements = response.rows[0].elements;
+
+          // Filtramos los elementos que tienen el estado "OK" y obtenemos sus distancias
+          const validElements = elements
+            .map((element, index) => ({ ...element, index }))
+            .filter((element: google.maps.DistanceMatrixResponseElement & { index: number }) => element.status === 'OK');
+
+          // Verificamos si todos los elementos son "ZERO_RESULTS" o "NOT_FOUND"
+          const allZeroResultsOrNotFound = validElements.length === 0;
+
+          if (allZeroResultsOrNotFound) {
+            console.error('Si hay origen pero por la lejania no se puede obtener las distancias de las demas sucursales');
+            return;
           }
-          // logica si la respuesta es correcta - Array para almacenar los valores
-          const distanceArr: number[] = response.rows[0].elements.map(
-            (element: google.maps.DistanceMatrixResponseElement) =>
-              element.distance.value
-          )
-          // Encontrar el valor más pequeño en el arreglo de distancias
-          const minDistance: number = Math.min(...distanceArr)
-          const closerBranchIndex = distanceArr.findIndex(
-            (distance) => distance === minDistance
-          )
-          setClosestDestination(destinations[closerBranchIndex])
+
+          // Obtenemos las distancias de los elementos válidos
+          const distanceArr: number[] = validElements.map(
+            (element: google.maps.DistanceMatrixResponseElement) => element.distance.value
+          );
+
+          if (distanceArr.length === 0) {
+            return;
+          }
+
+          // Encontramos la distancia mínima y el índice del elemento correspondiente
+          const minDistance: number = Math.min(...distanceArr);
+          const closerBranchIndex = validElements.find(
+            (element: google.maps.DistanceMatrixResponseElement) => element.distance.value === minDistance
+          )?.index;
+
+          if (closerBranchIndex === undefined) {
+            console.error('No se encontró una sucursal más cercana.');
+            return;
+          }
+
+          setClosestDestination(destinations[closerBranchIndex]);
         }
       )
     } catch (err) {
-      throw new Error('error al hacer el fetching de datos: ' + err)
+      console.error('error al hacer el fetching de datos: ', err)
     }
   }, [origin, coordenates, destinations])
 
   useEffect(() => {
-    if (
-      origin.latitude == null ||
-      origin.longitude == null ||
-      destinations.length === 0
-    ) {
+    if (origin.latitude == null || origin.longitude == null || destinations.length === 0) {
       return
     }
     getDistanceMatrix()
