@@ -40,6 +40,7 @@ export const useDistanceMatrix = () => {
         origin.latitude,
         origin.longitude
       )
+      console.log(originInCoordinates)
       const service = new google.maps.DistanceMatrixService()
       service.getDistanceMatrix(
         {
@@ -50,14 +51,14 @@ export const useDistanceMatrix = () => {
         },
         (response, status) => {
           setData(response)
-
           if (response === null) {
             return
           }
 
           //si no hay resultados retorna
+          console.log(response)
           const withOutResults = response.rows[0].elements[0].status
-          if (withOutResults === 'ZERO_RESULTS') {
+          if (withOutResults === 'ZERO_RESULTS' || withOutResults === 'NOT_FOUND') {
             throw new Error(
               'Si hay origen pero por la lejania no se puede obtener las distancias de las demas sucursales'
             )
@@ -89,7 +90,7 @@ export const useDistanceMatrix = () => {
       return
     }
     getDistanceMatrix()
-  }, [origin, destinations])
+  }, [origin, destinations, getDistanceMatrix])
 
   return { closestDestination, setDistanceMatrix }
 }

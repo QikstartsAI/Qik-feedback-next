@@ -42,7 +42,7 @@ const RequestLocationDialog = ({
   }
 
   const handleOnGrant = async () => {
-    await getLocation()
+    getLocation()
     goToSuggestedView()
   }
 
@@ -141,12 +141,12 @@ const SuggestedLocations = ({
       <div className='grow'></div>
 
       <div className='flex flex-col gap-3 w-full overflow-y-scroll'>
-        {branches.map((branch) => {
+        {branches.map((branch, idx) => {
           return (
             <div
               onClick={() => handleClickSelected(branch?.Name)}
               className='flex items-center gap-4 border py-2 px-3 rounded-lg cursor-pointer focus:ring'
-              key={branch?.Name}>
+              key={idx}>
               {selected == getNormalizedBusinessName(branch?.Name ?? '') ? (
                 <span>
                   <IconCircleCheck
