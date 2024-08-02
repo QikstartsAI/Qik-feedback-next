@@ -49,7 +49,7 @@ const RequestLocationDialog = ({
   return (
     <div
       className={cn(
-        'fixed bottom-0 h-[0px] w-screen flex flex-col justify-between items-center gap-10 bg-white transition-all ease-in-out duration-[2000ms]  overflow-hidden',
+        'fixed bottom-0 h-[0px] w-screen flex flex-col justify-between items-center gap-10 bg-white transition-all ease-in-out duration-100  overflow-hidden',
         { 'h-screen': open },
         { 'p-10': open }
       )}>
@@ -60,7 +60,7 @@ const RequestLocationDialog = ({
           <Image
             src={'/location.svg'}
             alt={'Permisos de ubicación'}
-            className='animate-bounce delay-[2000ms]'
+            className='animate-bounce delay-100'
             width={120}
             height={120}
           />
@@ -75,9 +75,9 @@ const RequestLocationDialog = ({
           </div>
           <div className='grow'></div>
           <div className='flex flex-col gap-3 w-full'>
-            {/* <Button onClick={handleOnGrant} className='w-full' type='button'>
+            <Button onClick={handleOnGrant} className='w-full' type='button'>
               Compartir ubicación
-            </Button> */}
+            </Button>
             <Button
               onClick={handleOnDeny}
               className='w-full'
@@ -127,7 +127,7 @@ const SuggestedLocations = ({
         <Image
           src={'/location.svg'}
           alt={'Permisos de ubicación'}
-          className='animate-bounce delay-[2000ms]'
+          className='animate-bounce delay-100'
           width={120}
           height={120}
         />

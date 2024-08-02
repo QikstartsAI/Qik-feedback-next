@@ -41,21 +41,7 @@ export interface Waiter {
   feedbackType?: string
 }
 
-export interface Branch {
-  BusinessId:string 
-  Address: string
-  Icono: string
-  MapsUrl: string
-  Name: string
-  Cover: string
-  IconoWhite: string
-  Country: 'CO' | 'EC' | 'MX' | 'US' | 'AR' | 'CA' | 'DO' | 'HN'
-  Waiter?: Waiter
-  Waiters?: Waiter[]
-  feedbacks?: Feedback[]
-  PricePlan: number
-}
-
+export interface Branch extends Omit<Business, 'sucursales'> {}
 export interface Business {
     BusinessId: string
     Address: string
@@ -70,6 +56,7 @@ export interface Business {
     Waiter?: Waiter
     feedbacks?: Feedback[]
     PricePlan: number
+    Geopoint?: {_lat: number, _long: number}
 }
 
 export type BusinessAssets = {

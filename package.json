@@ -12,6 +12,7 @@
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@hookform/resolvers": "^3.3.2",
+    "@mapbox/mapbox-sdk": "^0.16.0",
     "@mui/icons-material": "^5.15.14",
     "@mui/material": "^5.15.14",
     "@next/third-parties": "^14.1.4",
@@ -36,6 +37,7 @@
   },
   "devDependencies": {
     "@iconify/react": "^4.1.1",
+    "@types/mapbox__mapbox-sdk": "^0.15.1",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

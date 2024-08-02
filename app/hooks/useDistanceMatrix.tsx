@@ -1,12 +1,17 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Branch } from '../types/business'
+import '@mapbox/mapbox-sdk';
+import Matrix from '@mapbox/mapbox-sdk/services/matrix'
+
+const matrixService = Matrix({ accessToken: 'pk.eyJ1IjoicWlrc3RhcnRzIiwiYSI6ImNsemEzNWlzNTAyb3EybG9laWF5a2dhOGIifQ.cnaCe_kHmcNRhY9nI1cdeQ' });
 
 export const useDistanceMatrix = () => {
   const [origin, setOrigin] = useState<{ latitude: number | null; longitude: number | null }>({ latitude: null, longitude: null })
   const [destinations, setDestinations] = useState<Branch[]>([])
   const [closestDestination, setClosestDestination] = useState<Branch>()
-  const coordenates = destinations.map((destination) => destination.Address)
-  const [data, setData] = useState<google.maps.DistanceMatrixResponse | null>(null)
+  const coordinates = destinations.map(
+    destination => [destination.Geopoint?._long, destination.Geopoint?._lat]
+  )
 
   const setDistanceMatrix = useCallback(({ origin, destinations = [] }: { origin: { latitude: number | null; longitude: number | null }; destinations?: Branch[] }) => {
     setOrigin(origin)
@@ -18,71 +23,49 @@ export const useDistanceMatrix = () => {
       if (origin.latitude === null || origin.longitude === null) {
         return
       }
+      coordinates.unshift([origin.longitude, origin.latitude])
 
-      const originInCoordinates = new google.maps.LatLng(origin.latitude, origin.longitude)
-      const service = new google.maps.DistanceMatrixService()
-      service.getDistanceMatrix(
-        {
-          origins: [originInCoordinates],
-          destinations: coordenates,
-          travelMode: google.maps.TravelMode.DRIVING,
-          unitSystem: google.maps.UnitSystem.METRIC,
-        },
-        (response, status) => {
-          setData(response)
-          if (response === null) {
-            return
-          }
+      const points = coordinates.map(coordinate => ({
+        coordinates: coordinate as [number, number]
+      }));
 
-          const elements = response.rows[0].elements;
+      const destinationsPoints = points.map((_, index) => index).filter(index => index !== 0);
 
-          // Filtramos los elementos que tienen el estado "OK" y obtenemos sus distancias
-          const validElements = elements
-            .map((element, index) => ({ ...element, index }))
-            .filter((element: google.maps.DistanceMatrixResponseElement & { index: number }) => element.status === 'OK');
+      const response = await matrixService.getMatrix({
+        points: points,
+        sources: [0],
+        destinations: destinationsPoints,
+        profile: 'driving',
+        annotations: ['distance', 'duration'],
+      }).send();
 
-          // Verificamos si todos los elementos son "ZERO_RESULTS" o "NOT_FOUND"
-          const allZeroResultsOrNotFound = validElements.length === 0;
+      if (response.statusCode !== 200) {
+        return
+      }
 
-          if (allZeroResultsOrNotFound) {
-            console.error('Si hay origen pero por la lejania no se puede obtener las distancias de las demas sucursales');
-            return;
-          }
-
-          // Obtenemos las distancias de los elementos válidos
-          const distanceArr: number[] = validElements.map(
-            (element: google.maps.DistanceMatrixResponseElement) => element.distance.value
-          );
-
-          if (distanceArr.length === 0) {
-            return;
-          }
-
-          // Encontramos la distancia mínima y el índice del elemento correspondiente
-          const minDistance: number = Math.min(...distanceArr);
-          const closerBranchIndex = validElements.find(
-            (element: google.maps.DistanceMatrixResponseElement) => element.distance.value === minDistance
-          )?.index;
-
-          if (closerBranchIndex === undefined) {
-            console.error('No se encontró una sucursal más cercana.');
-            return;
-          }
-
-          setClosestDestination(destinations[closerBranchIndex]);
-        }
-      )
+      if (response.body.code === 'NoRoute') {
+        console.error('There is origin but for the distance routes were not found.');
+        return;
+      }
+      const distances = response.body.distances
+      if (distances) {
+        const minDistance: number = Math.min(...distances[0]);
+        setClosestDestination(destinations[distances[0].indexOf(minDistance)]);
+      } else {
+        console.error('There is an error with distances in the response.');
+        return;
+      }
     } catch (err) {
-      console.error('error al hacer el fetching de datos: ', err)
+      console.error('Error fetching data to the API: ', err)
     }
-  }, [origin, coordenates, destinations])
+  }, [coordinates, destinations, origin.latitude, origin.longitude])
 
   useEffect(() => {
     if (origin.latitude == null || origin.longitude == null || destinations.length === 0) {
       return
     }
     getDistanceMatrix()
-  }, [origin, destinations, getDistanceMatrix])
+  }, [origin, destinations, coordinates, getDistanceMatrix])
 
   return { closestDestination, setDistanceMatrix }
 }

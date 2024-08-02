@@ -63,7 +63,6 @@ export default function FeedbackFormRoot() {
       latitude: position.coords.latitude,
       longitude: position.coords.longitude,
     }
-    console.log(origin)
     setOriginPosition(origin)
   }
 
@@ -95,7 +94,7 @@ export default function FeedbackFormRoot() {
     }
     setDistanceMatrix({
       origin: originPosition,
-      destinations: business?.sucursales?.concat([business as Branch]),
+      destinations: business?.sucursales,
     })
   }, [originPosition, business, setDistanceMatrix])
 
