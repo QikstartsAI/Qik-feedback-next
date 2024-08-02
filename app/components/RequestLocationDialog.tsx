@@ -43,7 +43,6 @@ const RequestLocationDialog = ({
 
   const handleOnGrant = async () => {
     getLocation()
-    goToSuggestedView()
   }
 
   return (
