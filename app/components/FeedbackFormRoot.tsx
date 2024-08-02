@@ -78,7 +78,7 @@ export default function FeedbackFormRoot() {
   }
 
   const getBestOption = () => {
-    return [closestDestination]
+    return Array.isArray(closestDestination)? closestDestination : [closestDestination]
   }
 
   const handleConfirmLocation = (branch: Branch | undefined) => {
