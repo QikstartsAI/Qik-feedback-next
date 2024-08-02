@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Branch } from '../types/business'
 import '@mapbox/mapbox-sdk';
+import { Branch } from '../types/business'
+import { MAPBOX_API_KEY } from '../constants/general';
 import Matrix from '@mapbox/mapbox-sdk/services/matrix'
 
-const matrixService = Matrix({ accessToken: 'pk.eyJ1IjoicWlrc3RhcnRzIiwiYSI6ImNsemEzNWlzNTAyb3EybG9laWF5a2dhOGIifQ.cnaCe_kHmcNRhY9nI1cdeQ' });
+const matrixService = Matrix({ accessToken: MAPBOX_API_KEY || '' });
 
 export const useDistanceMatrix = () => {
   const [origin, setOrigin] = useState<{ latitude: number | null; longitude: number | null }>({ latitude: null, longitude: null })
