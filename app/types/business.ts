@@ -42,6 +42,8 @@ export interface Waiter {
 }
 
 export interface Branch extends Omit<Business, 'sucursales'> {}
+
+export type Country = 'CO' | 'EC' | 'MX' | 'US' | 'AR' | 'CA' | 'DO' | 'HN' | 'GT' | 'ES' | 'FR' | 'HK'
 export interface Business {
     BusinessId: string
     Address: string
@@ -50,7 +52,7 @@ export interface Business {
     Name: string
     Cover: string
     IconoWhite: string
-    Country: 'CO' | 'EC' | 'MX' | 'US' | 'AR' | 'CA' | 'DO' | 'HN' | 'GT' | 'ES' | 'FR' | 'HK'
+    Country: Country
     sucursales?: Branch[]
     meseros?: Waiter[]
     Waiter?: Waiter

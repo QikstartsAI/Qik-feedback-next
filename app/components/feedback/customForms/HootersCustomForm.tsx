@@ -28,6 +28,7 @@ import { Business } from '@/app/types/business'
 import React, { Dispatch, SetStateAction, useState } from 'react'
 import {
   getImprovements,
+  getOtherOptions,
 } from '@/app/constants/form'
 import { CustomerRole } from '@/app/types/customer'
 import getFormTranslations from '@/app/constants/formTranslations';
@@ -47,6 +48,9 @@ import CustomStepperIcons, { CustomStepperIconsHooters } from "@/app/components/
 import CustomStepperConnector from "@/app/components/form/CustomStepperConnector";
 import { useSearchParams } from 'next/navigation'
 import StarRatingQuestion from '../questions/StarRatingQuestion'
+import { SelectedOption } from '@/app/types/general'
+import Modal from '../../ui/Modal'
+import { Origins } from '@/app/types/feedback'
 
 interface HootersCustomFormProps {
   business: Business | null
@@ -61,6 +65,12 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
   const [isTermsChecked, setIsTermsChecked] = useState(true)
   const [recommending, setRecommending] = useState<boolean | null>(null)
   const [comeBack, setComeBack] = useState<boolean | null>(null)
+
+  const [isChecked, setIsChecked] = useState<boolean>(false)
+
+  const [showOtherOptionsModal, setShowOtherOptionsModal] = useState<boolean>(false)
+  const [selectedOtherOption, setSelectedOtherOption] = useState<SelectedOption | null>(null)
+
   const [isLastFeedbackMoreThanOneDay, setIsLastFeedbackMoreThanOneDay] = useState<boolean | undefined>(false)
   const searchParams = useSearchParams()
 
@@ -83,6 +93,10 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
       FullName: '',
       AcceptTerms: isTermsChecked,
       Email: '',
+      PhoneNumber: '',
+      BirthdayDate: '',
+      AcceptPromotions: isChecked,
+      Origin: undefined,
       StartTime: new Date(),
       Courtesy: undefined,
       RecommendingText: '',
@@ -141,11 +155,14 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
     termsAndConditions4,
     formErrorMessage,
     formUserDataErrorMessage,
+    formUserPhoneNumberErrorMessage,
     emptyRecommendingError,
     emptyNoRecommendingError,
     chooseOneOptionError,
     howToImprovementError,
     whyComeBackError,
+    birthdayQuestion,
+    phoneNumberQuestion
   } = getFormTranslations({ businessCountry })
 
   const {
@@ -203,7 +220,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
 
       updatedData.ImproveText = !comeBack ? ImproveText : ''
       updatedData.ComeBackText = comeBack ? ComeBackText : ''
-      const improveOptions = !comeBack ? getImprovements({ Ambience, Service, Food, business }) : []
+      const improveOptions = !comeBack ? getImprovements({ Ambience, Service, Food, businessCountry: business?.Country }) : []
       let customerNumberOfVisits = 0
       let feedbackNumberOfVisit = 0
       const customerFeedbackInBusinesData = await findCustomerFeedbackDataInBusiness(data.Email, business?.BusinessId || '')
@@ -255,9 +272,41 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
     goTo(currentStepIndex + 1)
   }
 
+  const handleOthersSelecteOption = (option: SelectedOption) => {
+    form.setValue("Origin", option?.value as Origins)
+    setSelectedOtherOption(option)
+  }
+
   return (
     <>
       <div className='mx-auto py-8 lg:py-18 max-w-xl px-6 min-h-screen text-colorText' id='form'>
+        {showOtherOptionsModal && (
+          <Modal isOpen={true} onClose={() => setShowOtherOptionsModal(false)}>
+            <ul
+              className='flex flex-row flex-wrap justify-center items-center gap-3 text-sm font-medium text-gray-900 mt-5'
+            >
+              {
+                getOtherOptions(business?.Country).map((option) => (
+                  <li
+                    key={option.value}
+                    className='list-none'
+                  >
+                    <button
+                      className={cn('flex justify-center items-center w-full px-3 bg-white border border-gray-200 rounded-lg py-1 cursor-pointer shadow hover:border-hooters hover:text-hooters transition-all', {
+                        'border-hooters text-hooters': selectedOtherOption?.value === option.value
+                      })}
+                      onClick={
+                        () => handleOthersSelecteOption(option)
+                      }
+                    >
+                      <p className='text-[10px]'>{option.label}</p>
+                    </button>
+                  </li>
+                ))
+              }
+            </ul>
+          </Modal>
+        )}
         <h4 className={'text-center font-medium text-colorText'}>
           {title}
           <span className='text-hooters font-medium'>
@@ -280,7 +329,13 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                     form={form}
                     emailQuestion={emailQuestion}
                     fullNameQuestion={fullNameQuestion}
+                    birthdayQuestion={birthdayQuestion}
+                    phoneNumberQuestion={phoneNumberQuestion}
                     businessCountry={businessCountry}
+                    isChecked={isChecked}
+                    selectedOtherOption={selectedOtherOption}
+                    setIsChecked={setIsChecked}
+                    setShowOtherOptionsModal={setShowOtherOptionsModal}
                     setIsLastFeedbackMoreThanOneDay={setIsLastFeedbackMoreThanOneDay}
                     businessId={businessId || ''}
                   />
@@ -306,6 +361,12 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
                       if (!form.watch('FullName') || !form.watch('Email')) {
                         toast({
                           title: formUserDataErrorMessage,
+                          variant: 'hootersDestructive'
+                        })
+                      }
+                      if (!form.watch('PhoneNumber') && form.watch('AcceptPromotions')) {
+                        toast({
+                          title: formUserPhoneNumberErrorMessage,
                           variant: 'hootersDestructive'
                         })
                       }
@@ -445,7 +506,7 @@ export default function HootersCustomForm({ business, setIsSubmitted, setRating,
               </div>
 
               <div className={'md:grid md:space-y-0 items-center'}>
-                <Stepper activeStep={0} alternativeLabel connector={<CustomStepperConnector variant='hooters'/>}>
+                <Stepper activeStep={0} alternativeLabel connector={<CustomStepperConnector variant='hooters' />}>
                   {steps.map((label, index) => (
                     <Step
                       key={index}

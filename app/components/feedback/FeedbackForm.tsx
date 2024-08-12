@@ -159,7 +159,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
       const updatedData = data
       updatedData.ImproveText = isLowRating ? ImproveText : ''
       updatedData.AcceptPromotions = isChecked
-      const improveOptions = isLowRating ? getImprovements({ Ambience, Service, Food, business }) : []
+      const improveOptions = isLowRating ? getImprovements({ Ambience, Service, Food, businessCountry: business?.Country }) : []
       let customerNumberOfVisits = 0
       let feedbackNumberOfVisit = 0
       const customerFeedbackInBusinesData = await findCustomerFeedbackDataInBusiness(data.Email, businessId || '')
@@ -205,7 +205,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
               className='flex flex-row flex-wrap justify-center items-center gap-3 text-sm font-medium text-gray-900 mt-5'
             >
               {
-                getOtherOptions(business).map((option) => (
+                getOtherOptions(business?.Country).map((option) => (
                   <li
                     key={option.value}
                     className='list-none'
@@ -450,7 +450,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                           <RadioGroup
                             onValueChange={(value) => {
                               field.onChange(value);
-                              if (value === getOthersText(business) || value === selectedOtherOption?.value) {
+                              if (value === getOthersText(business?.Country) || value === selectedOtherOption?.value) {
                                 setShowOtherOptionsModal(true);
                               }
                             }}
@@ -461,9 +461,9 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                               className='sm:grid-cols-5'
                               value={field.value}
                               items={
-                                getKnownOrigins(business).concat(
+                                getKnownOrigins(business?.Country).concat(
                                   !selectedOtherOption
-                                    ? getOtherOriginValues(business)
+                                    ? getOtherOriginValues(business?.Country)
                                     : selectedOtherOption
                                 )
                               }
@@ -497,7 +497,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                             <CustomRadioGroup 
                               className='sm:grid-cols-5' 
                               value={field.value} 
-                              items={getCustomersQuantity(business)} 
+                              items={getCustomersQuantity(business?.Country)} 
                             />
                           </RadioGroup>
                         </FormControl>
@@ -528,7 +528,7 @@ export default function FeedbackForm({ business, setIsSubmitted, setRating, setC
                             <CustomRadioGroup 
                               className='sm:grid-cols-5' 
                               value={field.value} 
-                              items={getAverageTicket(business)} 
+                              items={getAverageTicket(business?.Country)} 
                             />
                           </RadioGroup>
                         </FormControl>

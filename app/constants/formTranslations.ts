@@ -18,6 +18,8 @@ const {
   formTitle, 
   fullNameQuestion,
   emailQuestion,
+  birthdayQuestion,
+  phoneNumberQuestion,
   courtesyQuestion,
   placeCleannessQuestion,
   quicknessQuestion,
@@ -55,6 +57,7 @@ const {
   termsAndConditions4,
   formErrorMessage,
   formUserDataErrorMessage,
+  formUserPhoneNumberDataErrorMessage,
   emptyRecommendingError,
   emptyNoRecommendingError,
   chooseOneOptionError,
@@ -78,6 +81,14 @@ const getTranslatedFullNameQuestion = ({ businessCountry }: { businessCountry: s
 
 const getTranslatedEmailQuestion = ({ businessCountry }: { businessCountry: string }) => {
   return emailQuestion[businessCountry as keyof typeof emailQuestion] || emailQuestion.default
+}
+
+const getTranslatedBirthdayQuestion = ({ businessCountry }: { businessCountry: string }) => {
+  return birthdayQuestion[businessCountry as keyof typeof birthdayQuestion] || birthdayQuestion.default
+}
+
+const getTranslatedPhoneNumberQuestion = ({ businessCountry }: { businessCountry: string }) => {
+  return phoneNumberQuestion[businessCountry as keyof typeof phoneNumberQuestion] || phoneNumberQuestion.default
 }
 
 const getTranslatedCourtesyQuestion = ({ businessCountry }: { businessCountry: string }) => {
@@ -228,6 +239,10 @@ const getFormUserDataErrorMessage = ({ businessCountry }: { businessCountry: str
   return formUserDataErrorMessage[businessCountry as keyof typeof formErrorMessage] || formUserDataErrorMessage.default
 }
 
+const getFormUserPhoneNumberDataErrorMessage = ({ businessCountry }: { businessCountry: string }) => {
+  return formUserPhoneNumberDataErrorMessage[businessCountry as keyof typeof formErrorMessage] || formUserPhoneNumberDataErrorMessage.default
+}
+
 const getRecommendingError = ({ businessCountry }: { businessCountry: string }) => {
   return formErrorMessage[businessCountry as keyof typeof emptyRecommendingError] || emptyRecommendingError.default
 }
@@ -259,6 +274,8 @@ const getFormTranslations = ({ businessCountry }: { businessCountry: string }) =
     subTitle: getTranslatedFormSubTitle({ businessCountry }),
     fullNameQuestion: getTranslatedFullNameQuestion({ businessCountry }),
     emailQuestion: getTranslatedEmailQuestion({ businessCountry }),
+    birthdayQuestion: getTranslatedBirthdayQuestion({ businessCountry }),
+    phoneNumberQuestion: getTranslatedPhoneNumberQuestion({ businessCountry }),
     courtesyQuestion: getTranslatedCourtesyQuestion({ businessCountry }),
     placeCleannessQuestion: getTranslatedPlaceCleannessQuestion({ businessCountry }),
     quicknessQuestion: getTranslatedQuicknessQuestion({ businessCountry }),
@@ -296,6 +313,7 @@ const getFormTranslations = ({ businessCountry }: { businessCountry: string }) =
     termsAndConditions4: getTermsAndConditions4({ businessCountry }),
     formErrorMessage: getFormErrorMessage({ businessCountry }),
     formUserDataErrorMessage: getFormUserDataErrorMessage({ businessCountry }),
+    formUserPhoneNumberErrorMessage: getFormUserPhoneNumberDataErrorMessage({ businessCountry }),
     emptyRecommendingError: getRecommendingError({ businessCountry }),
     emptyNoRecommendingError: getNoRecommendingError({ businessCountry }),
     chooseOneOptionError: getChooseOneOptionError({ businessCountry }),

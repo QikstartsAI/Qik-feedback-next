@@ -66,7 +66,7 @@ const RequestLocationDialog = ({
           />
 
           <div className='flex flex-col items-center gap-3'>
-            <h2 className='font-bold text-[1.5rem] text-sky-500 text-center'>
+            <h2 className='font-bold text-[1.5rem] text-hooters text-center'>
               Mejora tu experiencia
             </h2>
             <p className='text-center text-sky-900'>
@@ -75,21 +75,29 @@ const RequestLocationDialog = ({
           </div>
           <div className='grow'></div>
           <div className='flex flex-col gap-3 w-full'>
-            <Button onClick={handleOnGrant} className='w-full' type='button'>
+            <Button
+              onClick={handleOnGrant}
+              className='w-full'
+              type='button'
+              variant='hootersPrimary'
+            >
               Compartir ubicación
             </Button>
             <Button
               onClick={handleOnDeny}
               className='w-full'
               type='button'
-              variant={'default'}>
+              variant='hootersSecondary'>
               Ver sucursales
             </Button>
           </div>
         </>
       )}
       {currentView == 'suggestedLocations' && (
-        <SuggestedLocations branches={branches} onConfirm={onConfirm} />
+        <SuggestedLocations
+          branches={branches}
+          onConfirm={onConfirm}
+        />
       )}
     </div>
   )
@@ -131,7 +139,7 @@ const SuggestedLocations = ({
           width={120}
           height={120}
         />
-        <h2 className='font-bold text-[1.5rem] text-sky-500 text-center'>
+        <h2 className='font-bold text-[1.5rem] text-hooters text-center'>
           ¿Dónde te encuentras?
         </h2>
         <p className='text-center text-sky-900 mb-3'>
@@ -161,7 +169,7 @@ const SuggestedLocations = ({
                 </span>
               )}
               <div className='flex flex-col'>
-                <h4 className='text-qik text-[1rem] font-bold'>
+                <h4 className='text-hooters text-[1rem] font-bold'>
                   {branch?.Name}
                 </h4>
                 <div className='flex items-center gap-1'>
@@ -188,7 +196,9 @@ const SuggestedLocations = ({
             )
           }
           className='w-full'
-          type='button'>
+          type='button'
+          variant='hootersPrimary'
+          >
           ¡Aquí estoy!
         </Button>
       </div>

@@ -25,6 +25,10 @@ const handleSubmitHootersForm = async (
       ImproveText,    
       RecommendingText,
       Climate,
+      BirthdayDate,
+      PhoneNumber,
+      AcceptPromotions,
+      Origin
     }: HootersFeedbackProps, 
     Improve: string[], 
     customerType: string,
@@ -39,11 +43,11 @@ const handleSubmitHootersForm = async (
   const customerContactData:Customer = {
     email: Email,
     name: FullName,
-    phoneNumber: '',
-    birthdayDate: '',
-    origin: '',
+    phoneNumber: PhoneNumber  || '',
+    birthdayDate: BirthdayDate || '',
+    origin: Origin || '',
     customerType: customerType || '',
-    acceptPromotions: false,
+    acceptPromotions: AcceptPromotions,
     lastFeedbackFilled: getTimesTampFromDate(new Date())
   }
 
@@ -68,6 +72,10 @@ const handleSubmitHootersForm = async (
     CreationDate: getTimesTampFromDate(new Date()),
     FullName,
     AcceptTerms,
+    PhoneNumber,
+    BirthdayDate,
+    AcceptPromotions,
+    Origin,
     StartTime: getTimesTampFromDate(StartTime),
     Email,
     AttendedBy,
