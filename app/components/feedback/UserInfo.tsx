@@ -53,9 +53,26 @@ export default function UserInfo<T extends HootersFeedbackProps | GusFeedbackPro
     feedbackLimit
   } = getFormTranslations({ businessCountry: businessCountry || '' })
 
-  const searchParams = useSearchParams()
-  const branchId = searchParams.get('sucursal')
-  const waiterId = searchParams.get('mesero')
+  const handleUserData = async (email: PathValue<T, Path<T>>) => {
+    if (email) {
+      const customerData = await findCustomerDataByEmail(email as string)
+      const lastFeedbackFilledInBusiness = customerData?.lastFeedbackFilled
+      const lastFeedbackGreaterThanOneDay = lastFeedbackFilledIsGreaterThanOneDay(lastFeedbackFilledInBusiness)
+      setShowLastFeedbackFilledModal(lastFeedbackGreaterThanOneDay)
+      setIsLastFeedbackMoreThanOneDay(lastFeedbackGreaterThanOneDay)
+      if (customerData) {
+        form.setValue('FullName' as Path<T>, customerData.name as PathValue<T, Path<T>>)
+        form.setValue('PhoneNumber' as Path<T>, customerData.phoneNumber as PathValue<T, Path<T>>)
+        form.setValue('BirthdayDate' as Path<T>, customerData.birthdayDate as PathValue<T, Path<T>>)
+        form.setValue('AcceptPromotions' as Path<T>, customerData.acceptPromotions as PathValue<T, Path<T>>)
+        setIsChecked(customerData.acceptPromotions || false)
+      }
+    }
+  }
+
+  // const searchParams = useSearchParams()
+  // const branchId = searchParams.get('sucursal')
+  // const waiterId = searchParams.get('mesero')
 
   return (
     <>
@@ -84,19 +101,7 @@ export default function UserInfo<T extends HootersFeedbackProps | GusFeedbackPro
                 {...field}
                 type='email'
                 value={field.value as string}
-                onBlur={async () => {
-                  const email = field.value
-                  if (email) {
-                    const customerData = await findCustomerDataByEmail(email as string)
-                    const lastFeedbackFilledInBusiness = customerData?.lastFeedbackFilled
-                    const lastFeedbackGreaterThanOneDay = lastFeedbackFilledIsGreaterThanOneDay(lastFeedbackFilledInBusiness)
-                    setShowLastFeedbackFilledModal(lastFeedbackGreaterThanOneDay)
-                    setIsLastFeedbackMoreThanOneDay(lastFeedbackGreaterThanOneDay)
-                    if (customerData) {
-                      form.setValue('FullName' as Path<T>, customerData.name as PathValue<T, Path<T>>)
-                    }
-                  }
-                }}
+                onBlur={() => handleUserData(field.value)}
               />
             </FormControl>
             <FormMessage />

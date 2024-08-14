@@ -163,7 +163,6 @@ export const hootersFeedbackSchema = (businessCountry: string) =>
     hiddenInput: z.boolean().optional().nullable()
   })
     .superRefine((values, context) => {
-      console.log(values)
       if (values.AcceptPromotions && !values.PhoneNumber) {
         context.addIssue({
           code: z.ZodIssueCode.custom,
