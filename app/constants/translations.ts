@@ -17,6 +17,18 @@ const translations = {
     'ES': 'Nombre completo',
     'default': 'Nombre completo'
   },
+  birthdayQuestion: {
+    'US': 'Your birthday? 🎂 (optional)',
+    'CA': 'Ton anniversaire? 🎂 (facultatif)',
+    'ES': '¿Tu fecha de cumpleaños? 🎂 (opcional)',
+    'default': '¿Tu fecha de cumpleaños? 🎂 (opcional)'
+  },
+  phoneNumberQuestion: {
+    'US': 'Phone (optional)',
+    'CA': 'Téléphone (facultatif)',
+    'ES': 'Teléfono (opcional)',
+    'default': 'Teléfono (opcional)'
+  },
   emailQuestion: {
     'US': 'Email',
     'CA': 'Courrier électronique',
@@ -250,7 +262,7 @@ const translations = {
     'CA': 'Veuillez nous dire pourquoi vous ne recommanderiez pas Hooters',
     'ES': 'Por favor dinos por qué no recomendarías Hooters',
     'default': 'Por favor dinos por qué no recomendarías Hooters'
-    },
+  },
   chooseOneOptionError: {
     'US': 'Choose one option',
     'CA': 'Choisissez une option',
@@ -280,6 +292,12 @@ const translations = {
     'CA': "Veuillez remplir les champs de données utilisateur avant de continuer",
     'ES': 'Por favor, llena tus datos antes de continuar',
     'default': 'Por favor, llena tus datos antes de continuar'
+  },
+  formUserPhoneNumberDataErrorMessage: {
+    'US': 'Please, fill your phone number field before continuing',
+    'CA': "Veuillez remplir le champ de votre numéro de téléphone avant de continuer",
+    'ES': 'Por favor, llena el campo de tu número de teléfono antes de continuar',
+    'default': 'Por favor, llena el campo de tu número de teléfono antes de continuar'
   }
 };
 export default translations;

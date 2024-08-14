@@ -46,6 +46,7 @@ import CustomStepperConnector from "@/app/components/form/CustomStepperConnector
 import StarRatingQuestion from '../questions/StarRatingQuestion'
 import BooleanQuestion from '../questions/BooleanQuestion'
 import { useSearchParams } from 'next/navigation'
+import { SelectedOption } from '@/app/types/general'
 
 interface GusCustomFormProps {
   business: Business | null
@@ -59,6 +60,11 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
   const [recommending, setRecommending] = useState<boolean | null>(null)
   const [comeBack, setComeBack] = useState<boolean | null>(null)
   const [reception, setReception] = useState<boolean | null>(true)
+  const [isChecked, setIsChecked] = useState<boolean>(false)
+
+  const [showOtherOptionsModal, setShowOtherOptionsModal] = useState<boolean>(false)
+  const [selectedOtherOption, setSelectedOtherOption] = useState<SelectedOption | null>(null)
+
   const [isLastFeedbackMoreThanOneDay, setIsLastFeedbackMoreThanOneDay] = useState<boolean | undefined>(false)
   const searchParams = useSearchParams()
 
@@ -134,6 +140,8 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
     chooseOneOptionError,
     howToImprovementError,
     whyComeBackError,
+    birthdayQuestion,
+    phoneNumberQuestion
   } = getFormTranslations({ businessCountry })
 
   const {
@@ -216,7 +224,7 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
 
       updatedData.ImproveText = !comeBack ? ImproveText : ''
       updatedData.ComeBackText = comeBack ? ComeBackText : ''
-      const improveOptions = !comeBack ? getImprovements({ Ambience, Service, Food, business }) : []
+      const improveOptions = !comeBack ? getImprovements({ Ambience, Service, Food, businessCountry: business?.Country }) : []
       let customerNumberOfVisits = 0
       let feedbackNumberOfVisit = 0
       const customerFeedbackInBusinesData = await findCustomerFeedbackDataInBusiness(data.Email, business?.BusinessId || '')
@@ -274,6 +282,12 @@ export default function GusCustomForm({ business, setIsSubmitted, setRating, cus
                     form={form}
                     emailQuestion={emailQuestion}
                     fullNameQuestion={fullNameQuestion}
+                    birthdayQuestion={birthdayQuestion}
+                    phoneNumberQuestion={phoneNumberQuestion}
+                    isChecked={isChecked}
+                    selectedOtherOption={selectedOtherOption}
+                    setIsChecked={setIsChecked}
+                    setShowOtherOptionsModal={setShowOtherOptionsModal}
                     businessCountry={businessCountry}
                     setIsLastFeedbackMoreThanOneDay={setIsLastFeedbackMoreThanOneDay}
                     businessId={businessId || ''}

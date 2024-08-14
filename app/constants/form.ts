@@ -18,34 +18,34 @@ import {
   IconStar,
 } from '@tabler/icons-react'
 import { ReactNode } from 'react'
-import { Business } from '../types/business'
 import { currencyPrices } from './prices'
 import { Improvements } from '@/app/types/feedback'
 import { CustomerRole } from '../types/customer'
+import { Country } from 'react-phone-number-input'
 import getFormTranslations from "@/app/constants/formTranslations";
 
-const getOthersText = (business: Business | null) => {
-  return business?.Country === 'US'
+const getOthersText = (businessCountry: Country | undefined) => {
+  return businessCountry === 'US'
     ? 'Others'
-    : business?.Country === 'CA' || business?.Country === 'FR'
+    : businessCountry === 'CA' || businessCountry === 'FR'
       ? 'Autres'
       : 'Otros'
 }
 
-const getOtherOptions = (business: Business | null) => {
-  const walking = business?.Country === 'US'
+const getOtherOptions = (businessCountry: Country | undefined) => {
+  const walking = businessCountry === 'US'
     ? 'Walking'
-    : business?.Country === 'CA' || business?.Country === 'FR'
+    : businessCountry === 'CA' || businessCountry === 'FR'
       ? 'Marche'
       : 'Caminando'
-  const billboard = business?.Country === 'US'
+  const billboard = businessCountry === 'US'
     ? 'Billboard'
-    : business?.Country === 'CA' || business?.Country === 'FR'
+    : businessCountry === 'CA' || businessCountry === 'FR'
       ? "Panneau d'affichage"
       : 'Valla publicitaria'
-  const events = business?.Country === 'US'
+  const events = businessCountry === 'US'
     ? 'Events'
-    : business?.Country === 'CA' || business?.Country === 'FR'
+    : businessCountry === 'CA' || businessCountry === 'FR'
       ? "Événements"
       : 'Eventos'
 
@@ -58,15 +58,15 @@ const getOtherOptions = (business: Business | null) => {
   ]
 }
 
-const getOtherOriginValues = (business: Business | null) => {
-  const others = getOthersText(business)
+const getOtherOriginValues = (businessCountry: Country | undefined) => {
+  const others = getOthersText(businessCountry)
   return { value: others, label: others, icon: IconPlus }
 }
 
-const getKnownOrigins = (business: Business | null) => {
-  const referred = business?.Country === 'US'
+const getKnownOrigins = (businessCountry: Country | undefined) => {
+  const referred = businessCountry === 'US'
     ? 'Referred'
-    : business?.Country === 'CA' || business?.Country === 'FR'
+    : businessCountry === 'CA' || businessCountry === 'FR'
       ? 'Référé'
       : 'Referido'
 
@@ -80,16 +80,16 @@ const getKnownOrigins = (business: Business | null) => {
   ]
 }
 
-const getCustomersQuantity = (business: Business | null) => {
-  const toGo = business?.Country === 'US'
+const getCustomersQuantity = (businessCountry: Country | undefined) => {
+  const toGo = businessCountry === 'US'
     ? 'To go'
-    : business?.Country === 'CA' || business?.Country === 'FR'
+    : businessCountry === 'CA' || businessCountry === 'FR'
       ? 'Pour emporter'
       : 'Para llevar'
 
-  const forDelivery = business?.Country === 'US'
+  const forDelivery = businessCountry === 'US'
     ? 'For delivery'
-    : business?.Country === 'CA' || business?.Country === 'FR'
+    : businessCountry === 'CA' || businessCountry === 'FR'
       ? 'Pour livraison'
       : 'Domicilio'
   return [
@@ -101,8 +101,7 @@ const getCustomersQuantity = (business: Business | null) => {
   ]
 }
 
-const getAverageTicket = (business: Business | null) => {
-  const businessCountry = business?.Country
+const getAverageTicket = (businessCountry: Country | undefined) => {
   const averageTicketList = Object.entries(currencyPrices).find(([key]) => key === businessCountry)?.[1]
 
   return averageTicketList?.map((price) => ({ value: price, label: price })) || []
@@ -120,25 +119,31 @@ const improveOptions: ImproveOptions[] = [
   { value: 'Ambience', label: 'Ambiente', icon: IconBuildingStore }
 ]
 
-type IGetImprovements = ({ Ambience, Food, Service }: { Food: boolean | undefined, Service: boolean | undefined, Ambience: boolean | undefined, business: Business | null }) => string[]
+type IGetImprovements = ({
+  Ambience, Food, Service
+}: {
+  Food: boolean | undefined,
+  Service: boolean | undefined,
+  Ambience: boolean | undefined,
+  businessCountry: Country | undefined
+}) => string[]
 
-const getImprovements: IGetImprovements = ({ Ambience, Food, Service, business }) => {
-  const businessCountry = business?.Country
+const getImprovements: IGetImprovements = ({ Ambience, Food, Service, businessCountry }) => {
   const foodLabel = businessCountry === 'US'
     ? Improvements.Food
-    : business?.Country === 'CA' || business?.Country === 'FR'
+    : businessCountry === 'CA' || businessCountry === 'FR'
       ? 'Nourriture'
       : 'Comida'
 
   const serviceLabel = businessCountry === 'US'
     ? Improvements.Service
-    : business?.Country === 'CA' || business?.Country === 'FR'
+    : businessCountry === 'CA' || businessCountry === 'FR'
       ? 'Service'
       : 'Servicio'
 
   const ambienceLabel = businessCountry === 'US'
     ? Improvements.Ambience
-    : business?.Country === 'CA' || business?.Country === 'FR'
+    : businessCountry === 'CA' || businessCountry === 'FR'
       ? 'Ambiance'
       : 'Ambiente'
 

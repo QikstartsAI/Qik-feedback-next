@@ -1,4 +1,4 @@
-import { RatingsFiveStars } from '@/app/types/feedback'
+import { Origins, RatingsFiveStars } from '@/app/types/feedback'
 import { z } from 'zod'
 
 export const hootersFeedbackSchema = (businessCountry: string) =>
@@ -29,7 +29,34 @@ export const hootersFeedbackSchema = (businessCountry: string) =>
             ? 'Veuillez entrer un email valide'
             : 'Por favor ingresa un correo electrónico válido'
       ),
-
+    BirthdayDate: z.string().optional(),
+    PhoneNumber: z
+      .string({
+        required_error:
+          businessCountry === 'US' || businessCountry === 'HK'
+            ? 'Please tell us your phone number'
+            : businessCountry === 'CA' || businessCountry === 'FR'
+              ? "S'il vous plaît dites-nous votre numéro de téléphone"
+              : 'Por favor dinos tu número de teléfono'
+      })
+      .max(
+        13,
+        businessCountry === 'US' || businessCountry === 'HK'
+          ? 'Please type a correct phone number'
+          : businessCountry === 'CA' || businessCountry === 'FR'
+            ? "S'il vous plaît entrer un numéro de téléphone valide"
+            : 'Por favor ingresa un número de teléfono válido'
+      )
+      .optional(),
+    AcceptPromotions: z.boolean(),
+    Origin: z.nativeEnum(Origins, {
+      required_error:
+        businessCountry === 'US' || businessCountry === 'HK'
+          ? 'Please tell us where you know us'
+          : businessCountry === 'CA' || businessCountry === 'FR'
+            ? "S'il vous plaît dites-nous d'où vous nous connaissez"
+            : 'Por favor dinos de dónde nos conoces'
+    }),
     Courtesy: z.nativeEnum(RatingsFiveStars, {
       required_error:
         businessCountry === 'US'
@@ -105,7 +132,7 @@ export const hootersFeedbackSchema = (businessCountry: string) =>
             : 'No puedes exceder los 500 caracteres'
       ),
 
-      ComeBackText: z
+    ComeBackText: z
       .string()
       .max(
         500,
@@ -116,13 +143,13 @@ export const hootersFeedbackSchema = (businessCountry: string) =>
             : 'No puedes exceder los 500 caracteres'
       ),
 
-      Food: z.boolean().optional(),
+    Food: z.boolean().optional(),
 
-      Service: z.boolean().optional(),
-  
-      Ambience: z.boolean().optional(),
+    Service: z.boolean().optional(),
 
-      ImproveText: z
+    Ambience: z.boolean().optional(),
+
+    ImproveText: z
       .string()
       .max(
         500,
@@ -133,10 +160,21 @@ export const hootersFeedbackSchema = (businessCountry: string) =>
             : 'No puedes exceder los 500 caracteres'
       ),
 
-      hiddenInput: z.boolean().optional().nullable()
-
-
-
+    hiddenInput: z.boolean().optional().nullable()
   })
+    .superRefine((values, context) => {
+      if (values.AcceptPromotions && !values.PhoneNumber) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: businessCountry === 'US' || businessCountry === 'HK'
+            ? 'Please tell us your phone number'
+            : businessCountry === 'CA' || businessCountry === 'FR'
+              ? "S'il vous plaît dites-nous votre numéro de téléphone"
+              : 'Por favor dinos tu número de teléfono',
+          path: ["PhoneNumber"]
+        })
+      }
+    })
+
 
 export type HootersFeedbackProps = z.infer<ReturnType<typeof hootersFeedbackSchema>>

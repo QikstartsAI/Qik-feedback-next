@@ -1,8 +1,7 @@
 import { Customer } from "../types/customer";
 import { CUSTOMERS_COLLECTION_NAME, COLLECTION_NAME } from '@/app/constants/general'
 import { getFirebase } from '@/app/lib/firebase'
-import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore'
-import { Feedback } from "../types/business";
+import { doc, getDoc } from 'firebase/firestore'
 
 export const findCustomerDataByEmail = async (email: string): Promise<Customer | null> => {
   const db = getFirebase().db;
