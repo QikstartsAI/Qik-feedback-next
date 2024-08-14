@@ -96,6 +96,7 @@ const RequestLocationDialog = ({
         <SuggestedLocations
           branches={branches}
           onConfirm={onConfirm}
+          handleOnDeny={handleOnDeny}
           grantingPermissions={grantingPermissions}
           isHootersForm={isHootersForm}
         />
@@ -107,10 +108,12 @@ const RequestLocationDialog = ({
 const SuggestedLocations = ({
   branches,
   onConfirm,
+  handleOnDeny,
   grantingPermissions,
   isHootersForm,
 }: {
   onConfirm: (branch: Branch | undefined) => void;
+  handleOnDeny: () => void;
   branches: (Branch | undefined)[];
   grantingPermissions: boolean;
   isHootersForm: boolean;
@@ -125,6 +128,7 @@ const SuggestedLocations = ({
   const [selected, setSelected] = useState<string>();
 
   useEffect(() => {
+    console.log(branches);
     if (branches.length == 0) return;
     setSelected(getNormalizedBusinessName(branches[0]?.Name));
   }, [branches]);
@@ -179,59 +183,80 @@ const SuggestedLocations = ({
           </div>
         )}
         {!grantingPermissions &&
-          branches.map((branch, idx) => {
-            return (
-              <div
-                onClick={() => handleClickSelected(branch?.Name)}
-                className="flex items-center gap-4 border py-2 px-3 rounded-lg cursor-pointer focus:ring"
-                key={idx}>
-                {selected == getNormalizedBusinessName(branch?.Name ?? '') ? (
-                  <span>
-                    <IconCircleCheck
-                      size={18}
-                      strokeWidth={3}
-                      className="text-qik"
-                    />
-                  </span>
-                ) : (
-                  <span>
-                    <IconCircle size={18} />
-                  </span>
-                )}
-                <div className="flex flex-col">
-                  <h4 className="text-hooters text-[1rem] font-bold">
-                    {branch?.Name}
-                  </h4>
-                  <div className="flex items-center gap-1">
-                    <span>
-                      <IconPinned size={10} />
-                    </span>
-                    <p className="text-sky-900 text-[0.7rem] font-light">
-                      {branch?.Address}
-                    </p>
+          (branches.length == 0 || branches[0] == undefined ? (
+            <div>
+              <h3 className="text-[1.5rem] text-hooters text-center">
+                No tienes sucursales cerca
+              </h3>
+              <Button
+                onClick={handleOnDeny}
+                className="w-full"
+                type="button"
+                variant="hootersPrimary">
+                Ver todas las sucursales
+              </Button>
+            </div>
+          ) : (
+            <>
+              {branches.map((branch, idx) => {
+                return (
+                  <div
+                    onClick={() => handleClickSelected(branch?.Name)}
+                    className="flex items-center gap-4 border py-2 px-3 rounded-lg cursor-pointer focus:ring"
+                    key={idx}>
+                    {selected ==
+                    getNormalizedBusinessName(branch?.Name ?? '') ? (
+                      <span>
+                        <IconCircleCheck
+                          size={18}
+                          strokeWidth={3}
+                          className="text-qik"
+                        />
+                      </span>
+                    ) : (
+                      <span>
+                        <IconCircle size={18} />
+                      </span>
+                    )}
+                    <div className="flex flex-col">
+                      <h4 className="text-hooters text-[1rem] font-bold">
+                        {branch?.Name}
+                      </h4>
+                      <div className="flex items-center gap-1">
+                        <span>
+                          <IconPinned size={10} />
+                        </span>
+                        <p className="text-sky-900 text-[0.7rem] font-light">
+                          {branch?.Address}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            );
-          })}
+                );
+              })}
+            </>
+          ))}
       </div>
-
-      <div className="flex flex-col gap-3 w-full mt-10">
-        <Button
-          onClick={() =>
-            onConfirm(
-              branches.find(
-                (branch) => getNormalizedBusinessName(branch?.Name) === selected
-              )
-            )
-          }
-          className="w-full"
-          disabled={grantingPermissions}
-          type="button"
-          variant="hootersPrimary">
-          {grantingPermissions ? 'Esperando permisos...' : '¡Aquí estoy!'}
-        </Button>
-      </div>
+      {!grantingPermissions &&
+        !(branches.length == 0 || branches[0] == undefined) && (
+          <div className="flex flex-col gap-3 w-full mt-10">
+            <Button
+              onClick={() =>
+                onConfirm(
+                  branches.find(
+                    (branch) =>
+                      getNormalizedBusinessName(branch?.Name) === selected
+                  )
+                )
+              }
+              className="w-full"
+              disabled={grantingPermissions}
+              type="button"
+              variant="hootersPrimary">
+              {grantingPermissions ? 'Esperando permisos...' : '¡Aquí estoy!'}
+            </Button>
+          </div>
+        )}
     </div>
   );
 };
