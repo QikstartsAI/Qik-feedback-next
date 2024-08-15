@@ -210,12 +210,12 @@ const SuggestedLocations = ({
                         <IconCircleCheck
                           size={18}
                           strokeWidth={3}
-                          className="text-qik"
+                          className="text-hooters"
                         />
                       </span>
                     ) : (
                       <span>
-                        <IconCircle size={18} />
+                        <IconCircle size={18} color='#FF4F00'/>
                       </span>
                     )}
                     <div className="flex flex-col">
