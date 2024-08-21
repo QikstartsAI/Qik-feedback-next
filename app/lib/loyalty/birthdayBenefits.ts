@@ -1,5 +1,5 @@
 import { Business } from "@/app/types/business"
-import loyaltyService from "@/app/services/loyaltyService";
+import loyaltyService from "@/app/services/loyalty/general";
 import { DocumentData } from "firebase/firestore";
 import { BirthdayConfiguration, BirthdayOption } from "@/app/types/loyalty";
 

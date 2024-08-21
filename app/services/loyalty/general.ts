@@ -1,4 +1,4 @@
-import {collection, doc, getDoc, setDoc } from 'firebase/firestore';
+import {addDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import {getFirebase} from '@/app/lib/firebase'
 import {
 	DASHBOARD_COLLECTION_NAME,
@@ -10,8 +10,8 @@ import {
   REDEEMS_SUBCOLLECTION_NAME
 } from "@/app/constants/general";
 import {Business} from "@/app/types/business";
-import { Customer } from '../types/customer';
-import { GiftData } from '../types/loyalty';
+import { Customer } from '../../types/customer';
+import { GiftData } from '../../types/loyalty';
 
 type BenefitDataRedeem = {
   businessId: string | null
@@ -48,15 +48,19 @@ const sendCustomerDataToCustomersRedeem = async ({businessId, customerData, qikL
 const sendBenefitDataRedeem = async ({
   businessId,
   customerData,
-  qikLoyaltySubcollection
+  qikLoyaltySubcollection,
 }: BenefitDataRedeem,
 selectedBenefit: GiftData | null,
-pin: string
+pin: number,
+loyaltyType: string,
+redeemDate: string
 ) => {
   const redeemedBenefitData = {
-    pin: pin,
+    pin,
+    loyaltyType,
+    redeemDate,
     benefit: selectedBenefit,
-    redeemed: false
+    redeemed: false,
   }
   await sendCustomerDataToCustomersRedeem({
     businessId,
@@ -74,14 +78,15 @@ pin: string
     customerData?.email || '',
     REDEEMS_SUBCOLLECTION_NAME
   )
-  await setDoc(doc(customerRedeemsRef), redeemedBenefitData)
+  const docRef = await addDoc(customerRedeemsRef, redeemedBenefitData);
+  return docRef.id;
 }
 
 const loyaltyService = {
-	getBirthdayDataFromBusiness: getBirthdayDataFromBusiness,
-	getRewardsDataFromBusiness: getRewardsDataFromBusiness,
-	getStarsDataFromBusiness: getStarsDataFromBusiness,
-  sendBenefitDataRedeem: sendBenefitDataRedeem
+	getBirthdayDataFromBusiness,
+  getRewardsDataFromBusiness,
+	getStarsDataFromBusiness,
+  sendBenefitDataRedeem
 }
 
 export default loyaltyService;

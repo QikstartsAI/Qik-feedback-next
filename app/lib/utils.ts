@@ -16,3 +16,7 @@ export function lastFeedbackFilledIsGreaterThanOneDay(lastFeedbackFilled: Timest
   }
   return false
 }
+
+export function generateFourDigitNumber(): number {
+  return Math.floor(1000 + Math.random() * 9000);
+}

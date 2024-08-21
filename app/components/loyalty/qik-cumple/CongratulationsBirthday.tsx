@@ -4,8 +4,10 @@ import { Button } from "../../ui/Button"
 import { giftData } from "@/app/constants/loyalty/qik-birthday"
 import { GiftData } from "@/app/types/loyalty"
 import { useEffect, useState } from "react"
-import loyaltyService from "@/app/services/loyaltyService"
+import loyaltyService from "@/app/services/loyalty/general"
+import { subscribeToCustomerRedeems } from "@/app/services/loyalty/redeems"
 import { QIK_CUMPLE_SUBCOLLECTION_NAME } from "@/app/constants/general"
+import { generateFourDigitNumber } from "@/app/lib/utils"
 
 interface Props {
   customerData: Customer | null
@@ -17,7 +19,9 @@ interface Props {
 const CongratulationsBirthday = ({ customerData, businessIcon, businessSelectedGifts, businessId }: Props) => {
   const [selectedOption, setSelectedOption] = useState<GiftData | null>(null)
   const [showRedeemInformation, setShowRedeemInformation] = useState<boolean>(false)
-  const [pinText, setPinText] = useState<string>("001QIK")
+  const [loading, setLoading] = useState<boolean>(false)
+
+  const [pin, setPin] = useState<number>(generateFourDigitNumber())
 
   const handleGiftClick = (gift: GiftData) => {
     setSelectedOption(gift)
@@ -33,11 +37,30 @@ const CongratulationsBirthday = ({ customerData, businessIcon, businessSelectedG
   }
 
   const handleRedeemPinClick = async () => {
-    await loyaltyService.sendBenefitDataRedeem({
+    const redeemId = await loyaltyService.sendBenefitDataRedeem({
       businessId,
       customerData,
       qikLoyaltySubcollection: QIK_CUMPLE_SUBCOLLECTION_NAME
-    }, selectedOption, pinText)
+    },
+      selectedOption,
+      pin,
+      "Qik Cumple",
+      new Date().toUTCString()
+    )
+    if (redeemId) {
+      setLoading(true)
+      const unsubscribe = subscribeToCustomerRedeems(
+        businessId || '',
+        customerData?.email || '',
+        redeemId,
+        (isRedeemed) => {
+          if (isRedeemed) {
+            console.log("El beneficio ha sido canjeado.");
+          }
+        }
+      );
+      return () => unsubscribe()
+    }
   }
 
   return (
@@ -148,13 +171,13 @@ const CongratulationsBirthday = ({ customerData, businessIcon, businessSelectedG
             showRedeemInformation && (
               <div className="flex justify-center items-center flex-col w-1/2">
                 <p className="text-white text-center font-medium text-xl mb-4">
-                Solicita al mesero el PIN de tu beneficio
+                  Solicita al mesero el PIN de tu beneficio
                 </p>
                 <p
                   className="border-white border-[2px] rounded-lg text-white w-full
                   text-center text-xl py-1 px-4"
                 >
-                  {pinText}
+                  {pin}
                 </p>
                 <Button
                   className="text-center text-white mt-4 w-full"
