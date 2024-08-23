@@ -8,6 +8,8 @@ import loyaltyService from "@/app/services/loyalty/general"
 import { subscribeToCustomerRedeems } from "@/app/services/loyalty/redeems"
 import { QIK_CUMPLE_SUBCOLLECTION_NAME } from "@/app/constants/general"
 import { generateFourDigitNumber } from "@/app/lib/utils"
+import { Input } from "../../ui/Input"
+import Modal from "../../ui/Modal"
 
 interface Props {
   customerData: Customer | null
@@ -22,6 +24,7 @@ const CongratulationsBirthday = ({ customerData, businessIcon, businessSelectedG
   const [loading, setLoading] = useState<boolean>(false)
 
   const [pin, setPin] = useState<number>(generateFourDigitNumber())
+  const [tableNumber, setTableNumber] = useState<string | undefined>()
 
   const handleGiftClick = (gift: GiftData) => {
     setSelectedOption(gift)
@@ -45,7 +48,8 @@ const CongratulationsBirthday = ({ customerData, businessIcon, businessSelectedG
       selectedOption,
       pin,
       "Qik Cumple",
-      new Date().toUTCString()
+      new Date().toUTCString(),
+      tableNumber
     )
     if (redeemId) {
       setLoading(true)
@@ -55,6 +59,7 @@ const CongratulationsBirthday = ({ customerData, businessIcon, businessSelectedG
         redeemId,
         (isRedeemed) => {
           if (isRedeemed) {
+            setLoading(false)
             console.log("El beneficio ha sido canjeado.");
           }
         }
@@ -179,6 +184,19 @@ const CongratulationsBirthday = ({ customerData, businessIcon, businessSelectedG
                 >
                   {pin}
                 </p>
+                <p className="text-white text-center font-medium text-lg my-4">
+                  Ingresa el número de mesa en donde te encuentras (opcional)
+                </p>
+                <div className="flex justify-center items-center flex-row gap-3">
+                  <span className="text-white font-semibold text-sm">
+                    Mesa
+                  </span>
+                  <Input
+                    placeholder="Ej. 5"
+                    className="text-white w-1/3 text-center font-semibold text-base"
+                    type="number"
+                    onChange={(e) => setTableNumber(e.target.value)} />
+                </div>
                 <Button
                   className="text-center text-white mt-4 w-full"
                   onClick={handleRedeemPinClick}
@@ -186,6 +204,13 @@ const CongratulationsBirthday = ({ customerData, businessIcon, businessSelectedG
                   Canjear
                 </Button>
               </div>
+            )
+          }
+          {
+            loading && (
+              <Modal isOpen={true} onClose={() => setLoading(false)}>
+                Esperando confirmación
+              </Modal>
             )
           }
         </div>

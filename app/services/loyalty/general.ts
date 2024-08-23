@@ -53,7 +53,8 @@ const sendBenefitDataRedeem = async ({
 selectedBenefit: GiftData | null,
 pin: number,
 loyaltyType: string,
-redeemDate: string
+redeemDate: string,
+tableNumber?: string
 ) => {
   const redeemedBenefitData = {
     pin,
@@ -61,6 +62,7 @@ redeemDate: string
     redeemDate,
     benefit: selectedBenefit,
     redeemed: false,
+    tableNumber
   }
   await sendCustomerDataToCustomersRedeem({
     businessId,
