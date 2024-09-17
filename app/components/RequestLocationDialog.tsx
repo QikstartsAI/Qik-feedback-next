@@ -66,7 +66,11 @@ const RequestLocationDialog = ({
           />
 
           <div className="flex flex-col items-center gap-3">
-            <h2 className="font-bold text-[1.5rem] text-hooters text-center">
+            <h2
+              className={cn('font-bold text-[1.5rem] text-center ', {
+                'text-hooters': isHootersForm,
+                'text-qik': !isHootersForm,
+              })}>
               Mejora tu experiencia
             </h2>
             <p className="text-center text-sky-900">
@@ -79,14 +83,14 @@ const RequestLocationDialog = ({
               onClick={handleOnGrant}
               className="w-full"
               type="button"
-              variant="hootersPrimary">
+              variant={isHootersForm ? 'hootersPrimary' : 'default'}>
               Compartir ubicación
             </Button>
             <Button
               onClick={handleOnDeny}
               className="w-full"
               type="button"
-              variant="hootersSecondary">
+              variant={isHootersForm ? 'hootersSecondary' : 'secondary'}>
               Ver sucursales
             </Button>
           </div>
@@ -149,7 +153,11 @@ const SuggestedLocations = ({
         />
         {grantingPermissions ? (
           <>
-            <h2 className="font-bold text-[1.5rem] text-hooters text-center">
+            <h2
+              className={cn('font-bold text-[1.5rem] text-center ', {
+                'text-hooters': isHootersForm,
+                'text-qik': !isHootersForm,
+              })}>
               Para mejorar tu experiencia
             </h2>
             <p className="text-center text-sky-900 mb-3">
@@ -158,7 +166,11 @@ const SuggestedLocations = ({
           </>
         ) : (
           <>
-            <h2 className="font-bold text-[1.5rem] text-hooters text-center">
+            <h2
+              className={cn('font-bold text-[1.5rem] text-center ', {
+                'text-hooters': isHootersForm,
+                'text-qik': !isHootersForm,
+              })}>
               ¿Dónde te encuentras?
             </h2>
             <p className="text-center text-sky-900 mb-3">
@@ -185,14 +197,18 @@ const SuggestedLocations = ({
         {!grantingPermissions &&
           (branches.length == 0 || branches[0] == undefined ? (
             <div>
-              <h3 className="text-[1.5rem] text-hooters text-center">
+              <h3
+                className={cn('text-[1.5rem] text-center', {
+                  'text-hooters': isHootersForm,
+                  'text-qik': !isHootersForm,
+                })}>
                 No tienes sucursales cerca
               </h3>
               <Button
                 onClick={handleOnDeny}
                 className="w-full"
                 type="button"
-                variant="hootersPrimary">
+                variant={isHootersForm ? 'hootersPrimary' : 'default'}>
                 Ver todas las sucursales
               </Button>
             </div>
@@ -210,16 +226,27 @@ const SuggestedLocations = ({
                         <IconCircleCheck
                           size={18}
                           strokeWidth={3}
-                          className="text-hooters"
+                          className={
+                            isHootersForm ? 'text-hooters' : 'text-qik'
+                          }
                         />
                       </span>
                     ) : (
                       <span>
-                        <IconCircle size={18} color='#FF4F00'/>
+                        <IconCircle
+                          size={18}
+                          className={
+                            isHootersForm ? 'text-hooters' : 'text-qik'
+                          }
+                        />
                       </span>
                     )}
                     <div className="flex flex-col">
-                      <h4 className="text-hooters text-[1rem] font-bold">
+                      <h4
+                        className={cn('text-[1rem] font-bold', {
+                          'text-hooters': isHootersForm,
+                          'text-qik': !isHootersForm,
+                        })}>
                         {branch?.Name}
                       </h4>
                       <div className="flex items-center gap-1">
@@ -252,7 +279,7 @@ const SuggestedLocations = ({
               className="w-full"
               disabled={grantingPermissions}
               type="button"
-              variant="hootersPrimary">
+              variant={isHootersForm ? 'hootersPrimary' : 'default'}>
               {grantingPermissions ? 'Esperando permisos...' : '¡Aquí estoy!'}
             </Button>
           </div>
