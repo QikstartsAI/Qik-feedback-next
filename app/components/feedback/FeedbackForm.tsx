@@ -35,7 +35,7 @@ import { useToast } from '@/app/hooks/useToast';
 import { FeedbackProps, feedbackSchema } from '@/app/validators/feedbackSchema';
 import { RadioGroup } from '../ui/RadioGroup';
 import { Origins, Ratings } from '@/app/types/feedback';
-import handleSubmitFeedback from '@/app/lib/handleSubmit';
+import handleSubmitFeedback, { formattedName } from '@/app/lib/handleSubmit';
 import {
   findCustomerDataByEmail,
   findCustomerFeedbackDataInBusiness,
@@ -152,7 +152,7 @@ export default function FeedbackForm({
   };
 
   const handleRedirect = () => {
-    writeReviewURL();
+    window.location.replace(writeReviewURL());
   };
 
   async function onSubmit(data: FeedbackProps) {
@@ -198,7 +198,10 @@ export default function FeedbackForm({
       let customerNumberOfVisits = 0;
       let feedbackNumberOfVisit = 0;
       const customerFeedbackInBusinesData =
-        await findCustomerFeedbackDataInBusiness(data.Email, businessId || '');
+        await findCustomerFeedbackDataInBusiness(
+          data.Email,
+          formattedName(businessId) || ''
+        );
       if (customerFeedbackInBusinesData) {
         const feedbackVisits =
           customerFeedbackInBusinesData.customerNumberOfVisits;
@@ -353,7 +356,7 @@ export default function FeedbackForm({
                                 setIsCustomerInBusiness(
                                   await findIsCustomerInBusiness(
                                     email,
-                                    business?.BusinessId || ''
+                                    formattedName(business?.BusinessId)
                                   )
                                 );
                                 setShowLastFeedbackFilledModal(
