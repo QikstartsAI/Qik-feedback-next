@@ -18,7 +18,10 @@ import { Customer } from '../types/customer';
 import { findCustomerDataByEmail } from './handleEmail';
 
 const formattedName = (name?: string | null): string => {
-  return name ? name.toLocaleLowerCase().split(' ').join('-').trim() : '';
+  if (name?.includes(' ')) {
+    return name ? name.toLocaleLowerCase().split(' ').join('-').trim() : '';
+  }
+  return name ?? '';
 };
 
 const handleSubmitFeedback = async (
