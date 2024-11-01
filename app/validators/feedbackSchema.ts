@@ -1,7 +1,8 @@
 import { Origins, Ratings } from '@/app/types/feedback'
 import { z } from 'zod'
+import { Wallet } from '../constants/wallets'
 
-export const feedbackSchema = (averageTicket: [string, ...string[]], businessCountry: string) =>
+export const feedbackSchema = (averageTicket: [string, ...string[]], paymentMethod: [string, ...string[]], businessCountry: string) =>
   z.object({
     FullName: z.string().nonempty({
       message:
@@ -85,6 +86,15 @@ export const feedbackSchema = (averageTicket: [string, ...string[]], businessCou
           : businessCountry === 'CA' || businessCountry === 'FR'
             ? "Veuillez nous dire combien vous avez dépensé aujourd'hui par personne"
             : 'Por favor dinos cuánto gastaste hoy por persona'
+    }),
+
+    PaymentMethod: z.enum(paymentMethod, {
+      required_error:
+        businessCountry === 'US' || businessCountry === 'HK'
+          ? 'Please tell us what was your payment method?'
+          : businessCountry === 'CA' || businessCountry === 'FR'
+            ? 'Veuillez nous dire quelle était votre méthode de paiement?'
+            : 'Por favor dinos cuál fue tu forma de pago'
     }),
 
     Rating: z.nativeEnum(Ratings, {

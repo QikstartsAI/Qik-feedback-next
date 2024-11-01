@@ -16,8 +16,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   return (
     <div className={modalContainerClasses}>
       <div className={overlayClasses} onClick={onClose} />
-      <div className='bg-white border border-t-4 border-blue-500 shadow-lg rounded-md   px-3 py-4
-      mx-10 relative max-w-md'>
+      <div className='bg-white shadow-lg rounded-md   px-3 py-4
+      mx-10 relative max-w-2xl'>
         <button
           className="absolute top-2 right-2 text-gray-600 hover:text-gray-800"
           onClick={onClose}

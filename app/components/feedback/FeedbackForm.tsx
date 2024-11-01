@@ -44,7 +44,7 @@ import {
 import { Checkbox } from '../ui/Checkbox';
 import { Textarea } from '../ui/TextArea';
 import { Business } from '@/app/types/business';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import CustomRadioGroup from '../form/CustomRadioGroup';
 import Modal from '../ui/Modal';
 import {
@@ -56,6 +56,8 @@ import {
   getOtherOptions,
   getOtherOriginValues,
   getOriginLabel,
+  getWalletByCountry,
+  getGoodFeedbackOptions,
 } from '@/app/constants/form';
 import RatingRadioGroup from '../form/RatingRadioGroup';
 import { SelectedOption } from '@/app/types/general';
@@ -64,6 +66,10 @@ import GoogleReviewMessage from '../form/GoogleReviewMessage';
 import { lastFeedbackFilledIsGreaterThanOneDay } from '@/app/lib/utils';
 import { getCustomerDataInBusiness } from '@/app/lib/handleEmail';
 import { useSearchParams } from 'next/navigation';
+import { commonPaymentMethods, walletsByCountry, walletsIdsByCountry } from '@/app/constants/wallets';
+import { IconCopy} from '@tabler/icons-react';
+
+import Image from 'next/image';
 
 interface FeedbackFormProps {
   business: Business | null;
@@ -84,8 +90,9 @@ export default function FeedbackForm({
 
   const [isChecked, setIsChecked] = useState(false);
   const [isTermsChecked, setIsTermsChecked] = useState(true);
-
   const [showOtherOptionsModal, setShowOtherOptionsModal] =
+    useState<boolean>(false);
+  const [showGoodFeedbackModal, setShowGoodFeedbackModal] =
     useState<boolean>(false);
   const [selectedOtherOption, setSelectedOtherOption] =
     useState<SelectedOption | null>(null);
@@ -107,6 +114,7 @@ export default function FeedbackForm({
     resolver: zodResolver(
       feedbackSchema(
         currencyPrices[business?.Country || 'EC'],
+        walletsIdsByCountry[business?.Country || 'EC'],
         business?.Country || 'EC'
       )
     ),
@@ -142,6 +150,9 @@ export default function FeedbackForm({
   const watchFullName = watch('FullName');
   const waiterName = business?.Waiter?.name || '';
   const attendantName = waiterName ? waiterName : 'Matriz';
+
+  const [goodFeedback, setGoodFeedback] = useState('');
+
 
   const writeReviewURL = () => {
     if (!business?.MapsUrl) return '';
@@ -220,7 +231,7 @@ export default function FeedbackForm({
         feedbackNumberOfVisit
       );
       if (
-        (data.Rating === Ratings.Bueno || data.Rating === Ratings.Excelente) &&
+        (!isLowRating) &&
         business?.MapsUrl
       ) {
         handleRedirect();
@@ -245,6 +256,36 @@ export default function FeedbackForm({
     form.setValue('Origin', option?.value as Origins);
     setSelectedOtherOption(option);
   };
+
+  const finalGoodFeedback = () => {
+    const paymentMethodName = [...walletsByCountry[business?.Country || 'EC'], ...commonPaymentMethods].find(method => method.id === form.getValues().PaymentMethod)?.name ?? '';
+    const textByCountry = paymentMethodName ? isUsCountry
+      ? 'I paid with '
+      : isCaCountry || isFrCountry
+      ? 'J\'ai payé avec '
+      : '✅ Pagué con ' : '';
+
+    const feedbackWithPayment = `${textByCountry}${paymentMethodName}`;
+    if (!goodFeedback.includes(feedbackWithPayment)) {
+      return `${goodFeedback} \n ${feedbackWithPayment}`;
+      
+    }
+    return goodFeedback;
+  };
+
+  const [showIsCopied, setShowIsCopied] = useState(false);
+
+  useEffect(() => {
+    setShowIsCopied(false)
+    let timeout: ReturnType<typeof setTimeout>;
+    if (showGoodFeedbackModal) {
+      timeout = setTimeout(() => {
+        navigator.clipboard.writeText(finalGoodFeedback());
+        setShowIsCopied(true)
+      }, 1000);
+    }
+    return () => clearTimeout(timeout);
+  }, [showGoodFeedbackModal, goodFeedback]);
 
   return (
     <>
@@ -272,6 +313,7 @@ export default function FeedbackForm({
             </ul>
           </Modal>
         )}
+
         {showLastFeedbackFilledModal && (
           <Modal
             isOpen={true}
@@ -316,7 +358,8 @@ export default function FeedbackForm({
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-4 md:space-y-6"
-                noValidate>
+                noValidate
+                >
                 <div className={cn('space-y-3 mb-3', {})}>
                   <FormField
                     control={form.control}
@@ -594,6 +637,36 @@ export default function FeedbackForm({
                       </FormItem>
                     )}
                   />
+
+                  <FormField
+                    control={form.control}
+                    name="PaymentMethod"
+                    render={({ field }) => (
+                      <FormItem className="space-y-3">
+                        <FormLabel>
+                          {' '}
+                          {isUsCountry
+                            ? 'What was your payment method?'
+                            : isCaCountry || isFrCountry
+                            ? "Quelle était votre méthode de paiement ?"
+                            : '¿Cuál fue tu forma de pago?'}
+                        </FormLabel>
+                        <FormControl>
+                          <RadioGroup
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            className="">
+                            <CustomRadioGroup
+                              className="sm:grid-cols-5"
+                              value={field.value}
+                              items={getWalletByCountry(business?.Country)}
+                            />
+                          </RadioGroup>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   {/* Rating */}
                   <FormField
                     control={form.control}
@@ -799,7 +872,8 @@ export default function FeedbackForm({
                 ) : null}
                 <Button
                   className="w-full"
-                  type="submit"
+                  type={isLowRating? 'submit' : 'button'}
+                  onClick={!isLowRating ? () => setShowGoodFeedbackModal(true) : () => {}}
                   disabled={
                     isTermsChecked === false || isLastFeedbackMoreThanOneDay
                       ? true
@@ -864,6 +938,113 @@ export default function FeedbackForm({
                     )}
                   />
                 </CardFooter>
+                {showGoodFeedbackModal && (
+          <Modal isOpen={true} onClose={() => setShowGoodFeedbackModal(false)}>
+            <div className='p-6 flex flex-col items-center gap-4'>
+              <p className='text-center'>
+                {isUsCountry ? 'One last thing!' : isCaCountry || isFrCountry ? "Une dernière chose!" : '¡Un a última cosa! '}<br/>
+                {isUsCountry ? 'You will be redirected to' : isCaCountry || isFrCountry ? "Vous allez être redirigé vers" : 'Te estaremos redireccionando a'}
+              </p>
+              <Image
+              src='/google.png'
+              alt='experiencia bueno'
+              className='w-[60%]'
+              width={668}
+              height={657}
+            />
+            <p className='font-bold'>
+            {isUsCountry ? 'What was the best part of your visit?' : isCaCountry || isFrCountry ? "Qu'est-ce qui s'est le mieux passé pendant votre visite ?" : '¿Qué fue lo mejor de tu visita?'}
+            </p>
+             <RadioGroup
+                onValueChange={(value) => setGoodFeedback(getGoodFeedbackOptions(business?.Country).find(option => option.value === value)?.label ?? '')}
+                defaultValue=''
+                >
+                <CustomRadioGroup
+                  className="!flex flex-col md:flex-row"
+                  value={'field.value'}
+                  items={getGoodFeedbackOptions(business?.Country)}
+                />
+              </RadioGroup>
+             <div className='w-full flex gap-3 items-center'>
+              <Textarea
+                  placeholder={isUsCountry
+                    ? 'Ex: The food was very good, recommended.'
+                    : isCaCountry || isFrCountry
+                    ? 'Ex: La nourriture était très bonne, recommandée.'
+                    : 'Ej: La comida estuvo muy buena, recomendado.'
+                  }
+                  onChange={(event)=> setGoodFeedback(event.target.value)}
+                  value={goodFeedback}
+                  />
+                  <IconCopy className='text-qik' cursor='pointer' onClick={() => navigator.clipboard.writeText(finalGoodFeedback())} />
+             </div>
+
+                  <p className={cn('transition text-[#5bc236]', showIsCopied && goodFeedback ? 'opacity-100' : 'opacity-0')}>{isUsCountry
+                    ? 'Copied to clipboard, paste it on Google!'
+                    : isCaCountry || isFrCountry
+                    ? 'Copié dans le presse-papiers, collez-le sur Google !'
+                    : 'Copiado al porta papeles, ¡pégalo en Google!'
+                  }</p>
+              <Button
+                  className="w-full"
+                  type='submit'
+                  disabled={
+                    isTermsChecked === false || isLastFeedbackMoreThanOneDay
+                      ? true
+                      : form.formState.isSubmitting
+                  }>
+                  {isUsCountry
+                    ? 'Send to Google'
+                    : isCaCountry || isFrCountry
+                    ? 'Envoyer à Google'
+                    : 'Enviar a Google'}
+                </Button>
+                <div className='flex gap-3'>
+                          <input
+                            type="checkbox"
+                            className="form-checkbox min-h-[12px] min-w-[12px] text-green-500"
+                            onChange={() => setIsTermsChecked(!isTermsChecked)}
+                            checked={isTermsChecked}
+                          />
+                          <small className="text-gray-500">
+                            {isUsCountry
+                              ? 'By pressing "Submit", I declare that I accept the'
+                              : isCaCountry || isFrCountry
+                              ? 'En pressant "Enviar", déclarez que vous acceptez les'
+                              : 'Al presionar "Enviar", declaro que acepto los'}{' '}
+                            <a
+                              className="text-primary hover:underline"
+                              href="https://qikstarts.com/terms-of-service"
+                              rel="noopener noreferrer"
+                              target="_blank">
+                              {isUsCountry
+                                ? 'Terms and Cons'
+                                : isCaCountry || isFrCountry
+                                ? 'Conditions et conditions'
+                                : 'Términos y Condiciones'}
+                            </a>{' '}
+                            {isUsCountry
+                              ? ' and the '
+                              : isCaCountry || isFrCountry
+                              ? ' et là '
+                              : ' y las '}{' '}
+                            <a
+                              className="text-primary hover:underline"
+                              href="https://qikstarts.com/privacy-policy"
+                              rel="noopener noreferrer"
+                              target="_blank">
+                              {isUsCountry
+                                ? 'Privacy Policies'
+                                : isCaCountry
+                                ? 'Politiques de confidentialité'
+                                : 'Políticas de Privacidad'}
+                            </a>
+                            .
+                          </small>
+                        </div>
+                  </div>
+                </Modal>
+              )}
               </form>
             </Form>
           </CardContent>

@@ -23,6 +23,7 @@ import { Improvements } from '@/app/types/feedback'
 import { CustomerRole } from '../types/customer'
 import { Country } from 'react-phone-number-input'
 import getFormTranslations from "@/app/constants/formTranslations";
+import { commonPaymentMethods, walletsByCountry } from './wallets'
 
 const getOthersText = (businessCountry: Country | undefined) => {
   return businessCountry === 'US'
@@ -101,10 +102,49 @@ const getCustomersQuantity = (businessCountry: Country | undefined) => {
   ]
 }
 
+const getGoodFeedbackOptions = (businessCountry: Country | undefined) => {
+  const loveIt = businessCountry === 'US'
+    ? 'Everything was amazing, I loved it! 🌟✨'
+    : businessCountry === 'CA' || businessCountry === 'FR'
+      ? 'Tout était incroyable, j\'ai adoré ! 🌟✨'
+      : 'Todo increíble, ¡me encantó! 🌟✨';
+
+  const recommended = businessCountry === 'US'
+    ? 'Exceeded my expectations, highly recommended 👍💯'
+    : businessCountry === 'CA' || businessCountry === 'FR'
+      ? 'A dépassé mes attentes, très recommandé 👍💯'
+      : 'Superó mis expectativas, muy recomendado 👍💯';
+
+  const greatExperience = businessCountry === 'US'
+    ? 'Great experience, I will definitely come back! 😃👏'
+    : businessCountry === 'CA' || businessCountry === 'FR'
+      ? 'Grande expérience, je reviendrai sans doute ! 😃👏'
+      : 'Gran experiencia, ¡voleveré sin duda! 😃👏';
+
+  const amazing = businessCountry === 'US'
+    ? 'Excellent in all aspects, congratulations! 🎉🙌'
+    : businessCountry === 'CA' || businessCountry === 'FR'
+      ? 'Excellente dans tous les aspects, bravo ! 🎉🙌'
+      : 'Excelente en todos los aspectos, ¡felicitaciones! 🎉🙌';
+
+  return [
+    { value: 'loveIt', label: loveIt },
+    { value: 'recommended', label: recommended },
+    { value: 'greatExperience', label: greatExperience },
+    { value: 'amazing', label: amazing },
+  ];
+}
+
 const getAverageTicket = (businessCountry: Country | undefined) => {
   const averageTicketList = Object.entries(currencyPrices).find(([key]) => key === businessCountry)?.[1]
 
   return averageTicketList?.map((price) => ({ value: price, label: price })) || []
+}
+
+const getWalletByCountry = (businessCountry: Country | undefined) => {
+const wallets= Object.entries(walletsByCountry).find(([key]) => key === businessCountry)?.[1]
+return [...wallets || [], ...commonPaymentMethods]?.map((wallet) => ({ value: wallet.id, label: wallet.name, image: wallet.image })) || []
+
 }
 
 type ImproveOptions = {
@@ -197,6 +237,7 @@ export {
   getKnownOrigins,
   getCustomersQuantity,
   getAverageTicket,
+  getWalletByCountry,
   improveOptions,
   getImprovements,
   getOthersText,
@@ -204,4 +245,5 @@ export {
   getOtherOriginValues,
   getOriginLabel,
   getRatingOptions,
+  getGoodFeedbackOptions
 }

@@ -34,6 +34,7 @@ const handleSubmitFeedback = async (
     StartTime,
     Dinners,
     AverageTicket,
+    PaymentMethod,
     Email,
     AcceptPromotions,
     AcceptTerms,
@@ -97,6 +98,7 @@ const handleSubmitFeedback = async (
     StartTime: getTimesTampFromDate(StartTime),
     Dinners,
     AverageTicket,
+    PaymentMethod,
     Email,
     BirthdayDate: BirthdayDate
       ? getTimesTampFromDate(new Date(BirthdayDate))

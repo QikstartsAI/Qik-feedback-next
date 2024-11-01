@@ -7,6 +7,7 @@ export type FeedbackPerRating = {
 export interface Feedback {
   BusinessName?: string
   AverageTicket: string
+  PaymentMethod: string
   CreationDate: Timestamp
   Dinners: string
   Email: string
