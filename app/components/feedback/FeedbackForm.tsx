@@ -980,10 +980,10 @@ export default function FeedbackForm({
              </div>
 
                   <p className={cn('transition font-bold text-[#ff0000]', showIsCopied && goodFeedback ? 'opacity-100' : 'opacity-0')}>{isUsCountry
-                    ? 'Copied to clipboard, paste it on Google!'
+                    ? 'Copied to clipboard, paste it on Google.'
                     : isCaCountry || isFrCountry
-                    ? 'Copié dans le presse-papiers, collez-le sur Google !'
-                    : 'Copiado al porta papeles, ¡pégalo en Google!'
+                    ? 'Copié dans le presse-papiers, collez-le sur Google.'
+                    : 'Copiado al porta papeles, ¡pégalo en Google.'
                   }</p>
               <Button
                   className="w-full"
