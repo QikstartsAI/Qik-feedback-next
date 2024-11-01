@@ -979,7 +979,7 @@ export default function FeedbackForm({
                   <IconCopy className='text-qik' cursor='pointer' onClick={() => navigator.clipboard.writeText(finalGoodFeedback())} />
              </div>
 
-                  <p className={cn('transition text-[#5bc236]', showIsCopied && goodFeedback ? 'opacity-100' : 'opacity-0')}>{isUsCountry
+                  <p className={cn('transition font-bold text-[#ff0000]', showIsCopied && goodFeedback ? 'opacity-100' : 'opacity-0')}>{isUsCountry
                     ? 'Copied to clipboard, paste it on Google!'
                     : isCaCountry || isFrCountry
                     ? 'Copié dans le presse-papiers, collez-le sur Google !'
