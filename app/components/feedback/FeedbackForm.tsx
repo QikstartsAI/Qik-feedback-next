@@ -265,7 +265,7 @@ return
   };
 
   const finalGoodFeedback = () => {
-    const paymentMethodName = [...walletsByCountry[business?.Country || 'EC'], ...commonPaymentMethods].find(method => method.id === form.getValues().PaymentMethod)?.name ?? '';
+    const paymentMethodName = walletsByCountry[business?.Country || 'EC'].find(method => method.id === form.getValues().PaymentMethod)?.name ?? '';
     const textByCountry = paymentMethodName ? isUsCountry
       ? 'I paid with '
       : isCaCountry || isFrCountry
