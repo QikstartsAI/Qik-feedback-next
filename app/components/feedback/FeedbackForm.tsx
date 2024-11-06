@@ -273,9 +273,9 @@ return
       : '✅ Pagué con ' : '';
 
     const feedbackWithPayment = `${textByCountry}${paymentMethodName} 🔰`;
+    console.log('feedbackWithPayment', feedbackWithPayment, 'goodFeedback', goodFeedback)
     if (!goodFeedback.includes(feedbackWithPayment)) {
       return `${goodFeedback} \n ${feedbackWithPayment}`;
-      
     }
     return goodFeedback;
   };
@@ -995,14 +995,15 @@ return
                   />
                   <IconCopy className='text-qik' cursor='pointer' onClick={() => copyToClipboard(finalGoodFeedback())} />
              </div>
-{goodFeedback && 
-                  <p className={cn('transition font-bold text-[#ff0000]', showIsCopied && goodFeedback ? 'opacity-100' : 'opacity-0')}>{isUsCountry
+
+                  <p className={cn('transition font-bold text-[#ff0000]', showIsCopied && goodFeedback ? 'opacity-100' : 'opacity-0')}>
+                    {isUsCountry
                     ? 'Text copied! Just paste it into Google and you\'re done. 😍'
                     : isCaCountry || isFrCountry
                     ? 'Texte copié ! Il suffit de le coller sur Google et c\'est fait. 😍'
                     : '¡Texto copiado! Solo pégalo en Google y listo. 😍'
                   }</p>
-}
+
               <Button
                   className="w-full"
                   type='submit'
