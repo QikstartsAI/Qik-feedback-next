@@ -222,6 +222,10 @@ export default function FeedbackForm({
         customerNumberOfVisits = 1;
         feedbackNumberOfVisit = 1;
       }
+      if(!isLowRating && !showGoodFeedbackModal) {
+        setShowGoodFeedbackModal(true);
+return
+      }
       await handleSubmitFeedback(
         updatedData,
         improveOptions,
@@ -247,6 +251,9 @@ export default function FeedbackForm({
         variant: 'destructive',
       });
     } finally {
+      if(!isLowRating && !showGoodFeedbackModal) {
+        return
+      }
       resetForm();
       setIsSubmitted(true);
     }
@@ -265,7 +272,7 @@ export default function FeedbackForm({
       ? 'J\'ai payé avec '
       : '✅ Pagué con ' : '';
 
-    const feedbackWithPayment = `${textByCountry}${paymentMethodName}`;
+    const feedbackWithPayment = `${textByCountry}${paymentMethodName} 🔰`;
     if (!goodFeedback.includes(feedbackWithPayment)) {
       return `${goodFeedback} \n ${feedbackWithPayment}`;
       
@@ -275,13 +282,24 @@ export default function FeedbackForm({
 
   const [showIsCopied, setShowIsCopied] = useState(false);
 
+  const copyToClipboard = (text: string)=> {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        setShowIsCopied(true);
+      }).catch((error) => {
+        console.error('Failed to copy text: ', error);
+      });
+    } else {
+      console.error('Clipboard API not available');
+    }
+  }
+
   useEffect(() => {
     setShowIsCopied(false)
     let timeout: ReturnType<typeof setTimeout>;
     if (showGoodFeedbackModal) {
       timeout = setTimeout(() => {
-        navigator.clipboard.writeText(finalGoodFeedback());
-        setShowIsCopied(true)
+        copyToClipboard(finalGoodFeedback())
       }, 1000);
     }
     return () => clearTimeout(timeout);
@@ -872,8 +890,7 @@ export default function FeedbackForm({
                 ) : null}
                 <Button
                   className="w-full"
-                  type={isLowRating? 'submit' : 'button'}
-                  onClick={!isLowRating ? () => setShowGoodFeedbackModal(true) : () => {}}
+                  type={'submit'}
                   disabled={
                     isTermsChecked === false || isLastFeedbackMoreThanOneDay
                       ? true
@@ -942,7 +959,7 @@ export default function FeedbackForm({
           <Modal isOpen={true} onClose={() => setShowGoodFeedbackModal(false)}>
             <div className='p-6 flex flex-col items-center gap-4'>
               <p className='text-center'>
-                {isUsCountry ? 'One last thing!' : isCaCountry || isFrCountry ? "Une dernière chose!" : '¡Un a última cosa! '}<br/>
+                {isUsCountry ? 'One last thing!' : isCaCountry || isFrCountry ? "Une dernière chose!" : '¡Una última cosa! '}<br/>
                 {isUsCountry ? 'You will be redirected to' : isCaCountry || isFrCountry ? "Vous allez être redirigé vers" : 'Te estaremos redireccionando a'}
               </p>
               <Image
@@ -960,7 +977,7 @@ export default function FeedbackForm({
                 defaultValue=''
                 >
                 <CustomRadioGroup
-                  className="!flex flex-col md:flex-row"
+                  className="!grid-cols-2"
                   value={'field.value'}
                   items={getGoodFeedbackOptions(business?.Country)}
                 />
@@ -976,15 +993,16 @@ export default function FeedbackForm({
                   onChange={(event)=> setGoodFeedback(event.target.value)}
                   value={goodFeedback}
                   />
-                  <IconCopy className='text-qik' cursor='pointer' onClick={() => navigator.clipboard.writeText(finalGoodFeedback())} />
+                  <IconCopy className='text-qik' cursor='pointer' onClick={() => copyToClipboard(finalGoodFeedback())} />
              </div>
-
+{goodFeedback && 
                   <p className={cn('transition font-bold text-[#ff0000]', showIsCopied && goodFeedback ? 'opacity-100' : 'opacity-0')}>{isUsCountry
-                    ? 'Copied to clipboard, paste it on Google.'
+                    ? 'Text copied! Just paste it into Google and you\'re done. 😍'
                     : isCaCountry || isFrCountry
-                    ? 'Copié dans le presse-papiers, collez-le sur Google.'
-                    : 'Copiado al porta papeles, ¡pégalo en Google.'
+                    ? 'Texte copié ! Il suffit de le coller sur Google et c\'est fait. 😍'
+                    : '¡Texto copiado! Solo pégalo en Google y listo. 😍'
                   }</p>
+}
               <Button
                   className="w-full"
                   type='submit'
@@ -994,10 +1012,10 @@ export default function FeedbackForm({
                       : form.formState.isSubmitting
                   }>
                   {isUsCountry
-                    ? 'Send to Google'
+                    ? 'COPY TO GOOGLE'
                     : isCaCountry || isFrCountry
-                    ? 'Envoyer à Google'
-                    : 'Enviar a Google'}
+                    ? 'ALLER SUR GOOGLE'
+                    : 'PEGAR EN GOOGLE'}
                 </Button>
                 <div className='flex gap-3'>
                           <input
