@@ -66,7 +66,7 @@ import GoogleReviewMessage from '../form/GoogleReviewMessage';
 import { lastFeedbackFilledIsGreaterThanOneDay } from '@/app/lib/utils';
 import { getCustomerDataInBusiness } from '@/app/lib/handleEmail';
 import { useSearchParams } from 'next/navigation';
-import { commonPaymentMethods, walletsByCountry, walletsIdsByCountry } from '@/app/constants/wallets';
+import { commonPaymentMethods, walletsByCountry, walletsIdsByCountry, walletsIdsByCountryWithCommon } from '@/app/constants/wallets';
 import { IconCopy} from '@tabler/icons-react';
 
 import Image from 'next/image';
@@ -114,7 +114,7 @@ export default function FeedbackForm({
     resolver: zodResolver(
       feedbackSchema(
         currencyPrices[business?.Country || 'EC'],
-        walletsIdsByCountry[business?.Country || 'EC'],
+        walletsIdsByCountryWithCommon(business?.Country || 'EC'),
         business?.Country || 'EC'
       )
     ),
@@ -193,6 +193,10 @@ export default function FeedbackForm({
       });
       return;
     }
+    if(!isLowRating && !showGoodFeedbackModal) {
+      setShowGoodFeedbackModal(true);
+      return
+    }
 
     try {
       const updatedData = data;
@@ -222,10 +226,7 @@ export default function FeedbackForm({
         customerNumberOfVisits = 1;
         feedbackNumberOfVisit = 1;
       }
-      if(!isLowRating && !showGoodFeedbackModal) {
-        setShowGoodFeedbackModal(true);
-return
-      }
+ 
       await handleSubmitFeedback(
         updatedData,
         improveOptions,
@@ -265,6 +266,7 @@ return
   };
 
   const finalGoodFeedback = () => {
+    if(! walletsByCountry[business?.Country || 'EC']) return goodFeedback;
     const paymentMethodName = walletsByCountry[business?.Country || 'EC'].find(method => method.id === form.getValues().PaymentMethod)?.name ?? '';
     const textByCountry = paymentMethodName ? isUsCountry
       ? 'I paid with '
