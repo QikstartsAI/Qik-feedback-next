@@ -265,7 +265,7 @@ return
   };
 
   const finalGoodFeedback = () => {
-    const paymentMethodName = [...walletsByCountry[business?.Country || 'EC'], ...commonPaymentMethods].find(method => method.id === form.getValues().PaymentMethod)?.name ?? '';
+    const paymentMethodName = walletsByCountry[business?.Country || 'EC'].find(method => method.id === form.getValues().PaymentMethod)?.name ?? '';
     const textByCountry = paymentMethodName ? isUsCountry
       ? 'I paid with '
       : isCaCountry || isFrCountry
@@ -275,7 +275,6 @@ return
     const feedbackWithPayment = `${textByCountry}${paymentMethodName} 🔰`;
     if (!goodFeedback.includes(feedbackWithPayment)) {
       return `${goodFeedback} \n ${feedbackWithPayment}`;
-      
     }
     return goodFeedback;
   };
@@ -995,14 +994,14 @@ return
                   />
                   <IconCopy className='text-qik' cursor='pointer' onClick={() => copyToClipboard(finalGoodFeedback())} />
              </div>
-{goodFeedback && 
-                  <p className={cn('transition font-bold text-[#ff0000]', showIsCopied && goodFeedback ? 'opacity-100' : 'opacity-0')}>{isUsCountry
+
+                  <p className={cn('transition font-bold text-[#ff0000]', showIsCopied && goodFeedback ? 'opacity-100' : 'opacity-0')}>
+                    {isUsCountry
                     ? 'Text copied! Just paste it into Google and you\'re done. 😍'
                     : isCaCountry || isFrCountry
                     ? 'Texte copié ! Il suffit de le coller sur Google et c\'est fait. 😍'
                     : '¡Texto copiado! Solo pégalo en Google y listo. 😍'
                   }</p>
-}
               <Button
                   className="w-full"
                   type='submit'
