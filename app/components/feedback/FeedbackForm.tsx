@@ -273,7 +273,6 @@ return
       : '✅ Pagué con ' : '';
 
     const feedbackWithPayment = `${textByCountry}${paymentMethodName} 🔰`;
-    console.log('feedbackWithPayment', feedbackWithPayment, 'goodFeedback', goodFeedback)
     if (!goodFeedback.includes(feedbackWithPayment)) {
       return `${goodFeedback} \n ${feedbackWithPayment}`;
     }
@@ -1003,7 +1002,6 @@ return
                     ? 'Texte copié ! Il suffit de le coller sur Google et c\'est fait. 😍'
                     : '¡Texto copiado! Solo pégalo en Google y listo. 😍'
                   }</p>
-
               <Button
                   className="w-full"
                   type='submit'
