@@ -29,7 +29,17 @@ type WalletsByCountry = {
   export const walletsIdsByCountry: { [key: string]: [string, ...string[]] } = Object.fromEntries(
     Object.entries(walletsByCountry).map(([country, wallets]) => {
       const ids = wallets.map(wallet => wallet.id);
-      const commonPaymentMethodIds = commonPaymentMethods.map(method => method.id);
-      return [country, [ids[0], ...ids.slice(1), ...commonPaymentMethodIds]]; // Ensure at least one element and include commonPaymentMethods
+      return [country, [ids[0], ...ids.slice(1)]]; // Ensure at least one element and include commonPaymentMethods
     })
   )
+
+  export function walletsIdsByCountryWithCommon(country: string): [string, ...string[]] {
+    switch (country) {
+      case 'EC':
+        return [walletsByCountry['EC'][0].id, ...walletsByCountry['EC'].slice(1).map(wallet => wallet.id), ...commonPaymentMethods.map(wallet => wallet.id)];
+      case 'CO':
+        return [walletsByCountry['CO'][0].id, ...walletsByCountry['CO'].slice(1).map(wallet => wallet.id), ...commonPaymentMethods.map(wallet => wallet.id)];
+      default:
+        return [commonPaymentMethods[0].id, ...commonPaymentMethods.slice(1).map(wallet => wallet.id)];
+    }
+  }
