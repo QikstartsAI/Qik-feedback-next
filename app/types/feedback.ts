@@ -26,7 +26,7 @@ export enum Origins {
 export enum Ratings {
     'Mal' = '1',
     'Regular' = '2',
-    'Bueno' = '4',
+    'Bien' = '4',
     'Excelente' = '5',
   }
 
