@@ -163,6 +163,7 @@ export default function FeedbackForm({
   };
 
   const handleRedirect = () => {
+    copyToClipboard(finalGoodFeedback())
     window.location.replace(writeReviewURL());
   };
 
@@ -239,6 +240,7 @@ export default function FeedbackForm({
         (!isLowRating) &&
         business?.MapsUrl
       ) {
+        copyToClipboard(finalGoodFeedback())
         handleRedirect();
       }
     } catch (error) {
@@ -676,7 +678,7 @@ export default function FeedbackForm({
                             defaultValue={field.value}
                             className="">
                             <CustomRadioGroup
-                              className="sm:grid-cols-5"
+                              className="sm:grid-cols-5 !py-0"
                               value={field.value}
                               items={getWalletByCountry(business?.Country)}
                             />
@@ -879,7 +881,7 @@ export default function FeedbackForm({
                 </div>
                 {!isCustomerInBusiness ? (
                   (watchRating == Ratings.Excelente ||
-                    watchRating === Ratings.Bueno) &&
+                    watchRating === Ratings.Bien) &&
                   watchFullName ? (
                     <GoogleReviewMessage
                       customerFullName={watchFullName}
@@ -960,7 +962,7 @@ export default function FeedbackForm({
           <Modal isOpen={true} onClose={() => setShowGoodFeedbackModal(false)}>
             <div className='p-6 flex flex-col items-center gap-4'>
               <p className='text-center'>
-                {isUsCountry ? 'One last thing!' : isCaCountry || isFrCountry ? "Une dernière chose!" : '¡Una última cosa! '}<br/>
+                {isUsCountry ? 'Almost there!' : isCaCountry || isFrCountry ? "Presque là !" : '¡Ya casi!'}<br/>
                 {isUsCountry ? 'You will be redirected to' : isCaCountry || isFrCountry ? "Vous allez être redirigé vers" : 'Te estaremos redireccionando a'}
               </p>
               <Image

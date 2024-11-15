@@ -52,7 +52,6 @@ function CustomRadioGroup({ items, value, className, isHooters, }: CustomRadioGr
                 <img
                   src={image}
                   alt={itemValue +' logo'}
-                  className="h-[80%]"
                 /> : <p className='w-full text-[10px] sm:text-[11px]'>{label}</p>}
                       </FormLabel>
                     </li>

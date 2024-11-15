@@ -91,7 +91,7 @@ const SimpleForm = ({
       );
       if (
         isQr &&
-        (data.Rating === Ratings.Bueno || data.Rating === Ratings.Excelente)
+        (data.Rating === Ratings.Bien || data.Rating === Ratings.Excelente)
       ) {
         setIsQr(true);
         handleRedirect();

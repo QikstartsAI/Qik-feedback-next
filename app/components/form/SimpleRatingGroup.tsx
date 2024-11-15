@@ -68,7 +68,7 @@ function SimpleRatingRadioGroup({ value }: RatingRadioGroupProps) {
         </FormItem>
       </li>
       <li className={cn('py-1 sm:py-2 cursor-pointer hover:scale-110 hover:sm:scale-125 filter  transition-all', {
-        ' scale-110 sm:scale-125': value === Ratings.Bueno
+        ' scale-110 sm:scale-125': value === Ratings.Bien
       })}
       >
         <FormItem className='flex flex-col items-center '>

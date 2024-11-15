@@ -10,20 +10,20 @@ type WalletsByCountry = {
 
   export const walletsByCountry: WalletsByCountry = {
     EC: [
-      {id: 'deuna', name: 'Deuna!', image: 'https://firebasestorage.googleapis.com/v0/b/qik_feedback/o/wallets%2Fdeuna.png?alt=media&token=c5639ab7-5f10-4736-8492-37634358f505'},
-      {id: 'payphone', name: 'Payphone', image: 'https://firebasestorage.googleapis.com/v0/b/qik_feedback/o/wallets%2Fpayphone.png?alt=media&token=6c219157-a6a5-441b-8025-786a264af079'},
+      {id: 'deuna', name: 'Deuna!', image: 'https://firebasestorage.googleapis.com/v0/b/qik_feedback/o/wallets%2Ficon-deuna.png?alt=media&token=925a1fa2-67c6-4f16-88bb-78457ec294cb'},
+      {id: 'payphone', name: 'Payphone', image: 'https://firebasestorage.googleapis.com/v0/b/qik_feedback/o/wallets%2Ficon-payphone.png?alt=media&token=abdda7a0-f061-4b66-b1a2-242c985391c1'},
     ],
     CO: [
-      {id: 'nequi', name: 'Nequi', image: 'https://firebasestorage.googleapis.com/v0/b/qik_feedback/o/wallets%2Fnequi.png?alt=media&token=57021f2c-2dd3-412a-8075-25c169dc3643'},
-      {id: 'daviplata', name: 'DaviPlata', image: 'https://firebasestorage.googleapis.com/v0/b/qik_feedback/o/wallets%2Fdaviplata.png?alt=media&token=8dd7c78b-0d71-479b-9887-7543ebca83b9'},
-      {id: 'dale', name: 'Dale!', image: 'https://firebasestorage.googleapis.com/v0/b/qik_feedback/o/wallets%2Fdale.png?alt=media&token=8d0cf6f5-32d7-4d05-b4f8-6706fcbc4abe'}
+      {id: 'nequi', name: 'Nequi', image: 'https://firebasestorage.googleapis.com/v0/b/qik_feedback/o/wallets%2Ficon-nequi.png?alt=media&token=fa9da7fe-8806-42bd-8476-06c98331bafa'},
+      {id: 'daviplata', name: 'DaviPlata', image: 'https://firebasestorage.googleapis.com/v0/b/qik_feedback/o/wallets%2Ficon-daviplata.png?alt=media&token=fda521d0-9553-4822-bd60-819862141850'},
+      {id: 'dale', name: 'Dale!', image: 'https://firebasestorage.googleapis.com/v0/b/qik_feedback/o/wallets%2Ficon-dale.png?alt=media&token=43366444-a076-4422-a833-deefe5b62434'}
     ],
   }
 
   export const commonPaymentMethods: Wallet[] = [
-    {id: 'credit-card', name: 'Tarjeta', image: 'https://firebasestorage.googleapis.com/v0/b/qik_feedback/o/wallets%2Fcredit-card.png?alt=media&token=412d037b-752e-4541-88d3-7fd9ccd48b6d'},
-    {id: 'cash', name: 'Efectivo', image: 'https://firebasestorage.googleapis.com/v0/b/qik_feedback/o/wallets%2Fcash.png?alt=media&token=10d2b5b7-76a0-4e88-a422-3c358bd5f8c7'},
-    {id: 'transfer', name: 'Transferencia', image: 'https://firebasestorage.googleapis.com/v0/b/qik_feedback/o/wallets%2Ftransfer.png?alt=media&token=43f169ae-7de2-4fa4-90c1-591599054b88'},
+    {id: 'credit-card', name: 'Tarjeta', image: 'https://firebasestorage.googleapis.com/v0/b/qik_feedback/o/wallets%2Ficon-creditcard.png?alt=media&token=5084677a-2d7a-4778-a701-c72c1c08be4a'},
+    {id: 'cash', name: 'Efectivo', image: 'https://firebasestorage.googleapis.com/v0/b/qik_feedback/o/wallets%2Ficon-cash.png?alt=media&token=8905ed63-ae8c-4920-be64-e7fcb40bbbef'},
+    {id: 'transfer', name: 'Transferencia', image: 'https://firebasestorage.googleapis.com/v0/b/qik_feedback/o/wallets%2Ficon-transfer.png?alt=media&token=5d3c22c6-f4f4-4de6-8775-55d2a68de4c7'},
 
   ] 
   export const walletsIdsByCountry: { [key: string]: [string, ...string[]] } = Object.fromEntries(

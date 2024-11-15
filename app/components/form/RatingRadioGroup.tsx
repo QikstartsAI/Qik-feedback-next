@@ -84,7 +84,7 @@ function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
         </FormItem>
       </li>
       <li className={cn('w-full py-1 sm:py-2 cursor-pointer hover:scale-110 hover:sm:scale-125  transition-all', {
-        ' scale-110 sm:scale-125': value === Ratings.Bueno
+        ' scale-110 sm:scale-125': value === Ratings.Bien
       })}
       >
         <FormItem className='flex flex-col items-center '>
@@ -99,7 +99,7 @@ function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
           >
             <Image
               src='/bueno.png'
-              alt='experiencia bueno'
+              alt='experiencia bien'
               className='w-8 h-8 sm:w-10 sm:h-10'
               width={668}
               height={657}
@@ -109,7 +109,7 @@ function RatingRadioGroup({ value, business }: RatingRadioGroupProps) {
                 ? 'Good'
                 : isCaCountry || isFrCountry
                   ? 'Bon'
-                  : 'Bueno'
+                  : 'Bien'
             }
             </p>
 

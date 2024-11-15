@@ -98,14 +98,14 @@ const translations = {
   threeStarLabel: {
     'US': 'Good',
     'CA': 'Bon',
-    'ES': 'Bueno',
-    'default': 'Bueno'
+    'ES': 'Bien',
+    'default': 'Bien'
   },
   fourStarLabel: {
     'US': 'Very Good',
     'CA': 'Très Bon',
-    'ES': 'Muy Bueno',
-    'default': 'Muy Bueno'
+    'ES': 'Muy Bien',
+    'default': 'Muy Bien'
   },
   fiveStarLabel: {
     'US': 'Excellent',
