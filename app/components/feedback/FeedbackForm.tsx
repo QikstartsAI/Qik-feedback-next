@@ -240,6 +240,7 @@ export default function FeedbackForm({
         (!isLowRating) &&
         business?.MapsUrl
       ) {
+        copyToClipboard(finalGoodFeedback())
         handleRedirect();
       }
     } catch (error) {
