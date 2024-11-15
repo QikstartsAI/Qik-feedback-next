@@ -677,7 +677,7 @@ export default function FeedbackForm({
                             defaultValue={field.value}
                             className="">
                             <CustomRadioGroup
-                              className="sm:grid-cols-5"
+                              className="sm:grid-cols-5 !py-0"
                               value={field.value}
                               items={getWalletByCountry(business?.Country)}
                             />
