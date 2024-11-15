@@ -88,6 +88,7 @@ export default function FeedbackForm({
 }: FeedbackFormProps) {
   const searchParams = useSearchParams();
 
+  const [loadingPercentage, setLoadingPercentage]  =useState(0);
   const [isChecked, setIsChecked] = useState(false);
   const [isTermsChecked, setIsTermsChecked] = useState(true);
   const [showOtherOptionsModal, setShowOtherOptionsModal] =
@@ -164,6 +165,7 @@ export default function FeedbackForm({
 
   const handleRedirect = () => {
     copyToClipboard(finalGoodFeedback())
+    setLoadingPercentage(100);
     window.location.replace(writeReviewURL());
   };
 
@@ -198,6 +200,7 @@ export default function FeedbackForm({
       setShowGoodFeedbackModal(true);
       return
     }
+    setLoadingPercentage(20);
 
     try {
       const updatedData = data;
@@ -218,6 +221,8 @@ export default function FeedbackForm({
           data.Email,
           formattedName(businessId) || ''
         );
+    setLoadingPercentage(60);
+
       if (customerFeedbackInBusinesData) {
         const feedbackVisits =
           customerFeedbackInBusinesData.customerNumberOfVisits;
@@ -236,11 +241,11 @@ export default function FeedbackForm({
         customerNumberOfVisits,
         feedbackNumberOfVisit
       );
+      setLoadingPercentage(70);
       if (
         (!isLowRating) &&
         business?.MapsUrl
       ) {
-        copyToClipboard(finalGoodFeedback())
         handleRedirect();
       }
     } catch (error) {
@@ -999,13 +1004,28 @@ export default function FeedbackForm({
                   <IconCopy className='text-qik' cursor='pointer' onClick={() => copyToClipboard(finalGoodFeedback())} />
              </div>
 
-                  <p className={cn('transition font-bold text-[#ff0000]', showIsCopied && goodFeedback ? 'opacity-100' : 'opacity-0')}>
+                  <p className={cn('transition-all font-bold text-[#ff0000]', goodFeedback ? 'opacity-100' : 'opacity-0')}>
                     {isUsCountry
                     ? 'Text copied! Just paste it into Google and you\'re done. 😍'
                     : isCaCountry || isFrCountry
                     ? 'Texte copié ! Il suffit de le coller sur Google et c\'est fait. 😍'
                     : '¡Texto copiado! Solo pégalo en Google y listo. 😍'
                   }</p>
+                  {loadingPercentage > 0
+                  && 
+                  <div className='flex flex-col gap-3 w-full'>
+                    <div className="w-full bg-neutral-200 rounded-xl">
+                      <div
+                        className="bg-primary p-0.5 text-center text-xs font-medium leading-none transition-all ease-in-out text-primary-100 rounded-xl text-white"
+                        style={{width: `${loadingPercentage}%`}}>
+                          {loadingPercentage}%
+                      </div>
+                    </div>
+                      <p>
+                        Te estamos enviando a Google ...
+                        </p> 
+                    </div>
+                  }
               <Button
                   className="w-full"
                   type='submit'
