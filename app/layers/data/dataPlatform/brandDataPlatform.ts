@@ -1,9 +1,7 @@
 import { HttpClient } from "@/data";
 import { BrandDTO, BrandModel, GetBrandParams } from '@/domain'
 
-const httpClient = new HttpClient(
-  "http://a807d22c5dcaf4392b29c14778d84f37-1961716059.us-east-1.elb.amazonaws.com/v1/api/"
-);
+const httpClient = new HttpClient();
 
 export const getAllBrands = async (params: GetBrandParams) : Promise<BrandModel[]> => {
   try {

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { findBusiness } from '@/app/services/business';
 import { Business } from '@/app/types/business';
 import { useSearchParams } from 'next/navigation';
+import { getBranchById, getBrandById } from '../layers/data';
 
 function useGetBusinessData() {
   const [loading, setLoading] = useState('loading');
@@ -20,6 +21,8 @@ function useGetBusinessData() {
     const fetchData = async () => {
       setLoading('requesting');
       try {
+
+getBrandById(businessId);
         const res =
           (await findBusiness(businessId, sucursalId || branchId, waiterId)) ||
           null;

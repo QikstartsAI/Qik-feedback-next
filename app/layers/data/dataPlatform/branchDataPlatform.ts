@@ -1,9 +1,7 @@
 import { HttpClient } from "@/data";
 import { BranchDTO, BranchModel, GetBranchParams } from '@/domain'
 
-const httpClient = new HttpClient(
-  "http://a807d22c5dcaf4392b29c14778d84f37-1961716059.us-east-1.elb.amazonaws.com/v1/api/"
-);
+const httpClient = new HttpClient();
 
 export const getAllBranch = async (params: GetBranchParams) : Promise<BranchModel[]> => {
   try {
@@ -28,6 +26,7 @@ export const createBranch = async (branchData: BranchDTO) => {
 export const getBranchById = async (branchId: string) : Promise<BranchModel> => {
   try {
     const branch = await httpClient.get(`/branch/${branchId}`);
+    console.log('branch:', branch)
     return branch as BranchModel;
   } catch (error) {
     console.error("Error fetching branch:", error);

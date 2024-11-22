@@ -1,10 +1,7 @@
 
 export class HttpClient {
-  private baseURL: string;
 
-  constructor(baseURL: string) {
-    this.baseURL = baseURL;
-  }
+  private baseURL = "http://a807d22c5dcaf4392b29c14778d84f37-1961716059.us-east-1.elb.amazonaws.com/v1/api";
 
   private async handleSuccess(response: Response) {
     return response.json();
@@ -23,12 +20,19 @@ export class HttpClient {
     return Promise.reject(error);
   }
 
-  public async get(url: string, params = {}) {
+  public async get(url: string, params: Record<string, any> = {}) {
     const queryString = new URLSearchParams(params).toString();
     const fullUrl = `${this.baseURL}${url}?${queryString}`;
 
     try {
-      const response = await fetch(fullUrl);
+      const response = await fetch(fullUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Access-Control-Allow-Origin': '*', // Added CORS header
+        },
+      });
       if (!response.ok) throw response;
       return this.handleSuccess(response);
     } catch (error) {
@@ -44,6 +48,8 @@ export class HttpClient {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Access-Control-Allow-Origin': '*', // Added CORS header
         },
         body: JSON.stringify(data),
       });

@@ -4,6 +4,7 @@ export interface BranchModel {
   owner: string;
   createdAt: Date;
   updatedAt: Date;
+  payload: object;
 }
 
 export interface BrandModel {
@@ -12,6 +13,7 @@ export interface BrandModel {
   owner: string;
   createdAt: Date;
   updatedAt: Date;
+  payload: object;
 }
 
 export interface CatalogModel {
@@ -22,6 +24,7 @@ export interface CatalogModel {
   parent: string;
   createdAt: Date;
   updatedAt: Date;
+  payload: object;
 }
 
 export interface CustomerModel {
@@ -31,23 +34,25 @@ export interface CustomerModel {
   origin: string;
   createdAt: Date;
   updatedAt: Date;
+  payload: object;
 }
 
 export interface FeedbackModel {
   id: string;
   reference: {
-  branch: string;
-  brand: string;
-  customer: string;
-  owner: string;
-  station: string;
-};
-type: {
-  key: string;
-  type: string;
-};
+    branch: string;
+    brand: string;
+    customer: string;
+    owner: string;
+    station: string;
+  };
+  type: {
+    key: string;
+    type: string;
+  };
   createdAt: Date;
   updatedAt: Date;
+  payload: object;
 }
 
 export interface StationModel {
@@ -56,5 +61,6 @@ export interface StationModel {
   brand: string;
   category: string;
   createdAt: Date;
-  updatedAt: Date
+  updatedAt: Date;
+  payload: object;
 }

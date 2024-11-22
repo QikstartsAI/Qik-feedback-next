@@ -1,9 +1,7 @@
 import { HttpClient } from "@/data";
 import { FeedbackDTO, FeedbackModel, GetFeedbackParams } from '@/domain'
 
-const httpClient = new HttpClient(
-  "http://a807d22c5dcaf4392b29c14778d84f37-1961716059.us-east-1.elb.amazonaws.com/v1/api/"
-);
+const httpClient = new HttpClient();
 
 export const getAllFeedback = async (params: GetFeedbackParams) : Promise<FeedbackModel[]> => {
   try {
