@@ -161,13 +161,13 @@ export default function FeedbackFormRoot() {
             <Loader />
           ) : (
             <>
-              {/* {!isDscSolutions ? (
+              {!isDscSolutions ? (
                 <div className="min-h-[calc(100vh-103px)]">
                   <Hero
                     business={business}
                     locationPermission={locationPermission}
                   />
-                  {!customerType &&
+                  {/* {!customerType &&
                     (isHootersForm || isGusForm ? (
                       <CustomIntro
                         business={business}
@@ -205,7 +205,7 @@ export default function FeedbackFormRoot() {
                         customerType={customerType}
                         setCustomerName={setCustomerName}
                       />
-                    ))}
+                    ))} */}
                 </div>
               ) : (
                 <SimpleForm
@@ -216,7 +216,7 @@ export default function FeedbackFormRoot() {
                   branchId={branchId}
                   waiterId={waiterId}
                 />
-              )} */}
+              )}
             </>
           )}
           <Toaster />
