@@ -161,7 +161,7 @@ export default function FeedbackFormRoot() {
             <Loader />
           ) : (
             <>
-              {!isDscSolutions ? (
+              {/* {!isDscSolutions ? (
                 <div className="min-h-[calc(100vh-103px)]">
                   <Hero
                     business={business}
@@ -216,7 +216,7 @@ export default function FeedbackFormRoot() {
                   branchId={branchId}
                   waiterId={waiterId}
                 />
-              )}
+              )} */}
             </>
           )}
           <Toaster />
@@ -236,3 +236,7 @@ export default function FeedbackFormRoot() {
     </APIProvider>
   );
 }
+
+
+
+

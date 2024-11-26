@@ -22,7 +22,9 @@ function useGetBusinessData() {
       setLoading('requesting');
       try {
 
-getBrandById(businessId);
+
+
+        const brand = await getBrandById(businessId);
         const res =
           (await findBusiness(businessId, sucursalId || branchId, waiterId)) ||
           null;

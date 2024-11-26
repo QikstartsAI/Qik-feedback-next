@@ -33,3 +33,4 @@ export const getBranchById = async (branchId: string) : Promise<BranchModel> => 
     throw error;
   }
 };
+

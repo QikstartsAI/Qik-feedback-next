@@ -19,7 +19,7 @@ export class HttpClient {
 
     return Promise.reject(error);
   }
-
+  
   public async get(url: string, params: Record<string, any> = {}) {
     const queryString = new URLSearchParams(params).toString();
     const fullUrl = `${this.baseURL}${url}?${queryString}`;
