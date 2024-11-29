@@ -147,8 +147,7 @@ const SimpleForm = ({
                 />
               </Modal>
             )}
-            {(showContactInfo || feedbackType === 'inspection') &&
-            showMoreFeedbackConfirmation ? (
+            {(showContactInfo || feedbackType === 'inspection')? (
               <SimpleContactInfo form={form} feedbackType={feedbackType} />
             ) : (
               <div
