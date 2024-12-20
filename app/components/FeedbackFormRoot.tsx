@@ -1,4 +1,5 @@
 'use client';
+import { Wizard } from '../layers/ui/wizard';
 
 import { lazy, useEffect, useState, Suspense } from 'react';
 import useGetBusinessData from '../hooks/useGetBusinessData';
@@ -167,7 +168,7 @@ export default function FeedbackFormRoot() {
                     business={business}
                     locationPermission={locationPermission}
                   />
-                  {/* {!customerType &&
+                  {!customerType &&
                     (isHootersForm || isGusForm ? (
                       <CustomIntro
                         business={business}
@@ -198,14 +199,15 @@ export default function FeedbackFormRoot() {
                         customerType={customerType}
                       />
                     ) : (
-                      <FeedbackForm
-                        business={business}
-                        setIsSubmitted={setIsSubmitted}
-                        setRating={setRating}
-                        customerType={customerType}
-                        setCustomerName={setCustomerName}
-                      />
-                    ))} */}
+                      // <FeedbackForm
+                      //   business={business}
+                      //   setIsSubmitted={setIsSubmitted}
+                      //   setRating={setRating}
+                      //   customerType={customerType}
+                      //   setCustomerName={setCustomerName}
+                      // />
+                      <Wizard/>
+                    ))}
                 </div>
               ) : (
                 <SimpleForm

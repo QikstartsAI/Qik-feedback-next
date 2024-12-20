@@ -1,0 +1,182 @@
+{
+  "reference" : {},
+  "templates": [{
+    "id" : "La-granja-burger",
+    "questions": [
+      {
+        "id": "emailfield",
+        "label": "Correo electrónico",
+        "placeholder": "Ej: juan@gmail.com", 
+        "type" : "email",
+        "required": true
+      },
+      {
+        "id": "askname",
+        "label": "Nombre completo",
+        "placeholder": "Ej: Juan Peréz",
+        "type": "text",
+        "required": true
+      },
+      {
+        "id": "askphonenumber",
+        "label": "Teléfono (opcional)",
+        "placeholder": "Ej: 3001234567",
+        "type": "tel",
+        "required": false
+
+      },
+      {
+        "id": "promotionscheckbox",
+          "label": "Acepto recibir promociones",
+          "type": "checkbox",
+          "ischecked": false,
+          "required": false
+      },
+
+      {
+        "id": "askbirthday",
+        "label": "¿Tu fecha de cumpleaños? 🎂 (opcional)",
+        "type": "date",
+        "placeholder": "Ej: 29/10/1999",
+        "max": "2005-12-31",
+        "required": false                         
+      },
+      {
+        "id": "socialmedia",
+        "label": "¿De dónde nos conoces?",
+        "type": "custom-radio-button",
+        "required": true,
+        "options" : [
+          {
+            "id": "Maps",
+            "label": "Maps"
+          },
+
+          {
+            "id": "TikTok",
+            "label": "TikTok"
+          },
+
+          {
+            "id": "Facebook",
+            "label": "Facebook"
+          },
+
+          {
+            "id": "WhatsApp",
+            "label": "WhatsApp"
+          },
+        
+          {
+            "id": "Instagram",
+            "label": "Instagram"
+          },
+
+          {
+            "id": "Referido",
+            "label": "Referido"
+          },
+          
+          {
+            "id": "sub-options",
+            "label": "Otros",
+            "required": false,
+            "sub-options": [
+              {
+                "id": "caminando",
+                "label": "caminando"
+              },
+
+              {
+              "id": "TV",
+              "label": "TV"
+              },
+
+              {
+                "id": "Radio",
+                "label": "Radio"
+              },
+
+              {
+                "id": "Radio",
+                "label": "Radio"
+              },
+
+              {
+                "id": "Eventos",
+                "label": "Eventos"
+              },
+
+              {
+                "id": "advertising",
+                "label": "Valla publicitaria"
+              }
+            ]
+          }
+        ]
+     
+      },
+      {
+        "id": "customersquantity",
+        "label": "¿Personas en la mesa?",
+        "type": "custom-getCustomersQuantity",
+        "required": true
+      },
+      {
+        "id": "averageticket",
+        "label": "¿Cuánto gastaste hoy por persona?",
+        "type": "custom-getAverageTicket",
+        "required": true
+      },
+      {
+        "id": "payment-method",
+        "label": "¿Cuál fue tu forma de pago?",
+        "type": "custom-getWalletByCountry",
+        "required": true
+      },
+      {
+        "id": "rate",
+        "label": "Cómo estuvimos el dia de hoy?",
+        "options": [
+          {"id":0, "type": "button", "icon": "url/...", "label": "Mal", "required": true, 
+          "options": [
+            {"id": "Comida", "icon": "url/...", "type": "button", "label": "comida", "required": false},
+            {"id": "Servicio", "icon": "url/...", "type": "button", "label": "Servicio", "required": false},
+            {"id": "Ambiente", "icon": "url/...", "type": "button", "label": "Ambiente", "required": false},
+            {"id": "opinion", "type": "textarea", "label": "Compartenos detalles sobre tu experiencia en este lugar", "placeholder": "Ej: La comida estuvo muy buena, pero el servicio fue lento", "required": true} 
+          ]
+        },
+        {"id":1, "type": "button", "icon": "url/...", "label": "Mal", "required": true, 
+        "options": [
+          {"id": "Comida", "icon": "url/...", "type": "button", "label": "comida", "required": false},
+          {"id": "Servicio", "icon": "url/...", "type": "button", "label": "Servicio", "required": false},
+          {"id": "Ambiente", "icon": "url/...", "type": "button", "label": "Ambiente", "required": false},
+          {"id": "opinion", "type": "textarea", "label": "Compartenos detalles sobre tu experiencia en este lugar", "placeholder": "Ej: La comida estuvo muy buena, pero el servicio fue lento", "required": true} 
+        ]
+      },
+      {
+        "id": 3, "type": "button", "icon": "url/...", "label": "Bien", "required": true,
+        "options": [{"type": "p", "text": "Al presionar ENVIAR, te vamos a dirigir a Google, último paso para completar tu encuesta. ¡Agradecemos tu apoyo!"}]
+      },
+      {
+        "id": 4, "type": "button", "icon": "url/...", "label": "Excelente", "required": true,
+        "options": [{"type": "p", "text": "Al presionar ENVIAR, te vamos a dirigir a Google, último paso para completar tu encuesta. ¡Agradecemos tu apoyo!"}]
+      }
+        ]
+
+      },
+      {
+        "id": "send",
+        "type": "submit",
+        "label": "Enviar"
+      },
+      {
+        "id": "T&C's",
+        "type": "checkbox",
+        "label": "Al presionar Enviar, declaro que acepto los Términos y Condiciones y las Políticas de Privacidad.",
+        "required": true
+      }
+
+    ]
+  }]
+}

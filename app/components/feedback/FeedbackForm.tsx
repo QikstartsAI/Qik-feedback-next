@@ -70,6 +70,7 @@ import { commonPaymentMethods, walletsByCountry, walletsIdsByCountry, walletsIds
 import { IconCopy} from '@tabler/icons-react';
 
 import Image from 'next/image';
+import { Wizard } from '@/app/layers/ui/wizard';
 
 interface FeedbackFormProps {
   business: Business | null;
@@ -307,7 +308,7 @@ export default function FeedbackForm({
     let timeout: ReturnType<typeof setTimeout>;
     if (showGoodFeedbackModal) {
       timeout = setTimeout(() => {
-        copyToClipboard(finalGoodFeedback())
+        copyToClipboard(finalGoodFeedback()) 
       }, 1000);
     }
     return () => clearTimeout(timeout);
@@ -387,6 +388,7 @@ export default function FeedbackForm({
                 noValidate
                 >
                 <div className={cn('space-y-3 mb-3', {})}>
+                  <Wizard/>
                   <FormField
                     control={form.control}
                     name="Email"
