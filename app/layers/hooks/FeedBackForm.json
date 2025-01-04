@@ -10,14 +10,14 @@
         "type" : "email",
         "required": true
       },
-      {
-        "id": "askname",
-        "label": "Nombre completo",
-        "placeholder": "Ej: Juan Peréz",
-        "type": "text",
-        "required": true
-      },
-      {
+        {
+          "id": "askname",
+          "label": "Nombre completo",
+          "placeholder": "Ej: Juan Peréz",
+          "type": "text",
+          "required": true 
+        },
+        {
         "id": "askphonenumber",
         "label": "Teléfono (opcional)",
         "placeholder": "Ej: 3001234567",

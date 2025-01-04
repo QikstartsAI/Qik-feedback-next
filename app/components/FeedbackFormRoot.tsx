@@ -154,7 +154,7 @@ export default function FeedbackFormRoot() {
 
   return (
     <APIProvider
-      apiKey={process.env.NEXT_PUBLIC_VITE_APP_GOOGLE_API_KEY ?? ''}
+      apiKey={process.env.NEXT_PUBLIC_VITE_APP_GOOGLE_API_KEY ?? ''} 
       solutionChannel="GMP_devsite_samples_v3_rgmautocomplete">
       <Suspense fallback={<Loader />}>
         <div>
