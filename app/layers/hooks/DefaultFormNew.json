@@ -6,33 +6,47 @@
               {
                   "id": "First-question",
                   "label": "¿Eres cliente nuevo o frecuente?",
-                  "primary": "bg-blue-600",
-                  "font-size": "25px",
-                  "centerText": "text-center"
+                  "color": "text-primary",
+                  "font-size": "md:text-2xl max-sm:text-2xl",
+                  "bolt": "font-bold",
+                  "centerText": "text-center",
+                  "margin-top": "mt-10"
               },
 
               {
                   "id": "Paragraf" ,
                   "label": "Valoramos tu opición, te tomará menos de 1 minuto",
-                  "color": "bg-grey-500",
+                  "color": "text-gray-600",
                   "font-size": "15px",
                   "centerText": "text-center"
+
               }
           ],
           
           "section-two":[    
               {
                   "id": "image-new",
-                  "url": "http",
+                  "type": "button",
+                  "url": "/yellow-start.png",
+                  "font-img":"{{ maxWidth: 180px }}",
+                  "center-image":"flex mt-7 justify-center items-center",
                   "label": "Nuevo",
-                  "font-size":"25px"
+                  "color":"text-gray-800",
+                  "bolt":"font-bold",
+                  "font-size":"md:text-xl"
               },
+              
 
               {
                   "id": "image-frequent",
-                  "url": "http",
+                  "type": "button",
+                  "url": "/gray-heart.png",
+                  "font-img":"{{ maxWidth: 180px }}",
+                  "center-image":"flex mt-7 justify-center items-center",
                   "label": "Frecuente",
-                  "font-size":"25px"
+                  "color":"text-gray-800",
+                  "bolt":"font-bold",
+                  "font-size":"md:text-xl"
               }
           ]
       }
