@@ -1,4 +1,5 @@
 'use client';
+import { Wizard } from '../layers/ui/wizard';
 
 import { lazy, useEffect, useState, Suspense } from 'react';
 import useGetBusinessData from '../hooks/useGetBusinessData';
@@ -153,7 +154,7 @@ export default function FeedbackFormRoot() {
 
   return (
     <APIProvider
-      apiKey={process.env.NEXT_PUBLIC_VITE_APP_GOOGLE_API_KEY ?? ''}
+      apiKey={process.env.NEXT_PUBLIC_VITE_APP_GOOGLE_API_KEY ?? ''} 
       solutionChannel="GMP_devsite_samples_v3_rgmautocomplete">
       <Suspense fallback={<Loader />}>
         <div>
@@ -198,13 +199,14 @@ export default function FeedbackFormRoot() {
                         customerType={customerType}
                       />
                     ) : (
-                      <FeedbackForm
-                        business={business}
-                        setIsSubmitted={setIsSubmitted}
-                        setRating={setRating}
-                        customerType={customerType}
-                        setCustomerName={setCustomerName}
-                      />
+                      // <FeedbackForm
+                      //   business={business}
+                      //   setIsSubmitted={setIsSubmitted}
+                      //   setRating={setRating}
+                      //   customerType={customerType}
+                      //   setCustomerName={setCustomerName}
+                      // />
+                      <Wizard/>
                     ))}
                 </div>
               ) : (
@@ -236,3 +238,7 @@ export default function FeedbackFormRoot() {
     </APIProvider>
   );
 }
+
+
+
+

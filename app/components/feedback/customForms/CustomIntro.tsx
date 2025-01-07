@@ -80,7 +80,7 @@ function CustomIntro({ business, toogleCustomerType, variant }: CustomIntroProps
         </Button>
         <Button
           variant={`${variant}Secondary`}
-          onClick={() => toogleCustomerType("frequent")}>
+          onClick={() => toogleCustomerType("frequent")}> 
           {
             isUsCountry
               ? 'I am already a client'
