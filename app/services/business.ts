@@ -32,6 +32,11 @@ export const findBusiness = async (
   if (docSnap.exists()) {
     let businessData: Business = docSnap.data() as Business;
 
+    const category = docSnap.get('category');
+    if (category) {
+      businessData.Category = category
+    }
+
     if (branchId) {
       const branchRef = doc(collection(docRef, 'sucursales'), branchId);
       const branchDocSnap = await getDoc(branchRef);
