@@ -606,66 +606,9 @@ export default function FeedbackForm({
                     )}
                   />
                   {/* Dinners */}
-                  <FormField
-                    control={form.control}
-                    name="Dinners"
-                    render={({ field }) => (
-                      <FormItem className="space-y-3">
-                        <FormLabel>
-                          {' '}
-                          {isUsCountry
-                            ? 'People at the table?'
-                            : isCaCountry || isFrCountry
-                            ? 'Du monde à table ?'
-                            : '¿Personas en la mesa?'}
-                        </FormLabel>
-                        <FormControl>
-                          <RadioGroup
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                            className="">
-                            <CustomRadioGroup
-                              className="sm:grid-cols-5"
-                              value={field.value}
-                              items={getCustomersQuantity(business?.Country)}
-                            />
-                          </RadioGroup>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                 
                   {/* AverageTicket */}
-                  <FormField
-                    control={form.control}
-                    name="AverageTicket"
-                    render={({ field }) => (
-                      <FormItem className="space-y-3">
-                        <FormLabel>
-                          {' '}
-                          {isUsCountry
-                            ? 'How much did you spend today per person?'
-                            : isCaCountry || isFrCountry
-                            ? "Qu'est-ce que tu as à manger aujourd'hui par personne ?"
-                            : '¿Cuánto gastaste hoy por persona?'}
-                        </FormLabel>
-                        <FormControl>
-                          <RadioGroup
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                            className="">
-                            <CustomRadioGroup
-                              className="sm:grid-cols-5"
-                              value={field.value}
-                              items={getAverageTicket(business?.Country)}
-                            />
-                          </RadioGroup>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
+                  
                   <FormField
                     control={form.control}
                     name="PaymentMethod"

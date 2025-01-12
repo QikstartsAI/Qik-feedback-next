@@ -1,6 +1,7 @@
 'use client';
 import { Wizard } from '../layers/ui/wizard';
 
+
 import { lazy, useEffect, useState, Suspense } from 'react';
 import useGetBusinessData from '../hooks/useGetBusinessData';
 import Loader from './Loader';
@@ -20,9 +21,11 @@ import { getCookie, setCookie } from '../lib/utils';
 import { useDistanceMatrix } from '../hooks/useDistanceMatrix';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { Branch } from '../types/business';
+import { getBranchById } from '../layers/data';
 
 const Hero = lazy(() => import('./Hero'));
 const FeedbackForm = lazy(() => import('./feedback/FeedbackForm'));
+const FeedbackFormServices = lazy(() => import('./feedback/FeedbackFormServices'));
 const CUSTOM_HOOTERS_FORM_ID = 'hooters';
 const CUSTOM_GUS_FORM_ID = 'pollo-gus';
 
@@ -111,6 +114,9 @@ export default function FeedbackFormRoot() {
     setLocationConfirmated(true);
   };
 
+
+
+
   useEffect(() => {
     if (
       originPosition.latitude == null ||
@@ -191,22 +197,30 @@ export default function FeedbackFormRoot() {
                         branchId={sucursalId}
                         waiterId={waiterId}
                       />
-                    ) : isGusForm ? (
+                    )  : isGusForm ? (
                       <GusCustomForm
                         business={business}
                         setIsSubmitted={setIsSubmitted}
                         setRating={setRating}
                         customerType={customerType}
                       />
+                    ) : business?.Category === 'Restaurantes' ? (
+                      <FeedbackForm
+                        business={business}
+                        setIsSubmitted={setIsSubmitted}
+                        setRating={setRating}
+                        customerType={customerType}
+                        setCustomerName={setCustomerName}
+                      />
                     ) : (
-                      // <FeedbackForm
-                      //   business={business}
-                      //   setIsSubmitted={setIsSubmitted}
-                      //   setRating={setRating}
-                      //   customerType={customerType}
-                      //   setCustomerName={setCustomerName}
-                      // />
-                      <Wizard/>
+                      <FeedbackFormServices
+                        business={business}
+                        setIsSubmitted={setIsSubmitted}
+                        setRating={setRating}
+                        customerType={customerType}
+                        setCustomerName={setCustomerName}
+                      />
+                      //<Wizard/>
                     ))}
                 </div>
               ) : (

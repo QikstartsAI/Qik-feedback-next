@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import DefaultFormNew from '../hooks/DefaultFormNew.json';
+import { NewCustomer } from './NewCustomer';
 
 
 
@@ -39,13 +39,12 @@ export const Wizard = () => {
         <div className="text-center mt-10">
           {response === "nuevo" && (
             <div>
-              
-              <h1 className="text-xl font-bold">Hola Nuevo</h1>
+              <NewCustomer/>
             </div>
           )}
           {response === "frecuente" && (
             <div>
-              
+
               <h1 className="text-xl font-bold">Frecuente</h1>
             </div>
           )}
