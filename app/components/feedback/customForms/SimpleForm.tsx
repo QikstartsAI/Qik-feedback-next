@@ -53,17 +53,13 @@ const SimpleForm = ({
   const businessId = business?.BusinessId;
   const isQr = searchParams.get('isQr');
 
+  const defaultValuesFromTemplate =() => {
+    return {}
+  }
+
   const form = useForm<SimpleFeedbackProps>({
     resolver: zodResolver(simpleFeedbackSchema(feedbackType)),
-    defaultValues: {
-      FullName: '',
-      Email: '',
-      Rating: undefined,
-      ProvideMoreFeedback: false,
-      ImproveText: '',
-      AcceptTerms: true,
-      StartTime: new Date(),
-    },
+    defaultValues: defaultValuesFromTemplate(),
   });
 
   const writeReviewURL = () => {
@@ -147,8 +143,7 @@ const SimpleForm = ({
                 />
               </Modal>
             )}
-            {(showContactInfo || feedbackType === 'inspection') &&
-            showMoreFeedbackConfirmation ? (
+            {(showContactInfo || feedbackType === 'inspection')? (
               <SimpleContactInfo form={form} feedbackType={feedbackType} />
             ) : (
               <div
