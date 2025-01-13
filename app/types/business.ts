@@ -59,7 +59,8 @@ export interface Business {
     Waiter?: Waiter
     feedbacks?: Feedback[]
     PricePlan: number
-    Geopoint?: {_lat: number, _long: number}
+    Geopoint?: {_lat: number, _long: number},
+    Category: string
 }
 
 export type BusinessAssets = {

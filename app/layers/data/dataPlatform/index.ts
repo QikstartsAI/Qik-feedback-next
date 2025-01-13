@@ -1,0 +1,6 @@
+export * from './branchDataPlatform'
+export * from './brandDataPlatform'
+export * from './catalogDataPlatform'
+export * from './customerDataPlatform'
+export * from './feedbackDataPlatform'
+export * from './stationDataPlatform'

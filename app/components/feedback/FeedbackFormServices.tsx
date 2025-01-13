@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-handler-names */
-import { Button } from "../ui/Button";
+import { Button } from '../ui/Button';
 import {
   Form,
   FormControl,
@@ -7,46 +7,46 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/Form";
+} from '../ui/Form';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../ui/Card";
+} from '../ui/Card';
 
-import { currencyPrices } from "@/app/constants/prices";
-import { phoneNumbersPlaceholders } from "@/app/constants/placeholders";
+import { currencyPrices } from '@/app/constants/prices';
+import { phoneNumbersPlaceholders } from '@/app/constants/placeholders';
 
-import PhoneInput from "react-phone-number-input";
-import "react-phone-number-input/style.css";
+import PhoneInput from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
 
-import { Input } from "../ui/Input";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { cn } from "@/app/lib/utils";
+import { Input } from '../ui/Input';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { cn } from '@/app/lib/utils';
 import {
   IconToolsKitchen,
   IconBuildingStore,
   IconUsers,
-} from "@tabler/icons-react";
-import { useToast } from "@/app/hooks/useToast";
-import { FeedbackProps, feedbackSchema } from "@/app/validators/feedbackSchema";
-import { RadioGroup } from "../ui/RadioGroup";
-import { Origins, Ratings } from "@/app/types/feedback";
-import handleSubmitFeedback, { formattedName } from "@/app/lib/handleSubmit";
+} from '@tabler/icons-react';
+import { useToast } from '@/app/hooks/useToast';
+import { FeedbackProps, feedbackSchema } from '@/app/validators/feedbackSchema';
+import { RadioGroup } from '../ui/RadioGroup';
+import { Origins, Ratings } from '@/app/types/feedback';
+import handleSubmitFeedback, { formattedName } from '@/app/lib/handleSubmit';
 import {
   findCustomerDataByEmail,
   findCustomerFeedbackDataInBusiness,
   findIsCustomerInBusiness,
-} from "@/app/lib/handleEmail";
-import { Checkbox } from "../ui/Checkbox";
-import { Textarea } from "../ui/TextArea";
-import { Business } from "@/app/types/business";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import CustomRadioGroup from "../form/CustomRadioGroup";
-import Modal from "../ui/Modal";
+} from '@/app/lib/handleEmail';
+import { Checkbox } from '../ui/Checkbox';
+import { Textarea } from '../ui/TextArea';
+import { Business } from '@/app/types/business';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import CustomRadioGroup from '../form/CustomRadioGroup';
+import Modal from '../ui/Modal';
 import {
   getCustomersQuantity,
   getKnownOrigins,
@@ -58,26 +58,19 @@ import {
   getOriginLabel,
   getWalletByCountry,
   getGoodFeedbackOptions,
-} from "@/app/constants/form";
-import RatingRadioGroup from "../form/RatingRadioGroup";
-import { SelectedOption } from "@/app/types/general";
-import { CustomerRole } from "@/app/types/customer";
-import GoogleReviewMessage from "../form/GoogleReviewMessage";
-import { lastFeedbackFilledIsGreaterThanOneDay } from "@/app/lib/utils";
-import { getCustomerDataInBusiness } from "@/app/lib/handleEmail";
-import { useSearchParams } from "next/navigation";
-import {
-  commonPaymentMethods,
-  walletsByCountry,
-  walletsIdsByCountry,
-  walletsIdsByCountryWithCommon,
-} from "@/app/constants/wallets";
-import { IconCopy } from "@tabler/icons-react";
-
+} from '@/app/constants/form';
+import RatingRadioGroup from '../form/RatingRadioGroup';
+import { SelectedOption } from '@/app/types/general';
+import { CustomerRole } from '@/app/types/customer';
+import GoogleReviewMessage from '../form/GoogleReviewMessage';
+import { lastFeedbackFilledIsGreaterThanOneDay } from '@/app/lib/utils';
+import { getCustomerDataInBusiness } from '@/app/lib/handleEmail';
+import { useSearchParams } from 'next/navigation';
+import { commonPaymentMethods, walletsByCountry, walletsIdsByCountry, walletsIdsByCountryWithCommon } from '@/app/constants/wallets';
+import { IconCopy} from '@tabler/icons-react';
 
 import Image from 'next/image';
 import { Wizard } from '@/app/layers/ui/wizard';
-
 
 interface FeedbackFormProps {
   business: Business | null;
@@ -96,7 +89,7 @@ export default function FeedbackForm({
 }: FeedbackFormProps) {
   const searchParams = useSearchParams();
 
-  const [loadingPercentage, setLoadingPercentage] = useState(0);
+  const [loadingPercentage, setLoadingPercentage]  =useState(0);
   const [isChecked, setIsChecked] = useState(false);
   const [isTermsChecked, setIsTermsChecked] = useState(true);
   const [showOtherOptionsModal, setShowOtherOptionsModal] =
@@ -113,34 +106,34 @@ export default function FeedbackForm({
   const [showLastFeedbackFilledModal, setShowLastFeedbackFilledModal] =
     useState<boolean | undefined>(false);
 
-  const businessId = searchParams.get("id");
-  const branchId = searchParams.get("sucursal");
-  const waiterId = searchParams.get("mesero");
+  const businessId = searchParams.get('id');
+  const branchId = searchParams.get('sucursal');
+  const waiterId = searchParams.get('mesero');
 
   const { toast } = useToast();
 
   const form = useForm<FeedbackProps>({
     resolver: zodResolver(
       feedbackSchema(
-        currencyPrices[business?.Country || "EC"],
-        walletsIdsByCountryWithCommon(business?.Country || "EC"),
-        business?.Country || "EC"
+        currencyPrices[business?.Country || 'EC'],
+        walletsIdsByCountryWithCommon(business?.Country || 'EC'),
+        business?.Country || 'EC'
       )
     ),
     defaultValues: {
-      FullName: "",
-      PhoneNumber: "",
+      FullName: '',
+      PhoneNumber: '',
       AcceptPromotions: isChecked,
       AcceptTerms: isTermsChecked,
-      BirthdayDate: "",
-      Email: "",
+      BirthdayDate: '',
+      Email: '',
       Origin: undefined,
       Rating: undefined,
       StartTime: new Date(),
       Ambience: false,
       Food: false,
       Service: false,
-      ImproveText: "",
+      ImproveText: '',
       hiddenInput: null,
     },
   });
@@ -150,28 +143,29 @@ export default function FeedbackForm({
   };
 
   const { watch } = form;
-  const watchRating = watch("Rating");
+  const watchRating = watch('Rating');
   const isLowRating =
     watchRating === Ratings.Mal || watchRating === Ratings.Regular;
-  const isUsCountry = business?.Country === "US" || business?.Country === "HK";
-  const isCaCountry = business?.Country === "CA";
-  const isFrCountry = business?.Country === "FR";
-  const watchFullName = watch("FullName");
-  const waiterName = business?.Waiter?.name || "";
-  const attendantName = waiterName ? waiterName : "Matriz";
+  const isUsCountry = business?.Country === 'US' || business?.Country === 'HK';
+  const isCaCountry = business?.Country === 'CA';
+  const isFrCountry = business?.Country === 'FR';
+  const watchFullName = watch('FullName');
+  const waiterName = business?.Waiter?.name || '';
+  const attendantName = waiterName ? waiterName : 'Matriz';
 
-  const [goodFeedback, setGoodFeedback] = useState("");
+  const [goodFeedback, setGoodFeedback] = useState('');
+
 
   const writeReviewURL = () => {
-    if (!business?.MapsUrl) return "";
-    if (business?.MapsUrl?.includes("https")) {
+    if (!business?.MapsUrl) return '';
+    if (business?.MapsUrl?.includes('https')) {
       return business?.MapsUrl;
     }
     return `https://search.google.com/local/writereview?placeid=${business?.MapsUrl}`;
   };
 
   const handleRedirect = () => {
-    copyToClipboard(finalGoodFeedback());
+    copyToClipboard(finalGoodFeedback())
     setLoadingPercentage(100);
     window.location.replace(writeReviewURL());
   };
@@ -181,37 +175,37 @@ export default function FeedbackForm({
     setCustomerName(data.FullName);
     const { Ambience, Service, Food, ImproveText } = data;
     if (isLowRating && !Ambience && !Service && !Food) {
-      form.setError("hiddenInput", {
-        type: "manual",
+      form.setError('hiddenInput', {
+        type: 'manual',
         message: isUsCountry
-          ? "Select at least one option"
+          ? 'Select at least one option'
           : isCaCountry || isFrCountry
-          ? "Sélectionnez au moins une option"
-          : "Selecciona al menos una opción",
+          ? 'Sélectionnez au moins une option'
+          : 'Selecciona al menos una opción',
       });
       return;
     }
 
     if (isLowRating && ImproveText.length === 0) {
-      form.setError("ImproveText", {
-        type: "manual",
+      form.setError('ImproveText', {
+        type: 'manual',
         message: isUsCountry
-          ? "Please tell us how can we improve"
+          ? 'Please tell us how can we improve'
           : isCaCountry || isFrCountry
-          ? "Veuillez écrire comment nous pouvons améliorer"
-          : "Por favor, escribe en que podemos mejorar",
+          ? 'Veuillez écrire comment nous pouvons améliorer'
+          : 'Por favor, escribe en que podemos mejorar',
       });
       return;
     }
-    if (!isLowRating && !showGoodFeedbackModal) {
+    if(!isLowRating && !showGoodFeedbackModal) {
       setShowGoodFeedbackModal(true);
-      return;
+      return
     }
     setLoadingPercentage(20);
 
     try {
       const updatedData = data;
-      updatedData.ImproveText = isLowRating ? ImproveText : "";
+      updatedData.ImproveText = isLowRating ? ImproveText : '';
       updatedData.AcceptPromotions = isChecked;
       const improveOptions = isLowRating
         ? getImprovements({
@@ -226,9 +220,9 @@ export default function FeedbackForm({
       const customerFeedbackInBusinesData =
         await findCustomerFeedbackDataInBusiness(
           data.Email,
-          formattedName(businessId) || ""
+          formattedName(businessId) || ''
         );
-      setLoadingPercentage(60);
+    setLoadingPercentage(60);
 
       if (customerFeedbackInBusinesData) {
         const feedbackVisits =
@@ -239,7 +233,7 @@ export default function FeedbackForm({
         customerNumberOfVisits = 1;
         feedbackNumberOfVisit = 1;
       }
-
+ 
       await handleSubmitFeedback(
         updatedData,
         improveOptions,
@@ -249,22 +243,25 @@ export default function FeedbackForm({
         feedbackNumberOfVisit
       );
       setLoadingPercentage(70);
-      if (!isLowRating && business?.MapsUrl) {
+      if (
+        (!isLowRating) &&
+        business?.MapsUrl
+      ) {
         handleRedirect();
       }
     } catch (error) {
       console.log(error);
       toast({
         title: isUsCountry
-          ? "An error occurred, try again"
+          ? 'An error occurred, try again'
           : isCaCountry || isFrCountry
           ? "Une erreur s'est produite, réessayez"
-          : "Ocurrio un error, intenta nuevamente",
-        variant: "destructive",
+          : 'Ocurrio un error, intenta nuevamente',
+        variant: 'destructive',
       });
     } finally {
-      if (!isLowRating && !showGoodFeedbackModal) {
-        return;
+      if(!isLowRating && !showGoodFeedbackModal) {
+        return
       }
       resetForm();
       setIsSubmitted(true);
@@ -272,23 +269,18 @@ export default function FeedbackForm({
   }
 
   const handleOthersSelecteOption = (option: SelectedOption) => {
-    form.setValue("Origin", option?.value as Origins);
+    form.setValue('Origin', option?.value as Origins);
     setSelectedOtherOption(option);
   };
 
   const finalGoodFeedback = () => {
-    if (!walletsByCountry[business?.Country || "EC"]) return goodFeedback;
-    const paymentMethodName =
-      walletsByCountry[business?.Country || "EC"].find(
-        (method) => method.id === form.getValues().PaymentMethod
-      )?.name ?? "";
-    const textByCountry = paymentMethodName
-      ? isUsCountry
-        ? "I paid with "
-        : isCaCountry || isFrCountry
-        ? "J'ai payé avec "
-        : "✅ Pagué con "
-      : "";
+    if(! walletsByCountry[business?.Country || 'EC']) return goodFeedback;
+    const paymentMethodName = walletsByCountry[business?.Country || 'EC'].find(method => method.id === form.getValues().PaymentMethod)?.name ?? '';
+    const textByCountry = paymentMethodName ? isUsCountry
+      ? 'I paid with '
+      : isCaCountry || isFrCountry
+      ? 'J\'ai payé avec '
+      : '✅ Pagué con ' : '';
 
     const feedbackWithPayment = `${textByCountry}${paymentMethodName} 🔰`;
     if (!goodFeedback.includes(feedbackWithPayment)) {
@@ -299,23 +291,20 @@ export default function FeedbackForm({
 
   const [showIsCopied, setShowIsCopied] = useState(false);
 
-  const copyToClipboard = (text: string) => {
+  const copyToClipboard = (text: string)=> {
     if (navigator.clipboard) {
-      navigator.clipboard
-        .writeText(text)
-        .then(() => {
-          setShowIsCopied(true);
-        })
-        .catch((error) => {
-          console.error("Failed to copy text: ", error);
-        });
+      navigator.clipboard.writeText(text).then(() => {
+        setShowIsCopied(true);
+      }).catch((error) => {
+        console.error('Failed to copy text: ', error);
+      });
     } else {
-      console.error("Clipboard API not available");
+      console.error('Clipboard API not available');
     }
-  };
+  }
 
   useEffect(() => {
-    setShowIsCopied(false);
+    setShowIsCopied(false)
     let timeout: ReturnType<typeof setTimeout>;
     if (showGoodFeedbackModal) {
       timeout = setTimeout(() => {
@@ -329,8 +318,7 @@ export default function FeedbackForm({
     <>
       <div
         className="mx-auto py-12 lg:py-24 max-w-xl px-6 min-h-screen"
-        id="form"
-      >
+        id="form">
         {showOtherOptionsModal && (
           <Modal isOpen={true} onClose={() => setShowOtherOptionsModal(false)}>
             <ul className="flex flex-row flex-wrap justify-center items-center gap-3 text-sm font-medium text-gray-900 mt-5">
@@ -338,14 +326,13 @@ export default function FeedbackForm({
                 <li key={option.value} className="list-none">
                   <button
                     className={cn(
-                      "flex justify-center items-center w-full px-3 bg-white border border-gray-200 rounded-lg py-1 cursor-pointer shadow hover:border-sky-500 hover:text-sky-500 transition-all",
+                      'flex justify-center items-center w-full px-3 bg-white border border-gray-200 rounded-lg py-1 cursor-pointer shadow hover:border-sky-500 hover:text-sky-500 transition-all',
                       {
-                        "border-sky-500 text-sky-500":
+                        'border-sky-500 text-sky-500':
                           selectedOtherOption?.value === option.value,
                       }
                     )}
-                    onClick={() => handleOthersSelecteOption(option)}
-                  >
+                    onClick={() => handleOthersSelecteOption(option)}>
                     <p className="text-[10px]">{option.label}</p>
                   </button>
                 </li>
@@ -357,22 +344,21 @@ export default function FeedbackForm({
         {showLastFeedbackFilledModal && (
           <Modal
             isOpen={true}
-            onClose={() => setShowLastFeedbackFilledModal(false)}
-          >
+            onClose={() => setShowLastFeedbackFilledModal(false)}>
             <div className="text-center">
               <p>
                 {isUsCountry
-                  ? "Thank you! "
+                  ? 'Thank you! '
                   : isCaCountry || isFrCountry
-                  ? "Merci!"
-                  : "¡Gracias!"}
+                  ? 'Merci!'
+                  : '¡Gracias!'}
               </p>
               <p>
                 {isUsCountry
-                  ? "✌🏻 You have reached the daily survey limit. Until your next visit! 😉"
+                  ? '✌🏻 You have reached the daily survey limit. Until your next visit! 😉'
                   : isCaCountry || isFrCountry
                   ? "✌🏻 Vous avez atteint la limite quotidienne d'enquêtes. A votre prochaine visite ! 😉"
-                  : "✌🏻 Has alcanzado el límite diario de encuestas. ¡Hasta tu próxima visita! 😉"}
+                  : '✌🏻 Has alcanzado el límite diario de encuestas. ¡Hasta tu próxima visita! 😉'}
               </p>
             </div>
           </Modal>
@@ -381,16 +367,16 @@ export default function FeedbackForm({
           <CardHeader>
             <CardTitle>
               {isUsCountry
-                ? "We value your opinion 😊, it will take you less than "
+                ? 'We value your opinion 😊, it will take you less than '
                 : isCaCountry || isFrCountry
-                ? "Nous apprécions votre avis 😊, cela vous prendra moins de "
-                : "Valoramos tu opinión 😊, te tomará menos de "}
+                ? 'Nous apprécions votre avis 😊, cela vous prendra moins de '
+                : 'Valoramos tu opinión 😊, te tomará menos de '}
               <span className="text-sky-500 font-medium">
                 {isUsCountry
-                  ? "1 minute"
+                  ? '1 minute'
                   : isCaCountry || isFrCountry
-                  ? "1 minute"
-                  : "1 minuto"}
+                  ? '1 minute'
+                  : '1 minuto'}
               </span>
             </CardTitle>
           </CardHeader>
@@ -410,10 +396,10 @@ export default function FeedbackForm({
                       <FormItem>
                         <FormLabel>
                           {isUsCountry
-                            ? "Email"
+                            ? 'Email'
                             : isCaCountry || isFrCountry
-                            ? "Courrier électronique"
-                            : "Correo electrónico"}
+                            ? 'Courrier électronique'
+                            : 'Correo electrónico'}
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -451,14 +437,14 @@ export default function FeedbackForm({
                                   lastFeedbackGreaterThanOneDay
                                 );
                                 if (customerData) {
-                                  form.setValue("FullName", customerData.name);
+                                  form.setValue('FullName', customerData.name);
                                   form.setValue(
-                                    "PhoneNumber",
-                                    customerData.phoneNumber || ""
+                                    'PhoneNumber',
+                                    customerData.phoneNumber || ''
                                   );
                                   form.setValue(
-                                    "BirthdayDate",
-                                    customerData.birthdayDate || ""
+                                    'BirthdayDate',
+                                    customerData.birthdayDate || ''
                                   );
                                   setIsChecked(
                                     customerData.acceptPromotions || false
@@ -480,10 +466,10 @@ export default function FeedbackForm({
                       <FormItem>
                         <FormLabel>
                           {isUsCountry
-                            ? "Full name"
+                            ? 'Full name'
                             : isCaCountry || isFrCountry
-                            ? "Nom complet"
-                            : "Nombre completo"}
+                            ? 'Nom complet'
+                            : 'Nombre completo'}
                         </FormLabel>
                         <FormControl>
                           <Input placeholder="Ej: Juan Pérez" {...field} />
@@ -499,22 +485,22 @@ export default function FeedbackForm({
                       <FormItem>
                         <FormLabel>
                           {isUsCountry
-                            ? "Phone"
+                            ? 'Phone (optional)'
                             : isCaCountry || isFrCountry
-                            ? "Téléphone"
-                            : "Teléfono"}
+                            ? 'Téléphone (facultatif)'
+                            : 'Teléfono (opcional)'}
                         </FormLabel>
                         <FormControl>
                           <PhoneInput
                             {...field}
                             placeholder={`Ej: ${
                               phoneNumbersPlaceholders[
-                                business?.Country || "EC"
+                                business?.Country || 'EC'
                               ]
                             }`}
                             defaultCountry={business?.Country}
                             onChange={(value) => {
-                              form.setValue("PhoneNumber", value);
+                              form.setValue('PhoneNumber', value);
                               setIsChecked(!!value);
                             }}
                           />
@@ -536,16 +522,16 @@ export default function FeedbackForm({
                               onChange={() => {
                                 const newChecked = !isChecked;
                                 setIsChecked(newChecked);
-                                form.setValue("AcceptPromotions", newChecked);
+                                form.setValue('AcceptPromotions', newChecked);
                               }}
                               checked={isChecked}
                             />
                             <span className="ml-2 text-gray-700 text-xs">
                               {isUsCountry
-                                ? "I agree to receive promotions"
+                                ? 'I agree to receive promotions'
                                 : isCaCountry || isFrCountry
                                 ? "J'accepte de recevoir des promotions"
-                                : "Acepto recibir promociones"}
+                                : 'Acepto recibir promociones'}
                             </span>
                           </>
                         </FormControl>
@@ -559,10 +545,10 @@ export default function FeedbackForm({
                       <FormItem>
                         <FormLabel>
                           {isUsCountry
-                            ? "Your birthday? 🎂 (optional)"
+                            ? 'Your birthday? 🎂 (optional)'
                             : isCaCountry || isFrCountry
-                            ? "Ton anniversaire? 🎂 (facultatif)"
-                            : "¿Tu fecha de cumpleaños? 🎂 (opcional)"}
+                            ? 'Ton anniversaire? 🎂 (facultatif)'
+                            : '¿Tu fecha de cumpleaños? 🎂 (opcional)'}
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -583,7 +569,7 @@ export default function FeedbackForm({
                     render={({ field }) => (
                       <FormItem className="space-y-3">
                         <FormLabel>
-                          {" "}
+                          {' '}
                           {getOriginLabel(
                             isUsCountry,
                             isCaCountry,
@@ -603,8 +589,7 @@ export default function FeedbackForm({
                               }
                             }}
                             defaultValue={field.value}
-                            className=""
-                          >
+                            className="">
                             <CustomRadioGroup
                               className="sm:grid-cols-5"
                               value={field.value}
@@ -621,87 +606,27 @@ export default function FeedbackForm({
                     )}
                   />
                   {/* Dinners */}
-                  <FormField
-                    control={form.control}
-                    name="Dinners"
-                    render={({ field }) => (
-                      <FormItem className="space-y-3">
-                        <FormLabel>
-                          {" "}
-                          {isUsCountry
-                            ? "People at the table?"
-                            : isCaCountry || isFrCountry
-                            ? "Du monde à table ?"
-                            : "¿Personas en la mesa?"}
-                        </FormLabel>
-                        <FormControl>
-                          <RadioGroup
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                            className=""
-                          >
-                            <CustomRadioGroup
-                              className="sm:grid-cols-5"
-                              value={field.value}
-                              items={getCustomersQuantity(business?.Country)}
-                            />
-                          </RadioGroup>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                 
                   {/* AverageTicket */}
-                  <FormField
-                    control={form.control}
-                    name="AverageTicket"
-                    render={({ field }) => (
-                      <FormItem className="space-y-3">
-                        <FormLabel>
-                          {" "}
-                          {isUsCountry
-                            ? "How much did you spend today per person?"
-                            : isCaCountry || isFrCountry
-                            ? "Qu'est-ce que tu as à manger aujourd'hui par personne ?"
-                            : "¿Cuánto gastaste hoy por persona?"}
-                        </FormLabel>
-                        <FormControl>
-                          <RadioGroup
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                            className=""
-                          >
-                            <CustomRadioGroup
-                              className="sm:grid-cols-5"
-                              value={field.value}
-                              items={getAverageTicket(business?.Country)}
-                            />
-                          </RadioGroup>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
+                  
                   <FormField
                     control={form.control}
                     name="PaymentMethod"
                     render={({ field }) => (
                       <FormItem className="space-y-3">
                         <FormLabel>
-                          {" "}
+                          {' '}
                           {isUsCountry
-                            ? "What was your payment method?"
+                            ? 'What was your payment method?'
                             : isCaCountry || isFrCountry
                             ? "Quelle était votre méthode de paiement ?"
-                            : "¿Cuál fue tu forma de pago?"}
+                            : '¿Cuál fue tu forma de pago?'}
                         </FormLabel>
                         <FormControl>
                           <RadioGroup
                             onValueChange={field.onChange}
                             defaultValue={field.value}
-                            className=""
-                          >
+                            className="">
                             <CustomRadioGroup
                               className="sm:grid-cols-5 !py-0"
                               value={field.value}
@@ -720,12 +645,12 @@ export default function FeedbackForm({
                     render={({ field }) => (
                       <FormItem className="space-y-0">
                         <FormLabel>
-                          {" "}
+                          {' '}
                           {isUsCountry
-                            ? "How were we today?"
+                            ? 'How were we today?'
                             : isCaCountry || isFrCountry
                             ? "Comment sommes-nous le jour d'aujourd'hui ?"
-                            : "¿Cómo estuvimos el dia de hoy?"}
+                            : '¿Cómo estuvimos el dia de hoy?'}
                         </FormLabel>
                         <FormControl>
                           <RadioGroup onValueChange={field.onChange}>
@@ -745,10 +670,10 @@ export default function FeedbackForm({
                       <FormItem>
                         <FormLabel>
                           {isUsCountry
-                            ? "What can we improve?"
+                            ? 'What can we improve?'
                             : isCaCountry || isFrCountry
                             ? "Et qu'est-ce que nous pourrions améliorer?"
-                            : "¿En qué podemos mejorar?"}
+                            : '¿En qué podemos mejorar?'}
                         </FormLabel>
                       </FormItem>
                       <div className="grid grid-cols-3 sm:grid-cols-4 gap-1 sm:gap-2 text-sm font-medium text-gray-900">
@@ -758,12 +683,11 @@ export default function FeedbackForm({
                           render={({ field }) => (
                             <FormItem
                               className={cn(
-                                "flex flex-row items-start space-y-0 rounded-md border py-1 sm:py-2 shadow hover:border-sky-500 hover:text-sky-500 transition-all",
+                                'flex flex-row items-start space-y-0 rounded-md border py-1 sm:py-2 shadow hover:border-sky-500 hover:text-sky-500 transition-all',
                                 {
-                                  "border-sky-500 text-sky-500": field.value,
+                                  'border-sky-500 text-sky-500': field.value,
                                 }
-                              )}
-                            >
+                              )}>
                               <FormControl>
                                 <Checkbox
                                   checked={field.value}
@@ -773,19 +697,18 @@ export default function FeedbackForm({
                               </FormControl>
                               <FormLabel
                                 className={cn(
-                                  "text-center w-full font-normal flex flex-col items-center cursor-pointer space-y-1 hover:border-sky-500 hover:text-sky-500 transition-all",
+                                  'text-center w-full font-normal flex flex-col items-center cursor-pointer space-y-1 hover:border-sky-500 hover:text-sky-500 transition-all',
                                   {
-                                    "border-sky-500 text-sky-500": field.value,
+                                    'border-sky-500 text-sky-500': field.value,
                                   }
-                                )}
-                              >
+                                )}>
                                 <IconToolsKitchen />
                                 <p className="w-full text-[10px] sm:text-[11px]">
                                   {isUsCountry
-                                    ? "Food"
+                                    ? 'Food'
                                     : isCaCountry || isFrCountry
-                                    ? "Cuisine"
-                                    : "Comida"}
+                                    ? 'Cuisine'
+                                    : 'Comida'}
                                 </p>
                               </FormLabel>
                             </FormItem>
@@ -797,12 +720,11 @@ export default function FeedbackForm({
                           render={({ field }) => (
                             <FormItem
                               className={cn(
-                                "flex flex-row items-start space-y-0 rounded-md border py-1 sm:py-2 shadow hover:border-sky-500 hover:text-sky-500 transition-all",
+                                'flex flex-row items-start space-y-0 rounded-md border py-1 sm:py-2 shadow hover:border-sky-500 hover:text-sky-500 transition-all',
                                 {
-                                  "border-sky-500 text-sky-500": field.value,
+                                  'border-sky-500 text-sky-500': field.value,
                                 }
-                              )}
-                            >
+                              )}>
                               <FormControl>
                                 <Checkbox
                                   checked={field.value}
@@ -812,19 +734,18 @@ export default function FeedbackForm({
                               </FormControl>
                               <FormLabel
                                 className={cn(
-                                  "text-center w-full font-normal flex flex-col items-center cursor-pointer space-y-1",
+                                  'text-center w-full font-normal flex flex-col items-center cursor-pointer space-y-1',
                                   {
-                                    "text-sky-500": field.value,
+                                    'text-sky-500': field.value,
                                   }
-                                )}
-                              >
+                                )}>
                                 <IconUsers />
                                 <p className="w-full text-[10px] sm:text-[11px]">
                                   {isUsCountry
-                                    ? "Service"
+                                    ? 'Service'
                                     : isCaCountry || isFrCountry
-                                    ? "Service"
-                                    : "Servicio"}
+                                    ? 'Service'
+                                    : 'Servicio'}
                                 </p>
                               </FormLabel>
                             </FormItem>
@@ -836,12 +757,11 @@ export default function FeedbackForm({
                           render={({ field }) => (
                             <FormItem
                               className={cn(
-                                "flex flex-row items-start space-y-0 rounded-md border py-1 sm:py-2 shadow hover:border-sky-500 hover:text-sky-500 transition-all",
+                                'flex flex-row items-start space-y-0 rounded-md border py-1 sm:py-2 shadow hover:border-sky-500 hover:text-sky-500 transition-all',
                                 {
-                                  "border-sky-500 text-sky-500": field.value,
+                                  'border-sky-500 text-sky-500': field.value,
                                 }
-                              )}
-                            >
+                              )}>
                               <FormControl>
                                 <Checkbox
                                   checked={field.value}
@@ -851,19 +771,18 @@ export default function FeedbackForm({
                               </FormControl>
                               <FormLabel
                                 className={cn(
-                                  "text-center w-full font-normal flex flex-col items-center cursor-pointer space-y-1",
+                                  'text-center w-full font-normal flex flex-col items-center cursor-pointer space-y-1',
                                   {
-                                    "text-sky-500": field.value,
+                                    'text-sky-500': field.value,
                                   }
-                                )}
-                              >
+                                )}>
                                 <IconBuildingStore />
                                 <p className="w-full text-[10px] sm:text-[11px]">
                                   {isUsCountry
-                                    ? "Atmosphere"
+                                    ? 'Atmosphere'
                                     : isCaCountry || isFrCountry
-                                    ? "Ambiance"
-                                    : "Ambiente"}
+                                    ? 'Ambiance'
+                                    : 'Ambiente'}
                                 </p>
                               </FormLabel>
                             </FormItem>
@@ -873,10 +792,10 @@ export default function FeedbackForm({
                       {form.formState.errors.hiddenInput ? (
                         <FormMessage>
                           {isUsCountry
-                            ? "Please select at least one option"
+                            ? 'Please select at least one option'
                             : isCaCountry
-                            ? "Veuillez sélectionner au moins une option"
-                            : "Por favor selecciona al menos una opción"}
+                            ? 'Veuillez sélectionner au moins une option'
+                            : 'Por favor selecciona al menos una opción'}
                         </FormMessage>
                       ) : null}
                       <FormField
@@ -886,19 +805,19 @@ export default function FeedbackForm({
                           <FormItem>
                             <FormLabel>
                               {isUsCountry
-                                ? "Share details about your experience in this place"
+                                ? 'Share details about your experience in this place'
                                 : isCaCountry || isFrCountry
-                                ? "Partagez des détails sur votre expérience dans ce lieu"
-                                : "Compartenos detalles sobre tu experiencia en este lugar"}
+                                ? 'Partagez des détails sur votre expérience dans ce lieu'
+                                : 'Compartenos detalles sobre tu experiencia en este lugar'}
                             </FormLabel>
                             <FormControl>
                               <Textarea
                                 placeholder={
                                   isUsCountry
-                                    ? "Ej:the food was very good, but the service was slow."
+                                    ? 'Ej:the food was very good, but the service was slow.'
                                     : isCaCountry || isFrCountry
-                                    ? "Fr: La nourriture était très bonne, mais le service était lent."
-                                    : "Ej: La comida estuvo muy buena, pero el servicio fue lento."
+                                    ? 'Fr: La nourriture était très bonne, mais le service était lent.'
+                                    : 'Ej: La comida estuvo muy buena, pero el servicio fue lento.'
                                 }
                                 {...field}
                               />
@@ -924,18 +843,17 @@ export default function FeedbackForm({
                 ) : null}
                 <Button
                   className="w-full"
-                  type={"submit"}
+                  type={'submit'}
                   disabled={
                     isTermsChecked === false || isLastFeedbackMoreThanOneDay
                       ? true
                       : form.formState.isSubmitting
-                  }
-                >
+                  }>
                   {isUsCountry
-                    ? "Send"
+                    ? 'Send'
                     : isCaCountry || isFrCountry
-                    ? "Envoyer"
-                    : "Enviar"}
+                    ? 'Envoyer'
+                    : 'Enviar'}
                 </Button>
                 <CardFooter>
                   <FormField
@@ -955,35 +873,33 @@ export default function FeedbackForm({
                               ? 'By pressing "Submit", I declare that I accept the'
                               : isCaCountry || isFrCountry
                               ? 'En pressant "Enviar", déclarez que vous acceptez les'
-                              : 'Al presionar "Enviar", declaro que acepto los'}{" "}
+                              : 'Al presionar "Enviar", declaro que acepto los'}{' '}
                             <a
                               className="text-primary hover:underline"
                               href="https://qikstarts.com/terms-of-service"
                               rel="noopener noreferrer"
-                              target="_blank"
-                            >
+                              target="_blank">
                               {isUsCountry
-                                ? "Terms and Cons"
+                                ? 'Terms and Cons'
                                 : isCaCountry || isFrCountry
-                                ? "Conditions et conditions"
-                                : "Términos y Condiciones"}
-                            </a>{" "}
+                                ? 'Conditions et conditions'
+                                : 'Términos y Condiciones'}
+                            </a>{' '}
                             {isUsCountry
-                              ? " and the "
+                              ? ' and the '
                               : isCaCountry || isFrCountry
-                              ? " et là "
-                              : " y las "}{" "}
+                              ? ' et là '
+                              : ' y las '}{' '}
                             <a
                               className="text-primary hover:underline"
                               href="https://qikstarts.com/privacy-policy"
                               rel="noopener noreferrer"
-                              target="_blank"
-                            >
+                              target="_blank">
                               {isUsCountry
-                                ? "Privacy Policies"
+                                ? 'Privacy Policies'
                                 : isCaCountry
-                                ? "Politiques de confidentialité"
-                                : "Políticas de Privacidad"}
+                                ? 'Politiques de confidentialité'
+                                : 'Políticas de Privacidad'}
                             </a>
                             .
                           </small>
@@ -993,164 +909,128 @@ export default function FeedbackForm({
                   />
                 </CardFooter>
                 {showGoodFeedbackModal && (
-                  <Modal
-                    isOpen={true}
-                    onClose={() => setShowGoodFeedbackModal(false)}
-                  >
-                    <div className="p-6 flex flex-col items-center gap-4">
-                      <p className="text-center">
-                        {isUsCountry
-                          ? "Almost there!"
-                          : isCaCountry || isFrCountry
-                          ? "Presque là !"
-                          : "¡Ya casi!"}
-                        <br />
-                        {isUsCountry
-                          ? "You will be redirected to"
-                          : isCaCountry || isFrCountry
-                          ? "Vous allez être redirigé vers"
-                          : "Te estaremos redireccionando a"}
-                      </p>
-                      <Image
-                        src="/google.png"
-                        alt="experiencia bueno"
-                        className="w-[60%]"
-                        width={668}
-                        height={657}
-                      />
-                      <p className="font-bold">
-                        {isUsCountry
-                          ? "What was the best part of your visit?"
-                          : isCaCountry || isFrCountry
-                          ? "Qu'est-ce qui s'est le mieux passé pendant votre visite ?"
-                          : "¿Qué fue lo mejor de tu visita?"}
-                      </p>
-                      <RadioGroup
-                        onValueChange={(value) =>
-                          setGoodFeedback(
-                            getGoodFeedbackOptions(business?.Country).find(
-                              (option) => option.value === value
-                            )?.label ?? ""
-                          )
-                        }
-                        defaultValue=""
-                      >
-                        <CustomRadioGroup
-                          className="!grid-cols-2"
-                          value={"field.value"}
-                          items={getGoodFeedbackOptions(business?.Country)}
-                        />
-                      </RadioGroup>
-                      <div className="w-full flex gap-3 items-center">
-                        <Textarea
-                          placeholder={
-                            isUsCountry
-                              ? "Ex: The food was very good, recommended."
-                              : isCaCountry || isFrCountry
-                              ? "Ex: La nourriture était très bonne, recommandée."
-                              : "Ej: La comida estuvo muy buena, recomendado."
-                          }
-                          onChange={(event) =>
-                            setGoodFeedback(event.target.value)
-                          }
-                          value={goodFeedback}
-                        />
-                        <IconCopy
-                          className="text-qik"
-                          cursor="pointer"
-                          onClick={() => copyToClipboard(finalGoodFeedback())}
-                        />
-                      </div>
+          <Modal isOpen={true} onClose={() => setShowGoodFeedbackModal(false)}>
+            <div className='p-6 flex flex-col items-center gap-4'>
+              <p className='text-center'>
+                {isUsCountry ? 'Almost there!' : isCaCountry || isFrCountry ? "Presque là !" : '¡Ya casi!'}<br/>
+                {isUsCountry ? 'You will be redirected to' : isCaCountry || isFrCountry ? "Vous allez être redirigé vers" : 'Te estaremos redireccionando a'}
+              </p>
+              <Image
+              src='/google.png'
+              alt='experiencia bueno'
+              className='w-[60%]'
+              width={668}
+              height={657}
+            />
+            <p className='font-bold'>
+            {isUsCountry ? 'What was the best part of your visit?' : isCaCountry || isFrCountry ? "Qu'est-ce qui s'est le mieux passé pendant votre visite ?" : '¿Qué fue lo mejor de tu visita?'}
+            </p>
+             <RadioGroup
+                onValueChange={(value) => setGoodFeedback(getGoodFeedbackOptions(business?.Country).find(option => option.value === value)?.label ?? '')}
+                defaultValue=''
+                >
+                <CustomRadioGroup
+                  className="!grid-cols-2"
+                  value={'field.value'}
+                  items={getGoodFeedbackOptions(business?.Country)}
+                />
+              </RadioGroup>
+             <div className='w-full flex gap-3 items-center'>
+              <Textarea
+                  placeholder={isUsCountry
+                    ? 'Ex: The food was very good, recommended.'
+                    : isCaCountry || isFrCountry
+                    ? 'Ex: La nourriture était très bonne, recommandée.'
+                    : 'Ej: La comida estuvo muy buena, recomendado.'
+                  }
+                  onChange={(event)=> setGoodFeedback(event.target.value)}
+                  value={goodFeedback}
+                  />
+                  <IconCopy className='text-qik' cursor='pointer' onClick={() => copyToClipboard(finalGoodFeedback())} />
+             </div>
 
-                      <p
-                        className={cn(
-                          "transition-all font-bold text-[#ff0000]",
-                          goodFeedback ? "opacity-100" : "opacity-0"
-                        )}
-                      >
-                        {isUsCountry
-                          ? "Text copied! Just paste it into Google and you're done. 😍"
-                          : isCaCountry || isFrCountry
-                          ? "Texte copié ! Il suffit de le coller sur Google et c'est fait. 😍"
-                          : "¡Texto copiado! Solo pégalo en Google y listo. 😍"}
-                      </p>
-                      {loadingPercentage > 0 && (
-                        <div className="flex flex-col gap-3 w-full">
-                          <div className="w-full bg-neutral-200 rounded-xl">
-                            <div
-                              className="bg-primary p-0.5 text-center text-xs font-medium leading-none transition-all ease-in-out text-primary-100 rounded-xl text-white"
-                              style={{ width: `${loadingPercentage}%` }}
-                            >
-                              {loadingPercentage}%
-                            </div>
-                          </div>
-                          <p>Te estamos enviando a Google ...</p>
-                        </div>
-                      )}
-                      <Button
-                        className="w-full"
-                        type="submit"
-                        disabled={
-                          isTermsChecked === false ||
-                          isLastFeedbackMoreThanOneDay
-                            ? true
-                            : form.formState.isSubmitting
-                        }
-                      >
-                        {isUsCountry
-                          ? "COPY TO GOOGLE"
-                          : isCaCountry || isFrCountry
-                          ? "ALLER SUR GOOGLE"
-                          : "PEGAR EN GOOGLE"}
-                      </Button>
-                      <div className="flex gap-3">
-                        <input
-                          type="checkbox"
-                          className="form-checkbox min-h-[12px] min-w-[12px] text-green-500"
-                          onChange={() => setIsTermsChecked(!isTermsChecked)}
-                          checked={isTermsChecked}
-                        />
-                        <small className="text-gray-500">
-                          {isUsCountry
-                            ? 'By pressing "Submit", I declare that I accept the'
-                            : isCaCountry || isFrCountry
-                            ? 'En pressant "Enviar", déclarez que vous acceptez les'
-                            : 'Al presionar "Enviar", declaro que acepto los'}{" "}
-                          <a
-                            className="text-primary hover:underline"
-                            href="https://qikstarts.com/terms-of-service"
-                            rel="noopener noreferrer"
-                            target="_blank"
-                          >
-                            {isUsCountry
-                              ? "Terms and Cons"
-                              : isCaCountry || isFrCountry
-                              ? "Conditions et conditions"
-                              : "Términos y Condiciones"}
-                          </a>{" "}
-                          {isUsCountry
-                            ? " and the "
-                            : isCaCountry || isFrCountry
-                            ? " et là "
-                            : " y las "}{" "}
-                          <a
-                            className="text-primary hover:underline"
-                            href="https://qikstarts.com/privacy-policy"
-                            rel="noopener noreferrer"
-                            target="_blank"
-                          >
-                            {isUsCountry
-                              ? "Privacy Policies"
-                              : isCaCountry
-                              ? "Politiques de confidentialité"
-                              : "Políticas de Privacidad"}
-                          </a>
-                          .
-                        </small>
+                  <p className={cn('transition-all font-bold text-[#ff0000]', goodFeedback ? 'opacity-100' : 'opacity-0')}>
+                    {isUsCountry
+                    ? 'Text copied! Just paste it into Google and you\'re done. 😍'
+                    : isCaCountry || isFrCountry
+                    ? 'Texte copié ! Il suffit de le coller sur Google et c\'est fait. 😍'
+                    : '¡Texto copiado! Solo pégalo en Google y listo. 😍'
+                  }</p>
+                  {loadingPercentage > 0
+                  && 
+                  <div className='flex flex-col gap-3 w-full'>
+                    <div className="w-full bg-neutral-200 rounded-xl">
+                      <div
+                        className="bg-primary p-0.5 text-center text-xs font-medium leading-none transition-all ease-in-out text-primary-100 rounded-xl text-white"
+                        style={{width: `${loadingPercentage}%`}}>
+                          {loadingPercentage}%
                       </div>
                     </div>
-                  </Modal>
-                )}
+                      <p>
+                        Te estamos enviando a Google ...
+                        </p> 
+                    </div>
+                  }
+              <Button
+                  className="w-full"
+                  type='submit'
+                  disabled={
+                    isTermsChecked === false || isLastFeedbackMoreThanOneDay
+                      ? true
+                      : form.formState.isSubmitting
+                  }>
+                  {isUsCountry
+                    ? 'COPY TO GOOGLE'
+                    : isCaCountry || isFrCountry
+                    ? 'ALLER SUR GOOGLE'
+                    : 'PEGAR EN GOOGLE'}
+                </Button>
+                <div className='flex gap-3'>
+                          <input
+                            type="checkbox"
+                            className="form-checkbox min-h-[12px] min-w-[12px] text-green-500"
+                            onChange={() => setIsTermsChecked(!isTermsChecked)}
+                            checked={isTermsChecked}
+                          />
+                          <small className="text-gray-500">
+                            {isUsCountry
+                              ? 'By pressing "Submit", I declare that I accept the'
+                              : isCaCountry || isFrCountry
+                              ? 'En pressant "Enviar", déclarez que vous acceptez les'
+                              : 'Al presionar "Enviar", declaro que acepto los'}{' '}
+                            <a
+                              className="text-primary hover:underline"
+                              href="https://qikstarts.com/terms-of-service"
+                              rel="noopener noreferrer"
+                              target="_blank">
+                              {isUsCountry
+                                ? 'Terms and Cons'
+                                : isCaCountry || isFrCountry
+                                ? 'Conditions et conditions'
+                                : 'Términos y Condiciones'}
+                            </a>{' '}
+                            {isUsCountry
+                              ? ' and the '
+                              : isCaCountry || isFrCountry
+                              ? ' et là '
+                              : ' y las '}{' '}
+                            <a
+                              className="text-primary hover:underline"
+                              href="https://qikstarts.com/privacy-policy"
+                              rel="noopener noreferrer"
+                              target="_blank">
+                              {isUsCountry
+                                ? 'Privacy Policies'
+                                : isCaCountry
+                                ? 'Politiques de confidentialité'
+                                : 'Políticas de Privacidad'}
+                            </a>
+                            .
+                          </small>
+                        </div>
+                  </div>
+                </Modal>
+              )}
               </form>
             </Form>
           </CardContent>
