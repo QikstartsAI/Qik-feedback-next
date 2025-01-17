@@ -238,18 +238,17 @@ export default function FeedbackFormRoot() {
           )}
           <Toaster />
         </div>
-        {isHootersForm ||
-          (isYogurtForm && (
-            <RequestLocationDialog
-              branches={getBranchesListByPermission()}
-              open={requestLocation}
-              getLocation={getLocation}
-              denyLocation={denyLocation}
-              onConfirm={handleConfirmLocation}
-              grantingPermissions={grantingPermissions}
-              isHootersForm={isHootersForm}
-            />
-          ))}
+        {(isHootersForm || isYogurtForm) && (
+          <RequestLocationDialog
+            branches={getBranchesListByPermission()}
+            open={requestLocation}
+            getLocation={getLocation}
+            denyLocation={denyLocation}
+            onConfirm={handleConfirmLocation}
+            grantingPermissions={grantingPermissions}
+            isHootersForm={isHootersForm}
+          />
+        )}
       </Suspense>
     </APIProvider>
   );
