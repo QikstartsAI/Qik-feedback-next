@@ -1,29 +1,30 @@
-'use client';
+"use client";
 
-import { lazy, useEffect, useState, Suspense } from 'react';
-import useGetBusinessData from '../hooks/useGetBusinessData';
-import Loader from './Loader';
-import Thanks from './Thanks';
-import { Toaster } from './ui/Toaster';
-import Intro from './feedback/Intro';
-import { CustomerRole } from '../types/customer';
-import GusCustomForm from './feedback/customForms/GusCustomForm';
-import HootersCustomForm from './feedback/customForms/HootersCustomForm';
-import CustomIntro from '@/app/components/feedback/customForms/CustomIntro';
-import HootersThanks from '@/app/components/HootersThanks';
-import SimpleForm from './feedback/customForms/SimpleForm';
-import SimpleThanks from './SimpleThanks';
-import { DSC_SOLUTIONS_ID } from '../constants/general';
-import RequestLocationDialog from './RequestLocationDialog';
-import { getCookie, setCookie } from '../lib/utils';
-import { useDistanceMatrix } from '../hooks/useDistanceMatrix';
-import { APIProvider } from '@vis.gl/react-google-maps';
-import { Branch } from '../types/business';
+import { lazy, useEffect, useState, Suspense } from "react";
+import useGetBusinessData from "../hooks/useGetBusinessData";
+import Loader from "./Loader";
+import Thanks from "./Thanks";
+import { Toaster } from "./ui/Toaster";
+import Intro from "./feedback/Intro";
+import { CustomerRole } from "../types/customer";
+import GusCustomForm from "./feedback/customForms/GusCustomForm";
+import HootersCustomForm from "./feedback/customForms/HootersCustomForm";
+import CustomIntro from "@/app/components/feedback/customForms/CustomIntro";
+import HootersThanks from "@/app/components/HootersThanks";
+import SimpleForm from "./feedback/customForms/SimpleForm";
+import SimpleThanks from "./SimpleThanks";
+import { DSC_SOLUTIONS_ID } from "../constants/general";
+import RequestLocationDialog from "./RequestLocationDialog";
+import { getCookie, setCookie } from "../lib/utils";
+import { useDistanceMatrix } from "../hooks/useDistanceMatrix";
+import { APIProvider } from "@vis.gl/react-google-maps";
+import { Branch } from "../types/business";
 
-const Hero = lazy(() => import('./Hero'));
-const FeedbackForm = lazy(() => import('./feedback/FeedbackForm'));
-const CUSTOM_HOOTERS_FORM_ID = 'hooters';
-const CUSTOM_GUS_FORM_ID = 'pollo-gus';
+const Hero = lazy(() => import("./Hero"));
+const FeedbackForm = lazy(() => import("./feedback/FeedbackForm"));
+const CUSTOM_HOOTERS_FORM_ID = "hooters";
+const CUSTOM_YOGURT_FORM_ID = "yogurt-amazonas";
+const CUSTOM_GUS_FORM_ID = "pollo-gus";
 
 export default function FeedbackFormRoot() {
   const {
@@ -41,11 +42,12 @@ export default function FeedbackFormRoot() {
   };
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isQr, setIsQr] = useState(false);
-  const [rating, setRating] = useState('');
+  const [rating, setRating] = useState("");
   const isHootersForm = businessId === CUSTOM_HOOTERS_FORM_ID;
+  const isYogurtForm = businessId === CUSTOM_YOGURT_FORM_ID;
   const isGusForm = businessId === CUSTOM_GUS_FORM_ID;
   const isDscSolutions = businessId === DSC_SOLUTIONS_ID;
-  const [customerName, setCustomerName] = useState('');
+  const [customerName, setCustomerName] = useState("");
   const [requestLocation, setRequestLocation] = useState(false);
   const [locationPermission, setLocationPermission] = useState(false);
   const [originPosition, setOriginPosition] = useState<{
@@ -64,7 +66,7 @@ export default function FeedbackFormRoot() {
         denyPositionPermission
       );
     } else {
-      console.log('Geolocation is not supported by this browser.');
+      console.log("Geolocation is not supported by this browser.");
     }
   }
 
@@ -74,7 +76,7 @@ export default function FeedbackFormRoot() {
 
   function grantPositionPermission(position: any) {
     setLocationPermission(true);
-    setCookie('grantedLocation', 'yes', 365);
+    setCookie("grantedLocation", "yes", 365);
     const origin = {
       latitude: position.coords.latitude,
       longitude: position.coords.longitude,
@@ -86,7 +88,7 @@ export default function FeedbackFormRoot() {
   function denyPositionPermission() {
     setLocationPermission(false);
     setGrantingPermissions(false);
-    setCookie('grantedLocation', 'no', 365);
+    setCookie("grantedLocation", "no", 365);
   }
 
   const getBranchesListByPermission = () => {
@@ -129,19 +131,19 @@ export default function FeedbackFormRoot() {
       setRequestLocation(true);
     }
 
-    if (loading === 'loaded' && !locationConfirmated) {
+    if (loading === "loaded" && !locationConfirmated) {
       checkFirstTime();
     }
   }, [loading, locationConfirmated]);
 
-  if (isSubmitted && rating !== '4' && rating !== '5' && !isDscSolutions) {
+  if (isSubmitted && rating !== "4" && rating !== "5" && !isDscSolutions) {
     if (isHootersForm || isGusForm) {
-      return <HootersThanks businessCountry={business?.Country || 'EC'} />;
+      return <HootersThanks businessCountry={business?.Country || "EC"} />;
     } else {
       return (
         <Thanks
-          businessCountry={business?.Country || 'EC'}
-          businessName={business?.Name || ''}
+          businessCountry={business?.Country || "EC"}
+          businessName={business?.Name || ""}
           customerName={customerName}
         />
       );
@@ -153,11 +155,12 @@ export default function FeedbackFormRoot() {
 
   return (
     <APIProvider
-      apiKey={process.env.NEXT_PUBLIC_VITE_APP_GOOGLE_API_KEY ?? ''}
-      solutionChannel="GMP_devsite_samples_v3_rgmautocomplete">
+      apiKey={process.env.NEXT_PUBLIC_VITE_APP_GOOGLE_API_KEY ?? ""}
+      solutionChannel="GMP_devsite_samples_v3_rgmautocomplete"
+    >
       <Suspense fallback={<Loader />}>
         <div>
-          {loading === 'loading' || loading === 'requesting' ? (
+          {loading === "loading" || loading === "requesting" ? (
             <Loader />
           ) : (
             <>
@@ -172,7 +175,7 @@ export default function FeedbackFormRoot() {
                       <CustomIntro
                         business={business}
                         toogleCustomerType={toggleCustomer}
-                        variant={isHootersForm ? 'hooters' : 'gus'}
+                        variant={isHootersForm ? "hooters" : "gus"}
                       />
                     ) : (
                       <Intro
@@ -221,17 +224,18 @@ export default function FeedbackFormRoot() {
           )}
           <Toaster />
         </div>
-        {isHootersForm && (
-          <RequestLocationDialog
-            branches={getBranchesListByPermission()}
-            open={requestLocation}
-            getLocation={getLocation}
-            denyLocation={denyLocation}
-            onConfirm={handleConfirmLocation}
-            grantingPermissions={grantingPermissions}
-            isHootersForm={isHootersForm}
-          />
-        )}
+        {isHootersForm ||
+          (isYogurtForm && (
+            <RequestLocationDialog
+              branches={getBranchesListByPermission()}
+              open={requestLocation}
+              getLocation={getLocation}
+              denyLocation={denyLocation}
+              onConfirm={handleConfirmLocation}
+              grantingPermissions={grantingPermissions}
+              isHootersForm={isHootersForm}
+            />
+          ))}
       </Suspense>
     </APIProvider>
   );
