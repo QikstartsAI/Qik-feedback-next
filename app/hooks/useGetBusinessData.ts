@@ -1,30 +1,25 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { findBusiness } from '@/app/services/business';
-import { Business } from '@/app/types/business';
-import { useSearchParams } from 'next/navigation';
-import { getBranchById, getBrandById } from '../layers/data';
+import { useEffect, useState } from "react";
+import { findBusiness } from "@/app/services/business";
+import { Business } from "@/app/types/business";
+import { useSearchParams } from "next/navigation";
 
 function useGetBusinessData() {
-  const [loading, setLoading] = useState('loading');
+  const [loading, setLoading] = useState("loading");
   const [business, setBusiness] = useState<Business | null>(null);
   const [sucursalId, setSucursalId] = useState<string | null>(null);
   const searchParams = useSearchParams();
 
-  const businessId = searchParams.get('id');
-  const branchId = searchParams.get('sucursal');
-  const waiterId = searchParams.get('mesero');
+  const businessId = searchParams.get("id");
+  const branchId = searchParams.get("sucursal");
+  const waiterId = searchParams.get("mesero");
 
   useEffect(() => {
     if (!businessId) return;
     const fetchData = async () => {
-      setLoading('requesting');
+      setLoading("requesting");
       try {
-
-
-
-        const brand = await getBrandById(businessId);
         const res =
           (await findBusiness(businessId, sucursalId || branchId, waiterId)) ||
           null;
@@ -33,7 +28,7 @@ function useGetBusinessData() {
       } catch (error) {
         console.error(error);
       } finally {
-        setLoading('loaded');
+        setLoading("loaded");
       }
     };
     fetchData();
@@ -46,8 +41,8 @@ function useGetBusinessData() {
     setSucursalId,
     sucursalId,
     branchId,
-    waiterId
-  }
+    waiterId,
+  };
 }
 
 export default useGetBusinessData;
