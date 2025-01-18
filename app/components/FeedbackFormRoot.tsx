@@ -1,7 +1,6 @@
 'use client';
 import { Wizard } from '../layers/ui/wizard';
 
-
 import { lazy, useEffect, useState, Suspense } from 'react';
 import useGetBusinessData from '../hooks/useGetBusinessData';
 import Loader from './Loader';

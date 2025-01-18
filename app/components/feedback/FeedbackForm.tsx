@@ -74,10 +74,8 @@ import {
 } from "@/app/constants/wallets";
 import { IconCopy } from "@tabler/icons-react";
 
-
 import Image from 'next/image';
 import { Wizard } from '@/app/layers/ui/wizard';
-
 
 interface FeedbackFormProps {
   business: Business | null;
@@ -320,6 +318,7 @@ export default function FeedbackForm({
     if (showGoodFeedbackModal) {
       timeout = setTimeout(() => {
         copyToClipboard(finalGoodFeedback()) 
+        copyToClipboard(finalGoodFeedback()) 
       }, 1000);
     }
     return () => clearTimeout(timeout);
@@ -400,9 +399,8 @@ export default function FeedbackForm({
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-4 md:space-y-6"
                 noValidate
-                >
-                <div className={cn('space-y-3 mb-3', {})}>
-                  {/*<Wizard/>*/}
+              >
+                <div className={cn("space-y-3 mb-3", {})}>
                   <FormField
                     control={form.control}
                     name="Email"
