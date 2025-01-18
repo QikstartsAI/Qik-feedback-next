@@ -1,171 +1,147 @@
 {
-  "id": "default-form",
-      "questions": [
-          {   
-          "section-one":[
-              {
-                  "id": "First-question",
-                  "label": "¿Eres cliente nuevo o frecuente?",
-                  "primary": "bg-blue-600",
-                  "font-size": "25px",
-                  "centerText": "text-center"
-              },
-
-              {
-                  "id": "Paragraf" ,
-                  "label": "Valoramos tu opición, te tomará menos de 1 minuto",
-                  "color": "bg-grey-500",
-                  "font-size": "15px",
-                  "centerText": "text-center"
-              }
-          ],
-          
-          "section-two":[    
-              {
-                  "id": "image-new",
-                  "url": "http",
-                  "label": "Nuevo",
-                  "font-size":"25px"
-              },
-
-              {
-                  "id": "image-frequent",
-                  "url": "http",
-                  "label": "Frecuente",
-                  "font-size":"25px"
-              }
-          ]
-      }
-
-  ],
-
-  "form-one":[
-      {
-          "Section-form-one":[
-              {
-                  "id": "emailfield",
-                  "label": "Correo electronico",
-                  "type": "textbox",
-                  "placeholder":"Ingresa tu correo",
-                  "required": true,
-                  "centerText": "text-center"
-
-              },
-              {
-                  "id": "askname",
-                  "label": "Nombre completo",
-                  "type": "textbox",
-                  "placeholder":"Ingresa tu nombre",
-                  "required": true,
-                  "centerText": "text-center"
-
-              },
-              {
-                  "id": "askphonenumber",
-                  "label": "Teléfono (opcional)",
-                  "placeholder": "Ej: 3001234567",
-                  "type": "textbox",
-                  "required": false,
-                  "centerText": "text-center"
-              },
-              {
-                  "id": "promotionscheckbox",
+    "id": "default-form",
+    "questions": [
+        {
+            "section-one": [
+                {
+                    "id": "First-question",
+                    "label": "¿Eres cliente nuevo o frecuente?",
+                    "primary": "bg-blue-600",
+                    "font-size": "25px",
+                    "centerText": "text-center"
+                },
+                {
+                    "id": "Paragraf",
+                    "label": "Valoramos tu opición, te tomará menos de 1 minuto",
+                    "color": "bg-grey-500",
+                    "font-size": "15px",
+                    "centerText": "text-center"
+                }
+            ],
+            "section-two": [
+                {
+                    "id": "image-new",
+                    "url": "http",
+                    "label": "Nuevo",
+                    "font-size": "25px"
+                },
+                {
+                    "id": "image-frequent",
+                    "url": "http",
+                    "label": "Frecuente",
+                    "font-size": "25px"
+                }
+            ]
+        }
+    ],
+    "form-one": [
+        {
+            "Section-form-one": [
+                {
+                    "id": "emailfield",
+                    "label": "Correo electronico",
+                    "type": "textbox",
+                    "placeholder": "Ingresa tu correo",
+                    "required": true,
+                    "centerText": "text-center"
+                },
+                {
+                    "id": "askname",
+                    "label": "Nombre completo",
+                    "type": "textbox",
+                    "placeholder": "Ingresa tu nombre",
+                    "required": true,
+                    "centerText": "text-center"
+                },
+                {
+                    "id": "askphonenumber",
+                    "label": "Teléfono",
+                    "placeholder": "Ej: 3001234567",
+                    "type": "textbox",
+                    "required": true,
+                    "centerText": "text-center"
+                },
+                {
+                    "id": "promotionscheckbox",
                     "label": "Acepto recibir promociones por whatsapp",
                     "type": "checkbox",
                     "ischecked": false,
                     "required": false
-              },
-              {
-                  "id": "askbirthday",
-                  "label": "¿Tu fecha de cumpleaños? 🎂 (opcional)",
-                  "type": "date",
-                  "placeholder": "dd/mm/yyyy",
-                  "max": "2005-12-31",
-                  "required": false                         
-              }
-          ],
-
-          "Section-form-two":[
-              {
-                      "id": "socialmedia",
-                      "label": "¿De dónde nos conoces?",
-                      "type": "custom-radio-button",
-                      "required": true,
-                      "options" : [
-                      {
-                          "id": "Maps",
-                          "label": "Maps"
-                      },
-
-                      {
-                          "id": "TikTok",
-                          "label": "TikTok"
-                      },
-
-                      {
-                          "id": "Facebook",
-                          "label": "Facebook"
-                      },
-
-                      {
-                          "id": "WhatsApp",
-                          "label": "WhatsApp"
-                      },
-                      
-                      {
-                          "id": "Instagram",
-                          "label": "Instagram"
-                      },
-
-                      {
-                          "id": "Referido",
-                          "label": "Referido"
-                      },
-                      
-                      {
-                              "id": "sub-options",
-                              "label": "Otros",
-                              "required": false,
-                              "sub-options": [
-                              {
-                                  "id": "caminando",
-                                  "label": "caminando"
-                              },
-
-                              {
-                              "id": "TV",
-                              "label": "TV"
-                              },
-
-                              {
-                                  "id": "Radio",
-                                  "label": "Radio"
-                              },
-
-                              {
-                                  "id": "Radio",
-                                  "label": "Radio"
-                              },
-
-                              {
-                                  "id": "Eventos",
-                                  "label": "Eventos"
-                              },
-
-                              {
-                                  "id": "advertising",
-                                  "label": "Valla publicitaria"
-                              }
-                          ]
-                      }
-                  ]
-              
-              }
-                 
-          ]
-
-      }
-  ]
- 
-
+                },
+                {
+                    "id": "askbirthday",
+                    "label": "¿Tu fecha de cumpleaños?",
+                    "type": "date",
+                    "placeholder": "dd/mm/yyyy",
+                    "max": "2005-12-31",
+                    "required": false
+                }
+            ],
+            "Section-form-two": [
+                {
+                    "id": "socialmedia",
+                    "label": "¿De dónde nos conoces?",
+                    "type": "custom-radio-button",
+                    "required": true,
+                    "options": [
+                        {
+                            "id": "Maps",
+                            "label": "Maps"
+                        },
+                        {
+                            "id": "TikTok",
+                            "label": "TikTok"
+                        },
+                        {
+                            "id": "Facebook",
+                            "label": "Facebook"
+                        },
+                        {
+                            "id": "WhatsApp",
+                            "label": "WhatsApp"
+                        },
+                        {
+                            "id": "Instagram",
+                            "label": "Instagram"
+                        },
+                        {
+                            "id": "Referido",
+                            "label": "Referido"
+                        },
+                        {
+                            "id": "sub-options",
+                            "label": "Otros",
+                            "required": false,
+                            "sub-options": [
+                                {
+                                    "id": "caminando",
+                                    "label": "caminando"
+                                },
+                                {
+                                    "id": "TV",
+                                    "label": "TV"
+                                },
+                                {
+                                    "id": "Radio",
+                                    "label": "Radio"
+                                },
+                                {
+                                    "id": "Radio",
+                                    "label": "Radio"
+                                },
+                                {
+                                    "id": "Eventos",
+                                    "label": "Eventos"
+                                },
+                                {
+                                    "id": "advertising",
+                                    "label": "Valla publicitaria"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
 }
