@@ -158,6 +158,7 @@ export default function FeedbackFormRoot() {
     return <SimpleThanks />;
   }
 
+  console.log(business?.Category)
   return (
     <APIProvider
       apiKey={process.env.NEXT_PUBLIC_VITE_APP_GOOGLE_API_KEY ?? ''} 
@@ -174,7 +175,7 @@ export default function FeedbackFormRoot() {
                     business={business}
                     locationPermission={locationPermission}
                   />
-                  {!customerType &&
+                   {!customerType &&
                     (isHootersForm || isGusForm ? (
                       <CustomIntro
                         business={business}
@@ -205,6 +206,7 @@ export default function FeedbackFormRoot() {
                         customerType={customerType}
                       />
                     ) : business?.Category === 'Restaurantes' ? (
+                     
                       <FeedbackForm
                         business={business}
                         setIsSubmitted={setIsSubmitted}

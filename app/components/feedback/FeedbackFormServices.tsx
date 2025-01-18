@@ -70,7 +70,7 @@ import { commonPaymentMethods, walletsByCountry, walletsIdsByCountry, walletsIds
 import { IconCopy} from '@tabler/icons-react';
 
 import Image from 'next/image';
-import { Wizard } from '@/app/layers/ui/wizard';
+
 
 interface FeedbackFormProps {
   business: Business | null;
