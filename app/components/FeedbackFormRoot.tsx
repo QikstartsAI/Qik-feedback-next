@@ -204,25 +204,29 @@ export default function FeedbackFormRoot() {
                         setRating={setRating}
                         customerType={customerType}
                       />
-                    ) : business?.Category === 'Restaurantes' ? (
-                     
-                      <FeedbackForm
-                        business={business}
-                        setIsSubmitted={setIsSubmitted}
-                        setRating={setRating}
-                        customerType={customerType}
-                        setCustomerName={setCustomerName}
-                      />
                     ) : (
-                      <FeedbackFormServices
-                        business={business}
-                        setIsSubmitted={setIsSubmitted}
-                        setRating={setRating}
-                        customerType={customerType}
-                        setCustomerName={setCustomerName}
-                      />
-                      //<Wizard/>
-                    ))}
+                      <Wizard />
+                    ))} 
+  
+                  {/* 
+                  business?.Category === 'Restaurantes' ? (
+                    <FeedbackForm
+                      business={business}
+                      setIsSubmitted={setIsSubmitted}
+                      setRating={setRating}
+                      customerType={customerType}
+                      setCustomerName={setCustomerName}
+                    />
+                  ) : (
+                    <FeedbackFormServices
+                      business={business}
+                      setIsSubmitted={setIsSubmitted}
+                      setRating={setRating}
+                      customerType={customerType}
+                      setCustomerName={setCustomerName}
+                    />
+                  );
+                  */}
                 </div>
               ) : (
                 <SimpleForm

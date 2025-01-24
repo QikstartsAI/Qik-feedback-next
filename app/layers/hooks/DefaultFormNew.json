@@ -5,44 +5,50 @@
             "Section-form-one": [
                 {
                     "id": "emailfield",
-                    "label": "Correo electronico",
+                    "label": "Correo electrónico",
                     "type": "textbox",
+                    "placeholder": "Ingresa tu correo",
                     "required": true,
                     "centerText": "text-center",
-                    "label-text-style": "text-gray-600 font-bold"
+                    "errorMessages": [
+                        "Porfavor Ingrese su email",
+                        "Email no valido"
+                    ]
                 },
                 {
-                    "id": "askname",
+                    "id": "namefield",
                     "label": "Nombre completo",
                     "type": "textbox",
+                    "placeholder": "Ingresa tu nombre",
                     "required": true,
                     "centerText": "text-center",
-                    "label-text-style": "text-gray-600 font-bold"
+                    "errorMessages": [
+                        "Porfavor Ingrese su nombre",
+                        "El nombre no es valido"
+                    ]
                 },
                 {
                     "id": "askphonenumber",
                     "label": "Teléfono",
-                    "type": "textbox",
-                    "required": false,
+                    "placeholder": "Ej: 3001234567",
+                    "type": "number",
+                    "required": true,
                     "centerText": "text-center",
-                    "label-text-style": "text-gray-600 font-bold"
+                    "errorMessages": [
+                        "Porfavor Ingrese su telefono",
+                        "El numero de telefono no es valido"
+                    ]
                 },
                 {
                     "id": "promotionscheckbox",
-                    "label": "Acepto recibir promociones por whatsapp",
+                    "label": "Acepto recibir promociones por",
                     "type": "checkbox",
                     "ischecked": false,
-                    "required": false,
-                    "centerText": "text-center",
-                    "label-text-style": "text-gray-600 font-bold",
-                    "highlight": {
-                        "text": "whatsapp",
-                        "style": "text-green-500 font-semibold"
-                      }
+                    "required": false
                 },
                 {
                     "id": "askbirthday",
-                    "label": "¿Tu fecha de cumpleaños? 🎂 (opcional)",
+                    "label": "¿Tu fecha de cumpleaños?",
                     "type": "date",
                     "placeholder": "dd/mm/yyyy",
                     "max": "2005-12-31",
@@ -52,62 +58,79 @@
             "Section-form-two": [
                 {
                     "id": "socialmedia",
-                    "label": "¿De dónde nos conoces?",
+                    "label": "¿Cómo nos conociste?",
                     "type": "custom-radio-button",
                     "required": true,
                     "options": [
                         {
-                            "id": "Maps",
-                            "label": "Maps"
+                            "id": "maps",
+                            "label": "Google Maps"
                         },
                         {
-                            "id": "TikTok",
-                            "label": "TikTok"
-                        },
-                        {
-                            "id": "Facebook",
-                            "label": "Facebook"
+                            "id": "socialmedia",
+                            "label": "Redes Sociales",
+                            "sub-options": [
+                                {
+                                    "id": "instagram",
+                                    "label": "Instagram"
+                                },
+                                {
+                                    "id": "facebook",
+                                    "label": "Facebook"
+                                },
+                                {
+                                    "id": "youtube",
+                                    "label": "Youtube"
+                                },
+                                {
+                                    "id": "tiktok",
+                                    "label": "Tiktok"
+                                }
+                            ]
                         },
                         {
                             "id": "WhatsApp",
                             "label": "WhatsApp"
                         },
                         {
-                            "id": "Instagram",
-                            "label": "Instagram"
-                        },
-                        {
-                            "id": "Referido",
+                            "id": "referido",
                             "label": "Referido"
                         },
                         {
-                            "id": "sub-options",
-                            "label": "Otros",
-                            "required": false,
+                            "id": "pasePorElLocal",
+                            "label": "Pase por el local"
+                        },
+                        {
+                            "id": "vivoCerca",
+                            "label": "Vivo cerca"
+                        },
+                        {
+                            "id": "otro",
+                            "label": "Otro",
                             "sub-options": [
                                 {
-                                    "id": "caminando",
-                                    "label": "caminando"
+                                    "id": "Flyers",
+                                    "label": "Flyers"
                                 },
                                 {
-                                    "id": "TV",
-                                    "label": "TV"
-                                },
-                                {
-                                    "id": "Radio",
-                                    "label": "Radio"
-                                },
-                                {
-                                    "id": "Radio",
-                                    "label": "Radio"
-                                },
-                                {
-                                    "id": "Eventos",
+                                    "id": "eventos",
                                     "label": "Eventos"
                                 },
                                 {
-                                    "id": "advertising",
-                                    "label": "Valla publicitaria"
+                                    "id": "email",
+                                    "label": "Email"
+                                },
+                                {
+                                    "id": "radio",
+                                    "label": "Radio"
+                                },
+                                {
+                                    "id": "tv",
+                                    "label": "TV"
+                                },
+                                {
+                                    "id": "valla",
+                                    "label": "Valla"
                                 }
                             ]
                         }
@@ -115,5 +138,73 @@
                 }
             ]
         }
+    ],
+    "form-second-page": [
+        {
+            "Section-form-one": [
+                {
+                    "id": "peopleTable",
+                    "text": "¿Personas sentadas en la mesa hoy?",
+                    "primary": "bg-blue-600",
+                    "font-size": "25px",
+                    "centerText": "text-center",
+                    "options": [
+                        {
+                            "opt1": "1-2",
+                            "opt2": "2-4",
+                            "opt3": "+4",
+                            "opt4": "Para llevar",
+                            "opt5": "Domicilio"
+                        }
+                    ]
+                }
+            ],
+            "Section-form-two": [
+                {
+                    "id": "averageExpense",
+                    "text": "¿Promedio de gasto por persona?",
+                    "primary": "bg-blue-600",
+                    "font-size": "25px",
+                    "centerText": "text-center",
+                    "options": [
+                        {
+                            "opt1": "1-5",
+                            "opt2": "5-10",
+                            "opt3": "10-15",
+                            "opt4": "15-20",
+                            "opt5": "20-25",
+                            "opt6": "+25"
+                        }
+                    ]
+                }
+            ],
+            "Setion-form-three": [
+                {
+                    "id": "paymentMethod",
+                    "text": "¿Cuál fue tu forma de pago?",
+                    "options": [
+                        {
+                            "id": "creditCard",
+                            "text": "Tarjeta de crédito",
+                            "buttonImageUrl": "https://firebasestorage.googleapis.com/v0/b/qik_feedback/o/wallets%2Ficon-creditcard.png?alt=media&token=5084677a-2d7a-4778-a701-c72c1c08be4a"
+                        },
+                        {
+                            "id": "efectivo",
+                            "text": "Efectivo",
+                            "buttonImageUrl": "https://firebasestorage.googleapis.com/v0/b/qik_feedback/o/wallets%2Ficon-cash.png?alt=media&token=8905ed63-ae8c-4920-be64-e7fcb40bbbef"
+                        },
+                        {
+                            "id": "transferencias",
+                            "text": "Transferencias",
+                            "buttonImageUrl": "https://firebasestorage.googleapis.com/v0/b/qik_feedback/o/wallets%2Ficon-transfer.png?alt=media&token=5d3c22c6-f4f4-4de6-8775-55d2a68de4c7"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+
+    "form-third-page": [
+        
     ]
 }
