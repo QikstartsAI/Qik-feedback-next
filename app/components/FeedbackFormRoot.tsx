@@ -1,5 +1,4 @@
 "use client";
-import { Wizard } from "../layers/ui/wizard";
 
 import { lazy, useEffect, useState, Suspense } from "react";
 import useGetBusinessData from "../hooks/useGetBusinessData";
@@ -21,6 +20,7 @@ import { useDistanceMatrix } from "../hooks/useDistanceMatrix";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { Branch } from "../types/business";
 import { getBranchById } from "../layers/data";
+import { useBrand } from "../layers/presentation/hooks/brandHook";
 
 const Hero = lazy(() => import("./Hero"));
 const FeedbackForm = lazy(() => import("./feedback/FeedbackForm"));
@@ -63,6 +63,9 @@ export default function FeedbackFormRoot() {
   const { closestDestination, setDistanceMatrix } = useDistanceMatrix();
   const [grantingPermissions, setGrantingPermissions] = useState(false);
 
+  const { brand } = useBrand(businessId ?? "");
+
+  console.log("BRAND", brand?.payload);
   function getLocation() {
     setGrantingPermissions(true);
     if (navigator.geolocation) {

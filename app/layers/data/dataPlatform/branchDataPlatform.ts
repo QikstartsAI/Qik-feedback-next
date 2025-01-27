@@ -1,12 +1,14 @@
 import { HttpClient } from "@/data";
-import { BranchDTO, BranchModel, GetBranchParams } from '@/domain'
+import { BranchDTO, BranchModel, GetBranchParams } from "@/domain";
 
 const httpClient = new HttpClient();
 
-export const getAllBranch = async (params: GetBranchParams) : Promise<BranchModel[]> => {
+export const getAllBranch = async (
+  params: GetBranchParams
+): Promise<BranchModel[]> => {
   try {
-    const branchList = await httpClient.get('/branch', params);
-    return branchList as BranchModel[];
+    const branchList = await httpClient.get("/branch", params);
+    return branchList.items as BranchModel[];
   } catch (error) {
     console.error("Error fetching branch:", error);
     throw error;
@@ -23,14 +25,13 @@ export const createBranch = async (branchData: BranchDTO) => {
   }
 };
 
-export const getBranchById = async (branchId: string) : Promise<BranchModel> => {
+export const getBranchById = async (branchId: string): Promise<BranchModel> => {
   try {
     const branch = await httpClient.get(`/branch/${branchId}`);
-    console.log('branch:', branch)
+    console.log("branch:", branch);
     return branch as BranchModel;
   } catch (error) {
     console.error("Error fetching branch:", error);
     throw error;
   }
 };
-
