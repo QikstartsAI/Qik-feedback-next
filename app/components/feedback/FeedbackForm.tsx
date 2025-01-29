@@ -74,10 +74,8 @@ import {
 } from "@/app/constants/wallets";
 import { IconCopy } from "@tabler/icons-react";
 
-
-import Image from 'next/image';
-import { Wizard } from '@/app/layers/ui/wizard';
-
+import Image from "next/image";
+import { Wizard } from "@/app/layers/ui/wizard";
 
 interface FeedbackFormProps {
   business: Business | null;
@@ -156,6 +154,7 @@ export default function FeedbackForm({
   const isUsCountry = business?.Country === "US" || business?.Country === "HK";
   const isCaCountry = business?.Country === "CA";
   const isFrCountry = business?.Country === "FR";
+  const isItCountry = business?.Country === "IT";
   const watchFullName = watch("FullName");
   const waiterName = business?.Waiter?.name || "";
   const attendantName = waiterName ? waiterName : "Matriz";
@@ -187,6 +186,8 @@ export default function FeedbackForm({
           ? "Select at least one option"
           : isCaCountry || isFrCountry
           ? "Sélectionnez au moins une option"
+          : isItCountry
+          ? "Seleziona almeno un'opzione"
           : "Selecciona al menos una opción",
       });
       return;
@@ -199,6 +200,8 @@ export default function FeedbackForm({
           ? "Please tell us how can we improve"
           : isCaCountry || isFrCountry
           ? "Veuillez écrire comment nous pouvons améliorer"
+          : isItCountry
+          ? "Per favore dicci come possiamo migliorare"
           : "Por favor, escribe en que podemos mejorar",
       });
       return;
@@ -259,6 +262,8 @@ export default function FeedbackForm({
           ? "An error occurred, try again"
           : isCaCountry || isFrCountry
           ? "Une erreur s'est produite, réessayez"
+          : isItCountry
+          ? "Si è verificato un errore, riprova"
           : "Ocurrio un error, intenta nuevamente",
         variant: "destructive",
       });
@@ -287,6 +292,8 @@ export default function FeedbackForm({
         ? "I paid with "
         : isCaCountry || isFrCountry
         ? "J'ai payé avec "
+        : isItCountry
+        ? "Ho pagato con "
         : "✅ Pagué con "
       : "";
 
@@ -319,7 +326,7 @@ export default function FeedbackForm({
     let timeout: ReturnType<typeof setTimeout>;
     if (showGoodFeedbackModal) {
       timeout = setTimeout(() => {
-        copyToClipboard(finalGoodFeedback()) 
+        copyToClipboard(finalGoodFeedback());
       }, 1000);
     }
     return () => clearTimeout(timeout);
@@ -365,6 +372,8 @@ export default function FeedbackForm({
                   ? "Thank you! "
                   : isCaCountry || isFrCountry
                   ? "Merci!"
+                  : isItCountry
+                  ? "Grazie!"
                   : "¡Gracias!"}
               </p>
               <p>
@@ -372,6 +381,8 @@ export default function FeedbackForm({
                   ? "✌🏻 You have reached the daily survey limit. Until your next visit! 😉"
                   : isCaCountry || isFrCountry
                   ? "✌🏻 Vous avez atteint la limite quotidienne d'enquêtes. A votre prochaine visite ! 😉"
+                  : isItCountry
+                  ? "✌🏻 Hai raggiunto il limite giornaliero di sondaggi. Alla tua prossima visita! 😉"
                   : "✌🏻 Has alcanzado el límite diario de encuestas. ¡Hasta tu próxima visita! 😉"}
               </p>
             </div>
@@ -384,12 +395,16 @@ export default function FeedbackForm({
                 ? "We value your opinion 😊, it will take you less than "
                 : isCaCountry || isFrCountry
                 ? "Nous apprécions votre avis 😊, cela vous prendra moins de "
+                : isItCountry
+                ? "Apprezziamo la tua opinione 😊, ci vorrà meno di "
                 : "Valoramos tu opinión 😊, te tomará menos de "}
               <span className="text-sky-500 font-medium">
                 {isUsCountry
                   ? "1 minute"
                   : isCaCountry || isFrCountry
                   ? "1 minute"
+                  : isItCountry
+                  ? "1 minuto"
                   : "1 minuto"}
               </span>
             </CardTitle>
@@ -400,8 +415,8 @@ export default function FeedbackForm({
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-4 md:space-y-6"
                 noValidate
-                >
-                <div className={cn('space-y-3 mb-3', {})}>
+              >
+                <div className={cn("space-y-3 mb-3", {})}>
                   {/*<Wizard/>*/}
                   <FormField
                     control={form.control}
@@ -413,6 +428,8 @@ export default function FeedbackForm({
                             ? "Email"
                             : isCaCountry || isFrCountry
                             ? "Courrier électronique"
+                            : isItCountry
+                            ? "Email"
                             : "Correo electrónico"}
                         </FormLabel>
                         <FormControl>
@@ -483,6 +500,8 @@ export default function FeedbackForm({
                             ? "Full name"
                             : isCaCountry || isFrCountry
                             ? "Nom complet"
+                            : isItCountry
+                            ? "Nome completo"
                             : "Nombre completo"}
                         </FormLabel>
                         <FormControl>
@@ -502,6 +521,8 @@ export default function FeedbackForm({
                             ? "Phone"
                             : isCaCountry || isFrCountry
                             ? "Téléphone"
+                            : isItCountry
+                            ? "Telefono"
                             : "Teléfono"}
                         </FormLabel>
                         <FormControl>
@@ -545,6 +566,8 @@ export default function FeedbackForm({
                                 ? "I agree to receive promotions"
                                 : isCaCountry || isFrCountry
                                 ? "J'accepte de recevoir des promotions"
+                                : isItCountry
+                                ? "Accetto di ricevere promozioni"
                                 : "Acepto recibir promociones"}
                             </span>
                           </>
@@ -562,6 +585,8 @@ export default function FeedbackForm({
                             ? "Your birthday? 🎂 (optional)"
                             : isCaCountry || isFrCountry
                             ? "Ton anniversaire? 🎂 (facultatif)"
+                            : isItCountry
+                            ? "Il tuo compleanno? 🎂 (opzionale)"
                             : "¿Tu fecha de cumpleaños? 🎂 (opcional)"}
                         </FormLabel>
                         <FormControl>
@@ -588,6 +613,7 @@ export default function FeedbackForm({
                             isUsCountry,
                             isCaCountry,
                             isFrCountry,
+                            isItCountry,
                             customerType
                           )}
                         </FormLabel>
@@ -632,6 +658,8 @@ export default function FeedbackForm({
                             ? "People at the table?"
                             : isCaCountry || isFrCountry
                             ? "Du monde à table ?"
+                            : isItCountry
+                            ? "Persone al tavolo?"
                             : "¿Personas en la mesa?"}
                         </FormLabel>
                         <FormControl>
@@ -663,6 +691,8 @@ export default function FeedbackForm({
                             ? "How much did you spend today per person?"
                             : isCaCountry || isFrCountry
                             ? "Qu'est-ce que tu as à manger aujourd'hui par personne ?"
+                            : isItCountry
+                            ? "Quanto hai speso oggi a persona?"
                             : "¿Cuánto gastaste hoy por persona?"}
                         </FormLabel>
                         <FormControl>
@@ -694,6 +724,8 @@ export default function FeedbackForm({
                             ? "What was your payment method?"
                             : isCaCountry || isFrCountry
                             ? "Quelle était votre méthode de paiement ?"
+                            : isItCountry
+                            ? "Qual è stato il tuo metodo di pagamento?"
                             : "¿Cuál fue tu forma de pago?"}
                         </FormLabel>
                         <FormControl>
@@ -725,6 +757,8 @@ export default function FeedbackForm({
                             ? "How were we today?"
                             : isCaCountry || isFrCountry
                             ? "Comment sommes-nous le jour d'aujourd'hui ?"
+                            : isItCountry
+                            ? "Come siamo stati oggi?"
                             : "¿Cómo estuvimos el dia de hoy?"}
                         </FormLabel>
                         <FormControl>
@@ -748,6 +782,8 @@ export default function FeedbackForm({
                             ? "What can we improve?"
                             : isCaCountry || isFrCountry
                             ? "Et qu'est-ce que nous pourrions améliorer?"
+                            : isItCountry
+                            ? "Cosa possiamo migliorare?"
                             : "¿En qué podemos mejorar?"}
                         </FormLabel>
                       </FormItem>
@@ -785,6 +821,8 @@ export default function FeedbackForm({
                                     ? "Food"
                                     : isCaCountry || isFrCountry
                                     ? "Cuisine"
+                                    : isItCountry
+                                    ? "Cibo"
                                     : "Comida"}
                                 </p>
                               </FormLabel>
@@ -824,6 +862,8 @@ export default function FeedbackForm({
                                     ? "Service"
                                     : isCaCountry || isFrCountry
                                     ? "Service"
+                                    : isItCountry
+                                    ? "Servizio"
                                     : "Servicio"}
                                 </p>
                               </FormLabel>
@@ -863,6 +903,8 @@ export default function FeedbackForm({
                                     ? "Atmosphere"
                                     : isCaCountry || isFrCountry
                                     ? "Ambiance"
+                                    : isItCountry
+                                    ? "Atmosfera"
                                     : "Ambiente"}
                                 </p>
                               </FormLabel>
@@ -876,6 +918,8 @@ export default function FeedbackForm({
                             ? "Please select at least one option"
                             : isCaCountry
                             ? "Veuillez sélectionner au moins une option"
+                            : isItCountry
+                            ? "Seleziona almeno un'opzione"
                             : "Por favor selecciona al menos una opción"}
                         </FormMessage>
                       ) : null}
@@ -889,6 +933,8 @@ export default function FeedbackForm({
                                 ? "Share details about your experience in this place"
                                 : isCaCountry || isFrCountry
                                 ? "Partagez des détails sur votre expérience dans ce lieu"
+                                : isItCountry
+                                ? "Condividi i dettagli della tua esperienza in questo posto"
                                 : "Compartenos detalles sobre tu experiencia en este lugar"}
                             </FormLabel>
                             <FormControl>
@@ -898,6 +944,8 @@ export default function FeedbackForm({
                                     ? "Ej:the food was very good, but the service was slow."
                                     : isCaCountry || isFrCountry
                                     ? "Fr: La nourriture était très bonne, mais le service était lent."
+                                    : isItCountry
+                                    ? "Es: Il cibo era molto buono, ma il servizio era lento."
                                     : "Ej: La comida estuvo muy buena, pero el servicio fue lento."
                                 }
                                 {...field}
@@ -919,6 +967,7 @@ export default function FeedbackForm({
                       isCaCountry={isCaCountry}
                       isFrCountry={isFrCountry}
                       isUsCountry={isUsCountry}
+                      isItCountry={isItCountry}
                     />
                   ) : null
                 ) : null}
@@ -935,6 +984,8 @@ export default function FeedbackForm({
                     ? "Send"
                     : isCaCountry || isFrCountry
                     ? "Envoyer"
+                    : isItCountry
+                    ? "Inviare"
                     : "Enviar"}
                 </Button>
                 <CardFooter>
@@ -955,6 +1006,8 @@ export default function FeedbackForm({
                               ? 'By pressing "Submit", I declare that I accept the'
                               : isCaCountry || isFrCountry
                               ? 'En pressant "Enviar", déclarez que vous acceptez les'
+                              : isItCountry
+                              ? 'Premendo "Inviare", dichiaro di accettare i'
                               : 'Al presionar "Enviar", declaro que acepto los'}{" "}
                             <a
                               className="text-primary hover:underline"
@@ -966,12 +1019,16 @@ export default function FeedbackForm({
                                 ? "Terms and Cons"
                                 : isCaCountry || isFrCountry
                                 ? "Conditions et conditions"
+                                : isItCountry
+                                ? "Termini e condizioni"
                                 : "Términos y Condiciones"}
                             </a>{" "}
                             {isUsCountry
                               ? " and the "
                               : isCaCountry || isFrCountry
                               ? " et là "
+                              : isItCountry
+                              ? " e le "
                               : " y las "}{" "}
                             <a
                               className="text-primary hover:underline"
@@ -983,6 +1040,8 @@ export default function FeedbackForm({
                                 ? "Privacy Policies"
                                 : isCaCountry
                                 ? "Politiques de confidentialité"
+                                : isItCountry
+                                ? "Politiche sulla riservatezza"
                                 : "Políticas de Privacidad"}
                             </a>
                             .
@@ -1003,12 +1062,16 @@ export default function FeedbackForm({
                           ? "Almost there!"
                           : isCaCountry || isFrCountry
                           ? "Presque là !"
+                          : isItCountry
+                          ? "Quasi fatto!"
                           : "¡Ya casi!"}
                         <br />
                         {isUsCountry
                           ? "You will be redirected to"
                           : isCaCountry || isFrCountry
                           ? "Vous allez être redirigé vers"
+                          : isItCountry
+                          ? "Sarai reindirizzato a"
                           : "Te estaremos redireccionando a"}
                       </p>
                       <Image
@@ -1023,6 +1086,8 @@ export default function FeedbackForm({
                           ? "What was the best part of your visit?"
                           : isCaCountry || isFrCountry
                           ? "Qu'est-ce qui s'est le mieux passé pendant votre visite ?"
+                          : isItCountry
+                          ? "Qual è stata la parte migliore della tua visita?"
                           : "¿Qué fue lo mejor de tu visita?"}
                       </p>
                       <RadioGroup
@@ -1048,6 +1113,8 @@ export default function FeedbackForm({
                               ? "Ex: The food was very good, recommended."
                               : isCaCountry || isFrCountry
                               ? "Ex: La nourriture était très bonne, recommandée."
+                              : isItCountry
+                              ? "Es: Il cibo era molto buono, consigliato."
                               : "Ej: La comida estuvo muy buena, recomendado."
                           }
                           onChange={(event) =>
@@ -1072,6 +1139,8 @@ export default function FeedbackForm({
                           ? "Text copied! Just paste it into Google and you're done. 😍"
                           : isCaCountry || isFrCountry
                           ? "Texte copié ! Il suffit de le coller sur Google et c'est fait. 😍"
+                          : isItCountry
+                          ? "Testo copiato! Basta incollarlo su Google e il gioco è fatto. 😍"
                           : "¡Texto copiado! Solo pégalo en Google y listo. 😍"}
                       </p>
                       {loadingPercentage > 0 && (
@@ -1101,6 +1170,8 @@ export default function FeedbackForm({
                           ? "COPY TO GOOGLE"
                           : isCaCountry || isFrCountry
                           ? "ALLER SUR GOOGLE"
+                          : isItCountry
+                          ? "COPIA SU GOOGLE"
                           : "PEGAR EN GOOGLE"}
                       </Button>
                       <div className="flex gap-3">
@@ -1115,6 +1186,8 @@ export default function FeedbackForm({
                             ? 'By pressing "Submit", I declare that I accept the'
                             : isCaCountry || isFrCountry
                             ? 'En pressant "Enviar", déclarez que vous acceptez les'
+                            : isItCountry
+                            ? 'Premendo "Inviare", dichiaro di accettare i'
                             : 'Al presionar "Enviar", declaro que acepto los'}{" "}
                           <a
                             className="text-primary hover:underline"
@@ -1126,12 +1199,16 @@ export default function FeedbackForm({
                               ? "Terms and Cons"
                               : isCaCountry || isFrCountry
                               ? "Conditions et conditions"
+                              : isItCountry
+                              ? "Termini e condizioni"
                               : "Términos y Condiciones"}
                           </a>{" "}
                           {isUsCountry
                             ? " and the "
                             : isCaCountry || isFrCountry
                             ? " et là "
+                            : isItCountry
+                            ? " e le "
                             : " y las "}{" "}
                           <a
                             className="text-primary hover:underline"
@@ -1143,6 +1220,8 @@ export default function FeedbackForm({
                               ? "Privacy Policies"
                               : isCaCountry
                               ? "Politiques de confidentialité"
+                              : isItCountry
+                              ? "Politiche sulla riservatezza"
                               : "Políticas de Privacidad"}
                           </a>
                           .
