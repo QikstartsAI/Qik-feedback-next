@@ -29,6 +29,7 @@ const FeedbackFormServices = lazy(
 );
 const CUSTOM_HOOTERS_FORM_ID = "hooters";
 const CUSTOM_YOGURT_FORM_ID = "yogurt-amazonas";
+const CUSTOM_POLLOSDCAMPO_FORM_ID = "pollos-d-campo";
 const CUSTOM_GUS_FORM_ID = "pollo-gus";
 
 export default function FeedbackFormRoot() {
@@ -49,7 +50,10 @@ export default function FeedbackFormRoot() {
   const [isQr, setIsQr] = useState(false);
   const [rating, setRating] = useState("");
   const isHootersForm = businessId === CUSTOM_HOOTERS_FORM_ID;
-  const isYogurtForm = businessId === CUSTOM_YOGURT_FORM_ID;
+  const enableGeolocation = [
+    CUSTOM_YOGURT_FORM_ID,
+    CUSTOM_POLLOSDCAMPO_FORM_ID,
+  ].includes(businessId ?? "");
   const isGusForm = businessId === CUSTOM_GUS_FORM_ID;
   const isDscSolutions = businessId === DSC_SOLUTIONS_ID;
   const [customerName, setCustomerName] = useState("");
@@ -238,7 +242,7 @@ export default function FeedbackFormRoot() {
           )}
           <Toaster />
         </div>
-        {(isHootersForm || isYogurtForm) && (
+        {(isHootersForm || enableGeolocation) && (
           <RequestLocationDialog
             branches={getBranchesListByPermission()}
             open={requestLocation}
