@@ -30,6 +30,8 @@ const getOthersText = (businessCountry: Country | undefined) => {
     ? "Others"
     : businessCountry === "CA" || businessCountry === "FR"
     ? "Autres"
+    : businessCountry === "IT"
+    ? "Altri"
     : "Otros";
 };
 
@@ -39,18 +41,24 @@ const getOtherOptions = (businessCountry: Country | undefined) => {
       ? "Walking"
       : businessCountry === "CA" || businessCountry === "FR"
       ? "Marche"
+      : businessCountry === "IT"
+      ? "Camminando"
       : "Caminando";
   const billboard =
     businessCountry === "US"
       ? "Billboard"
       : businessCountry === "CA" || businessCountry === "FR"
       ? "Panneau d'affichage"
+      : businessCountry === "IT"
+      ? "Cartellone pubblicitario"
       : "Valla publicitaria";
   const events =
     businessCountry === "US"
       ? "Events"
       : businessCountry === "CA" || businessCountry === "FR"
       ? "Événements"
+      : businessCountry === "IT"
+      ? "Eventi"
       : "Eventos";
 
   return [
@@ -73,6 +81,8 @@ const getKnownOrigins = (businessCountry: Country | undefined) => {
       ? "Referred"
       : businessCountry === "CA" || businessCountry === "FR"
       ? "Référé"
+      : businessCountry === "IT"
+      ? "Riferito"
       : "Referido";
 
   return [
@@ -91,6 +101,8 @@ const getCustomersQuantity = (businessCountry: Country | undefined) => {
       ? "To go"
       : businessCountry === "CA" || businessCountry === "FR"
       ? "Pour emporter"
+      : businessCountry === "IT"
+      ? "Da asporto"
       : "Para llevar";
 
   const forDelivery =
@@ -98,6 +110,8 @@ const getCustomersQuantity = (businessCountry: Country | undefined) => {
       ? "For delivery"
       : businessCountry === "CA" || businessCountry === "FR"
       ? "Pour livraison"
+      : businessCountry === "IT"
+      ? "Per consegna"
       : "Domicilio";
   return [
     { value: "1-2", label: "1-2" },
@@ -114,6 +128,8 @@ const getGoodFeedbackOptions = (businessCountry: Country | undefined) => {
       ? "Everything was amazing, I loved it! 🌟✨"
       : businessCountry === "CA" || businessCountry === "FR"
       ? "Tout était incroyable, j'ai adoré ! 🌟✨"
+      : businessCountry === "IT"
+      ? "Tutto era incredibile, mi è piaciuto! 🌟✨"
       : "Todo increíble, ¡me encantó! 🌟✨";
 
   const recommended =
@@ -121,6 +137,8 @@ const getGoodFeedbackOptions = (businessCountry: Country | undefined) => {
       ? "Exceeded my expectations, highly recommended 👍💯"
       : businessCountry === "CA" || businessCountry === "FR"
       ? "A dépassé mes attentes, très recommandé 👍💯"
+      : businessCountry === "IT"
+      ? "Ha superato le mie aspettative, altamente raccomandato 👍💯"
       : "Superó mis expectativas, muy recomendado 👍💯";
 
   const greatExperience =
@@ -128,6 +146,8 @@ const getGoodFeedbackOptions = (businessCountry: Country | undefined) => {
       ? "Great experience, I will definitely come back! 😃👏"
       : businessCountry === "CA" || businessCountry === "FR"
       ? "Grande expérience, je reviendrai sans doute ! 😃👏"
+      : businessCountry === "IT"
+      ? "Grande esperienza, tornerò sicuramente! 😃👏"
       : "Gran experiencia, ¡voleveré sin duda! 😃👏";
 
   const amazing =
@@ -135,6 +155,8 @@ const getGoodFeedbackOptions = (businessCountry: Country | undefined) => {
       ? "Excellent in all aspects, congratulations! 🎉🙌"
       : businessCountry === "CA" || businessCountry === "FR"
       ? "Excellente dans tous les aspects, bravo ! 🎉🙌"
+      : businessCountry === "IT"
+      ? "Eccellente in tutti gli aspetti, congratulazioni! 🎉🙌"
       : "Excelente en todos los aspectos, ¡felicitaciones! 🎉🙌";
 
   return [
@@ -155,12 +177,55 @@ const getAverageTicket = (businessCountry: Country | undefined) => {
   );
 };
 
+const localizedCommonPaymentMethods = (businessCountry: Country | undefined) =>
+  commonPaymentMethods.map((method) => {
+    let localizedName;
+    switch (method.id) {
+      case "credit-card":
+        localizedName =
+          businessCountry === "US"
+            ? "Credit Card"
+            : businessCountry === "CA" || businessCountry === "FR"
+            ? "Carte de Crédit"
+            : businessCountry === "IT"
+            ? "Carta di Credito"
+            : "Tarjeta de Crédito";
+        break;
+      case "cash":
+        localizedName =
+          businessCountry === "US"
+            ? "Cash"
+            : businessCountry === "CA" || businessCountry === "FR"
+            ? "Espèces"
+            : businessCountry === "IT"
+            ? "Contanti"
+            : "Efectivo";
+        break;
+      case "transfer":
+        localizedName =
+          businessCountry === "US"
+            ? "Transfer"
+            : businessCountry === "CA" || businessCountry === "FR"
+            ? "Virement"
+            : businessCountry === "IT"
+            ? "Bonifico"
+            : "Transferencia";
+        break;
+      default:
+        localizedName = method.name;
+    }
+    return { ...method, name: localizedName };
+  });
+
 const getWalletByCountry = (businessCountry: Country | undefined) => {
   const wallets = Object.entries(walletsByCountry).find(
     ([key]) => key === businessCountry
   )?.[1];
   return (
-    [...(wallets || []), ...commonPaymentMethods]?.map((wallet) => ({
+    [
+      ...(wallets || []),
+      ...localizedCommonPaymentMethods(businessCountry),
+    ]?.map((wallet) => ({
       value: wallet.id,
       label: wallet.name,
       image: wallet.image,
@@ -202,6 +267,8 @@ const getImprovements: IGetImprovements = ({
       ? Improvements.Food
       : businessCountry === "CA" || businessCountry === "FR"
       ? "Nourriture"
+      : businessCountry === "IT"
+      ? "Cibo"
       : "Comida";
 
   const serviceLabel =
@@ -209,6 +276,8 @@ const getImprovements: IGetImprovements = ({
       ? Improvements.Service
       : businessCountry === "CA" || businessCountry === "FR"
       ? "Service"
+      : businessCountry === "IT"
+      ? "Servizio"
       : "Servicio";
 
   const ambienceLabel =
@@ -216,6 +285,8 @@ const getImprovements: IGetImprovements = ({
       ? Improvements.Ambience
       : businessCountry === "CA" || businessCountry === "FR"
       ? "Ambiance"
+      : businessCountry === "IT"
+      ? "Atmosfera"
       : "Ambiente";
 
   const Improve = [];
