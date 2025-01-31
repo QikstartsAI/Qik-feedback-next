@@ -21,6 +21,7 @@ import { useDistanceMatrix } from "../hooks/useDistanceMatrix";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { Branch } from "../types/business";
 import { getBranchById } from "../layers/data";
+import BenitoMiamiForm from "./feedback/customForms/BenitoMiamiForm";
 
 const Hero = lazy(() => import("./Hero"));
 const FeedbackForm = lazy(() => import("./feedback/FeedbackForm"));
@@ -31,6 +32,10 @@ const CUSTOM_HOOTERS_FORM_ID = "hooters";
 const CUSTOM_YOGURT_FORM_ID = "yogurt-amazonas";
 const CUSTOM_POLLOSDCAMPO_FORM_ID = "pollos-d-campo";
 const CUSTOM_GUS_FORM_ID = "pollo-gus";
+const CUSTOM_BENIT_MIAMI_ID = {
+  branch: "ttIvaTT3WjuLnJtOIbqu",
+  sucursal: "miami",
+};
 
 export default function FeedbackFormRoot() {
   const {
@@ -56,6 +61,9 @@ export default function FeedbackFormRoot() {
   ].includes(businessId ?? "");
   const isGusForm = businessId === CUSTOM_GUS_FORM_ID;
   const isDscSolutions = businessId === DSC_SOLUTIONS_ID;
+  const isBenitoMiami =
+    businessId === CUSTOM_BENIT_MIAMI_ID.branch &&
+    branchId === CUSTOM_BENIT_MIAMI_ID.sucursal;
   const [customerName, setCustomerName] = useState("");
   const [requestLocation, setRequestLocation] = useState(false);
   const [locationPermission, setLocationPermission] = useState(false);
@@ -67,6 +75,7 @@ export default function FeedbackFormRoot() {
   const { closestDestination, setDistanceMatrix } = useDistanceMatrix();
   const [grantingPermissions, setGrantingPermissions] = useState(false);
 
+  console.log("isBenitoMiami:::", isBenitoMiami);
   function getLocation() {
     setGrantingPermissions(true);
     if (navigator.geolocation) {
@@ -208,6 +217,14 @@ export default function FeedbackFormRoot() {
                         setIsSubmitted={setIsSubmitted}
                         setRating={setRating}
                         customerType={customerType}
+                      />
+                    ) : isBenitoMiami ? (
+                      <BenitoMiamiForm
+                        business={business}
+                        setIsSubmitted={setIsSubmitted}
+                        setRating={setRating}
+                        customerType={customerType}
+                        setCustomerName={setCustomerName}
                       />
                     ) : (
                       <FeedbackForm
