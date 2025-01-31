@@ -6,6 +6,9 @@ const USERS_COLLECTION_NAME = 'businessUsers'
 const BUCKET_NAME = 'qik_feedback_test'
 const BUCKET_URL = `gs://${COLLECTION_NAME}`
 const DSC_SOLUTIONS_ID = 'dsc-solutions'
+const CUSTOM_HOOTERS_FORM_ID = "hooters";
+const CUSTOM_YOGURT_FORM_ID = "yogurt-amazonas";
+const CUSTOM_GUS_FORM_ID = "pollo-gus";
 const ASSETS_FOLDER = {
     icons: 'business/icons',
     background: 'business/background'
@@ -20,5 +23,8 @@ export {
     USERS_COLLECTION_NAME,
     DASHBOARD_COLLECTION_NAME,
     DSC_SOLUTIONS_ID,
-    MAPBOX_API_KEY
+    MAPBOX_API_KEY,
+    CUSTOM_HOOTERS_FORM_ID,
+    CUSTOM_YOGURT_FORM_ID,
+    CUSTOM_GUS_FORM_ID
 }

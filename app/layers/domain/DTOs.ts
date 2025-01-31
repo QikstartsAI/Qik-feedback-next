@@ -2,14 +2,30 @@ export interface BranchDTO {
   id: string;
   brand: string;
   owner: string;
-  payload?: object;
+  payload?: {
+    address: string;
+    country: string;
+    cover: string;
+    icon: string;
+    iconoWhite: string;
+    mapsUrl: string;
+    name: string;
+  };
 }
 
 export interface BrandDTO {
   id: string;
   logo: string;
   owner: string;
-  payload?: object;
+  payload?: {
+    address: string;
+    country: string;
+    cover: string;
+    iconoWhite: string;
+    mapsUrl: string;
+    name: string;
+    pricePlan: number;
+  };
 }
 
 export interface CatalogDTO {

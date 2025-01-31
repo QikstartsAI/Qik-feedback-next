@@ -13,23 +13,19 @@ import CustomIntro from "@/app/components/feedback/customForms/CustomIntro";
 import HootersThanks from "@/app/components/HootersThanks";
 import SimpleForm from "./feedback/customForms/SimpleForm";
 import SimpleThanks from "./SimpleThanks";
-import { DSC_SOLUTIONS_ID } from "../constants/general";
+import { CUSTOM_GUS_FORM_ID, CUSTOM_HOOTERS_FORM_ID, CUSTOM_YOGURT_FORM_ID, DSC_SOLUTIONS_ID } from "../constants/general";
 import RequestLocationDialog from "./RequestLocationDialog";
 import { getCookie, setCookie } from "../lib/utils";
 import { useDistanceMatrix } from "../hooks/useDistanceMatrix";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { Branch } from "../types/business";
-import { getBranchById } from "../layers/data";
-import { useBrand } from "../layers/presentation/hooks/brandHook";
+import useGetBrand from "../layers/presentation/hooks/useGetBrand";
 
 const Hero = lazy(() => import("./Hero"));
 const FeedbackForm = lazy(() => import("./feedback/FeedbackForm"));
 const FeedbackFormServices = lazy(
   () => import("./feedback/FeedbackFormServices")
 );
-const CUSTOM_HOOTERS_FORM_ID = "hooters";
-const CUSTOM_YOGURT_FORM_ID = "yogurt-amazonas";
-const CUSTOM_GUS_FORM_ID = "pollo-gus";
 
 export default function FeedbackFormRoot() {
   const {
@@ -41,6 +37,11 @@ export default function FeedbackFormRoot() {
     setSucursalId,
     sucursalId,
   } = useGetBusinessData();
+
+  const { brand } = useGetBrand();
+  console.log("BRAND", brand);
+  console.log("Business", business);
+
   const [customerType, setCustomerType] = useState<CustomerRole | null>(null);
   const toggleCustomer = (customerType: CustomerRole) => {
     setCustomerType(customerType);
@@ -63,9 +64,7 @@ export default function FeedbackFormRoot() {
   const { closestDestination, setDistanceMatrix } = useDistanceMatrix();
   const [grantingPermissions, setGrantingPermissions] = useState(false);
 
-  const { brand } = useBrand(businessId ?? "");
 
-  console.log("BRAND", brand?.payload);
   function getLocation() {
     setGrantingPermissions(true);
     if (navigator.geolocation) {

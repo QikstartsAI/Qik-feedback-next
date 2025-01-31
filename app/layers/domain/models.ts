@@ -1,10 +1,20 @@
+import { Country } from "@/app/types/business";
+
 export interface BranchModel {
   id: string;
   brand: string;
   owner: string;
   createdAt: Date;
   updatedAt: Date;
-  payload: object;
+  payload: {
+    address: string;
+    country: string;
+    cover: string;
+    icon: string;
+    iconoWhite: string;
+    mapsUrl: string;
+    name: string;
+  }
 }
 
 export interface BrandModel {
@@ -13,7 +23,15 @@ export interface BrandModel {
   owner: string;
   createdAt: Date;
   updatedAt: Date;
-  payload: object;
+  payload: {
+    address: string;
+    country: Country;
+    cover: string;
+    iconoWhite: string;
+    mapsUrl: string;
+    name: string;
+    pricePlan: number;
+  };
 }
 
 export interface CatalogModel {

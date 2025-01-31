@@ -1,3 +1,5 @@
+"use client";
+
 import React, {
   createContext,
   useContext,
@@ -56,7 +58,7 @@ export const useBrandContext = (brandId: string) => {
     if (brandId) {
       fetchBrand(brandId);
     }
-  }, [brandId, fetchBrand]);
+  }, [brandId]);
 
   return { brand, loading, error };
 };
