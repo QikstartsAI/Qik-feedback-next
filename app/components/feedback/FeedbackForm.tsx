@@ -434,7 +434,11 @@ export default function FeedbackForm({
                         </FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Ej: juan@gmail.com"
+                            placeholder={
+                              isItCountry
+                                ? "stefano@gmail.com"
+                                : "Ej: juan@gmail.com"
+                            }
                             {...field}
                             type="email"
                             onBlur={async () => {
@@ -505,7 +509,14 @@ export default function FeedbackForm({
                             : "Nombre completo"}
                         </FormLabel>
                         <FormControl>
-                          <Input placeholder="Ej: Juan Pérez" {...field} />
+                          <Input
+                            placeholder={
+                              isItCountry
+                                ? "Ej: Stefano Grassi"
+                                : "Ej: Juan Pérez"
+                            }
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
