@@ -436,7 +436,7 @@ export default function FeedbackForm({
                           <Input
                             placeholder={
                               isItCountry
-                                ? "stefano@gmail.com"
+                                ? "Esempio: stefano@gmail.com"
                                 : "Ej: juan@gmail.com"
                             }
                             {...field}
@@ -512,7 +512,7 @@ export default function FeedbackForm({
                           <Input
                             placeholder={
                               isItCountry
-                                ? "Ej: Stefano Grassi"
+                                ? "Esempio: Stefano Grassi"
                                 : "Ej: Juan Pérez"
                             }
                             {...field}
