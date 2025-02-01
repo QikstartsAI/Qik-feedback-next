@@ -62,11 +62,9 @@ import GoogleReviewMessage from "../../form/GoogleReviewMessage";
 import { lastFeedbackFilledIsGreaterThanOneDay } from "@/app/lib/utils";
 import { getCustomerDataInBusiness } from "@/app/lib/handleEmail";
 import { useSearchParams } from "next/navigation";
-import { walletsByCountry } from "@/app/constants/wallets";
 import { IconCopy } from "@tabler/icons-react";
 
 import Image from "next/image";
-import { Wizard } from "@/app/layers/ui/wizard";
 import { benitoMiamoFeedbackSchema } from "@/app/validators/BenitoMiamiFeedbackSchema";
 import handleBenitoMiamiSubmitFeedback from "@/app/lib/handleBenitoMiamiSubmit";
 
