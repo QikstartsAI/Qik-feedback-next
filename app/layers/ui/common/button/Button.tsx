@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "antd";
 import { BaseButtonProps } from "antd/es/button/button";
 
+
 type ButtonProps = {
   type?: "primary" | "default";
   text?: string;

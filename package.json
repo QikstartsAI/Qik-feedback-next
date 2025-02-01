@@ -24,6 +24,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "firebase": "^10.7.0",
+    "i18n": "^0.15.1",
     "next": "^14.2.5",
     "radix-ui": "^1.0.1",
     "react": "^18",
