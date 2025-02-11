@@ -1,43 +1,31 @@
 {
     "id": "default-form",
-    "form-one": [
+    "name": "Default Form",
+    "description": "Formulario de feedback por defecto",
+    "steps": [
         {
-            "Section-form-one": [
+            "id": "101",
+            "questions": [
                 {
                     "id": "emailfield",
                     "label": "Correo electrónico",
                     "type": "textbox",
                     "placeholder": "Ingresa tu correo",
-                    "required": true,
-                    "centerText": "text-center",
-                    "errorMessages": [
-                        "Porfavor Ingrese su email",
-                        "Email no valido"
-                    ]
+                    "required": true
                 },
                 {
                     "id": "namefield",
                     "label": "Nombre completo",
                     "type": "textbox",
                     "placeholder": "Ingresa tu nombre",
-                    "required": true,
-                    "centerText": "text-center",
-                    "errorMessages": [
-                        "Porfavor Ingrese su nombre",
-                        "El nombre no es valido"
-                    ]
+                    "required": true
                 },
                 {
                     "id": "askphonenumber",
                     "label": "Teléfono",
                     "placeholder": "Ej: 3001234567",
                     "type": "number",
-                    "required": true,
-                    "centerText": "text-center",
-                    "errorMessages": [
-                        "Porfavor Ingrese su telefono",
-                        "El numero de telefono no es valido"
-                    ]
+                    "required": true
                 },
                 {
                     "id": "promotionscheckbox",
@@ -53,13 +41,15 @@
                     "placeholder": "dd/mm/yyyy",
                     "max": "2005-12-31",
                     "required": false
-                }
-            ],
-            "Section-form-two": [
+                },
+                {
+                    "id": "suprise",
+                    "label": "Te sorprenderemos ese día😎"
+                },
                 {
                     "id": "socialmedia",
-                    "label": "¿Cómo nos conociste?",
-                    "type": "custom-radio-button",
+                    "title": "¿Cómo nos conociste?",
+                    "type": "select-options",
                     "required": true,
                     "options": [
                         {
@@ -69,7 +59,8 @@
                         {
                             "id": "socialmedia",
                             "label": "Redes Sociales",
-                            "sub-options": [
+                            "popupTitle": "¿En que red social nos viste?",
+                            "subOptions": [
                                 {
                                     "id": "instagram",
                                     "label": "Instagram"
@@ -107,7 +98,7 @@
                         {
                             "id": "otro",
                             "label": "Otro",
-                            "sub-options": [
+                            "subOptions": [
                                 {
                                     "id": "Flyers",
                                     "label": "Flyers"
@@ -135,76 +126,108 @@
                             ]
                         }
                     ]
+                },
+                {
+                    "id": "frequentClient",
+                    "title": "¿Qué te ha motivado a visitarnos esta vez?",
+                    "type": "select-options",
+                    "required": true,
+                    "options": [
+                        {
+                            "id": "promo",
+                            "label": "Vi una promo",
+                            "popupTitle": "¿Dónde viste la promo?",
+                            "subOptions": [
+                                {
+                                    "id": "instagram",
+                                    "label": "Instagram"
+                                },
+                                {
+                                    "id": "facebook",
+                                    "label": "Facebook"
+                                },
+                                {
+                                    "id": "youtube",
+                                    "label": "Youtube"
+                                },
+                                {
+                                    "id": "tiktok",
+                                    "label": "Tiktok"
+                                },
+                                {
+                                    "id": "google",
+                                    "label": "Google"
+                                },
+                                {
+                                    "id": "email",
+                                    "label": "Email"
+                                },
+                                {
+                                    "id": "whatsapp",
+                                    "label": "WhatsApp"
+                                },
+                                {
+                                    "id": "flyleaves",
+                                    "label": "Hojas volantes"
+                                },
+                                {
+                                    "id": "events",
+                                    "label": "Eventos o ferias"
+                                },
+                                {
+                                    "id": "alliances",
+                                    "label": "Alianzas"
+                                },
+                                {
+                                    "id": "tv",
+                                    "label": "Radio o Tv"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "enjoy",
+                            "label": "Disfruto venir aquí"
+                        },
+                        {
+                            "id": "maps",
+                            "label": "Google Maps"
+                        },
+                        {
+                            "id": "recommended",
+                            "label": "Me recomendaron nuevamente"
+                        },
+                        {
+                            "id": "reason",
+                            "label": "Otra razón",
+                            "title": "¿Decribe la razón de visitarnos?",
+                            "sub-options": [
+                                {
+                                    "id": "describe",
+                                    "type": "textbox",
+                                    "placeholder": "Ej: En una reunión de amigos"
+                                },
+                                {
+                                    "id": "accept",
+                                    "label": "Aceptar"
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
-        }
-    ],
-    "form-second-page": [
+        },
         {
-            "Section-form-one": [
+            "id": "103",
+            "questions": [
                 {
-                    "id": "peopleTable",
-                    "text": "¿Personas sentadas en la mesa hoy?",
-                    "primary": "bg-blue-600",
-                    "font-size": "25px",
-                    "centerText": "text-center",
-                    "options": [
-                        {
-                            "opt1": "1-2",
-                            "opt2": "2-4",
-                            "opt3": "+4",
-                            "opt4": "Para llevar",
-                            "opt5": "Domicilio"
-                        }
-                    ]
-                }
-            ],
-            "Section-form-two": [
-                {
-                    "id": "averageExpense",
-                    "text": "¿Promedio de gasto por persona?",
-                    "primary": "bg-blue-600",
-                    "font-size": "25px",
-                    "centerText": "text-center",
-                    "options": [
-                        {
-                            "opt1": "1-5",
-                            "opt2": "5-10",
-                            "opt3": "10-15",
-                            "opt4": "15-20",
-                            "opt5": "20-25",
-                            "opt6": "+25"
-                        }
-                    ]
-                }
-            ],
-            "Setion-form-three": [
-                {
-                    "id": "paymentMethod",
-                    "text": "¿Cuál fue tu forma de pago?",
-                    "options": [
-                        {
-                            "id": "creditCard",
-                            "text": "Tarjeta de crédito",
-                            "buttonImageUrl": "https://firebasestorage.googleapis.com/v0/b/qik_feedback/o/wallets%2Ficon-creditcard.png?alt=media&token=5084677a-2d7a-4778-a701-c72c1c08be4a"
-                        },
-                        {
-                            "id": "efectivo",
-                            "text": "Efectivo",
-                            "buttonImageUrl": "https://firebasestorage.googleapis.com/v0/b/qik_feedback/o/wallets%2Ficon-cash.png?alt=media&token=8905ed63-ae8c-4920-be64-e7fcb40bbbef"
-                        },
-                        {
-                            "id": "transferencias",
-                            "text": "Transferencias",
-                            "buttonImageUrl": "https://firebasestorage.googleapis.com/v0/b/qik_feedback/o/wallets%2Ficon-transfer.png?alt=media&token=5d3c22c6-f4f4-4de6-8775-55d2a68de4c7"
-                        }
-                    ]
+                    "id": "rateExperience",
+                    "titles": {
+                        "main": "¿Cómo calificas tu experiencia HOY?",
+                        "secondary": "¿Qué fue lo mejor?"
+                    },
+                    "text": "¡Queremos escucharlo todo, lo bueno y no tan bueno!"
                 }
             ]
         }
-    ],
-
-    "form-third-page": [
-        
     ]
-}
+} 

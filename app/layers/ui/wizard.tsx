@@ -1,53 +1,152 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DefaultFormNew from "../hooks/DefaultFormNew.json";
-import { IconChevronCompactRight, IconChevronCompactLeft } from "@tabler/icons-react";
+import { Form, Progress, Flex } from "antd";
 
-import { Form, Progress, Flex } from "antd"
+interface Option {
+  id: string;
+  label?: string;
+  text?: string;
+  popupTitle?: string;
+  buttonImageUrl?: string;
+  subOptions?: { id: string; label: string }[];
+}
 
 interface FormField {
   id: string;
   label?: string;
   type?: string;
+  title?: string;
   placeholder?: string;
   required?: boolean;
-  centerText?: string;
   ischecked?: boolean;
   max?: string;
   text?: string;
-  options?: { opt1: string; opt2: string; opt3: string; opt4: string; opt5: string }[];
-  errorMessages?: string[];
+  options?: Option[]
+  titles?: {
+    main: string;
+    secondary?: string;
+  };
 }
-
-//estados pop up
-
 
 export const Wizard = () => {
   const [response, setResponse] = useState("");
   const [page, setPage] = useState(1);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
-
+  const [active, setActive] = useState<string | null>(null);
   const [showPopup, setShowPopup] = useState(false);
-  const [showOtherPopup, setShowOtherPopup] = useState(false);
+  const [popupOptions, setPopupOptions] = useState<Option[]>([]);
+  const [isFrequentCustomer, setIsFrequentCustomer] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const getFormData = (): FormField[] => {
-    if (page === 1) return DefaultFormNew["form-one"][0]["Section-form-one"];
-    if (page === 2) return DefaultFormNew["form-second-page"][0]["Section-form-one"];
+    if (page === 1) return DefaultFormNew.steps[0].questions;
+    if (page === 2) return DefaultFormNew.steps[1].questions;
     return [];
   };
 
-  const progreeBar = () => {
-    if (page === 1) return 33;
-    if (page === 2) return 66;
-    return 0;
-  }
+  const calculateProgress = (values: any) => {
+    const formFields = getFormData();
+    const totalFields = formFields.filter(field => field.required).length;
+    const filledFields = Object.keys(values).filter(key => values[key]).length;
+    const newProgress = (filledFields / totalFields) * 100;
+    setProgress(newProgress);
+  };
 
   const [form] = Form.useForm();
-
   const formOne: FormField[] = getFormData();
 
-  return (
+  const mapOptions = (options: Option[]) => {
+    return options.map((option) => (
+      <button
+        key={option.id}
+        className="border border-gray-400 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 focus:ring focus:ring-blue-200"
+        onClick={() => {
+          if (option.subOptions) {
+            setPopupOptions(option.subOptions);
+            setShowPopup(true);
+          } else if (option.id === "reason") {
+            setSelectedOption("reason");
+            setShowPopup(true);
+          } else {
+            setSelectedOption(option.id);
+          }
+        }}
+      >
+        {option.label}
+      </button>
+    ));
+  };
 
+  const handlePopupClose = () => {
+    setShowPopup(false);
+    setPopupOptions([]);
+    setSelectedOption(null);
+  };
+
+  const renderPopup = () => {
+    if (!showPopup) return null;
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="!text-center bg-white p-6 rounded-xl border border-black border-opacity-60 shadow-lg max-w-md w-full">
+          <h2 className="text-blue-500 text-2xl font-bold mb-4">
+            Selecciona una opción
+          </h2>
+          <div className="flex flex-wrap justify-center gap-4">
+            {popupOptions.map((option) => (
+              <button
+                key={option.id}
+                className="border border-gray-400 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 focus:ring focus:ring-blue-200"
+                onClick={() => {
+                  setSelectedOption(option.id);
+                  handlePopupClose();
+                }}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const inputPopup = () => {
+    if (!showPopup) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="!text-center bg-white p-6 rounded-xl border border-black border-opacity-60 shadow-lg max-w-md w-full">
+          <h2 className="text-blue-500 text-2xl font-bold mb-4">
+            ¿Decribe la razón de visitarnos?
+          </h2>
+          <textarea
+            className="w-full border-2 border-blue-500 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Ej: En una reunión de amigos"
+            rows={3}
+          />
+          <button
+            className="mt-4 px-5 py-2 hover:bg-blue-800 focus:ring focus:ring-blue-200 bg-blue-600 text-white rounded-full"
+            onClick={handlePopupClose}
+          >
+            Aceptar
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const handleClick = (type: string) => {
+    setActive(type);
+    setTimeout(() => {
+      setResponse(type);
+      setIsFrequentCustomer(type === "frecuente");
+    }, 500);
+  };
+
+  return (
     <div className="mt-10 w-full flex justify-center px-4">
+
+      {selectedOption === "reason" ? inputPopup() : renderPopup()}
 
       {!response ? (
         <div className="text-center">
@@ -59,44 +158,57 @@ export const Wizard = () => {
           </p>
 
           <div className="flex mt-7 justify-center items-center">
-            <button className="flex flex-col items-center mx-4" onClick={() => setResponse("nuevo")}>
-              <img src="/yellow-start.png" alt="Nuevo" style={{ maxWidth: "180px" }} />
+            <button
+              className="flex flex-col items-center mx-4"
+              onMouseEnter={() => setActive("nuevo")}
+              onMouseLeave={() => setActive(null)}
+              onClick={() => handleClick("nuevo")}
+            >
+              <img
+                src={active === "nuevo" ? "/yellow-start.png" : "/gray-start.png"}
+                alt="Nuevo"
+                style={{ maxWidth: "180px" }}
+              />
               <h1 className="text-gray-800 md:text-xl font-bold">Nuevo</h1>
             </button>
 
-            <button className="flex flex-col items-center mx-4" onClick={() => setResponse("frecuente")}>
-              <img src="/gray-heart.png" alt="Frecuente" style={{ maxWidth: "180px" }} />
+            <button
+              className="flex flex-col items-center mx-4"
+              onMouseEnter={() => setActive("frecuente")}
+              onMouseLeave={() => setActive(null)}
+              onClick={() => handleClick("frecuente")}
+            >
+              <img
+                src={active === "frecuente" ? "/red-heart.png" : "/gray-heart.png"}
+                alt="Frecuente"
+                style={{ maxWidth: "180px" }}
+              />
               <h1 className="text-gray-800 md:text-xl font-bold">Frecuente</h1>
             </button>
           </div>
         </div>
       ) : (
-        <Form autoComplete="on" form={form} name="validateOnly">
-
+        <Form autoComplete="on" form={form} name="validateOnly" onValuesChange={(_, values) => calculateProgress(values)}>
           <Flex>
             <Progress
               strokeLinecap="round"
               status="active"
-              percent={progreeBar()}
+              percent={progress}
               strokeWidth={35}
               strokeColor="#2B82F6"
               percentPosition={{ align: 'end', type: 'inner' }}
               format={(percent) => (
                 <span style={{ fontWeight: 'bold', fontSize: '17px' }}>{percent}%</span>
               )}
-
             />
           </Flex>
-
 
           <div className="text-left mt-12">
             {page === 1 ? (
               <>
                 {formOne.map((field) => (
                   <div key={field.id} className="mb-6">
-                    {/*Email field*/}
                     {field.id === "emailfield" && (
-
                       <div className="relative mb-10">
                         <span className="absolute -top-3 left-3 bg-white px-2 text-sm text-gray-600 rounded-full z-10">
                           {field.label?.replace("(opcional)", "").trim()}
@@ -117,11 +229,8 @@ export const Wizard = () => {
                           />
                         </Form.Item>
                       </div>
-
                     )}
-                    {/*Name field*/}
                     {field.id === "namefield" && (
-
                       <div className="relative mb-10">
                         <span className="absolute -top-3 left-3 bg-white px-2 text-sm text-gray-600 rounded-full z-10">
                           {field.label?.replace("(opcional)", "").trim()}
@@ -142,11 +251,8 @@ export const Wizard = () => {
                           />
                         </Form.Item>
                       </div>
-
                     )}
-                    {/*Phone field*/}
                     {field.id === "askphonenumber" && (
-
                       <div className="relative">
                         <span className="absolute -top-3 left-3 bg-white px-2 text-sm text-gray-600 rounded-full z-10">
                           {field.label?.replace("(opcional)", "").trim()}
@@ -154,12 +260,12 @@ export const Wizard = () => {
                         <Form.Item
                           name="phone"
                           rules={[
-                            { required: true, message: "Porfavor Ingrese su telefono" },
-                            { type: "number", message: "El numero de telefono no es valido" },
+                            { required: false, message: "Por favor ingrese su teléfono" },
+                            { pattern: /^[0-9]+$/, message: "El número de teléfono no es válido" },
                           ]}
                         >
                           <input
-                            type={field.type}
+                            type="text"
                             id={field.id}
                             placeholder={field.placeholder}
                             required={field.required}
@@ -167,9 +273,7 @@ export const Wizard = () => {
                           />
                         </Form.Item>
                       </div>
-
                     )}
-
                     {field.type === "checkbox" && (
                       <div className="flex items-center">
                         <input
@@ -185,12 +289,10 @@ export const Wizard = () => {
                         </label>
                       </div>
                     )}
-
                     {field.type === "date" && (
                       <div className="relative">
-
                         <span className="absolute -top-2 left-3 bg-white px-2 text-sm text-gray-600 rounded-full">
-                          {field.label?.replace("(opcional)", "").replace("🎂", "").trim()}
+                          {field.label}
                         </span>
                         <input
                           type="date"
@@ -202,226 +304,73 @@ export const Wizard = () => {
                         />
                       </div>
                     )}
+                    {field.id === "suprise" && (
+                      <p className="text-sm text-gray-600">
+                        {field.label}
+                      </p>
+                    )}
+
+                    {isFrequentCustomer ? (
+                      field.id === "frequentClient" && (
+                        <div className="mt-8 text-center">
+                          <h2 className="text-blue-500 text-2xl font-bold">
+                            {field.title}
+                          </h2>
+                          <div className="flex flex-wrap justify-center gap-4 mt-6">
+                            {mapOptions(field.options || [])}
+                          </div>
+
+                        </div>
+                      )
+                    ) : (
+                      field.id === "socialmedia" && (
+                        <div className="mt-8 text-center">
+                          <h2 className="text-blue-500 text-2xl font-bold">
+                            {field.title}
+                          </h2>
+                          <div className="flex flex-wrap justify-center gap-4 mt-6">
+                            {mapOptions(field.options || [])}
+                          </div>
+                        </div>
+                      )
+                    )}
                   </div>
                 ))}
-
-                <p className="text-sm text-gray-600">
-                  Te sorprenderemos ese día<span role="img" aria-label="emoji">😎</span>
-                </p>
-
-                {/* Sección de botones: ¿Cómo nos conociste? */}
-                <div className="mt-8 text-center">
-                  <h2 className="text-blue-500 text-2xl font-bold">
-                    ¿Cómo nos conociste?
-                  </h2>
-                  <div className="flex flex-wrap justify-center gap-4 mt-6">
-                    <button className="border border-gray-300 px-4 py-2 rounded-full text-gray-700 hover:bg-gray-100 focus:ring focus:ring-blue-200">
-                      Google Maps
-                    </button>
-                    <button
-                      className="border border-gray-300 px-4 py-2 rounded-full text-gray-700 hover:bg-gray-100 focus:ring focus:ring-blue-200"
-                      onClick={() => setShowPopup(true)}
-                    >
-                      Redes Sociales
-                    </button>
-                    <button className="border border-gray-300 px-4 py-2 rounded-full text-gray-700 hover:bg-gray-100 focus:ring focus:ring-blue-200">
-                      WhatsApp
-                    </button>
-                    <button className="border border-gray-300 px-4 py-2 rounded-full text-gray-700 hover:bg-gray-100 focus:ring focus:ring-blue-200">
-                      Referido
-                    </button>
-                    <button className="border border-gray-300 px-4 py-2 rounded-full text-gray-700 hover:bg-gray-100 focus:ring focus:ring-blue-200">
-                      Pase por el local
-                    </button>
-                    <button className="border border-gray-300 px-4 py-2 rounded-full text-gray-700 hover:bg-gray-100 focus:ring focus:ring-blue-200">
-                      Vivo cerca
-                    </button>
-                    <button
-                      className="border border-gray-400 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 focus:ring focus:ring-blue-200"
-                      onClick={() => setShowOtherPopup(true)}
-                    >
-                      Otro
-                    </button>
-                  </div>
-                </div>
-
-                {/* Popup Redes sociales */}
-                {showPopup && (
-                  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                    <div className=" !text-center bg-white p-6 rounded-xl border border-black border-opacity-60 shadow-lg max-w-md w-full">
-                      <h2 className="text-blue-500 text-2xl font-bold mb-4">
-                        ¿Dónde viste la promo?
-                      </h2>
-                      <div className="flex flex-wrap justify-center gap-4">
-                        <button className="border border-gray-300 px-4 py-2 rounded-full text-gray-700 hover:bg-gray-100 focus:ring focus:ring-blue-200">
-                          Instagram
-                        </button>
-                        <button className="border border-gray-300 px-4 py-2 rounded-full text-gray-700 hover:bg-gray-100 focus:ring focus:ring-blue-200">
-                          Facebook
-                        </button>
-                        <button className="border border-gray-300 px-4 py-2 rounded-full text-gray-700 hover:bg-gray-100 focus:ring focus:ring-blue-200">
-                          YouTube
-                        </button>
-                        <button className="border border-gray-300 px-4 py-2 rounded-full text-gray-700 hover:bg-gray-100 focus:ring focus:ring-blue-200">
-                          TikTok
-                        </button>
-                      </div>
-                      <button
-                        onClick={() => setShowPopup(false)}
-                        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600"
-                      >
-                        Cerrar
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Popup Otro */}
-                {showOtherPopup && (
-                  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="!text-center bg-white p-6 rounded-xl border border-black border-opacity-60 shadow-lg max-w-md w-full">
-                      <h2 className="text-blue-500 text-2xl font-bold mb-4">
-                        ¿Dónde viste la promo?
-                      </h2>
-                      <div className="flex flex-wrap justify-center gap-4">
-                        <button className="border border-gray-300 px-4 py-2 rounded-full text-gray-700 hover:bg-gray-100 focus:ring focus:ring-blue-200">
-                          Flyers
-                        </button>
-                        <button className="border border-gray-300 px-4 py-2 rounded-full text-gray-700 hover:bg-gray-100 focus:ring focus:ring-blue-200">
-                          Eventos
-                        </button>
-                        <button className="border border-gray-300 px-4 py-2 rounded-full text-gray-700 hover:bg-gray-100 focus:ring focus:ring-blue-200">
-                          Email
-                        </button>
-                        <button className="border border-gray-300 px-4 py-2 rounded-full text-gray-700 hover:bg-gray-100 focus:ring focus:ring-blue-200">
-                          TV
-                        </button>
-                        <button className="border border-gray-300 px-4 py-2 rounded-full text-gray-700 hover:bg-gray-100 focus:ring focus:ring-blue-200">
-                          Radio
-                        </button>
-                        <button className="border border-gray-300 px-4 py-2 rounded-full text-gray-700 hover:bg-gray-100 focus:ring focus:ring-blue-200">
-                          Valla
-                        </button>
-                      </div>
-                      <button
-                        onClick={() => setShowOtherPopup(false)}
-                        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600"
-                      >
-                        Cerrar
-                      </button>
-                    </div>
-                  </div>
-                )}
-
               </>
             ) : (
+              // Página 2
               <div className="text-center">
-                {DefaultFormNew["form-second-page"][0]["Section-form-one"].map((field) => (
-                  <div key={field.id} className="mb-6">
-                    <h2 className="text-blue-500 text-2xl font-bold">
-                      {field.text}
-                    </h2>
-                    <div className="flex justify-center mt-4">
-                      {field.options?.map((opt, index) => (
-                        <div key={index} className="mx-2">
-                          {["opt1", "opt2", "opt3", "opt4", "opt5"].map((key) => (
-
-                            <button
-                              key={key}
-                              className="border rounded-lg mr-4 border-gray-400 px-4 py-2 rounded-full text-gray-700 hover:bg-gray-100 focus:ring focus:ring-blue-200"
-                              onClick={() => setResponse(opt[key as keyof typeof opt])}
-                            >
-                              {opt[key as keyof typeof opt]}
-                            </button>
-                          ))}
-                        </div>
-                      ))}
-                    </div>
+                {formOne.map((field) => (
+                  <div key={field.id}>
+                    <h2 className="text-blue-500 text-2xl font-bold">{field.titles?.main}</h2>
+                    <p className="text-base  text-gray-600">{field.text}</p>
+                    <h2 className="text-blue-500 text-2xl font-bold">{field.titles?.secondary}</h2>
                   </div>
                 ))}
-                {DefaultFormNew["form-second-page"][0]["Section-form-two"].map((field) => (
-                  <div key={field.id} className=" mt-8">
-                    <h2 className="text-blue-500 text-2xl font-bold">
-                      {field.text}
-                    </h2>
-                    <div className="flex justify-center mt-4">
-                      {field.options?.map((opt, index) => (
-                        <div key={index} className="mx-2">
-                          {["opt1", "opt2", "opt3", "opt4", "opt5", "opt6"].map((key) => (
-                            <button
-                              key={key}
-                              className="border mr-4 border-gray-400 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 focus:ring focus:ring-blue-200"
-                              onClick={() => setResponse(opt[key as keyof typeof opt])}
-                            >
-                              {opt[key as keyof typeof opt]}
-                            </button>
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-
-                {DefaultFormNew["form-second-page"][0]["Setion-form-three"].map((field) => (
-                  <div key={field.id} className="mt-8">
-                    <h2 className="text-blue-500 text-2xl font-bold text-center">
-                      {field.text}
-                    </h2>
-
-                    {/* Contenedor principal: Alinea los elementos en fila */}
-                    <div className="flex justify-center gap-6 mt-4">
-                      {field.options?.map((bt, index) => (
-                        /* Cada opción es una columna (botón arriba, texto abajo) */
-                        <div key={index} className="flex flex-col items-center">
-                          {/* Botón con imagen */}
-                          <button className="border rounded-lg border-gray-400  text-gray-700 hover:bg-gray-100 focus:ring focus:ring-blue-200">
-                            <img
-                              src={bt.buttonImageUrl}
-                              className="w-20  object-contain"
-                              alt={bt.text}
-                            />
-                          </button>
-
-                          {/* Texto debajo del botón */}
-                          <p className="mt-2 text-center text-gray-800">{bt.text}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-
               </div>
-
             )}
             {response && (
               <div className="!text-center mt-10 mb-20">
-                {page > 1 && (
-                  <button
-                    className="border border-gray-300 px-5 py-2 text-gray-900 hover:bg-gray-300 focus:ring focus:ring-blue-200 mr-5 rounded-full bg-gray-100"
-                    onClick={() => setPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage))}
-                  >
-                    Atrás
-                  </button>
-                )}
+                <button
+                  className="border border-gray-300 px-5 py-2 text-gray-900 hover:bg-gray-300 focus:ring focus:ring-blue-200 mr-5 rounded-full bg-gray-100"
+                  onClick={() => setPage(1)}
+                  disabled={page === 1}
+                >
+                  Atrás
+                </button>
 
-                <button className=" px-5 py-2 hover:bg-blue-800 focus:ring focus:ring-blue-200 bg-blue-600 text-white rounded-full "
-                  onClick={() => setPage((prevPage) => (prevPage < 2 ? prevPage + 1 : prevPage))}
+                <button
+                  className="px-5 py-2 hover:bg-blue-800 focus:ring focus:ring-blue-200 bg-blue-600 text-white rounded-full"
+                  onClick={() => setPage(2)}
+                  disabled={page === 2}
                 >
                   Siguiente
                 </button>
-
               </div>
-
-
             )}
           </div>
         </Form>
       )}
-
-
-
     </div>
-
-
   );
 };
