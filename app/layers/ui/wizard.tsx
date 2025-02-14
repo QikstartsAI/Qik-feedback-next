@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import DefaultFormNew from "../hooks/DefaultFormNew.json";
 import { Form, Progress, Flex, Button } from "antd";
 import { cn } from "@/app/lib/utils";
@@ -9,7 +9,7 @@ interface Option {
   text?: string;
   popupTitle?: string;
   buttonImageUrl?: string;
-  options?: { id?: string; label?: string; options?: Option[] }[];
+  options?: Option[];
 }
 
 interface FormField {
@@ -27,62 +27,69 @@ interface FormField {
 
 export const Wizard = () => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
-
   const [showPopup, setShowPopup] = useState(false);
-  const [popupOptions, setPopupOptions] = useState<Option[]>([]);
-
+  const [popupOptions, setPopupOptions] = useState<Record<string, Option[]>>(
+    {}
+  );
   const [progress, setProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
   const [clientType, setClientType] = useState("");
-
   const [responses, setResponses] = useState<Record<string, any>>({});
   const [form] = Form.useForm();
+  const popupRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
+        handlePopupClose();
+      }
+    };
+
+    if (showPopup) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showPopup]);
 
   const getFormData = (): FormField[] => {
-    if (clientType === "new") {
-      return DefaultFormNew.newClient.steps[currentStep].questions;
-    }
-    return [];
+    return clientType === "new"
+      ? DefaultFormNew.newClient.steps[currentStep].questions
+      : [];
   };
+
   const calculateProgress = (values: Record<string, any>) => {
     const formFields = getFormData();
-    console.log("formFields::", values);
     setResponses({ ...responses, ...values });
     const totalFields = formFields.filter((field) => field.required);
     const filledFields = totalFields.filter((field) => {
       if (!field.id) return false;
-      const isValid =
-        field?.required &&
+      return (
+        field.required &&
         !form.getFieldError(field.id)[0] &&
         values[field.id] &&
-        values[field.id].length > 1;
-      return isValid;
+        values[field.id].length > 1
+      );
     });
 
-    Object.keys(values).filter((key: string) => {
-      const field = formFields.find((f) => f.id === key);
-      const isValid =
-        field?.required &&
-        !form.getFieldError(key)[0] &&
-        values[key] &&
-        values[key].length > 1;
-      return isValid;
-    }).length;
     const newProgress =
       ((filledFields.length / totalFields.length) * 100) / getStepsLength();
     setProgress(newProgress);
   };
 
-  const formOne: FormField[] = getFormData();
-
   const handleNextStep = () => {
     const formFields = getFormData();
     const requiredFields = formFields.filter((field) => field.required);
-    console.log("requiredFields::::", requiredFields);
-    const allFieldsVerified = requiredFields.every((field) => {
-      const value = responses[field.id!];
-      return value;
-    });
+    const allFieldsVerified = requiredFields.every(
+      (field) => responses[field.id!]
+    );
 
     if (
       allFieldsVerified &&
@@ -106,9 +113,9 @@ export const Wizard = () => {
       .steps.length;
   };
 
-  const handleOptionClick = (option: Option) => {
+  const handleOptionClick = (fieldId: string, option: Option) => {
     if (option.options) {
-      setPopupOptions(option.options);
+      setPopupOptions({ [fieldId]: option.options });
       setShowPopup(true);
     } else if (option.id === "reason") {
       setSelectedOption("reason");
@@ -120,40 +127,56 @@ export const Wizard = () => {
 
   const handlePopupClose = () => {
     setShowPopup(false);
-    setPopupOptions([]);
+    setPopupOptions({});
     setSelectedOption(null);
   };
 
   const handleSelectOption = (fieldId?: string, option?: Option) => {
     if (!fieldId || !option) return;
-    setResponses({ ...responses, [fieldId]: option.id });
-    form.setFieldValue(fieldId, option.id);
-    calculateProgress(form.getFieldsValue());
+    if (option.options) {
+      setPopupOptions({ [fieldId]: option.options });
+      setShowPopup(true);
+    } else {
+      setResponses({ ...responses, [fieldId]: option.id });
+      form.setFieldValue(fieldId, option.id);
+      calculateProgress(form.getFieldsValue());
+    }
   };
 
   const handleOnFieldChange = (fieldId?: string, value?: any) => {
     if (!fieldId || value == undefined) return;
-    console.log("fieldId::::", fieldId, value);
     setResponses({ ...responses, [fieldId]: value });
     form.setFieldValue(fieldId, value);
     calculateProgress(form.getFieldsValue());
   };
 
+  const isOptionSelected = (fieldId?: string, options?: Option[]): boolean =>
+    options?.some((option) => option.id === responses[fieldId ?? ""]) ?? false;
+
   const renderPopup = () => {
     if (!showPopup) return null;
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-        <div className="!text-center bg-white p-6 rounded-xl border border-black border-opacity-60 shadow-lg max-w-md w-full">
+        <div
+          ref={popupRef}
+          className="!text-center bg-white p-6 rounded-xl border border-black border-opacity-60 shadow-lg max-w-md w-full"
+        >
           <h2 className="text-blue-500 text-2xl font-bold mb-4">
             Selecciona una opción
           </h2>
           <div className="flex flex-wrap justify-center gap-4">
-            {popupOptions.map((option) => (
+            {Object.values(popupOptions)[0].map((option) => (
               <button
                 key={option.id}
-                className="border border-gray-400 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 focus:ring focus:ring-blue-200"
+                className={cn(
+                  "border border-gray-400 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-qik hover:border-qik transition",
+                  {
+                    "bg-qik text-white border-qik":
+                      responses[Object.keys(popupOptions)[0]] == option.id,
+                  }
+                )}
                 onClick={() => {
-                  setSelectedOption(option.id || null);
+                  handleSelectOption(Object.keys(popupOptions)[0], option);
                   handlePopupClose();
                 }}
               >
@@ -171,7 +194,10 @@ export const Wizard = () => {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-        <div className="!text-center bg-white p-6 rounded-xl border border-black border-opacity-60 shadow-lg max-w-md w-full">
+        <div
+          ref={popupRef}
+          className="!text-center bg-white p-6 rounded-xl border border-black border-opacity-60 shadow-lg max-w-md w-full"
+        >
           <h2 className="text-blue-500 text-2xl font-bold mb-4">
             ¿Decribe la razón de visitarnos?
           </h2>
@@ -251,7 +277,7 @@ export const Wizard = () => {
       </Flex>
 
       <div className="flex flex-col gap-3 mt-5 w-full">
-        {formOne.map((field) => renderFormField(field))}
+        {getFormData().map((field) => renderFormField(field))}
       </div>
 
       <div className="text-center mt-10 mb-20">
@@ -286,11 +312,11 @@ export const Wizard = () => {
       case "date":
         return renderDateField(field);
       case "chips":
-        return rendeChipsFields(field);
+        return renderChipsFields(field);
     }
   };
 
-  const rendeChipsFields = (field: FormField) => (
+  const renderChipsFields = (field: FormField) => (
     <div className="mt-4 flex flex-col">
       <span className="font-bold text-[24px] text-center text-qik">
         {field.title?.trim()}
@@ -307,7 +333,8 @@ export const Wizard = () => {
                 "border border-gray-400 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-qik hover:border-qik transition",
                 {
                   "bg-qik text-white border-qik":
-                    responses[field.id ?? ""] == option.id,
+                    responses[field.id ?? ""] == option.id ||
+                    isOptionSelected(field.id, option.options),
                 }
               )}
               onClick={() => handleSelectOption(field.id, option)}
