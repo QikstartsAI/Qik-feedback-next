@@ -85,10 +85,10 @@
                         "type": "rate",
                         "required": true,
                         "options": [
-                            { "id": "bad", "label": "Bad" },
+                            { "id": "mal", "label": "Bad" },
                             { "id": "regular", "label": "Regular" },
-                            { "id": "good", "label": "Good" },
-                            { "id": "excellent", "label": "Excellent" }
+                            { "id": "bueno", "label": "Good" },
+                            { "id": "excelente", "label": "Excellent" }
                         ]
 
                     }

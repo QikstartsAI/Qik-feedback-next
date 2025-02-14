@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import DefaultFormNew from "../hooks/DefaultFormNew.json";
-import { Form, Progress, Flex, Button } from "antd";
+import { Form, Progress, Flex, Image, Radio } from "antd";
 import { cn } from "@/app/lib/utils";
+import "./wizard-styles.css";
 
 interface Option {
   id?: string;
@@ -257,6 +258,7 @@ export const Wizard = () => {
       autoComplete="on"
       form={form}
       name="validateOnly"
+      style={{ minWidth: "400px" }}
       className="max-w-lg"
       onValuesChange={(_, values) => calculateProgress(values)}
     >
@@ -276,20 +278,20 @@ export const Wizard = () => {
         />
       </Flex>
 
-      <div className="flex flex-col gap-3 mt-5 w-full">
+      <div className="flex flex-col gap-3 mt-10 w-full">
         {getFormData().map((field) => renderFormField(field))}
       </div>
 
-      <div className="text-center mt-10 mb-20">
+      <div className="flex justify-between gap-3 mt-10 mb-20 w-full">
         <button
-          className="border border-gray-300 px-5 py-2 text-gray-900 hover:bg-gray-300 focus:ring focus:ring-blue-200 mr-5 rounded-full bg-gray-100"
+          className="w-[20%] h-12 border border-gray-300 px-5 py-2 text-gray-900 hover:bg-gray-300 focus:ring focus:ring-blue-200 rounded-full bg-gray-100"
           onClick={handlePrevStep}
           disabled={currentStep === 0}
         >
           Atrás
         </button>
         <button
-          className="px-5 py-2 hover:bg-blue-800 focus:ring focus:ring-blue-200 bg-blue-600 text-white rounded-full"
+          className="w-[80%] px-5 py-2 hover:bg-blue-800 focus:ring focus:ring-blue-200 bg-blue-600 text-white rounded-full"
           onClick={handleNextStep}
           disabled={currentStep === getStepsLength() - 1}
         >
@@ -313,8 +315,36 @@ export const Wizard = () => {
         return renderDateField(field);
       case "chips":
         return renderChipsFields(field);
+      case "rate":
+        return renderRateFields(field);
     }
   };
+
+  const renderRateFields = (field: FormField) => (
+    <Form.Item name={field.id}>
+      <Radio.Group className="grid grid-cols-4 text-sm font-medium text-gray-900">
+        {field.options?.map((option) => (
+          <Radio
+            key={option.id}
+            value={option.id}
+            className="w-full cursor-pointer hover:scale-110 transition-all"
+          >
+            <div className="flex flex-col items-center">
+              <Image
+                src={`/${option.id}.png`}
+                alt={`experiencia ${option?.label?.toLowerCase()}`}
+                className={cn("w-16 h-16 sm:w-10 sm:h-10", {
+                  grayscale: responses[field.id ?? ""] != option.id,
+                })}
+                preview={false}
+              />
+              <p className="text-[10px] sm:text-[11px]">{option.label}</p>
+            </div>
+          </Radio>
+        ))}
+      </Radio.Group>
+    </Form.Item>
+  );
 
   const renderChipsFields = (field: FormField) => (
     <div className="mt-4 flex flex-col">
