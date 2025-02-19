@@ -3,35 +3,24 @@ import DefaultFormNew from "../hooks/DefaultFormNew.json";
 import { Form, Progress, Flex, Image, Radio } from "antd";
 import { cn } from "@/app/lib/utils";
 import "./wizard-styles.css";
+import PositiveReview from "./components/PositiveReview";
+import { Business } from "@/app/types/business";
+import CheckboxField from "./components/ChecboxField";
+import { FormField, Option } from "./types/wizardTypes";
+import DateField from "./components/DateField";
+import RateField from "./components/RateField";
+import ChipsField from "./components/ChipsField";
+import TextField from "./components/TextField";
+import PhoneField from "./components/PhoneField";
+import NegativeReview from "./components/NegativeReview";
 
-interface Option {
-  id?: string;
-  label?: string;
-  text?: string;
-  popupTitle?: string;
-  buttonImageUrl?: string;
-  options?: Option[];
-}
-
-interface FormField {
-  id?: string;
-  label?: string;
-  type?: string;
-  title?: string;
-  ischecked?: boolean;
-  placeholder?: string;
-  required?: boolean;
-  max?: string;
-  text?: string;
-  options?: Option[];
-}
-
-export const Wizard = () => {
+export const Wizard = ({ business }: { business: Business | null }) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [showPopup, setShowPopup] = useState(false);
   const [popupOptions, setPopupOptions] = useState<Record<string, Option[]>>(
     {}
   );
+
   const [progress, setProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
   const [clientType, setClientType] = useState("");
@@ -68,6 +57,7 @@ export const Wizard = () => {
 
   const calculateProgress = (values: Record<string, any>) => {
     const formFields = getFormData();
+    console.log("VALUES::: ", values);
     setResponses({ ...responses, ...values });
     const totalFields = formFields.filter((field) => field.required);
     const filledFields = totalFields.filter((field) => {
@@ -80,8 +70,11 @@ export const Wizard = () => {
       );
     });
 
+    const stepPercentage = (currentStep / getStepsLength()) * 100;
+    const filledFieldsPercentage =
+      (filledFields.length / totalFields.length) * 100;
     const newProgress =
-      ((filledFields.length / totalFields.length) * 100) / getStepsLength();
+      stepPercentage + filledFieldsPercentage / getStepsLength();
     setProgress(newProgress);
   };
 
@@ -91,7 +84,6 @@ export const Wizard = () => {
     const allFieldsVerified = requiredFields.every(
       (field) => responses[field.id!]
     );
-
     if (
       allFieldsVerified &&
       currentStep <
@@ -100,6 +92,7 @@ export const Wizard = () => {
           1
     ) {
       setCurrentStep(currentStep + 1);
+      setResponses({ ...responses, ...form.getFieldsValue() });
     }
   };
 
@@ -153,6 +146,15 @@ export const Wizard = () => {
 
   const isOptionSelected = (fieldId?: string, options?: Option[]): boolean =>
     options?.some((option) => option.id === responses[fieldId ?? ""]) ?? false;
+
+  const isLastStep = currentStep === getStepsLength() - 1;
+
+  const canOpenPositiveReview = () =>
+    ["bueno", "excelente"].includes(form.getFieldValue("rateExperience")) &&
+    isLastStep;
+  const canOpenNegativeReview = () =>
+    ["mal", "regular"].includes(form.getFieldValue("rateExperience")) &&
+    isLastStep;
 
   const renderPopup = () => {
     if (!showPopup) return null;
@@ -254,250 +256,107 @@ export const Wizard = () => {
   );
 
   const renderForm = () => (
-    <Form
-      autoComplete="on"
-      form={form}
-      name="validateOnly"
-      style={{ minWidth: "400px" }}
-      className="max-w-lg"
-      onValuesChange={(_, values) => calculateProgress(values)}
-    >
-      <Flex className="mb-5">
-        <Progress
-          strokeLinecap="round"
-          status="active"
-          percent={progress}
-          strokeWidth={35}
-          strokeColor="#2B82F6"
-          percentPosition={{ align: "end", type: "inner" }}
-          format={(percent) => (
-            <span style={{ fontWeight: "bold", fontSize: "17px" }}>
-              {percent}%
-            </span>
-          )}
-        />
-      </Flex>
+    <div className="flex flex-col">
+      <Progress
+        className="w-100  max-w-lg"
+        strokeLinecap="round"
+        status="active"
+        percent={progress}
+        strokeWidth={35}
+        strokeColor="#2B82F6"
+        percentPosition={{ align: "end", type: "inner" }}
+        format={(percent) => (
+          <span style={{ fontWeight: "bold", fontSize: "17px" }}>
+            {percent}%
+          </span>
+        )}
+      />
 
-      <div className="flex flex-col gap-3 mt-10 w-full">
-        {getFormData().map((field) => renderFormField(field))}
-      </div>
+      <Form
+        autoComplete="on"
+        form={form}
+        name="validateOnly"
+        className="max-w-lg"
+        onValuesChange={(_, values) => calculateProgress(values)}
+      >
+        <div className="flex flex-col gap-3 mt-10 w-full">
+          {getFormData().map((field) => renderFormField(field))}
+          {canOpenPositiveReview() && <PositiveReview business={business} />}
+          {canOpenNegativeReview() && <NegativeReview />}
+        </div>
 
-      <div className="flex justify-between gap-3 mt-10 mb-20 w-full">
-        <button
-          className="w-[20%] h-12 border border-gray-300 px-5 py-2 text-gray-900 hover:bg-gray-300 focus:ring focus:ring-blue-200 rounded-full bg-gray-100"
-          onClick={handlePrevStep}
-          disabled={currentStep === 0}
-        >
-          Atrás
-        </button>
-        <button
-          className="w-[80%] px-5 py-2 hover:bg-blue-800 focus:ring focus:ring-blue-200 bg-blue-600 text-white rounded-full"
-          onClick={handleNextStep}
-          disabled={currentStep === getStepsLength() - 1}
-        >
-          Siguiente
-        </button>
-      </div>
-    </Form>
+        <div className="flex justify-between gap-3 mt-10 mb-20 w-full">
+          <button
+            className="w-[20%] h-12 border border-gray-300 px-5 py-2 text-gray-900 hover:bg-gray-300 focus:ring focus:ring-blue-200 rounded-full bg-gray-100"
+            onClick={handlePrevStep}
+            disabled={currentStep === 0}
+          >
+            Atrás
+          </button>
+          <button
+            className="w-[80%] px-5 py-2 hover:bg-blue-800 focus:ring focus:ring-blue-200 bg-blue-600 text-white rounded-full"
+            onClick={handleNextStep}
+            disabled={currentStep === getStepsLength() - 1}
+          >
+            {isLastStep ? "ENVIAR A GOOGLE" : "Siguiente"}
+          </button>
+        </div>
+      </Form>
+    </div>
   );
 
   const renderFormField = (field: FormField) => {
     switch (field.type) {
-      case "email":
-        return renderEmailField(field);
-      case "text":
-        return renderTextField(field);
       case "phone":
-        return renderPhoneNumberField(field);
+        return (
+          <PhoneField
+            field={field}
+            value={responses[field.id!]}
+            onChange={(checked) => handleOnFieldChange(field.id, checked)}
+          />
+        );
       case "checkbox":
-        return renderCheckboxField(field);
+        return (
+          <CheckboxField
+            field={field}
+            value={responses[field.id!]}
+            onChange={(checked) => handleOnFieldChange(field.id, checked)}
+          />
+        );
       case "date":
-        return renderDateField(field);
+        return (
+          <DateField
+            field={field}
+            value={responses[field.id!]}
+            onChange={(value) => handleOnFieldChange(field.id, value)}
+          />
+        );
       case "chips":
-        return renderChipsFields(field);
+        return (
+          <ChipsField
+            field={field}
+            value={responses[field.id ?? ""]}
+            onChange={(value) => handleOnFieldChange(field.id, value)}
+          />
+        );
       case "rate":
-        return renderRateFields(field);
+        return (
+          <RateField
+            field={field}
+            value={responses[field.id ?? ""]}
+            onChange={(value) => handleOnFieldChange(field.id, value)}
+          />
+        );
+      default:
+        return (
+          <TextField
+            field={field}
+            value={responses[field.id ?? ""]}
+            onChange={(value) => handleOnFieldChange(field.id, value)}
+          />
+        );
     }
   };
-
-  const renderRateFields = (field: FormField) => (
-    <Form.Item name={field.id}>
-      <Radio.Group className="grid grid-cols-4 text-sm font-medium text-gray-900">
-        {field.options?.map((option) => (
-          <Radio
-            key={option.id}
-            value={option.id}
-            className="w-full cursor-pointer hover:scale-110 transition-all"
-          >
-            <div className="flex flex-col items-center">
-              <Image
-                src={`/${option.id}.png`}
-                alt={`experiencia ${option?.label?.toLowerCase()}`}
-                className={cn("w-16 h-16 sm:w-10 sm:h-10", {
-                  grayscale: responses[field.id ?? ""] != option.id,
-                })}
-                preview={false}
-              />
-              <p className="text-[10px] sm:text-[11px]">{option.label}</p>
-            </div>
-          </Radio>
-        ))}
-      </Radio.Group>
-    </Form.Item>
-  );
-
-  const renderChipsFields = (field: FormField) => (
-    <div className="mt-4 flex flex-col">
-      <span className="font-bold text-[24px] text-center text-qik">
-        {field.title?.trim()}
-      </span>
-      <Form.Item
-        name={field.id}
-        rules={[{ required: field.required, message: "Selecciona una opción" }]}
-      >
-        <div className="mt-4 flex gap-3 justify-center items-center flex-wrap">
-          {field.options?.map((option) => (
-            <button
-              key={option.id}
-              className={cn(
-                "border border-gray-400 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-qik hover:border-qik transition",
-                {
-                  "bg-qik text-white border-qik":
-                    responses[field.id ?? ""] == option.id ||
-                    isOptionSelected(field.id, option.options),
-                }
-              )}
-              onClick={() => handleSelectOption(field.id, option)}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
-      </Form.Item>
-    </div>
-  );
-
-  const renderEmailField = (field: FormField) => (
-    <div className="relative">
-      <span className="absolute -top-3 left-3 bg-white px-2 text-sm text-gray-600 rounded-full z-10">
-        {field.label?.trim()}
-      </span>
-      <Form.Item
-        name={field.id}
-        rules={[
-          { required: true, message: "Porfavor Ingrese su email" },
-          { type: "email", message: "Email no valido" },
-        ]}
-        required={field.required || undefined}
-      >
-        <input
-          type="text"
-          id={field.id || undefined}
-          placeholder={field.placeholder || undefined}
-          required={field.required || undefined}
-          className="relative w-full border border-gray-400 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-      </Form.Item>
-    </div>
-  );
-
-  const renderTextField = (field: FormField) => (
-    <div className="relative">
-      <span className="absolute -top-3 left-3 bg-white px-2 text-sm text-gray-600 rounded-full z-10">
-        {field.label?.trim()}
-      </span>
-      <Form.Item
-        name={field.id}
-        rules={[
-          { required: field.required, message: "Ingresa tu nombre" },
-          { type: "string", message: "Nombre no valido" },
-        ]}
-      >
-        <input
-          type="text"
-          id={field.id || undefined}
-          placeholder={field.placeholder || undefined}
-          required={field.required || undefined}
-          className="relative w-full border border-gray-400 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-      </Form.Item>
-    </div>
-  );
-
-  const renderPhoneNumberField = (field: FormField) => (
-    <div className="relative">
-      <span className="absolute -top-3 left-3 bg-white px-2 text-sm text-gray-600 rounded-full z-10">
-        {field.label?.trim()}
-      </span>
-      <Form.Item
-        name={field.id}
-        rules={[
-          {
-            required: field.required,
-            message: "Por favor ingrese su teléfono",
-          },
-          {
-            pattern: /^[0-9]+$/,
-            message: "El número de teléfono no es válido",
-          },
-        ]}
-      >
-        <input
-          type="number"
-          id={field.id || undefined}
-          placeholder={field.placeholder || undefined}
-          required={field.required || undefined}
-          className="relative w-full border border-gray-400 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 mb-3"
-        />
-      </Form.Item>
-      {renderCheckboxField({ id: "checkWhatsApp" })}
-    </div>
-  );
-
-  const renderDateField = (field: FormField) => (
-    <div className="relative">
-      <span className="absolute -top-3 left-3 bg-white px-2 text-sm text-gray-600 rounded-full z-10">
-        {field.label?.trim()}
-      </span>
-      <Form.Item name={field.id}>
-        <input
-          type="date"
-          id={field.id || undefined}
-          placeholder={field.placeholder || undefined}
-          required={field.required || undefined}
-          className="relative w-full border border-gray-400 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-      </Form.Item>
-    </div>
-  );
-
-  const renderCheckboxField = (field: FormField) => (
-    <Form.Item
-      name={field.id}
-      rules={[
-        { required: field.required, message: "Debes seleccionar esta opción" },
-      ]}
-      className="-mt-5"
-    >
-      <div className="flex items-center">
-        <input
-          type="checkbox"
-          id={field.id || undefined}
-          required={field.required || undefined}
-          checked={responses[field.id!]}
-          onChange={(e) => handleOnFieldChange(field.id, e.target.checked)}
-          className="w-5 h-5 text-blue-600 border-gray-400 rounded focus:ring-2 focus:ring-blue-400"
-        />
-        <label
-          htmlFor={field.id || undefined}
-          className="ml-3 text-gray-700 font-medium"
-        >
-          Acepto recibir promociones por
-          <span className="text-green-500"> WhatsApp</span>
-        </label>
-      </div>
-    </Form.Item>
-  );
 
   return (
     <div className="mt-10 w-full flex justify-center px-4">
