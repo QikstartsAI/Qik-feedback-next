@@ -8,7 +8,7 @@ export interface BranchModel {
   updatedAt: Date;
   payload: {
     address: string;
-    country: string;
+    country: Country;
     cover: string;
     icon: string;
     iconoWhite: string;

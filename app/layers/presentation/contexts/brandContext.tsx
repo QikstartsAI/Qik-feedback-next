@@ -8,7 +8,7 @@ import React, {
   ReactNode,
 } from "react";
 import { BrandModel } from "@/domain";
-import { getBrandById } from "../../data/dataPlatform/brandDataPlatform";
+import { getBrandById } from "@/app/layers/data/dataPlatform/brandDataPlatform";
 
 interface BrandContextProps {
   brand: BrandModel | null;

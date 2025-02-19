@@ -1,10 +1,12 @@
+import { Country } from "@/app/types/business";
+
 export interface BranchDTO {
   id: string;
   brand: string;
   owner: string;
   payload?: {
     address: string;
-    country: string;
+    country: Country;
     cover: string;
     icon: string;
     iconoWhite: string;
@@ -19,13 +21,26 @@ export interface BrandDTO {
   owner: string;
   payload?: {
     address: string;
-    country: string;
+    country: Country;
     cover: string;
     iconoWhite: string;
     mapsUrl: string;
     name: string;
     pricePlan: number;
   };
+}
+
+export interface BizDTO {
+  Address: string | null;
+  BusinessId: string | null;
+  Country: Country | null;
+  Cover: string | null;
+  Icono: string | null;
+  IconoWhite: string | null;
+  MapsUrl: string | null;
+  Name: string | null;
+  PricePlan: number | null;
+  sucursales: [] | null;
 }
 
 export interface CatalogDTO {
@@ -59,6 +74,11 @@ export interface FeedbackDTO {
     type: string;
   };
   payload?: object;
+}
+
+export interface SetValueDTO {
+  id: string;
+  value: string;
 }
 
 export interface StationDTO {

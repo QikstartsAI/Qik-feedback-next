@@ -1,9 +1,9 @@
 import { HttpClient } from "@/data";
-import { BranchDTO, BranchModel, GetBranchParams } from "@/domain";
+import { BranchDTO, BranchModel, GetBranchParams, SetValueDTO } from "@/domain";
 
 const httpClient = new HttpClient();
 
-export const getAllBranch = async (
+export const getAllBranches = async (
   params: GetBranchParams
 ): Promise<BranchModel[]> => {
   try {
@@ -21,6 +21,15 @@ export const createBranch = async (branchData: BranchDTO) => {
     return newBranch;
   } catch (error) {
     console.error("Error creating branch:", error);
+    throw error;
+  }
+};
+
+export const updateBranch = async (branchProperty: SetValueDTO) => {
+  try {
+    await httpClient.patch(`/branch/value/${branchProperty.id}`, branchProperty.value);
+  } catch (error) {
+    console.error("Error updating branch:", error);
     throw error;
   }
 };

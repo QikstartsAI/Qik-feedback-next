@@ -60,4 +60,23 @@ export class HttpClient {
     }
   }
 
+  public async patch(url: string, data: any) {
+    const fullUrl = `${this.baseURL}${url}`;
+
+    try {
+      const response = await fetch(fullUrl, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Access-Control-Allow-Origin': '*', // Added CORS header
+        },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw response;
+      return this.handleSuccess(response);
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
 }
