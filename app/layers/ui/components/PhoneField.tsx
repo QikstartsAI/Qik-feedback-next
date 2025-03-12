@@ -1,6 +1,6 @@
 import { Form } from "antd";
 import { FormField } from "../types/wizardTypes";
-import CheckboxField from "./ChecboxField";
+import CheckboxField from "./CheckboxField";
 
 interface TextFieldProps {
   field: FormField;

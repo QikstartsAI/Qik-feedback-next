@@ -1,39 +1,34 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
-import { cn } from '../lib/utils';
-import { Button } from './ui/Button';
+import { cn } from "../lib/utils";
+import { Button } from "./ui/Button";
 
-import Image from 'next/image';
-import { Branch } from '../types/business';
-import { IconCircle, IconCircleCheck, IconPinned } from '@tabler/icons-react';
-import Loader from './Loader';
+import Image from "next/image";
+import { Branch } from "../types/business";
+import { IconCircle, IconCircleCheck, IconPinned } from "@tabler/icons-react";
+import Loader from "./Loader";
+import { useLocation } from "../layers";
+import { useGetBusinessData } from "../hooks/useGetBusinessData";
 const RequestLocationDialog = ({
-  view = 'grantPermissions',
-  branches = [],
-  open = false,
-  grantingPermissions = false,
   isHootersForm = false,
-  getLocation,
-  denyLocation,
-  onConfirm,
 }: {
-  branches?: (Branch | undefined)[];
-  open?: boolean;
-  view?: string;
-  grantingPermissions?: boolean;
   isHootersForm?: boolean;
-  getLocation: () => void;
-  denyLocation: () => void;
-  onConfirm: (branch: Branch | undefined) => void;
 }) => {
-  const [currentView, setCurrentView] = React.useState('grantPermissions');
+  const { business, setSucursalId } = useGetBusinessData();
 
-  useEffect(() => {
-    setCurrentView(view);
-  }, [view]);
+  const {
+    requestLocation: open,
+    denyLocation,
+    getLocation,
+    onLocationSelect,
+    branches,
+    loading,
+  } = useLocation(business, setSucursalId);
+
+  const [currentView, setCurrentView] = React.useState("grantPermissions");
 
   const goToSuggestedView = () => {
-    setCurrentView('suggestedLocations');
+    setCurrentView("suggestedLocations");
   };
 
   const handleOnDeny = () => {
@@ -49,17 +44,18 @@ const RequestLocationDialog = ({
   return (
     <div
       className={cn(
-        'fixed bottom-0 h-[0px] w-screen flex flex-col justify-between items-center gap-10 bg-white transition-all ease-in-out duration-100  overflow-hidden',
-        { 'h-screen': open },
-        { 'p-10': open }
-      )}>
-      {currentView == 'grantPermissions' && (
+        "fixed bottom-0 h-[0px] w-screen flex flex-col justify-between items-center gap-10 bg-white transition-all ease-in-out duration-100  overflow-hidden",
+        { "h-screen": open },
+        { "p-10": open }
+      )}
+    >
+      {currentView == "grantPermissions" && (
         <>
           <div className="grow"></div>
 
           <Image
-            src={isHootersForm ? '/location-orange.svg' : '/location.svg'}
-            alt={'Permisos de ubicación'}
+            src={isHootersForm ? "/location-orange.svg" : "/location.svg"}
+            alt={"Permisos de ubicación"}
             className="animate-bounce delay-100"
             width={120}
             height={120}
@@ -67,10 +63,11 @@ const RequestLocationDialog = ({
 
           <div className="flex flex-col items-center gap-3">
             <h2
-              className={cn('font-bold text-[1.5rem] text-center ', {
-                'text-hooters': isHootersForm,
-                'text-qik': !isHootersForm,
-              })}>
+              className={cn("font-bold text-[1.5rem] text-center ", {
+                "text-hooters": isHootersForm,
+                "text-qik": !isHootersForm,
+              })}
+            >
               Mejora tu experiencia
             </h2>
             <p className="text-center text-sky-900">
@@ -83,25 +80,27 @@ const RequestLocationDialog = ({
               onClick={handleOnGrant}
               className="w-full"
               type="button"
-              variant={isHootersForm ? 'hootersPrimary' : 'default'}>
+              variant={isHootersForm ? "hootersPrimary" : "default"}
+            >
               Compartir ubicación
             </Button>
             <Button
               onClick={handleOnDeny}
               className="w-full"
               type="button"
-              variant={isHootersForm ? 'hootersSecondary' : 'secondary'}>
+              variant={isHootersForm ? "hootersSecondary" : "secondary"}
+            >
               Ver sucursales
             </Button>
           </div>
         </>
       )}
-      {currentView == 'suggestedLocations' && (
+      {currentView == "suggestedLocations" && (
         <SuggestedLocations
           branches={branches}
-          onConfirm={onConfirm}
+          onConfirm={onLocationSelect}
           handleOnDeny={handleOnDeny}
-          grantingPermissions={grantingPermissions}
+          grantingPermissions={loading}
           isHootersForm={isHootersForm}
         />
       )}
@@ -124,9 +123,9 @@ const SuggestedLocations = ({
 }) => {
   const getNormalizedBusinessName = (name: string | undefined) => {
     if (!name) {
-      return '';
+      return "";
     }
-    return name.toLocaleLowerCase().split(' ').join('-');
+    return name.toLocaleLowerCase().split(" ").join("-");
   };
 
   const [selected, setSelected] = useState<string>();
@@ -145,8 +144,8 @@ const SuggestedLocations = ({
       <div className="grow"></div>
       <div className="flex flex-col items-center gap-3">
         <Image
-          src={isHootersForm ? '/location-orange.svg' : '/location.svg'}
-          alt={'Permisos de ubicación'}
+          src={isHootersForm ? "/location-orange.svg" : "/location.svg"}
+          alt={"Permisos de ubicación"}
           className="animate-bounce delay-100"
           width={120}
           height={120}
@@ -154,10 +153,11 @@ const SuggestedLocations = ({
         {grantingPermissions ? (
           <>
             <h2
-              className={cn('font-bold text-[1.5rem] text-center ', {
-                'text-hooters': isHootersForm,
-                'text-qik': !isHootersForm,
-              })}>
+              className={cn("font-bold text-[1.5rem] text-center ", {
+                "text-hooters": isHootersForm,
+                "text-qik": !isHootersForm,
+              })}
+            >
               Para mejorar tu experiencia
             </h2>
             <p className="text-center text-sky-900 mb-3">
@@ -167,10 +167,11 @@ const SuggestedLocations = ({
         ) : (
           <>
             <h2
-              className={cn('font-bold text-[1.5rem] text-center ', {
-                'text-hooters': isHootersForm,
-                'text-qik': !isHootersForm,
-              })}>
+              className={cn("font-bold text-[1.5rem] text-center ", {
+                "text-hooters": isHootersForm,
+                "text-qik": !isHootersForm,
+              })}
+            >
               ¿Dónde te encuentras?
             </h2>
             <p className="text-center text-sky-900 mb-3">
@@ -198,17 +199,19 @@ const SuggestedLocations = ({
           (branches.length == 0 || branches[0] == undefined ? (
             <div>
               <h3
-                className={cn('text-[1.5rem] text-center', {
-                  'text-hooters': isHootersForm,
-                  'text-qik': !isHootersForm,
-                })}>
+                className={cn("text-[1.5rem] text-center", {
+                  "text-hooters": isHootersForm,
+                  "text-qik": !isHootersForm,
+                })}
+              >
                 No tienes sucursales cerca
               </h3>
               <Button
                 onClick={handleOnDeny}
                 className="w-full"
                 type="button"
-                variant={isHootersForm ? 'hootersPrimary' : 'default'}>
+                variant={isHootersForm ? "hootersPrimary" : "default"}
+              >
                 Ver todas las sucursales
               </Button>
             </div>
@@ -219,15 +222,16 @@ const SuggestedLocations = ({
                   <div
                     onClick={() => handleClickSelected(branch?.Name)}
                     className="flex items-center gap-4 border py-2 px-3 rounded-lg cursor-pointer focus:ring"
-                    key={idx}>
+                    key={idx}
+                  >
                     {selected ==
-                    getNormalizedBusinessName(branch?.Name ?? '') ? (
+                    getNormalizedBusinessName(branch?.Name ?? "") ? (
                       <span>
                         <IconCircleCheck
                           size={18}
                           strokeWidth={3}
                           className={
-                            isHootersForm ? 'text-hooters' : 'text-qik'
+                            isHootersForm ? "text-hooters" : "text-qik"
                           }
                         />
                       </span>
@@ -236,17 +240,18 @@ const SuggestedLocations = ({
                         <IconCircle
                           size={18}
                           className={
-                            isHootersForm ? 'text-hooters' : 'text-qik'
+                            isHootersForm ? "text-hooters" : "text-qik"
                           }
                         />
                       </span>
                     )}
                     <div className="flex flex-col">
                       <h4
-                        className={cn('text-[1rem] font-bold', {
-                          'text-hooters': isHootersForm,
-                          'text-qik': !isHootersForm,
-                        })}>
+                        className={cn("text-[1rem] font-bold", {
+                          "text-hooters": isHootersForm,
+                          "text-qik": !isHootersForm,
+                        })}
+                      >
                         {branch?.Name}
                       </h4>
                       <div className="flex items-center gap-1">
@@ -279,8 +284,9 @@ const SuggestedLocations = ({
               className="w-full"
               disabled={grantingPermissions}
               type="button"
-              variant={isHootersForm ? 'hootersPrimary' : 'default'}>
-              {grantingPermissions ? 'Esperando permisos...' : '¡Aquí estoy!'}
+              variant={isHootersForm ? "hootersPrimary" : "default"}
+            >
+              {grantingPermissions ? "Esperando permisos..." : "¡Aquí estoy!"}
             </Button>
           </div>
         )}

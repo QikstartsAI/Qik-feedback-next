@@ -5,7 +5,7 @@ import { cn } from "@/app/lib/utils";
 import "./wizard-styles.css";
 import PositiveReview from "./components/PositiveReview";
 import { Business } from "@/app/types/business";
-import CheckboxField from "./components/ChecboxField";
+import CheckboxField from "./components/CheckboxField";
 import { FormField, Option } from "./types/wizardTypes";
 import DateField from "./components/DateField";
 import RateField from "./components/RateField";
