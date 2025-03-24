@@ -8,28 +8,28 @@
                 "id": "101",
                 "questions": [
                     {
-                        "id": "email",
+                        "id": "Email",
                         "label": "Correo electrónico",
                         "type": "email",
                         "placeholder": "Ingresa tu correo",
                         "required": true
                     },
                     {
-                        "id": "name",
+                        "id": "FullName",
                         "label": "Nombre completo",
                         "type": "text",
                         "placeholder": "Ingresa tu nombre",
                         "required": true
                     },
                     {
-                        "id": "phone",
+                        "id": "PhoneNumber",
                         "label": "Teléfono",
                         "placeholder": "Ej: 3001234567",
                         "type": "phone",
                         "required": true
                     },
                     {
-                        "id": "birthday",
+                        "id": "BirthdayDate",
                         "label": "¿Tu fecha de cumpleaños?",
                         "placeholder": "dd/mm/yyyy",
                         "description": "Te sorprenderemos ese día😎",
@@ -38,7 +38,7 @@
                         "required": false
                     },
                     {
-                        "id": "how",
+                        "id": "Origin",
                         "title": "¿Cómo nos conociste?",
                         "type": "chips",
                         "required": true,
@@ -76,7 +76,7 @@
                 ]
             },
             {
-                "id": "103",
+                "id": "Rating",
                 "questions": [
                     {
                         "id": "rateExperience",
@@ -85,10 +85,10 @@
                         "type": "rate",
                         "required": true,
                         "options": [
-                            { "id": "mal", "label": "Bad" },
-                            { "id": "regular", "label": "Regular" },
-                            { "id": "bueno", "label": "Good" },
-                            { "id": "excelente", "label": "Excellent" }
+                            { "id": "Mal", "label": "Bad", "value": 1 },
+                            { "id": "Regular", "label": "Regular", "value": 2 },
+                            { "id": "Bueno", "label": "Good", "value": 4 },
+                            { "id": "Excelente", "label": "Excellent", "value": 5 }
                         ]
 
                     }

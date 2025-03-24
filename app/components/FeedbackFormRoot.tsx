@@ -6,22 +6,15 @@ import Loader from "./Loader";
 import { Toaster } from "./ui/Toaster";
 import RequestLocationDialog from "./RequestLocationDialog";
 import { APIProvider } from "@vis.gl/react-google-maps";
-import { Wizard } from "../layers/ui/wizard";
+import { Wizard } from "../layers/ui/components/wizard/wizard";
+import Thanks from "./Thanks";
 
 const Hero = lazy(() => import("./Hero"));
 
 export default function FeedbackFormRoot() {
   const { business, loading } = useGetBusinessData();
 
-  // if (isSubmitted && rating !== "4" && rating !== "5") {
-  //   return (
-  //     <Thanks
-  //       businessCountry={business?.Country || "EC"}
-  //       businessName={business?.Name || ""}
-  //       customerName={customerName}
-  //     />
-  //   );
-  // }
+
 
   return (
     <APIProvider
@@ -40,7 +33,7 @@ export default function FeedbackFormRoot() {
           )}
           <Toaster />
         </div>
-        <RequestLocationDialog />
+        {business?.Powers?.includes("GEOLOCATION") && <RequestLocationDialog />}
       </Suspense>
     </APIProvider>
   );

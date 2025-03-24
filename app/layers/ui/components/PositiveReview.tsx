@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Business } from "@/app/types/business";
-import Image from "next/image";
 import { Textarea } from "@/app/components/ui/TextArea";
 import { IconCopy } from "@tabler/icons-react";
 import { cn } from "@/app/lib/utils";
@@ -102,7 +101,7 @@ const PositiveReview = ({ business }: { business: Business | null }) => {
           checked={isTermsChecked}
         />
         <small className="text-gray-500">
-          Al presionar "Enviar", declaro que acepto los{" "}
+          Al presionar &quot;Enviar&quot;, declaro que acepto los{" "}
           <a
             className="text-primary hover:underline"
             href="https://qikstarts.com/terms-of-service"

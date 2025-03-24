@@ -1,7 +1,7 @@
 import React from "react";
 import { Form } from "antd";
 import cn from "classnames";
-import { FormField } from "../types/wizardTypes";
+import { FormField, Option } from "../types/wizardTypes";
 
 interface ChipsFieldProps {
   field: FormField;
@@ -10,6 +10,11 @@ interface ChipsFieldProps {
 }
 
 const ChipsField: React.FC<ChipsFieldProps> = ({ field, value, onChange }) => {
+  const isOptionSelected = (id?: string): boolean =>
+    field.options
+      ?.find((option) => option.id === id)
+      ?.options?.some((opt) => opt.id === value) ?? false;
+
   return (
     <div className="mt-4 flex flex-col">
       <span className="font-bold text-[24px] text-center text-qik">
@@ -27,7 +32,8 @@ const ChipsField: React.FC<ChipsFieldProps> = ({ field, value, onChange }) => {
               className={cn(
                 "border border-gray-400 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-qik hover:border-qik transition",
                 {
-                  "bg-qik text-white border-qik": value == option.id,
+                  "bg-qik text-white border-qik":
+                    isOptionSelected(option.id) || value == option.id,
                 }
               )}
               onClick={() => onChange && onChange(option.id)}

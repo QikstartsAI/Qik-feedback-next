@@ -67,15 +67,12 @@ import { lastFeedbackFilledIsGreaterThanOneDay } from "@/app/lib/utils";
 import { getCustomerDataInBusiness } from "@/app/lib/handleEmail";
 import { useSearchParams } from "next/navigation";
 import {
-  commonPaymentMethods,
   walletsByCountry,
-  walletsIdsByCountry,
   walletsIdsByCountryWithCommon,
 } from "@/app/constants/wallets";
 import { IconCopy } from "@tabler/icons-react";
 
-import Image from 'next/image';
-import { Wizard } from '@/app/layers/ui/wizard';
+import Image from "next/image";
 
 interface FeedbackFormProps {
   business: Business | null;
@@ -317,8 +314,8 @@ export default function FeedbackForm({
     let timeout: ReturnType<typeof setTimeout>;
     if (showGoodFeedbackModal) {
       timeout = setTimeout(() => {
-        copyToClipboard(finalGoodFeedback()) 
-        copyToClipboard(finalGoodFeedback()) 
+        copyToClipboard(finalGoodFeedback());
+        copyToClipboard(finalGoodFeedback());
       }, 1000);
     }
     return () => clearTimeout(timeout);

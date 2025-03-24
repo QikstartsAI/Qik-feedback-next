@@ -6,7 +6,6 @@ import { Button } from "./ui/Button";
 import Image from "next/image";
 import { Branch } from "../types/business";
 import { IconCircle, IconCircleCheck, IconPinned } from "@tabler/icons-react";
-import Loader from "./Loader";
 import { useLocation } from "../layers";
 import { useGetBusinessData } from "../hooks/useGetBusinessData";
 const RequestLocationDialog = ({

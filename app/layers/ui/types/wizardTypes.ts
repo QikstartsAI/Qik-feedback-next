@@ -15,6 +15,7 @@ export interface Option {
   id?: string;
   label?: string;
   text?: string;
+  value?: any;
   popupTitle?: string;
   buttonImageUrl?: string;
   options?: Option[];

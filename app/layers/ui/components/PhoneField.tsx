@@ -1,16 +1,24 @@
 import { Form } from "antd";
 import { FormField } from "../types/wizardTypes";
 import CheckboxField from "./CheckboxField";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 
 interface TextFieldProps {
   field: FormField;
   value?: string;
-  onChange?: (value: string) => void;
+  checked?: boolean;
+  onChange?: (value: any, fieldId?: string) => void;
 }
 
-const PhoneField: React.FC<TextFieldProps> = ({ field, value, onChange }) => {
+const PhoneField: React.FC<TextFieldProps> = ({
+  field,
+  value,
+  checked,
+  onChange,
+}) => {
   return (
-    <div className="relative">
+    <div className="relative mb-3">
       <span className="absolute -top-3 left-3 bg-white px-2 text-sm text-gray-600 rounded-full z-10">
         {field.label?.trim()}
       </span>
@@ -21,21 +29,28 @@ const PhoneField: React.FC<TextFieldProps> = ({ field, value, onChange }) => {
             required: field.required,
             message: "Por favor ingrese su teléfono",
           },
-          {
-            pattern: /^[0-9]+$/,
-            message: "El número de teléfono no es válido",
-          },
         ]}
       >
-        <input
-          type="number"
+        <PhoneInput
           id={field.id}
-          placeholder={field.placeholder}
+          placeholder="(XXX)-XXX-XXXX"
+          defaultCountry="EC"
+          value={value}
+          onChange={(value) => onChange && onChange(value, field.id)}
           required={field.required}
-          className="relative w-full border border-gray-400 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 mb-3"
+          limitMaxLength
+          className="relative w-full border border-gray-400 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
       </Form.Item>
-      <CheckboxField field={{ id: "checkWhatsApp", defaultValue: true }} />
+      <CheckboxField
+        field={{
+          id: "checkWhatsApp",
+          defaultValue: true,
+          label: "Acepto recibir promociones por WhatsApp",
+        }}
+        value={checked}
+        onChange={(checked) => onChange && onChange(checked, "checkWhatsApp")}
+      />
     </div>
   );
 };

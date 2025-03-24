@@ -1,12 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { Form, Checkbox, Input } from "antd";
-import { FormField } from "../types/wizardTypes";
 
 interface NegativeReviewProps {
   form?: any;
+  responses?: Record<string, any>;
+  onChange?: (fieldId?: string, value?: any) => void;
 }
 
-const NegativeReview: React.FC<NegativeReviewProps> = ({ form }) => {
+const NegativeReview: React.FC<NegativeReviewProps> = ({
+  form,
+  responses,
+  onChange,
+}) => {
+  const [isTermsChecked, setIsTermsChecked] = useState(true);
+
   return (
     <>
       <Form.Item>
@@ -15,7 +22,7 @@ const NegativeReview: React.FC<NegativeReviewProps> = ({ form }) => {
       <div className="grid grid-cols-3 sm:grid-cols-4 gap-1 sm:gap-2 text-sm font-medium text-gray-900">
         <Form.Item name="Food" valuePropName="checked">
           <Checkbox>
-            <div className="flex flex-col items-center">
+            <div className="flex gap-3 items-center">
               <span>🍴</span>
               <p className="w-full text-[10px] sm:text-[11px]">Comida</p>
             </div>
@@ -23,7 +30,7 @@ const NegativeReview: React.FC<NegativeReviewProps> = ({ form }) => {
         </Form.Item>
         <Form.Item name="Service" valuePropName="checked">
           <Checkbox>
-            <div className="flex flex-col items-center">
+            <div className="flex gap-3 items-center">
               <span>👥</span>
               <p className="w-full text-[10px] sm:text-[11px]">Servicio</p>
             </div>
@@ -31,7 +38,7 @@ const NegativeReview: React.FC<NegativeReviewProps> = ({ form }) => {
         </Form.Item>
         <Form.Item name="Ambience" valuePropName="checked">
           <Checkbox>
-            <div className="flex flex-col items-center">
+            <div className="flex gap-3 items-center">
               <span>🏢</span>
               <p className="w-full text-[10px] sm:text-[11px]">Ambiente</p>
             </div>
@@ -45,8 +52,43 @@ const NegativeReview: React.FC<NegativeReviewProps> = ({ form }) => {
       )}
       <Form.Item name="ImproveText">
         <label>Compartenos detalles sobre tu experiencia en este lugar</label>
-        <Input.TextArea placeholder="Ej: La comida estuvo muy buena, pero el servicio fue lento." />
+        <Input.TextArea
+          value={responses ? responses["ImproveText"] : null}
+          onChange={(e) =>
+            onChange ? onChange("ImproveText", e.target.value) : null
+          }
+          placeholder="Ej: La comida estuvo muy buena, pero el servicio fue lento."
+        />
       </Form.Item>
+      <div className="flex gap-3">
+        <input
+          type="checkbox"
+          className="form-checkbox min-h-[12px] min-w-[12px] text-green-500"
+          onChange={() => setIsTermsChecked(!isTermsChecked)}
+          checked={isTermsChecked}
+        />
+        <small className="text-gray-500">
+          Al presionar &quot;Enviar&quot;, declaro que acepto los{" "}
+          <a
+            className="text-primary hover:underline"
+            href="https://qikstarts.com/terms-of-service"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Términos y Condiciones
+          </a>{" "}
+          y las{" "}
+          <a
+            className="text-primary hover:underline"
+            href="https://qikstarts.com/privacy-policy"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Políticas de Privacidad
+          </a>
+          .
+        </small>
+      </div>
     </>
   );
 };

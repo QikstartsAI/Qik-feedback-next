@@ -24,15 +24,15 @@ const RateField: React.FC<RateFieldProps> = ({ field, value, onChange }) => {
         {field.options?.map((option) => (
           <Radio
             key={option.id}
-            value={option.id}
-            className="w-full cursor-pointer hover:scale-110 transition-all"
+            value={option.value}
+            className="w-full cursor-pointer hover:scale-110 transition-all flex-col"
           >
             <div className="flex flex-col items-center">
               <Image
                 src={`/${option.id}.png`}
                 alt={`experiencia ${option?.label?.toLowerCase()}`}
-                className={cn("w-16 h-16 sm:w-10 sm:h-10", {
-                  grayscale: value != option.id,
+                className={cn("w-16 h-16 sm:w-10 sm:h-10 hover:opacity-100", {
+                  "opacity-25": value != option.value,
                 })}
                 unselectable="on"
                 preview={false}
