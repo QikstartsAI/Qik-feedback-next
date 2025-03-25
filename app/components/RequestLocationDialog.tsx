@@ -12,7 +12,7 @@ const RequestLocationDialog = ({
   branches = [],
   open = false,
   grantingPermissions = false,
-  isHootersForm = false,
+  variant,
   getLocation,
   denyLocation,
   onConfirm,
@@ -20,8 +20,8 @@ const RequestLocationDialog = ({
   branches?: (Branch | undefined)[];
   open?: boolean;
   view?: string;
+  variant?: "hooters" | "gus" | "delcampo";
   grantingPermissions?: boolean;
-  isHootersForm?: boolean;
   getLocation: () => void;
   denyLocation: () => void;
   onConfirm: (branch: Branch | undefined) => void;
@@ -59,7 +59,7 @@ const RequestLocationDialog = ({
           <div className="grow"></div>
 
           <Image
-            src={isHootersForm ? "/location-orange.svg" : "/location.svg"}
+            src={variant ? `/location-${variant}.svg` : "/location.svg"}
             alt={"Permisos de ubicación"}
             className="animate-bounce delay-100"
             width={120}
@@ -68,10 +68,9 @@ const RequestLocationDialog = ({
 
           <div className="flex flex-col items-center gap-3">
             <h2
-              className={cn("font-bold text-[1.5rem] text-center ", {
-                "text-hooters": isHootersForm,
-                "text-qik": !isHootersForm,
-              })}
+              className={`font-bold text-[1.5rem] text-center text-${
+                variant ?? "qik"
+              }`}
             >
               Mejora tu experiencia
             </h2>
@@ -85,7 +84,7 @@ const RequestLocationDialog = ({
               onClick={handleOnGrant}
               className="w-full"
               type="button"
-              variant={isHootersForm ? "hootersPrimary" : "default"}
+              variant={variant ? `${variant}Primary` : "default"}
             >
               Compartir ubicación
             </Button>
@@ -93,7 +92,7 @@ const RequestLocationDialog = ({
               onClick={handleOnDeny}
               className="w-full"
               type="button"
-              variant={isHootersForm ? "hootersSecondary" : "secondary"}
+              variant={variant ? `${variant}Secondary` : "secondary"}
             >
               Ver sucursales
             </Button>
@@ -106,7 +105,7 @@ const RequestLocationDialog = ({
           onConfirm={onConfirm}
           handleOnDeny={handleOnDeny}
           grantingPermissions={grantingPermissions}
-          isHootersForm={isHootersForm}
+          variant={variant}
         />
       )}
     </div>
@@ -118,13 +117,13 @@ const SuggestedLocations = ({
   onConfirm,
   handleOnDeny,
   grantingPermissions,
-  isHootersForm,
+  variant,
 }: {
   onConfirm: (branch: Branch | undefined) => void;
   handleOnDeny: () => void;
   branches: (Branch | undefined)[];
   grantingPermissions: boolean;
-  isHootersForm: boolean;
+  variant?: "hooters" | "gus" | "delcampo";
 }) => {
   const getNormalizedBusinessName = (name: string | undefined) => {
     if (!name) {
@@ -148,7 +147,7 @@ const SuggestedLocations = ({
       <div className="grow"></div>
       <div className="flex flex-col items-center gap-3">
         <Image
-          src={isHootersForm ? "/location-orange.svg" : "/location.svg"}
+          src={variant ? `/location-${variant}.svg` : "/location.svg"}
           alt={"Permisos de ubicación"}
           className="animate-bounce delay-100"
           width={120}
@@ -157,10 +156,9 @@ const SuggestedLocations = ({
         {grantingPermissions ? (
           <>
             <h2
-              className={cn("font-bold text-[1.5rem] text-center ", {
-                "text-hooters": isHootersForm,
-                "text-qik": !isHootersForm,
-              })}
+              className={`font-bold text-[1.5rem] text-center text-${
+                variant ?? "qik"
+              }`}
             >
               Para mejorar tu experiencia
             </h2>
@@ -171,10 +169,9 @@ const SuggestedLocations = ({
         ) : (
           <>
             <h2
-              className={cn("font-bold text-[1.5rem] text-center ", {
-                "text-hooters": isHootersForm,
-                "text-qik": !isHootersForm,
-              })}
+              className={`font-bold text-[1.5rem] text-center text-${
+                variant ?? "qik"
+              }`}
             >
               ¿Dónde te encuentras?
             </h2>
@@ -203,10 +200,7 @@ const SuggestedLocations = ({
           (branches.length == 0 || branches[0] == undefined ? (
             <div>
               <h3
-                className={cn("text-[1.5rem] text-center", {
-                  "text-hooters": isHootersForm,
-                  "text-qik": !isHootersForm,
-                })}
+                className={`text-[1.5rem] text-center text-${variant ?? "qik"}`}
               >
                 No tienes sucursales cerca
               </h3>
@@ -214,7 +208,7 @@ const SuggestedLocations = ({
                 onClick={handleOnDeny}
                 className="w-full"
                 type="button"
-                variant={isHootersForm ? "hootersPrimary" : "default"}
+                variant={variant ? `${variant}Primary` : "default"}
               >
                 Ver todas las sucursales
               </Button>
@@ -234,27 +228,22 @@ const SuggestedLocations = ({
                         <IconCircleCheck
                           size={18}
                           strokeWidth={3}
-                          className={
-                            isHootersForm ? "text-hooters" : "text-qik"
-                          }
+                          className={variant ? `text-${variant}` : ""}
                         />
                       </span>
                     ) : (
                       <span>
                         <IconCircle
                           size={18}
-                          className={
-                            isHootersForm ? "text-hooters" : "text-qik"
-                          }
+                          className={variant ? `text-${variant}` : ""}
                         />
                       </span>
                     )}
                     <div className="flex flex-col">
                       <h4
-                        className={cn("text-[1rem] font-bold", {
-                          "text-hooters": isHootersForm,
-                          "text-qik": !isHootersForm,
-                        })}
+                        className={`text-[1.5rem] font-bold text-${
+                          variant ?? "qik"
+                        }`}
                       >
                         {branch?.Name}
                       </h4>
@@ -288,7 +277,7 @@ const SuggestedLocations = ({
               className="w-full"
               disabled={grantingPermissions}
               type="button"
-              variant={isHootersForm ? "hootersPrimary" : "default"}
+              variant={variant ? `${variant}Primary` : "default"}
             >
               {grantingPermissions ? "Esperando permisos..." : "¡Aquí estoy!"}
             </Button>
