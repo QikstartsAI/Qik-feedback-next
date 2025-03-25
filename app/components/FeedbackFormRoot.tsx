@@ -22,6 +22,7 @@ import { APIProvider } from "@vis.gl/react-google-maps";
 import { Branch } from "../types/business";
 import { getBranchById } from "../layers/data";
 import BenitoMiamiForm from "./feedback/customForms/BenitoMiamiForm";
+import DelcampoCustomForm from "./feedback/customForms/PolloCustomForm";
 
 const Hero = lazy(() => import("./Hero"));
 const FeedbackForm = lazy(() => import("./feedback/FeedbackForm"));
@@ -63,6 +64,7 @@ export default function FeedbackFormRoot() {
   ].includes(businessId ?? "");
   const isGusForm = businessId === CUSTOM_GUS_FORM_ID;
   const isDscSolutions = businessId === DSC_SOLUTIONS_ID;
+  const isDelCampo = businessId === CUSTOM_POLLOSDCAMPO_FORM_ID;
   const isBenitoMiami =
     businessId === CUSTOM_BENIT_MIAMI_ID.branch &&
     branchId === CUSTOM_BENIT_MIAMI_ID.sucursal;
@@ -156,8 +158,13 @@ export default function FeedbackFormRoot() {
   }, [loading, locationConfirmated]);
 
   if (isSubmitted && rating !== "4" && rating !== "5" && !isDscSolutions) {
-    if (isHootersForm || isGusForm) {
-      return <HootersThanks businessCountry={business?.Country || "EC"} />;
+    if (isHootersForm || isGusForm || isDelCampo) {
+      return (
+        <HootersThanks
+          businessCountry={business?.Country || "EC"}
+          variant={isHootersForm ? "hooters" : isDelCampo ? "delcampo" : "gus"}
+        />
+      );
     } else {
       return (
         <Thanks
@@ -190,11 +197,17 @@ export default function FeedbackFormRoot() {
                     locationPermission={locationPermission}
                   />
                   {!customerType &&
-                    (isHootersForm || isGusForm ? (
+                    (isHootersForm || isGusForm || isDelCampo ? (
                       <CustomIntro
                         business={business}
                         toogleCustomerType={toggleCustomer}
-                        variant={isHootersForm ? "hooters" : "gus"}
+                        variant={
+                          isHootersForm
+                            ? "hooters"
+                            : isDelCampo
+                            ? "delcampo"
+                            : "gus"
+                        }
                       />
                     ) : (
                       <Intro
@@ -221,6 +234,14 @@ export default function FeedbackFormRoot() {
                       />
                     ) : isBenitoMiami ? (
                       <BenitoMiamiForm
+                        business={business}
+                        setIsSubmitted={setIsSubmitted}
+                        setRating={setRating}
+                        customerType={customerType}
+                        setCustomerName={setCustomerName}
+                      />
+                    ) : isDelCampo ? (
+                      <DelcampoCustomForm
                         business={business}
                         setIsSubmitted={setIsSubmitted}
                         setRating={setRating}
@@ -259,7 +280,9 @@ export default function FeedbackFormRoot() {
             denyLocation={denyLocation}
             onConfirm={handleConfirmLocation}
             grantingPermissions={grantingPermissions}
-            isHootersForm={isHootersForm}
+            variant={
+              isHootersForm ? "hooters" : isDelCampo ? "delcampo" : "gus"
+            }
           />
         )}
       </Suspense>
