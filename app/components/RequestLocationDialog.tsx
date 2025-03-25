@@ -241,7 +241,7 @@ const SuggestedLocations = ({
                     )}
                     <div className="flex flex-col">
                       <h4
-                        className={`text-[1.5rem] font-bold text-${
+                        className={`text-[1rem] font-bold text-${
                           variant ?? "qik"
                         }`}
                       >
