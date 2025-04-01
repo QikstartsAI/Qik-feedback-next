@@ -4,18 +4,18 @@ import {
   BUCKET_NAME,
   USERS_COLLECTION_NAME,
   COLLECTION_NAME,
-} from '@/app/constants/general';
-import { getFirebase } from '@/app/lib/firebase';
-import { Branch, Business, Feedback, Waiter } from '@/app/types/business';
+} from "@/app/constants/general";
+import { getFirebase } from "@/app/lib/firebase";
+import { Branch, Business, Feedback, Waiter } from "@/app/types/business";
 import {
   getDoc,
   doc,
   collection,
   getDocs,
   DocumentReference,
-} from 'firebase/firestore';
-import { getDownloadURL, getStorage, ref } from 'firebase/storage';
-import { User } from '@/app/types/user';
+} from "firebase/firestore";
+import { getDownloadURL, getStorage, ref } from "firebase/storage";
+import { User } from "@/app/types/user";
 
 const storageBucket = `gs://${BUCKET_NAME}`;
 const storage = getStorage(getFirebase().firebaseApp, storageBucket);
@@ -25,20 +25,20 @@ export const findBusiness = async (
   branchId?: string | null,
   waiterId?: string | null
 ) => {
-  const docRef = doc(getFirebase().db, COLLECTION_NAME || '', businessId || '');
+  const docRef = doc(getFirebase().db, COLLECTION_NAME || "", businessId || "");
 
   const docSnap = await getDoc(docRef);
 
   if (docSnap.exists()) {
     let businessData: Business = docSnap.data() as Business;
 
-    const category = docSnap.get('category');
+    const category = docSnap.get("category");
     if (category) {
-      businessData.Category = category
+      businessData.Category = category;
     }
 
     if (branchId) {
-      const branchRef = doc(collection(docRef, 'sucursales'), branchId);
+      const branchRef = doc(collection(docRef, "sucursales"), branchId);
       const branchDocSnap = await getDoc(branchRef);
 
       if (branchDocSnap.exists()) {
@@ -47,16 +47,16 @@ export const findBusiness = async (
     }
 
     if (waiterId && businessId && !branchId) {
-      const waitersRef = doc(collection(docRef, 'meseros'), waiterId);
+      const waitersRef = doc(collection(docRef, "meseros"), waiterId);
       const waitersDocSnap = await getDoc(waitersRef);
 
       if (waitersDocSnap.exists()) {
         businessData.Waiter = waitersDocSnap.data() as Waiter;
       }
     } else if (waiterId && businessId && branchId) {
-      const branchRef = doc(collection(docRef, 'sucursales'), branchId);
+      const branchRef = doc(collection(docRef, "sucursales"), branchId);
 
-      const waitersRef = doc(collection(branchRef, 'meseros'), waiterId);
+      const waitersRef = doc(collection(branchRef, "meseros"), waiterId);
       const waitersDocSnap = await getDoc(waitersRef);
 
       if (waitersDocSnap.exists()) {
@@ -81,11 +81,11 @@ export const findBusiness = async (
       businessData.Icono = iconUrl;
       businessData.Cover = coverUrl;
     }
-    businessData.BusinessId = businessId || '';
+    businessData.BusinessId = businessId || "";
     businessData.sucursales = await getBranchesByBusiness(docRef);
     return businessData;
   } else {
-    console.info('No such document!');
+    console.info("No such document!");
     return null;
   }
 };
@@ -106,17 +106,20 @@ const getBusinessIcon = async (businessData: Business) => {
   } catch (error) {
     console.log(error);
   }
-  return '';
+  return "";
 };
 
 async function getBranchesByBusiness(businessDataReference: DocumentReference) {
   const branchesSnapshot = await getDocs(
-    collection(businessDataReference, 'sucursales')
+    collection(businessDataReference, "sucursales")
   );
 
   const branchesData = await Promise.all(
     branchesSnapshot.docs.map(async (branchDoc) => {
-      const branchData = {...branchDoc.data(), BusinessId: branchDoc.id} as Branch;
+      const branchData = {
+        ...branchDoc.data(),
+        BusinessId: branchDoc.id,
+      } as Branch;
 
       const branch = {
         ...branchData,
@@ -125,8 +128,8 @@ async function getBranchesByBusiness(businessDataReference: DocumentReference) {
       };
 
       const [branchFeedback, waitersSnapshot] = await Promise.all([
-        getDocs(collection(branchDoc.ref, 'feedbacks')),
-        getDocs(collection(branchDoc.ref, 'meseros')),
+        getDocs(collection(branchDoc.ref, "feedbacks")),
+        getDocs(collection(branchDoc.ref, "meseros")),
       ]);
 
       branchFeedback.docs.forEach((doc) => {
@@ -142,7 +145,7 @@ async function getBranchesByBusiness(businessDataReference: DocumentReference) {
           };
 
           const waiterFeedback = await getDocs(
-            collection(waiterDoc.ref, 'feedbacks')
+            collection(waiterDoc.ref, "feedbacks")
           );
 
           waiterFeedback.docs.forEach((doc) => {
@@ -160,14 +163,14 @@ async function getBranchesByBusiness(businessDataReference: DocumentReference) {
 }
 
 export const getBusinessDataFromUser = async (userId: string) => {
-  const userDocRef = doc(getFirebase().db, USERS_COLLECTION_NAME, userId || '');
+  const userDocRef = doc(getFirebase().db, USERS_COLLECTION_NAME, userId || "");
   const userDocSnap = await getDoc(userDocRef);
   const userData: User = userDocSnap.data() as User;
 
   const businessDocRef = doc(
     getFirebase().db,
     DASHBOARD_COLLECTION_NAME,
-    userData.businessId || ''
+    userData.businessId || ""
   );
 
   try {
@@ -182,7 +185,7 @@ export const getBusinessDataFromUser = async (userId: string) => {
     response.Icono = await getBusinessIcon(businessData);
 
     const mainBusinessFeedback = await getDocs(
-      collection(businessDocRef, 'feedbacks')
+      collection(businessDocRef, "feedbacks")
     );
     mainBusinessFeedback.forEach((doc) => {
       response.feedbacks.push(doc.data() as Feedback);
@@ -192,7 +195,7 @@ export const getBusinessDataFromUser = async (userId: string) => {
 
     // Obtener meseros del negocio principal
     const waitersSnapshot = await getDocs(
-      collection(businessDocRef, 'meseros')
+      collection(businessDocRef, "meseros")
     );
     const waitersData = await Promise.all(
       waitersSnapshot.docs.map(async (waiterMainDoc) => {
@@ -203,7 +206,7 @@ export const getBusinessDataFromUser = async (userId: string) => {
         };
 
         const waiterFeedback = await getDocs(
-          collection(waiterMainDoc.ref, 'feedbacks')
+          collection(waiterMainDoc.ref, "feedbacks")
         );
         waiterFeedback.docs.forEach((doc) => {
           waiter.feedbacks.push(doc.data() as Feedback);
@@ -217,7 +220,7 @@ export const getBusinessDataFromUser = async (userId: string) => {
 
     return response;
   } catch (error) {
-    console.error('Error al obtener información del negocio:', error);
+    console.error("Error al obtener información del negocio:", error);
     return null;
   }
 };

@@ -178,7 +178,6 @@ export default function FeedbackFormRoot() {
   if (!isQr && isSubmitted && isDscSolutions) {
     return <SimpleThanks />;
   }
-
   return (
     <APIProvider
       apiKey={process.env.NEXT_PUBLIC_VITE_APP_GOOGLE_API_KEY ?? ""}
@@ -247,6 +246,8 @@ export default function FeedbackFormRoot() {
                         setRating={setRating}
                         customerType={customerType}
                         setCustomerName={setCustomerName}
+                        branchId={sucursalId}
+                        waiterId={waiterId}
                       />
                     ) : (
                       <FeedbackForm

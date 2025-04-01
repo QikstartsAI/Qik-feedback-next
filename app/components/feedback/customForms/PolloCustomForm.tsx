@@ -35,7 +35,9 @@ import { useToast } from "@/app/hooks/useToast";
 import { FeedbackProps, feedbackSchema } from "@/app/validators/feedbackSchema";
 import { RadioGroup } from "@/app/components/ui/RadioGroup";
 import { Origins, Ratings } from "@/app/types/feedback";
-import handleSubmitFeedback, { formattedName } from "@/app/lib/handleSubmit";
+import handleSubmitFeedback from "@/app/lib/handleSubmitDelCampoForm";
+import { formattedName } from "@/app/lib/handleSubmit";
+
 import {
   findCustomerDataByEmail,
   findCustomerFeedbackDataInBusiness,
@@ -67,31 +69,31 @@ import { lastFeedbackFilledIsGreaterThanOneDay } from "@/app/lib/utils";
 import { getCustomerDataInBusiness } from "@/app/lib/handleEmail";
 import { useSearchParams } from "next/navigation";
 import {
-  commonPaymentMethods,
   walletsByCountry,
-  walletsIdsByCountry,
   walletsIdsByCountryWithCommon,
 } from "@/app/constants/wallets";
 import { IconCopy } from "@tabler/icons-react";
-
 import Image from "next/image";
-import { Wizard } from "@/app/layers/ui/wizard";
 
-interface FeedbackFormProps {
+interface PolloCustomProps {
   business: Business | null;
   setIsSubmitted: Dispatch<SetStateAction<boolean>>;
   setRating: Dispatch<SetStateAction<string>>;
   customerType: CustomerRole;
   setCustomerName: Dispatch<SetStateAction<string>>;
+  branchId: string | null;
+  waiterId: string | null;
 }
 
-export default function FeedbackForm({
+export default function PolloCustomForm({
   business,
   setIsSubmitted,
   setRating,
   setCustomerName,
   customerType,
-}: FeedbackFormProps) {
+  branchId,
+  waiterId,
+}: PolloCustomProps) {
   const searchParams = useSearchParams();
 
   const [loadingPercentage, setLoadingPercentage] = useState(0);
@@ -112,8 +114,6 @@ export default function FeedbackForm({
     useState<boolean | undefined>(false);
 
   const businessId = searchParams.get("id");
-  const branchId = searchParams.get("sucursal");
-  const waiterId = searchParams.get("mesero");
 
   const { toast } = useToast();
 
@@ -246,7 +246,10 @@ export default function FeedbackForm({
         customerType,
         attendantName,
         customerNumberOfVisits,
-        feedbackNumberOfVisit
+        feedbackNumberOfVisit,
+        businessId,
+        branchId !== "pollos-d-campo" ? branchId : "",
+        waiterId
       );
       setLoadingPercentage(70);
       if (!isLowRating && business?.MapsUrl) {
