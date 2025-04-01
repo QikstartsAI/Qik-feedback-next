@@ -3,9 +3,14 @@ import { useEffect, useRef } from "react";
 interface InputPopupProps {
   show: boolean;
   onClose: () => void;
+  onChange: (fieldId: string, value: any) => void;
 }
 
-export const InputPopup: React.FC<InputPopupProps> = ({ show, onClose }) => {
+export const InputPopup: React.FC<InputPopupProps> = ({
+  show,
+  onClose,
+  onChange,
+}) => {
   const popupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

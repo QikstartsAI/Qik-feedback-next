@@ -1,13 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Business } from "@/app/types/business";
 import { Textarea } from "@/app/components/ui/TextArea";
 import { IconCopy } from "@tabler/icons-react";
 import { cn } from "@/app/lib/utils";
 
-const PositiveReview = ({ business }: { business: Business | null }) => {
+interface PositiveReviewProps {
+  business?: Business | null;
+  onChange?: (fieldId?: string, value?: any) => void;
+}
+
+const PositiveReview = ({ business, onChange }: PositiveReviewProps) => {
   const [showIsCopied, setShowIsCopied] = useState(false);
-  const [isTermsChecked, setIsTermsChecked] = useState(true);
   const [goodFeedback, setGoodFeedback] = useState("");
+
+  const [isTermsChecked, setIsTermsChecked] = useState(true);
 
   const writeReviewURL = () => {
     if (!business?.MapsUrl) return "";

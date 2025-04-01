@@ -1,7 +1,7 @@
 export const ClientTypeSelection = ({
   setClientType,
 }: {
-  setClientType: (type: string) => void;
+  setClientType: (type: "newClient" | "frequentClient") => void;
 }) => {
   return (
     <div className="text-center">
@@ -14,7 +14,7 @@ export const ClientTypeSelection = ({
       <div className="flex mt-7 justify-center items-center">
         <button
           className="flex flex-col items-center mx-4"
-          onClick={() => setClientType("new")}
+          onClick={() => setClientType("newClient")}
         >
           <img
             src={true ? "/yellow-start.png" : "/gray-start.png"}
@@ -25,7 +25,7 @@ export const ClientTypeSelection = ({
         </button>
         <button
           className="flex flex-col items-center mx-4"
-          onClick={() => setClientType("frequent")}
+          onClick={() => setClientType("frequentClient")}
         >
           <img
             src={true ? "/red-heart.png" : "/gray-heart.png"}

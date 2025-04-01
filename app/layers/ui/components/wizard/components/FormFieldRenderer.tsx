@@ -22,7 +22,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
         <PhoneField
           field={field}
           value={value}
-          onChange={(checked, fieldId) =>
+          onChange={(fieldId, checked) =>
             onChange(fieldId ?? field.id, checked)
           }
         />

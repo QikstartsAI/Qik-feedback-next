@@ -1,22 +1,15 @@
 import { Form } from "antd";
 import { FormField } from "../types/wizardTypes";
-import CheckboxField from "./CheckboxField";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
 interface TextFieldProps {
   field: FormField;
   value?: string;
-  checked?: boolean;
-  onChange?: (value: any, fieldId?: string) => void;
+  onChange?: (fieldId?: string, value?: any) => void;
 }
 
-const PhoneField: React.FC<TextFieldProps> = ({
-  field,
-  value,
-  checked,
-  onChange,
-}) => {
+const PhoneField: React.FC<TextFieldProps> = ({ field, value, onChange }) => {
   return (
     <div className="relative mb-3">
       <span className="absolute -top-3 left-3 bg-white px-2 text-sm text-gray-600 rounded-full z-10">
@@ -36,21 +29,12 @@ const PhoneField: React.FC<TextFieldProps> = ({
           placeholder="(XXX)-XXX-XXXX"
           defaultCountry="EC"
           value={value}
-          onChange={(value) => onChange && onChange(value, field.id)}
+          onChange={(value) => onChange && onChange(field.id, value)}
           required={field.required}
           limitMaxLength
           className="relative w-full border border-gray-400 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
       </Form.Item>
-      <CheckboxField
-        field={{
-          id: "checkWhatsApp",
-          defaultValue: true,
-          label: "Acepto recibir promociones por WhatsApp",
-        }}
-        value={checked}
-        onChange={(checked) => onChange && onChange(checked, "checkWhatsApp")}
-      />
     </div>
   );
 };

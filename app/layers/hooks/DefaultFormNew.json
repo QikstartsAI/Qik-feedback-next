@@ -29,6 +29,12 @@
                         "required": true
                     },
                     {
+                        "id": "AcceptPromotions",
+                        "label": "Acepto recibir promociones por WhatsApp",
+                        "type": "checkbox",
+                        "required": false
+                    },
+                    {
                         "id": "BirthdayDate",
                         "label": "¿Tu fecha de cumpleaños?",
                         "placeholder": "dd/mm/yyyy",
@@ -96,7 +102,94 @@
             }
         ]
     },
-    "frequentClient" : {
-        "steps": []
+    "frequentClient": {
+        "steps": [
+            {
+                "id": "101",
+                "questions": [
+                    {
+                        "id": "Email",
+                        "label": "Correo electrónico",
+                        "type": "email",
+                        "placeholder": "Ingresa tu correo",
+                        "required": true
+                    },
+                    {
+                        "id": "FullName",
+                        "label": "Nombre completo",
+                        "type": "text",
+                        "placeholder": "Ingresa tu nombre",
+                        "required": true
+                    },
+                    {
+                        "id": "AcceptPromotions",
+                        "label": "Acepto recibir promociones por WhatsApp",
+                        "type": "checkbox",
+                        "required": false
+                    },
+                    {
+                        "id": "BirthdayDate",
+                        "label": "¿Tu fecha de cumpleaños?",
+                        "placeholder": "dd/mm/yyyy",
+                        "description": "Te sorprenderemos ese día😎",
+                        "type": "date",
+                        "max": "2005-12-31",
+                        "required": false
+                    },
+                    {
+                        "id": "Origin",
+                        "title": "¿Qué te ha motivado a visitarnos esta vez?",
+                        "type": "chips",
+                        "required": true,
+                        "options": [
+                            {
+                                "id": "promo",
+                                "label": "Vi una promo",
+                                "title": "¿Dónde viste la promo?",
+                                "options": [
+                                    { "id": "instagram", "label": "Instagram" },
+                                    { "id": "facebook", "label": "Facebook" },
+                                    { "id": "youtube", "label": "Youtube" },
+                                    { "id": "tiktok", "label": "Tiktok" },
+                                    { "id": "google", "label": "Google" },
+                                    { "id": "email", "label": "Email" },
+                                    { "id": "whatsapp", "label": "WhatsApp" },
+                                    { "id": "flyer", "label": "Hoja volante" },
+                                    { "id": "eventFair", "label": "Eventos o Ferias" },
+                                    { "id": "partnership", "label": "Alianzas" },
+                                    { "id": "radioTV", "label": "Radio o TV" }
+                                ]
+                            },
+                            { "id": "enjoy", "label": "Disfruto venit aquí" },
+                            { "id": "maps", "label": "Google Maps" },
+                            { "id": "recommendation", "label": "Me recomendaron nuevamnete" },
+                            {
+                                "id": "reason",
+                                "label": "Otra Razón"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "Rating",
+                "questions": [
+                    {
+                        "id": "rateExperience",
+                        "label": "¡Queremos escucharlo todo, lo bueno y no tan bueno!",
+                        "placeholder": "",
+                        "type": "rate",
+                        "required": true,
+                        "options": [
+                            { "id": "Mal", "label": "Bad", "value": 1 },
+                            { "id": "Regular", "label": "Regular", "value": 2 },
+                            { "id": "Bueno", "label": "Good", "value": 4 },
+                            { "id": "Excelente", "label": "Excellent", "value": 5 }
+                        ]
+
+                    }
+                ]
+            }
+        ]
     }
 }

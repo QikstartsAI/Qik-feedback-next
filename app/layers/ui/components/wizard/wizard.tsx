@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DefaultFormNew from "../../../hooks/DefaultFormNew.json";
 import { Form, Progress } from "antd";
 import "./wizard-styles.css";
@@ -19,28 +19,48 @@ import { toast } from "@/app/hooks/useToast";
 import Thanks from "@/app/components/Thanks";
 
 export const Wizard = ({ business }: { business: Business | null }) => {
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [showPopup, setShowPopup] = useState(false);
+  const [showOptionsPopup, setShowOptionsPopup] = useState(false);
+  const [showInputPopup, setShowInputPopup] = useState(false);
   const [popupOptions, setPopupOptions] = useState<Record<string, Option[]>>(
     {}
   );
-
   const [progress, setProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
-  const [clientType, setClientType] = useState("");
+  const [clientType, setClientType] = useState<
+    "newClient" | "frequentClient" | ""
+  >("");
   const [responses, setResponses] = useState<Record<string, any>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [form] = Form.useForm();
 
   const getFormData = (): FormField[] => {
-    return clientType === "new"
-      ? DefaultFormNew.newClient.steps[currentStep].questions
+    return clientType
+      ? DefaultFormNew[clientType].steps[currentStep].questions
       : [];
   };
 
+  useEffect(() => {
+    setResponses({
+      FullName: "",
+      PhoneNumber: "",
+      AcceptPromotions: true,
+      AcceptTerms: true,
+      BirthdayDate: "",
+      Email: "",
+      Origin: undefined,
+      Rating: undefined,
+      StartTime: new Date(),
+      Ambience: false,
+      Food: false,
+      Service: false,
+      ImproveText: "",
+      hiddenInput: null,
+    });
+  }, []);
+
   const calculateProgress = (values: Record<string, any>) => {
     const formFields = getFormData();
-    setResponses({ ...responses, ...values });
+
     const totalFields = formFields.filter((field) => field.required);
     const filledFields = totalFields.filter((field) => {
       if (!field.id) return false;
@@ -58,7 +78,6 @@ export const Wizard = ({ business }: { business: Business | null }) => {
     const newProgress =
       stepPercentage + filledFieldsPercentage / getStepsLength();
     setProgress(newProgress);
-    console.log("VALUES:", responses);
   };
 
   const handleNextStep = () => {
@@ -67,13 +86,7 @@ export const Wizard = ({ business }: { business: Business | null }) => {
     const allFieldsVerified = requiredFields.every(
       (field) => responses[field.id!]
     );
-    if (
-      allFieldsVerified &&
-      currentStep <
-        DefaultFormNew[clientType === "new" ? "newClient" : "frequentClient"]
-          .steps.length -
-          1
-    ) {
+    if (allFieldsVerified && currentStep < getStepsLength() - 1) {
       setCurrentStep(currentStep + 1);
       setResponses({ ...responses, ...form.getFieldsValue() });
     }
@@ -88,33 +101,20 @@ export const Wizard = ({ business }: { business: Business | null }) => {
   };
 
   const getStepsLength = (): number => {
-    return DefaultFormNew[clientType === "new" ? "newClient" : "frequentClient"]
-      .steps.length;
-  };
-
-  const handleOptionClick = (fieldId: string, option: Option) => {
-    if (option.options) {
-      setPopupOptions({ [fieldId]: option.options });
-      setShowPopup(true);
-    } else if (option.id === "reason") {
-      setSelectedOption("reason");
-      setShowPopup(true);
-    } else {
-      setSelectedOption(option.id || null);
-    }
+    return clientType ? DefaultFormNew[clientType].steps.length : 0;
   };
 
   const handlePopupClose = () => {
-    setShowPopup(false);
+    setShowOptionsPopup(false);
+    setShowInputPopup(false);
     setPopupOptions({});
-    setSelectedOption(null);
   };
 
   const handleSelectOption = (fieldId?: string, option?: Option) => {
     if (!fieldId || !option) return;
     if (option.options) {
       setPopupOptions({ [fieldId]: option.options });
-      setShowPopup(true);
+      setShowOptionsPopup(true);
     } else {
       setResponses({ ...responses, [fieldId]: option.id });
       form.setFieldValue(fieldId, option.id);
@@ -126,12 +126,16 @@ export const Wizard = ({ business }: { business: Business | null }) => {
     if (!fieldId || value == undefined) return;
     const field = getFormData().find((e) => e.id === fieldId);
     const options = field?.options?.find((e) => e.id === value)?.options;
+    if (fieldId === "Origin" && value == "reason") {
+      setShowInputPopup(true);
+    }
     if (options) {
       setPopupOptions({ [fieldId]: options });
-      setShowPopup(true);
+      setShowOptionsPopup(true);
     } else {
       form.setFieldValue(fieldId, value);
       setResponses({ ...responses, [fieldId]: value });
+      console.log(fieldId, value, responses);
       calculateProgress(form.getFieldsValue());
     }
   };
@@ -196,13 +200,13 @@ export const Wizard = ({ business }: { business: Business | null }) => {
         updatedData,
         improveOptions,
         clientType,
-        FullName,
+        business?.Waiter?.name ?? business?.Name ?? "",
         customerNumberOfVisits,
         feedbackNumberOfVisit
       );
 
       if (!isLowRating && business?.MapsUrl) {
-        handleRedirect();
+        // handleRedirect();
       }
     } catch (error) {
       console.log(error);
@@ -251,7 +255,7 @@ export const Wizard = ({ business }: { business: Business | null }) => {
             form={form}
             name="validateOnly"
             className="max-w-lg"
-            onValuesChange={(_, values) => calculateProgress(values)}
+            // onValuesChange={(_, values) => calculateProgress(values)}
           >
             <div className="flex flex-col gap-3 mt-10 w-full">
               {getFormData().map((field) => (
@@ -263,7 +267,10 @@ export const Wizard = ({ business }: { business: Business | null }) => {
                 />
               ))}
               {canOpenPositiveReview() && (
-                <PositiveReview business={business} />
+                <PositiveReview
+                  business={business}
+                  onChange={handleOnFieldChange}
+                />
               )}
               {canOpenNegativeReview() && (
                 <NegativeReview
@@ -294,17 +301,18 @@ export const Wizard = ({ business }: { business: Business | null }) => {
           </Form>
         </div>
       )}
-      {selectedOption === "reason" ? (
-        <InputPopup show onClose={handlePopupClose} />
-      ) : (
-        <OptionsPopup
-          show={showPopup}
-          options={popupOptions}
-          responses={responses}
-          onSelect={handleSelectOption}
-          onClose={handlePopupClose}
-        />
-      )}
+      <InputPopup
+        show={showInputPopup}
+        onClose={handlePopupClose}
+        onChange={handleOnFieldChange}
+      />
+      <OptionsPopup
+        show={showOptionsPopup}
+        options={popupOptions}
+        responses={responses}
+        onSelect={handleSelectOption}
+        onClose={handlePopupClose}
+      />
     </div>
   );
 };
