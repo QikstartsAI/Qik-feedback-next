@@ -4,7 +4,7 @@ import {
 } from "@/app/constants/general";
 import { getFirebase, getTimesTampFromDate } from "@/app/lib/firebase";
 import { Waiter } from "@/app/types/business";
-import { DelCampoFeedbackProps } from "@/app/validators/delcampoFeedbackSchema";
+import { FeedbackProps } from "@/app/validators/feedbackSchema";
 import {
   addDoc,
   updateDoc,
@@ -17,29 +17,29 @@ import { findBusiness } from "../services/business";
 import { Customer } from "../types/customer";
 import { findCustomerDataByEmail } from "./handleEmail";
 
-const handleSubmitDelCampoForm = async (
+const formattedName = (name?: string | null): string => {
+  if (name?.includes(" ")) {
+    return name ? name.toLocaleLowerCase().split(" ").join("-").trim() : "";
+  }
+  return name ?? "";
+};
+
+const handleSubmitFeedback = async (
   {
     FullName,
-    AcceptTerms,
-    Ambience,
-    Courtesy,
-    Email,
-    Experience,
-    FoodQuality,
-    PlaceCleanness,
-    Quickness,
-    Recommending,
-    ComeBack,
-    StartTime,
-    ComeBackText,
     ImproveText,
-    RecommendingText,
-    Climate,
-    BirthdayDate,
-    PhoneNumber,
-    AcceptPromotions,
     Origin,
-  }: DelCampoFeedbackProps,
+    PhoneNumber,
+    Rating,
+    StartTime,
+    Dinners,
+    AverageTicket,
+    PaymentMethod,
+    Email,
+    AcceptPromotions,
+    AcceptTerms,
+    BirthdayDate,
+  }: FeedbackProps,
   Improve: string[],
   customerType: string,
   AttendedBy: string,
@@ -49,6 +49,8 @@ const handleSubmitDelCampoForm = async (
   branchId: string | null,
   waiterId: string | null
 ) => {
+  const searchParams = new URLSearchParams(document.location.search);
+
   const customerContactData: Customer = {
     email: Email,
     name: FullName,
@@ -56,14 +58,16 @@ const handleSubmitDelCampoForm = async (
     birthdayDate: BirthdayDate || "",
     origin: Origin || "",
     customerType: customerType || "",
-    acceptPromotions: AcceptPromotions,
+    acceptPromotions: !PhoneNumber ? false : true,
     lastFeedbackFilled: getTimesTampFromDate(new Date()),
   };
+
+  const formattedId = formattedName(businessId);
 
   const businessFeedbackRef = collection(
     getFirebase().db,
     COLLECTION_NAME || "",
-    businessId ? businessId : "",
+    formattedId,
     "customers",
     Email,
     "feedbacks"
@@ -72,46 +76,41 @@ const handleSubmitDelCampoForm = async (
   const businessCustomerRef = collection(
     getFirebase().db,
     COLLECTION_NAME || "",
-    businessId ? businessId : "",
+    formattedId,
     "customers"
   );
   const businessDocRef = doc(
     getFirebase().db,
     COLLECTION_NAME || "",
-    businessId || ""
+    formattedId
   );
 
-  const data = {
+  const feedbaackData = {
     CreationDate: getTimesTampFromDate(new Date()),
     FullName,
-    AcceptTerms,
-    PhoneNumber,
-    BirthdayDate,
     AcceptPromotions,
-    Origin,
-    StartTime: getTimesTampFromDate(StartTime),
-    Email,
-    AttendedBy,
-    PlaceCleanness: parseInt(PlaceCleanness),
-    Quickness: parseInt(Quickness),
-    FoodQuality: parseInt(FoodQuality),
-    Ambience,
-    Courtesy: parseInt(Courtesy),
-    ComeBack,
-    ComeBackText,
-    Recommending,
-    RecommendingText,
-    Experience: parseInt(Experience),
+    AcceptTerms,
     Improve,
     ImproveText,
-    Climate: parseInt(Climate),
+    Origin,
+    PhoneNumber,
+    Rating: parseInt(Rating),
+    StartTime: getTimesTampFromDate(StartTime),
+    Dinners,
+    AverageTicket,
+    PaymentMethod,
+    Email,
+    BirthdayDate: BirthdayDate
+      ? getTimesTampFromDate(new Date(BirthdayDate))
+      : null,
+    AttendedBy,
   };
   if (waiterId && businessId && !branchId) {
     try {
       const waiterFeedbackRef = collection(
         getFirebase().db,
         COLLECTION_NAME || "",
-        businessId || "",
+        formattedId,
         "meseros",
         waiterId || "",
         "customers",
@@ -121,7 +120,7 @@ const handleSubmitDelCampoForm = async (
       const waiterCustomerRef = collection(
         getFirebase().db,
         COLLECTION_NAME || "",
-        businessId || "",
+        formattedId,
         "meseros",
         waiterId || "",
         "customers"
@@ -135,15 +134,15 @@ const handleSubmitDelCampoForm = async (
       const latestSum = waiterData.latestSum || 0;
       const numberOfSurveys = waiterData.numberOfSurveys || 0;
       let waiterRating = waiterData.ratingAverage || 0;
-      // if (latestSum > 0) {
-      //   waiterRating = latestSum + parseInt(Rating)
-      // } else {
-      //   waiterRating += parseInt(Rating)
-      // }
+      if (latestSum > 0) {
+        waiterRating = latestSum + parseInt(Rating);
+      } else {
+        waiterRating += parseInt(Rating);
+      }
       const ratingAverage = (waiterRating / (numberOfSurveys + 1)).toFixed(1);
       const customerRef = doc(waiterCustomerRef, Email);
       await setDoc(customerRef, customerContactData);
-      await addDoc(waiterFeedbackRef, data);
+      await addDoc(waiterFeedbackRef, feedbaackData);
 
       await updateDoc(waitersRef, {
         numberOfSurveys: numberOfSurveys + 1,
@@ -158,7 +157,7 @@ const handleSubmitDelCampoForm = async (
       const waiterFeedbackRef = collection(
         getFirebase().db,
         COLLECTION_NAME || "",
-        businessId || "",
+        formattedId,
         "sucursales",
         branchId || "",
         "meseros",
@@ -170,7 +169,7 @@ const handleSubmitDelCampoForm = async (
       const waiterBranchCustomerRef = collection(
         getFirebase().db,
         COLLECTION_NAME || "",
-        businessId || "",
+        formattedId,
         "sucursales",
         branchId || "",
         "meseros",
@@ -190,15 +189,15 @@ const handleSubmitDelCampoForm = async (
       const latestSum = waiterData.latestSum || 0;
       const numberOfSurveys = waiterData.numberOfSurveys || 0;
       let waiterRating = waiterData.ratingAverage || 0;
-      // if (latestSum > 0) {
-      //   waiterRating = latestSum + parseInt(Rating)
-      // } else {
-      //   waiterRating += parseInt(Rating)
-      // }
+      if (latestSum > 0) {
+        waiterRating = latestSum + parseInt(Rating);
+      } else {
+        waiterRating += parseInt(Rating);
+      }
       const ratingAverage = (waiterRating / (numberOfSurveys + 1)).toFixed(1);
       const customerRef = doc(waiterBranchCustomerRef, Email);
       await setDoc(customerRef, customerContactData);
-      await addDoc(waiterFeedbackRef, data);
+      await addDoc(waiterFeedbackRef, feedbaackData);
       await updateDoc(waitersRef, {
         numberOfSurveys: numberOfSurveys + 1,
         latestSum: waiterRating,
@@ -214,7 +213,7 @@ const handleSubmitDelCampoForm = async (
       const branchFeedbackRef = collection(
         getFirebase().db,
         COLLECTION_NAME || "",
-        businessId || "",
+        formattedId,
         "sucursales",
         branchId || "",
         "customers",
@@ -224,18 +223,18 @@ const handleSubmitDelCampoForm = async (
       const branchCustomerRef = collection(
         getFirebase().db,
         COLLECTION_NAME || "",
-        businessId || "",
+        formattedId,
         "sucursales",
         branchId || "",
         "customers"
       );
       const customerRef = doc(branchCustomerRef, Email);
       await setDoc(customerRef, customerContactData);
-      await addDoc(branchFeedbackRef, data);
+      await addDoc(branchFeedbackRef, feedbaackData);
     } else if (businessId && !waiterId) {
       const customerRef = doc(businessCustomerRef, Email);
       await setDoc(customerRef, customerContactData);
-      await addDoc(businessFeedbackRef, data);
+      await addDoc(businessFeedbackRef, feedbaackData);
     }
 
     const parentCustomerDataRef = collection(
@@ -249,14 +248,13 @@ const handleSubmitDelCampoForm = async (
       "business"
     );
 
-    const businessData = await findBusiness(businessId);
-
+    const businessData = await findBusiness(businessId, branchId, waiterId);
     const customerData = await findCustomerDataByEmail(Email);
 
     let creationDate = customerData?.creationDate;
 
     const customerDoc = doc(parentCustomerDataRef, Email);
-    const businessDoc = doc(parentCustomerBusinessRef, businessId || "");
+    const businessDoc = doc(parentCustomerBusinessRef, formattedId);
 
     if (!customerData?.creationDate) {
       creationDate = getTimesTampFromDate(new Date());
@@ -268,6 +266,8 @@ const handleSubmitDelCampoForm = async (
         ...businessData,
         customerType: customerData?.customerType,
         lastFeedbackFilled: customerData?.lastFeedbackFilled,
+        acceptPromotions: customerData?.acceptPromotions,
+        lastOrigin: customerData?.origin,
         customerNumberOfVisits,
         creationDate,
       });
@@ -276,6 +276,8 @@ const handleSubmitDelCampoForm = async (
         ...businessData,
         customerType: customerType,
         lastFeedbackFilled: getTimesTampFromDate(new Date()),
+        acceptPromotions: AcceptPromotions,
+        lastOrigin: Origin,
         customerNumberOfVisits,
         creationDate,
       });
@@ -286,14 +288,18 @@ const handleSubmitDelCampoForm = async (
       CUSTOMERS_COLLECTION_NAME || "",
       Email,
       "business",
-      businessId || "",
+      formattedId,
       "feedbacks"
     );
     const businessFeedbackDoc = doc(customerBusinessFeedbackRef);
-    await setDoc(businessFeedbackDoc, { ...data, feedbackNumberOfVisit });
+    await setDoc(businessFeedbackDoc, {
+      ...feedbaackData,
+      feedbackNumberOfVisit,
+    });
   } catch (err) {
     console.error(err);
   }
 };
 
-export default handleSubmitDelCampoForm;
+export default handleSubmitFeedback;
+export { formattedName };

@@ -695,7 +695,8 @@ export default function BenitoMiamiForm({
                             checked={isTermsChecked}
                           />
                           <small className="text-gray-500">
-                            By pressing &quot;Submit&quot;, I declare that I accept the{" "}
+                            By pressing &quot;Submit&quot;, I declare that I
+                            accept the{" "}
                             <a
                               className="text-primary hover:underline"
                               href="https://qikstarts.com/terms-of-service"
@@ -778,8 +779,8 @@ export default function BenitoMiamiForm({
                           goodFeedback ? "opacity-100" : "opacity-0"
                         )}
                       >
-                        Text copied! Just paste it into Google and you&apos;re done.
-                        😍
+                        Text copied! Just paste it into Google and you&apos;re
+                        done. 😍
                       </p>
                       {loadingPercentage > 0 && (
                         <div className="flex flex-col gap-3 w-full">
@@ -814,7 +815,8 @@ export default function BenitoMiamiForm({
                           checked={isTermsChecked}
                         />
                         <small className="text-gray-500">
-                          By pressing &quot;Submit&quot;, I declare that I accept the{" "}
+                          By pressing &quot;Submit&quot;, I declare that I
+                          accept the{" "}
                           <a
                             className="text-primary hover:underline"
                             href="https://qikstarts.com/terms-of-service"
