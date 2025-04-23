@@ -9,3 +9,5 @@ type QikCheckboxProps = {
 const QikCheckBox = ({text} :QikCheckboxProps) => (
   <Checkbox>{text}</Checkbox>
 )
+
+export {QikCheckBox};
