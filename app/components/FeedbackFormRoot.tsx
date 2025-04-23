@@ -31,6 +31,8 @@ const CUSTOM_YOGURT_FORM_ID = "yogurt-amazonas";
 const CUSTOM_POLLOSDCAMPO_FORM_ID = "pollos-d-campo";
 const CUSTOM_GUS_FORM_ID = "pollo-gus";
 const CUSTOM_CEBICHES_FORM_ID = "los-cebiches-de-la-ruminahui";
+const CUSTOM_PIQUEOS_MORITOS = "piqueos-y-moritos";
+const INKA_BURGER = "MyzictjAWrtusZhk0sGh";
 const CUSTOM_BENIT_MIAMI_ID = {
   branch: "ttIvaTT3WjuLnJtOIbqu",
   sucursal: "miami",
@@ -58,6 +60,8 @@ export default function FeedbackFormRoot() {
     CUSTOM_YOGURT_FORM_ID,
     CUSTOM_POLLOSDCAMPO_FORM_ID,
     CUSTOM_CEBICHES_FORM_ID,
+    CUSTOM_PIQUEOS_MORITOS,
+    INKA_BURGER
   ].includes(businessId ?? "");
   const isGusForm = businessId === CUSTOM_GUS_FORM_ID;
   const isDscSolutions = businessId === DSC_SOLUTIONS_ID;
