@@ -1,6 +1,4 @@
 "use client";
-import { Wizard } from "../layers/ui/wizard";
-
 import { lazy, useEffect, useState, Suspense } from "react";
 import useGetBusinessData from "../hooks/useGetBusinessData";
 import Loader from "./Loader";
@@ -16,11 +14,10 @@ import SimpleForm from "./feedback/customForms/SimpleForm";
 import SimpleThanks from "./SimpleThanks";
 import { DSC_SOLUTIONS_ID } from "../constants/general";
 import RequestLocationDialog from "./RequestLocationDialog";
-import { getCookie, setCookie } from "../lib/utils";
+import { setCookie } from "../lib/utils";
 import { useDistanceMatrix } from "../hooks/useDistanceMatrix";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { Branch } from "../types/business";
-import { getBranchById } from "../layers/data";
 import BenitoMiamiForm from "./feedback/customForms/BenitoMiamiForm";
 import DelcampoCustomForm from "./feedback/customForms/PolloCustomForm";
 
@@ -38,7 +35,6 @@ const CUSTOM_BENIT_MIAMI_ID = {
   branch: "ttIvaTT3WjuLnJtOIbqu",
   sucursal: "miami",
 };
-
 export default function FeedbackFormRoot() {
   const {
     business,
@@ -58,6 +54,7 @@ export default function FeedbackFormRoot() {
   const [rating, setRating] = useState("");
   const isHootersForm = businessId === CUSTOM_HOOTERS_FORM_ID;
   const enableGeolocation = [
+    CUSTOM_HOOTERS_FORM_ID,
     CUSTOM_YOGURT_FORM_ID,
     CUSTOM_POLLOSDCAMPO_FORM_ID,
     CUSTOM_CEBICHES_FORM_ID,
@@ -273,7 +270,7 @@ export default function FeedbackFormRoot() {
           )}
           <Toaster />
         </div>
-        {(isHootersForm || enableGeolocation) && (
+        {enableGeolocation && (
           <RequestLocationDialog
             branches={getBranchesListByPermission()}
             open={requestLocation}
@@ -282,7 +279,13 @@ export default function FeedbackFormRoot() {
             onConfirm={handleConfirmLocation}
             grantingPermissions={grantingPermissions}
             variant={
-              isHootersForm ? "hooters" : isDelCampo ? "delcampo" : "gus"
+              isHootersForm
+                ? "hooters"
+                : isDelCampo
+                ? "delcampo"
+                : isGusForm
+                ? "gus"
+                : undefined
             }
           />
         )}
