@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { findBusiness } from "@/app/services/business";
 import { Business } from "@/app/types/business";
 import { useSearchParams } from "next/navigation";
+import { getBusinessCustomers } from "../lib/getBusinessCustomers";
 
 function useGetBusinessData() {
   const [loading, setLoading] = useState("loading");
@@ -14,6 +15,17 @@ function useGetBusinessData() {
   const businessId = searchParams.get("id");
   const branchId = searchParams.get("sucursal");
   const waiterId = searchParams.get("mesero");
+
+  // useEffect(() => {
+  //   console.log("BUSINESS:", businessId);
+  //   const fetchBusinessCustomers = async () => {
+  //     if (businessId) {
+  //       const customers = await getBusinessCustomers(businessId, true);
+  //       console.log("Customers", customers);
+  //     }
+  //   };
+  //   fetchBusinessCustomers();
+  // }, [businessId]);
 
   useEffect(() => {
     if (!businessId) return;
