@@ -4,13 +4,16 @@ import { Button } from "../ui/Button";
 import { Business } from "@/app/types/business";
 import ImageRounded from "../ui/ImageRounded";
 import { CustomerRole } from "@/app/types/customer";
+import useGetBusinessData from "@/app/hooks/useGetBusinessData";
 
 type IntroProps = {
   business: Business | null;
   toogleCustomerType: (customer: CustomerRole) => void;
 };
 
-function Intro({ business, toogleCustomerType }: IntroProps) {
+function Intro({ toogleCustomerType }: IntroProps) {
+  const { business, brandColor } = useGetBusinessData();
+
   const country = business?.Country || "EC";
   const waiter = business?.Waiter;
   const isUsCountry = country === "US" || country === "HK";
@@ -29,7 +32,10 @@ function Intro({ business, toogleCustomerType }: IntroProps) {
               : isItCountry
               ? "Apprezziamo la tua opinione 😊, ci vorrà meno di "
               : "Valoramos tu opinión 😊, te tomará menos de "}
-            <span className="text-sky-500 font-medium">
+            <span
+              className="font-medium"
+              style={{ color: `hsl(${brandColor || "var(--qik)"}` }}
+            >
               {isUsCountry
                 ? "1 minute"
                 : isCaCountry
@@ -71,7 +77,10 @@ function Intro({ business, toogleCustomerType }: IntroProps) {
             </div>
           )}
           <div className="flex flex-row justify-center items-center space-x-4 mt-4">
-            <Button onClick={() => toogleCustomerType("new")}>
+            <Button
+              onClick={() => toogleCustomerType("new")}
+              color={`hsl(${brandColor || "var(--qik)"})`}
+            >
               {isUsCountry
                 ? "New client"
                 : isCaCountry
@@ -82,6 +91,7 @@ function Intro({ business, toogleCustomerType }: IntroProps) {
             </Button>
             <Button
               variant="secondary"
+              color={`hsl(${brandColor || "var(--qik)"})`}
               onClick={() => toogleCustomerType("frequent")}
             >
               {isUsCountry

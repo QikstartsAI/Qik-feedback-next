@@ -15,29 +15,15 @@ const buttonVariants = cva(
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
           "border border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground",
-        secondary:
-          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+        secondary: "bg-transparent shadow-sm",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        hootersPrimary: "bg-hooters text-primary-foreground shadow font-bold",
-        hootersSecondary:
-          "bg-hooters-foreground text-colorText shadow border border-hooters",
-        delcampoPrimary: "bg-delcampo text-primary-foreground shadow font-bold",
-        delcampoSecondary:
-          "bg-delcampo-foreground text-colorText shadow border border-delcampo",
-        gusPrimary: "bg-gus text-primary-foreground shadow font-bold",
-        gusSecondary:
-          "bg-gus-foreground text-colorText shadow border border-gus",
       },
       size: {
         default: "h-9 px-4 py-2",
         sm: "h-8 rounded-md px-3 text-xs",
         lg: "h-10 rounded-md px-8",
         icon: "h-9 w-9",
-        hootersPrimary: "h-12 px-12 rounded-md text-lg",
-        hootersLarge: "h-9 rounded-md text-lg p-auto w-full",
-        delcampoPrimary: "h-12 px-12 rounded-md text-lg",
-        delcampoLarge: "h-9 rounded-md text-lg p-auto w-full",
       },
     },
     defaultVariants: {
@@ -51,15 +37,38 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
+  color?: string;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  (
+    {
+      className,
+      variant = "default",
+      size,
+      asChild = false,
+      color,
+      style,
+      ...props
+    },
+    ref
+  ) => {
     const Comp = asChild ? Slot : "button";
+
+    const buttonStyle = {
+      ...style,
+      ...(color && {
+        backgroundColor: variant === "secondary" ? "transparent" : color,
+        color: variant === "secondary" ? color : "#fff",
+        border: variant === "secondary" ? `1px solid ${color}` : "none",
+      }),
+    };
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
+        style={buttonStyle}
         {...props}
       />
     );

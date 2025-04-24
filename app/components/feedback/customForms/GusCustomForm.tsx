@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-handler-names */
-'use client';
+"use client";
 
-import { Button } from '../../ui/Button';
+import { Button } from "../../ui/Button";
 import {
   Form,
   FormControl,
@@ -9,45 +9,45 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../../ui/Form';
-import { CardFooter } from '../../ui/Card';
+} from "../../ui/Form";
+import { CardFooter } from "../../ui/Card";
 
-import 'react-phone-number-input/style.css';
+import "react-phone-number-input/style.css";
 
-import * as Separator from '@radix-ui/react-separator';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { cn } from '@/app/lib/utils';
-import { useToast } from '@/app/hooks/useToast';
+import * as Separator from "@radix-ui/react-separator";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { cn } from "@/app/lib/utils";
+import { useToast } from "@/app/hooks/useToast";
 import {
   GusFeedbackProps,
   gusFeedbackSchema,
-} from '@/app/validators/gusFeedbackSchema';
-import handleGusFeedbackSubmit from '@/app/lib/handleGusFeedbackSubmit';
-import { findCustomerFeedbackDataInBusiness } from '@/app/lib/handleEmail';
-import { Business } from '@/app/types/business';
-import React, { Dispatch, SetStateAction, useState } from 'react';
-import { getImprovements } from '@/app/constants/form';
-import { CustomerRole } from '@/app/types/customer';
-import getFormTranslations from '@/app/constants/formTranslations';
-import UserInfo from '@/app/components/feedback/UserInfo';
-import Stack from '@mui/material/Stack';
+} from "@/app/validators/gusFeedbackSchema";
+import handleGusFeedbackSubmit from "@/app/lib/handleGusFeedbackSubmit";
+import { findCustomerFeedbackDataInBusiness } from "@/app/lib/handleEmail";
+import { Business } from "@/app/types/business";
+import React, { Dispatch, SetStateAction, useState } from "react";
+import { getImprovements } from "@/app/constants/form";
+import { CustomerRole } from "@/app/types/customer";
+import getFormTranslations from "@/app/constants/formTranslations";
+import UserInfo from "@/app/components/feedback/UserInfo";
+import Stack from "@mui/material/Stack";
 
-import { useMultistepForm } from '@/app/hooks/useMultistepForm';
-import { Step, StepLabel, Stepper } from '@mui/material';
-import { Textarea } from '@/app/components/ui/TextArea';
-import { Checkbox } from '../../ui/Checkbox';
-import { IconToolsKitchen } from '@tabler/icons-react';
-import { IconUserScan } from '@tabler/icons-react';
-import { IconBuildingStore } from '@tabler/icons-react';
+import { useMultistepForm } from "@/app/hooks/useMultistepForm";
+import { Step, StepLabel, Stepper } from "@mui/material";
+import { Textarea } from "@/app/components/ui/TextArea";
+import { Checkbox } from "../../ui/Checkbox";
+import { IconToolsKitchen } from "@tabler/icons-react";
+import { IconUserScan } from "@tabler/icons-react";
+import { IconBuildingStore } from "@tabler/icons-react";
 import CustomStepperIcons, {
   CustomStepperIconsGus,
-} from '@/app/components/form/CustomStepperIcons';
-import CustomStepperConnector from '@/app/components/form/CustomStepperConnector';
-import StarRatingQuestion from '../questions/StarRatingQuestion';
-import BooleanQuestion from '../questions/BooleanQuestion';
-import { useSearchParams } from 'next/navigation';
-import { SelectedOption } from '@/app/types/general';
+} from "@/app/components/form/CustomStepperIcons";
+import CustomStepperConnector from "@/app/components/form/CustomStepperConnector";
+import StarRatingQuestion from "../questions/StarRatingQuestion";
+import BooleanQuestion from "../questions/BooleanQuestion";
+import { useSearchParams } from "next/navigation";
+import { SelectedOption } from "@/app/types/general";
 
 interface GusCustomFormProps {
   business: Business | null;
@@ -77,8 +77,8 @@ export default function GusCustomForm({
     useState<boolean | undefined>(false);
   const searchParams = useSearchParams();
 
-  const businessId = searchParams.get('id');
-  const businessCountry = business?.Country || 'EC';
+  const businessId = searchParams.get("id");
+  const businessCountry = business?.Country || "EC";
   const questionsNumber = 9;
 
   const isReceptiongClicked = React.useRef(null);
@@ -90,12 +90,12 @@ export default function GusCustomForm({
   const form = useForm<GusFeedbackProps>({
     resolver: zodResolver(gusFeedbackSchema()),
     defaultValues: {
-      FullName: '',
+      FullName: "",
       AcceptTerms: isTermsChecked,
-      Email: '',
+      Email: "",
       Treatment: undefined,
       Reception: undefined,
-      ReceptionText: '',
+      ReceptionText: "",
       ProductTaste: undefined,
       CashServiceSpeed: undefined,
       ProductDeliverySpeed: undefined,
@@ -104,9 +104,9 @@ export default function GusCustomForm({
       Recommending: undefined,
       ComeBack: undefined,
       StartTime: new Date(),
-      RecommendingText: '',
-      ComeBackText: '',
-      ImproveText: '',
+      RecommendingText: "",
+      ComeBackText: "",
+      ImproveText: "",
       hiddenInput: null,
       Ambience: false,
       Food: false,
@@ -119,9 +119,9 @@ export default function GusCustomForm({
   };
 
   const { watch } = form;
-  const waiterName = business?.Waiter?.name || '';
-  const attendantName = waiterName ? waiterName : 'Matriz';
-  const watchFullName = watch('FullName');
+  const waiterName = business?.Waiter?.name || "";
+  const attendantName = waiterName ? waiterName : "Matriz";
+  const watchFullName = watch("FullName");
 
   const {
     fullNameQuestion,
@@ -155,7 +155,7 @@ export default function GusCustomForm({
 
   const { goTo, currentStepIndex } = useMultistepForm(questionsNumber);
 
-  const steps = ['', '', '', '', '', '', '', '', ''];
+  const steps = ["", "", "", "", "", "", "", "", ""];
 
   const handleReceptionQuestion = (answer: boolean) => {
     setReception(answer);
@@ -170,8 +170,8 @@ export default function GusCustomForm({
   };
 
   const writeReviewURL = () => {
-    if (!business?.MapsUrl) return '';
-    if (business?.MapsUrl?.includes('https')) {
+    if (!business?.MapsUrl) return "";
+    if (business?.MapsUrl?.includes("https")) {
       return business?.MapsUrl;
     }
     return `https://search.google.com/local/writereview?placeid=${business?.MapsUrl}`;
@@ -184,8 +184,8 @@ export default function GusCustomForm({
   const handleNextStepReception = () => {
     if (!reception && isReceptionTextEmpty) {
       toast({
-        title: 'Por favor dinos qué no recibiste correctamente',
-        variant: 'gusDestructive',
+        title: "Por favor dinos qué no recibiste correctamente",
+        variant: "gusDestructive",
       });
       return;
     }
@@ -195,7 +195,7 @@ export default function GusCustomForm({
     if (recommending != null && isRecommendingTextEmpty) {
       toast({
         title: recommendingToastMessage,
-        variant: 'gusDestructive',
+        variant: "gusDestructive",
       });
       return;
     }
@@ -212,7 +212,7 @@ export default function GusCustomForm({
     ) {
       toast({
         title: chooseOneOptionError,
-        variant: 'gusDestructive',
+        variant: "gusDestructive",
       });
       return;
     }
@@ -220,7 +220,7 @@ export default function GusCustomForm({
     if (!comeBack && ImproveText.length === 0) {
       toast({
         title: howToImprovementError,
-        variant: 'gusDestructive',
+        variant: "gusDestructive",
       });
       return;
     }
@@ -228,7 +228,7 @@ export default function GusCustomForm({
     if (comeBack && ComeBackText.length === 0) {
       toast({
         title: whyComeBackError,
-        variant: 'gusDestructive',
+        variant: "gusDestructive",
       });
       return;
     }
@@ -236,8 +236,8 @@ export default function GusCustomForm({
     try {
       const updatedData = data;
 
-      updatedData.ImproveText = !comeBack ? ImproveText : '';
-      updatedData.ComeBackText = comeBack ? ComeBackText : '';
+      updatedData.ImproveText = !comeBack ? ImproveText : "";
+      updatedData.ComeBackText = comeBack ? ComeBackText : "";
       const improveOptions = !comeBack
         ? getImprovements({
             Ambience,
@@ -251,7 +251,7 @@ export default function GusCustomForm({
       const customerFeedbackInBusinesData =
         await findCustomerFeedbackDataInBusiness(
           data.Email,
-          business?.BusinessId || ''
+          business?.BusinessId || ""
         );
       if (customerFeedbackInBusinesData) {
         const feedbackVisits =
@@ -277,7 +277,7 @@ export default function GusCustomForm({
       console.log(error);
       toast({
         title: formErrorMessage,
-        variant: 'gusDestructive',
+        variant: "gusDestructive",
       });
     } finally {
       resetForm();
@@ -286,18 +286,19 @@ export default function GusCustomForm({
   }
 
   // validate if RecommendingText is empty cannot go to next step
-  const isReceptionTextEmpty = form.watch('ReceptionText') === '';
-  const isRecommendingTextEmpty = form.watch('RecommendingText') === '';
+  const isReceptionTextEmpty = form.watch("ReceptionText") === "";
+  const isRecommendingTextEmpty = form.watch("RecommendingText") === "";
 
   const recommendingToastMessage = `Por favor dinos por qué ${
-    !recommending ? 'no' : ''
+    !recommending ? "no" : ""
   } recomendarias GUS`;
   return (
     <>
       <div
         className="mx-auto py-8 lg:py-18 max-w-xl px-6 min-h-screen text-colorText"
-        id="form">
-        <h4 className={'text-center font-medium text-colorText'}>
+        id="form"
+      >
+        <h4 className={"text-center font-medium text-colorText"}>
           Valoramos tu opinión 😊, te llevará menos de
           <span className="text-gus font-medium">
             <b> 1 minuto</b>
@@ -308,12 +309,14 @@ export default function GusCustomForm({
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4 md:space-y-6 my-6"
-            noValidate>
+            noValidate
+          >
             <div
               className={cn(
-                'space-y-3 mb-3 flex-row items-center justify-center',
+                "space-y-3 mb-3 flex-row items-center justify-center",
                 {}
-              )}>
+              )}
+            >
               {currentStepIndex === 0 && (
                 <UserInfo<GusFeedbackProps>
                   form={form}
@@ -329,13 +332,13 @@ export default function GusCustomForm({
                   setIsLastFeedbackMoreThanOneDay={
                     setIsLastFeedbackMoreThanOneDay
                   }
-                  businessId={businessId || ''}
+                  businessId={businessId || ""}
                 />
               )}
               <div className="flex flex-col gap-2 text-center items-center justify-center py-2">
                 <Separator.Root
                   className="SeparatorRoot bg-gus h-1.5 rounded-full mb-4"
-                  style={{ width: '15%' }}
+                  style={{ width: "15%" }}
                 />
 
                 {currentStepIndex === 0 && (
@@ -343,16 +346,16 @@ export default function GusCustomForm({
                     form={form}
                     question="¿Cómo califica el trato recibido el dia de hoy?"
                     nextStep={() => {
-                      if (!form.watch('Treatment')) {
+                      if (!form.watch("Treatment")) {
                         toast({
                           title: formErrorMessage,
-                          variant: 'gusDestructive',
+                          variant: "gusDestructive",
                         });
                       }
-                      if (!form.watch('FullName') || !form.watch('Email')) {
+                      if (!form.watch("FullName") || !form.watch("Email")) {
                         toast({
-                          title: 'Ayúdanos con tus datos antes de seguir',
-                          variant: 'gusDestructive',
+                          title: "Ayúdanos con tus datos antes de seguir",
+                          variant: "gusDestructive",
                         });
                       } else goTo(currentStepIndex + 1);
                     }}
@@ -369,19 +372,19 @@ export default function GusCustomForm({
                     noButton="No"
                     handleResponse={handleReceptionQuestion}
                     nextStep={() => {
-                      if (form.watch('Reception') === undefined) {
+                      if (form.watch("Reception") === undefined) {
                         toast({
                           title: formErrorMessage,
-                          variant: 'gusDestructive',
+                          variant: "gusDestructive",
                         });
                       } else if (
-                        !form.watch('Reception') &&
+                        !form.watch("Reception") &&
                         isReceptionTextEmpty
                       ) {
                         toast({
                           title:
-                            'Por favor dinos qué no recibiste correctamente',
-                          variant: 'gusDestructive',
+                            "Por favor dinos qué no recibiste correctamente",
+                          variant: "gusDestructive",
                         });
                       } else goTo(currentStepIndex + 1);
                     }}
@@ -400,7 +403,7 @@ export default function GusCustomForm({
                       <FormItem className="pt-5 md:grid md:space-y-0 items-center text-center md:gap-12">
                         <Stack spacing={2}>
                           <FormLabel className="col-span-3 text-xl">
-                            <h4 className={'text-gus'}>
+                            <h4 className={"text-gus"}>
                               <b>¿Que no recibió correctamente?</b>
                             </h4>
                           </FormLabel>
@@ -408,7 +411,7 @@ export default function GusCustomForm({
                             <Textarea
                               placeholder="Ej: se equivocaron en el tamaño de..."
                               className={
-                                'border-2 border-gray-300 rounded-lg focus:border-gray-500'
+                                "border-2 border-gray-300 rounded-lg focus:border-gray-500"
                               }
                               {...field}
                             />
@@ -424,10 +427,10 @@ export default function GusCustomForm({
                     form={form}
                     question="¿Cuánto le gustó el producto que consumió?"
                     nextStep={() => {
-                      if (!form.watch('ProductTaste')) {
+                      if (!form.watch("ProductTaste")) {
                         toast({
                           title: formErrorMessage,
-                          variant: 'gusDestructive',
+                          variant: "gusDestructive",
                         });
                       } else goTo(currentStepIndex + 1);
                     }}
@@ -445,10 +448,10 @@ export default function GusCustomForm({
                     form={form}
                     question="¿Cómo califica la velocidad del servicio en caja?"
                     nextStep={() => {
-                      if (!form.watch('CashServiceSpeed')) {
+                      if (!form.watch("CashServiceSpeed")) {
                         toast({
                           title: formErrorMessage,
-                          variant: 'gusDestructive',
+                          variant: "gusDestructive",
                         });
                       } else goTo(currentStepIndex + 1);
                     }}
@@ -466,10 +469,10 @@ export default function GusCustomForm({
                     form={form}
                     question="¿Cómo califica la velocidad en la entrega del producto (despacho)?"
                     nextStep={() => {
-                      if (!form.watch('ProductDeliverySpeed')) {
+                      if (!form.watch("ProductDeliverySpeed")) {
                         toast({
                           title: formErrorMessage,
-                          variant: 'gusDestructive',
+                          variant: "gusDestructive",
                         });
                       } else goTo(currentStepIndex + 1);
                     }}
@@ -486,10 +489,10 @@ export default function GusCustomForm({
                     form={form}
                     question="¿Cómo califica la limpieza general del local? (salón, suelo, mesas y sillas, baños)"
                     nextStep={() => {
-                      if (!form.watch('PlaceCleanness')) {
+                      if (!form.watch("PlaceCleanness")) {
                         toast({
                           title: formErrorMessage,
-                          variant: 'gusDestructive',
+                          variant: "gusDestructive",
                         });
                       } else goTo(currentStepIndex + 1);
                     }}
@@ -506,10 +509,10 @@ export default function GusCustomForm({
                     form={form}
                     question="En base a sus experiencia en GUS ¿Cuán satisfecho se encuentra?"
                     nextStep={() => {
-                      if (!form.watch('Satisfaction')) {
+                      if (!form.watch("Satisfaction")) {
                         toast({
                           title: formErrorMessage,
-                          variant: 'gusDestructive',
+                          variant: "gusDestructive",
                         });
                       } else goTo(currentStepIndex + 1);
                     }}
@@ -529,15 +532,15 @@ export default function GusCustomForm({
                     noButton="No"
                     handleResponse={handleRecommendingQuestion}
                     nextStep={() => {
-                      if (form.watch('Recommending') === undefined) {
+                      if (form.watch("Recommending") === undefined) {
                         toast({
                           title: formErrorMessage,
-                          variant: 'gusDestructive',
+                          variant: "gusDestructive",
                         });
                       } else if (isRecommendingTextEmpty) {
                         toast({
                           title: recommendingToastMessage,
-                          variant: 'gusDestructive',
+                          variant: "gusDestructive",
                         });
                       } else goTo(currentStepIndex + 1);
                     }}
@@ -556,7 +559,7 @@ export default function GusCustomForm({
                       <FormItem className="pt-5 md:grid md:space-y-0 items-center text-center md:gap-12 w-full">
                         <Stack spacing={2}>
                           <FormLabel className="col-span-3 text-xl">
-                            <h4 className={'text-gus'}>
+                            <h4 className={"text-gus"}>
                               <b>{whyText}</b>
                             </h4>
                           </FormLabel>
@@ -568,7 +571,7 @@ export default function GusCustomForm({
                                   : noRecommendingPlaceholder
                               }
                               className={
-                                'border-2 border-gray-300 rounded-lg focus:border-gray-500'
+                                "border-2 border-gray-300 rounded-lg focus:border-gray-500"
                               }
                               {...field}
                             />
@@ -594,11 +597,12 @@ export default function GusCustomForm({
                   />
                 )}
               </div>
-              <div className={'md:grid md:space-y-0 items-center'}>
+              <div className={"md:grid md:space-y-0 items-center"}>
                 <Stepper
                   activeStep={0}
                   alternativeLabel
-                  connector={<CustomStepperConnector variant="gus" />}>
+                  connector={<CustomStepperConnector variant="gus" />}
+                >
                   {steps.map((label, index) => (
                     <Step
                       key={index}
@@ -606,7 +610,8 @@ export default function GusCustomForm({
                         if (index < 8 && index <= currentStepIndex) goTo(index);
                       }}
                       active={index === currentStepIndex}
-                      completed={index < currentStepIndex}>
+                      completed={index < currentStepIndex}
+                    >
                       <StepLabel StepIconComponent={CustomStepperIconsGus}>
                         {label}
                       </StepLabel>
@@ -623,7 +628,7 @@ export default function GusCustomForm({
                       <FormItem className="pt-5 md:grid md:space-y-0 items-center text-center md:gap-12">
                         <Stack spacing={2}>
                           <FormLabel className="col-span-3 text-xl">
-                            <h4 className={'text-gus'}>
+                            <h4 className={"text-gus"}>
                               <b>{whyText}</b>
                             </h4>
                           </FormLabel>
@@ -631,7 +636,7 @@ export default function GusCustomForm({
                             <Textarea
                               placeholder={recommendingPlaceholder}
                               className={
-                                'border-2 border-gray-300 rounded-lg focus:border-gray-500'
+                                "border-2 border-gray-300 rounded-lg focus:border-gray-500"
                               }
                               {...field}
                             />
@@ -643,13 +648,13 @@ export default function GusCustomForm({
                   />
                   {watchFullName && (
                     <p className="text-center mt-2 text-lg">
-                      <b className={'text-gus uppercase'}>{watchFullName}</b>,{' '}
+                      <b className={"text-gus uppercase"}>{watchFullName}</b>,{" "}
                       {submitText1}
-                      <b className={'text-gus uppercase'}>{submitButton}</b>
+                      <b className={"text-gus uppercase"}>{submitButton}</b>
                       {submitText2}
-                      <b className={'text-gus uppercase'}>Google</b>{' '}
+                      <b className={"text-gus uppercase"}>Google</b>{" "}
                       {submitText3}
-                      <b className={'text-gus uppercase'}>{submitText4}</b>{' '}
+                      <b className={"text-gus uppercase"}>{submitText4}</b>{" "}
                       {submitText5}
                     </p>
                   )}
@@ -671,11 +676,12 @@ export default function GusCustomForm({
                         render={({ field }) => (
                           <FormItem
                             className={cn(
-                              ' items-center rounded-md border py-1 sm:py-2 shadow hover:border-gus hover:text-gus transition-all',
+                              " items-center rounded-md border py-1 sm:py-2 shadow hover:border-gus hover:text-gus transition-all",
                               {
-                                'border-gus text-gus': field.value,
+                                "border-gus text-gus": field.value,
                               }
-                            )}>
+                            )}
+                          >
                             <FormControl>
                               <Checkbox
                                 checked={field.value}
@@ -685,11 +691,12 @@ export default function GusCustomForm({
                             </FormControl>
                             <FormLabel
                               className={cn(
-                                'text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-gus hover:text-gus transition-all',
+                                "text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-gus hover:text-gus transition-all",
                                 {
-                                  'border-gus text-gus': field.value,
+                                  "border-gus text-gus": field.value,
                                 }
-                              )}>
+                              )}
+                            >
                               <IconToolsKitchen />
                               <p className="w-full text-[10px] sm:text-[11px]">
                                 {foodButton}
@@ -704,11 +711,12 @@ export default function GusCustomForm({
                         render={({ field }) => (
                           <FormItem
                             className={cn(
-                              ' items-center rounded-md border py-1 sm:py-2 shadow hover:border-gus hover:text-gus transition-all',
+                              " items-center rounded-md border py-1 sm:py-2 shadow hover:border-gus hover:text-gus transition-all",
                               {
-                                'border-gus text-gus': field.value,
+                                "border-gus text-gus": field.value,
                               }
-                            )}>
+                            )}
+                          >
                             <FormControl>
                               <Checkbox
                                 checked={field.value}
@@ -718,11 +726,12 @@ export default function GusCustomForm({
                             </FormControl>
                             <FormLabel
                               className={cn(
-                                'text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-gus hover:text-gus transition-all',
+                                "text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-gus hover:text-gus transition-all",
                                 {
-                                  'border-gus text-gus': field.value,
+                                  "border-gus text-gus": field.value,
                                 }
-                              )}>
+                              )}
+                            >
                               <IconUserScan />
                               <p className="w-full text-[10px] sm:text-[11px]">
                                 {serviceButton}
@@ -737,11 +746,12 @@ export default function GusCustomForm({
                         render={({ field }) => (
                           <FormItem
                             className={cn(
-                              ' items-center rounded-md border py-1 sm:py-2 shadow hover:border-gus hover:text-gus transition-all',
+                              " items-center rounded-md border py-1 sm:py-2 shadow hover:border-gus hover:text-gus transition-all",
                               {
-                                'border-gus text-gus': field.value,
+                                "border-gus text-gus": field.value,
                               }
-                            )}>
+                            )}
+                          >
                             <FormControl>
                               <Checkbox
                                 checked={field.value}
@@ -751,11 +761,12 @@ export default function GusCustomForm({
                             </FormControl>
                             <FormLabel
                               className={cn(
-                                'text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-gus hover:text-gus transition-all',
+                                "text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-gus hover:text-gus transition-all",
                                 {
-                                  'border-gus text-gus': field.value,
+                                  "border-gus text-gus": field.value,
                                 }
-                              )}>
+                              )}
+                            >
                               <IconBuildingStore />
                               <p className="w-full text-[10px] sm:text-[11px]">
                                 {ambienceButton}
@@ -774,12 +785,12 @@ export default function GusCustomForm({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="col-span-3 text-question text-lg">
-                            {shareDetailsText} <b className={'text-gus'}>GUS</b>
+                            {shareDetailsText} <b className={"text-gus"}>GUS</b>
                           </FormLabel>
                           <FormControl>
                             <Textarea
                               className={
-                                'border-2 border-gray-300 rounded-lg focus:border-gray-500'
+                                "border-2 border-gray-300 rounded-lg focus:border-gray-500"
                               }
                               placeholder={shareDetailsPlaceholder}
                               {...field}
@@ -797,9 +808,9 @@ export default function GusCustomForm({
                   <div>
                     <Button
                       type="button"
-                      variant={'gusPrimary'}
-                      size={'hootersLarge'}
-                      onClick={handleNextStepReception}>
+                      color={`hsl(${business?.BrandColor || "var(--qik)"})`}
+                      onClick={handleNextStepReception}
+                    >
                       Siguiente
                     </Button>
                   </div>
@@ -809,9 +820,9 @@ export default function GusCustomForm({
                   <div>
                     <Button
                       type="button"
-                      variant={'gusPrimary'}
-                      size={'hootersLarge'}
-                      onClick={handleNextStepRecommending}>
+                      color={`hsl(${business?.BrandColor || "var(--qik)"})`}
+                      onClick={handleNextStepRecommending}
+                    >
                       Siguiente
                     </Button>
                   </div>
@@ -820,14 +831,14 @@ export default function GusCustomForm({
             {currentStepIndex === 8 && comeBack != null && (
               <>
                 <Button
-                  variant={'gusPrimary'}
-                  size={'hootersLarge'}
+                  color={`hsl(${business?.BrandColor || "var(--qik)"})`}
                   type="submit"
                   disabled={
                     !isTermsChecked || isLastFeedbackMoreThanOneDay
                       ? true
                       : form.formState.isSubmitting
-                  }>
+                  }
+                >
                   {submitButton}
                 </Button>
 
@@ -850,15 +861,17 @@ export default function GusCustomForm({
                               className="text-primary hover:underline"
                               href="https://qikstarts.com/terms-of-service"
                               rel="noopener noreferrer"
-                              target="_blank">
+                              target="_blank"
+                            >
                               {termsAndConditions2}
-                            </a>{' '}
-                            {termsAndConditions3}{' '}
+                            </a>{" "}
+                            {termsAndConditions3}{" "}
                             <a
                               className="text-primary hover:underline"
                               href="https://qikstarts.com/privacy-policy"
                               rel="noopener noreferrer"
-                              target="_blank">
+                              target="_blank"
+                            >
                               {termsAndConditions4}
                             </a>
                             .

@@ -76,6 +76,7 @@ import { IconCopy } from "@tabler/icons-react";
 
 import Image from "next/image";
 import { Wizard } from "@/app/layers/ui/wizard";
+import useGetBusinessData from "@/app/hooks/useGetBusinessData";
 
 interface FeedbackFormProps {
   business: Business | null;
@@ -92,6 +93,8 @@ export default function FeedbackForm({
   setCustomerName,
   customerType,
 }: FeedbackFormProps) {
+  const { brandColor } = useGetBusinessData();
+
   const searchParams = useSearchParams();
 
   const [loadingPercentage, setLoadingPercentage] = useState(0);
@@ -398,14 +401,17 @@ export default function FeedbackForm({
                 : isItCountry
                 ? "Apprezziamo la tua opinione 😊, ci vorrà meno di "
                 : "Valoramos tu opinión 😊, te tomará menos de "}
-              <span className="text-sky-500 font-medium">
+              <span
+                className="font-medium"
+                style={{ color: `hsl(${brandColor || "var(--qik)"}` }}
+              >
                 {isUsCountry
                   ? "1 minute"
                   : isCaCountry || isFrCountry
                   ? "1 minute"
                   : isItCountry
                   ? "1 minuto"
-                  : "1 minuto"}
+                  : "1 minutos"}
               </span>
             </CardTitle>
           </CardHeader>
@@ -985,6 +991,7 @@ export default function FeedbackForm({
                 <Button
                   className="w-full"
                   type={"submit"}
+                  color={`hsl(${brandColor || "var(--qik)"})`}
                   disabled={
                     isTermsChecked === false || isLastFeedbackMoreThanOneDay
                       ? true
@@ -1170,6 +1177,7 @@ export default function FeedbackForm({
                       <Button
                         className="w-full"
                         type="submit"
+                        color={`hsl(${brandColor || "var(--qik)"})`}
                         disabled={
                           isTermsChecked === false ||
                           isLastFeedbackMoreThanOneDay
