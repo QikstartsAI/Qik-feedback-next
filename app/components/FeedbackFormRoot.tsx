@@ -60,8 +60,8 @@ export default function FeedbackFormRoot() {
     CUSTOM_YOGURT_FORM_ID,
     CUSTOM_POLLOSDCAMPO_FORM_ID,
     CUSTOM_CEBICHES_FORM_ID,
-    CUSTOM_PIQUEOS_MORITOS_FORM_ID,
-    CUSTOM_INKA_BURGER_FORM_ID
+    CUSTOM_INKA_BURGER_FORM_ID,
+    CUSTOM_PIQUEOS_MORITOS_FORM_ID, 
   ].includes(businessId ?? "");
   const isGusForm = businessId === CUSTOM_GUS_FORM_ID;
   const isDscSolutions = businessId === DSC_SOLUTIONS_ID;
