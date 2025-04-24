@@ -3,6 +3,7 @@ import { Button } from "../../ui/Button";
 import { Business } from "@/app/types/business";
 import ImageRounded from "../../ui/ImageRounded";
 import { CustomerRole } from "@/app/types/customer";
+import useGetBusinessData from "@/app/hooks/useGetBusinessData";
 
 type CustomIntroProps = {
   business: Business | null;
@@ -10,11 +11,9 @@ type CustomIntroProps = {
   toogleCustomerType: (customer: CustomerRole) => void;
 };
 
-function CustomIntro({
-  business,
-  toogleCustomerType,
-  variant,
-}: CustomIntroProps) {
+function CustomIntro({ toogleCustomerType, variant }: CustomIntroProps) {
+  const { business, brandColor } = useGetBusinessData();
+
   const country = business?.Country || "EC";
   const waiter = business?.Waiter;
   const isUsCountry = country === "US";
@@ -28,7 +27,10 @@ function CustomIntro({
           : isCaCountry
           ? "Nous apprécions votre avis 😊, cela vous prendra moins de "
           : "Valoramos tu opinión 😊, te llevará menos de "}
-        <span className={`text-${variant} font-bold`}>
+        <span
+          className="font-bold"
+          style={{ color: `hsl(${brandColor || "var(--qik)"}` }}
+        >
           {isUsCountry ? "1 minute" : isCaCountry ? "1 minute" : "1 minuto"}
         </span>
       </h4>
@@ -63,8 +65,8 @@ function CustomIntro({
 
       <div className="flex flex-row justify-center items-center space-x-4 my-8">
         <Button
-          variant={`${variant}Primary`}
           onClick={() => toogleCustomerType("new")}
+          color={`hsl(${brandColor || "var(--qik)"})`}
         >
           {isUsCountry
             ? "New client"
@@ -73,7 +75,8 @@ function CustomIntro({
             : "Nuevo cliente"}
         </Button>
         <Button
-          variant={`${variant}Secondary`}
+          variant="secondary"
+          color={`hsl(${brandColor || "var(--qik)"})`}
           onClick={() => toogleCustomerType("frequent")}
         >
           {isUsCountry

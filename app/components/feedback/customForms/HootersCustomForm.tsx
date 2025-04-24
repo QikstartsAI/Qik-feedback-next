@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-handler-names */
-'use client';
+"use client";
 
-import { Button } from '../../ui/Button';
+import { Button } from "../../ui/Button";
 import {
   Form,
   FormControl,
@@ -9,48 +9,48 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../../ui/Form';
-import { CardFooter } from '../../ui/Card';
+} from "../../ui/Form";
+import { CardFooter } from "../../ui/Card";
 
-import 'react-phone-number-input/style.css';
+import "react-phone-number-input/style.css";
 
-import * as Separator from '@radix-ui/react-separator';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { cn } from '@/app/lib/utils';
-import { useToast } from '@/app/hooks/useToast';
+import * as Separator from "@radix-ui/react-separator";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { cn } from "@/app/lib/utils";
+import { useToast } from "@/app/hooks/useToast";
 import {
   HootersFeedbackProps,
   hootersFeedbackSchema,
-} from '@/app/validators/hootersFeedbackSchema';
-import handleSubmitHootersForm from '@/app/lib/handleSubmitHootersForm';
-import { findCustomerFeedbackDataInBusiness } from '@/app/lib/handleEmail';
-import { Business } from '@/app/types/business';
-import React, { Dispatch, SetStateAction, useState } from 'react';
-import { getImprovements, getOtherOptions } from '@/app/constants/form';
-import { CustomerRole } from '@/app/types/customer';
-import getFormTranslations from '@/app/constants/formTranslations';
-import UserInfo from '@/app/components/feedback/UserInfo';
-import Stack from '@mui/material/Stack';
+} from "@/app/validators/hootersFeedbackSchema";
+import handleSubmitHootersForm from "@/app/lib/handleSubmitHootersForm";
+import { findCustomerFeedbackDataInBusiness } from "@/app/lib/handleEmail";
+import { Business } from "@/app/types/business";
+import React, { Dispatch, SetStateAction, useState } from "react";
+import { getImprovements, getOtherOptions } from "@/app/constants/form";
+import { CustomerRole } from "@/app/types/customer";
+import getFormTranslations from "@/app/constants/formTranslations";
+import UserInfo from "@/app/components/feedback/UserInfo";
+import Stack from "@mui/material/Stack";
 
-import { useMultistepForm } from '@/app/hooks/useMultistepForm';
-import RecommendingQuestion from '../questions/RecommendingQuestion';
-import ComeBackQuestion from '@/app/components/feedback/questions/ComeBackQuestion';
-import { Step, StepLabel, Stepper } from '@mui/material';
-import { Textarea } from '@/app/components/ui/TextArea';
-import { Checkbox } from '../../ui/Checkbox';
-import { IconToolsKitchen } from '@tabler/icons-react';
-import { IconUserScan } from '@tabler/icons-react';
-import { IconBuildingStore } from '@tabler/icons-react';
+import { useMultistepForm } from "@/app/hooks/useMultistepForm";
+import RecommendingQuestion from "../questions/RecommendingQuestion";
+import ComeBackQuestion from "@/app/components/feedback/questions/ComeBackQuestion";
+import { Step, StepLabel, Stepper } from "@mui/material";
+import { Textarea } from "@/app/components/ui/TextArea";
+import { Checkbox } from "../../ui/Checkbox";
+import { IconToolsKitchen } from "@tabler/icons-react";
+import { IconUserScan } from "@tabler/icons-react";
+import { IconBuildingStore } from "@tabler/icons-react";
 import CustomStepperIcons, {
   CustomStepperIconsHooters,
-} from '@/app/components/form/CustomStepperIcons';
-import CustomStepperConnector from '@/app/components/form/CustomStepperConnector';
-import { useSearchParams } from 'next/navigation';
-import StarRatingQuestion from '../questions/StarRatingQuestion';
-import { SelectedOption } from '@/app/types/general';
-import Modal from '../../ui/Modal';
-import { Origins } from '@/app/types/feedback';
+} from "@/app/components/form/CustomStepperIcons";
+import CustomStepperConnector from "@/app/components/form/CustomStepperConnector";
+import { useSearchParams } from "next/navigation";
+import StarRatingQuestion from "../questions/StarRatingQuestion";
+import { SelectedOption } from "@/app/types/general";
+import Modal from "../../ui/Modal";
+import { Origins } from "@/app/types/feedback";
 
 interface HootersCustomFormProps {
   business: Business | null;
@@ -84,8 +84,8 @@ export default function HootersCustomForm({
     useState<boolean | undefined>(false);
   const searchParams = useSearchParams();
 
-  const businessId = searchParams.get('id');
-  const businessCountry = business?.Country || 'EC';
+  const businessId = searchParams.get("id");
+  const businessCountry = business?.Country || "EC";
   const questionsNumber = 8;
 
   const isRecommendingClicked = React.useRef(null);
@@ -96,18 +96,18 @@ export default function HootersCustomForm({
   const form = useForm<HootersFeedbackProps>({
     resolver: zodResolver(hootersFeedbackSchema(businessCountry)),
     defaultValues: {
-      FullName: '',
+      FullName: "",
       AcceptTerms: isTermsChecked,
-      Email: '',
-      PhoneNumber: '',
-      BirthdayDate: '',
+      Email: "",
+      PhoneNumber: "",
+      BirthdayDate: "",
       AcceptPromotions: isChecked,
       Origin: undefined,
       StartTime: new Date(),
       Courtesy: undefined,
-      RecommendingText: '',
-      ComeBackText: '',
-      ImproveText: '',
+      RecommendingText: "",
+      ComeBackText: "",
+      ImproveText: "",
       hiddenInput: null,
       Ambience: false,
       Food: false,
@@ -120,9 +120,9 @@ export default function HootersCustomForm({
   };
 
   const { watch } = form;
-  const waiterName = business?.Waiter?.name || '';
-  const attendantName = waiterName ? waiterName : 'Matriz';
-  const watchFullName = watch('FullName');
+  const waiterName = business?.Waiter?.name || "";
+  const attendantName = waiterName ? waiterName : "Matriz";
+  const watchFullName = watch("FullName");
 
   const {
     title,
@@ -173,7 +173,7 @@ export default function HootersCustomForm({
 
   const { goTo, currentStepIndex } = useMultistepForm(questionsNumber);
 
-  const steps = ['', '', '', '', '', '', '', ''];
+  const steps = ["", "", "", "", "", "", "", ""];
 
   const handleRecommendingQuestion = (answer: boolean) => {
     setRecommending(answer);
@@ -184,8 +184,8 @@ export default function HootersCustomForm({
   };
 
   const writeReviewURL = () => {
-    if (!business?.MapsUrl) return '';
-    if (business?.MapsUrl?.includes('https')) {
+    if (!business?.MapsUrl) return "";
+    if (business?.MapsUrl?.includes("https")) {
       return business?.MapsUrl;
     }
     return `https://search.google.com/local/writereview?placeid=${business?.MapsUrl}`;
@@ -205,7 +205,7 @@ export default function HootersCustomForm({
     ) {
       toast({
         title: chooseOneOptionError,
-        variant: 'hootersDestructive',
+        variant: "hootersDestructive",
       });
       return;
     }
@@ -213,7 +213,7 @@ export default function HootersCustomForm({
     if (!comeBack && ImproveText.length === 0) {
       toast({
         title: howToImprovementError,
-        variant: 'hootersDestructive',
+        variant: "hootersDestructive",
       });
       return;
     }
@@ -221,7 +221,7 @@ export default function HootersCustomForm({
     if (comeBack && ComeBackText.length === 0) {
       toast({
         title: whyComeBackError,
-        variant: 'hootersDestructive',
+        variant: "hootersDestructive",
       });
       return;
     }
@@ -229,8 +229,8 @@ export default function HootersCustomForm({
     try {
       const updatedData = data;
 
-      updatedData.ImproveText = !comeBack ? ImproveText : '';
-      updatedData.ComeBackText = comeBack ? ComeBackText : '';
+      updatedData.ImproveText = !comeBack ? ImproveText : "";
+      updatedData.ComeBackText = comeBack ? ComeBackText : "";
       const improveOptions = !comeBack
         ? getImprovements({
             Ambience,
@@ -244,7 +244,7 @@ export default function HootersCustomForm({
       const customerFeedbackInBusinesData =
         await findCustomerFeedbackDataInBusiness(
           data.Email,
-          business?.BusinessId || ''
+          business?.BusinessId || ""
         );
       if (customerFeedbackInBusinesData) {
         const feedbackVisits =
@@ -263,7 +263,7 @@ export default function HootersCustomForm({
         customerNumberOfVisits,
         feedbackNumberOfVisit,
         businessId,
-        branchId !== 'hooters' ? branchId : '',
+        branchId !== "hooters" ? branchId : "",
         waiterId
       );
       if (comeBack) {
@@ -273,7 +273,7 @@ export default function HootersCustomForm({
       console.log(error);
       toast({
         title: formErrorMessage,
-        variant: 'hootersDestructive',
+        variant: "hootersDestructive",
       });
     } finally {
       resetForm();
@@ -282,13 +282,13 @@ export default function HootersCustomForm({
   }
 
   // validate if RecommendingText is empty cannot go to next step
-  const isRecommendingTextEmpty = form.watch('RecommendingText') === '';
+  const isRecommendingTextEmpty = form.watch("RecommendingText") === "";
 
   const handleNextStep = () => {
     if (recommending != null && isRecommendingTextEmpty) {
       toast({
         title: recommending ? emptyRecommendingError : emptyNoRecommendingError,
-        variant: 'hootersDestructive',
+        variant: "hootersDestructive",
       });
       return;
     }
@@ -296,7 +296,7 @@ export default function HootersCustomForm({
   };
 
   const handleOthersSelecteOption = (option: SelectedOption) => {
-    form.setValue('Origin', option?.value as Origins);
+    form.setValue("Origin", option?.value as Origins);
     setSelectedOtherOption(option);
   };
 
@@ -304,7 +304,8 @@ export default function HootersCustomForm({
     <>
       <div
         className="mx-auto py-8 lg:py-18 max-w-xl px-6 min-h-screen text-colorText"
-        id="form">
+        id="form"
+      >
         {showOtherOptionsModal && (
           <Modal isOpen={true} onClose={() => setShowOtherOptionsModal(false)}>
             <ul className="flex flex-row flex-wrap justify-center items-center gap-3 text-sm font-medium text-gray-900 mt-5">
@@ -312,13 +313,14 @@ export default function HootersCustomForm({
                 <li key={option.value} className="list-none">
                   <button
                     className={cn(
-                      'flex justify-center items-center w-full px-3 bg-white border border-gray-200 rounded-lg py-1 cursor-pointer shadow hover:border-hooters hover:text-hooters transition-all',
+                      "flex justify-center items-center w-full px-3 bg-white border border-gray-200 rounded-lg py-1 cursor-pointer shadow hover:border-hooters hover:text-hooters transition-all",
                       {
-                        'border-hooters text-hooters':
+                        "border-hooters text-hooters":
                           selectedOtherOption?.value === option.value,
                       }
                     )}
-                    onClick={() => handleOthersSelecteOption(option)}>
+                    onClick={() => handleOthersSelecteOption(option)}
+                  >
                     <p className="text-[10px]">{option.label}</p>
                   </button>
                 </li>
@@ -326,7 +328,7 @@ export default function HootersCustomForm({
             </ul>
           </Modal>
         )}
-        <h4 className={'text-center font-medium text-colorText'}>
+        <h4 className={"text-center font-medium text-colorText"}>
           {title}
           <span className="text-hooters font-medium">
             <b>{subTitle}</b>
@@ -337,12 +339,14 @@ export default function HootersCustomForm({
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4 md:space-y-6 my-6"
-            noValidate>
+            noValidate
+          >
             <div
               className={cn(
-                'space-y-3 mb-3 flex-row items-center justify-center',
+                "space-y-3 mb-3 flex-row items-center justify-center",
                 {}
-              )}>
+              )}
+            >
               {currentStepIndex === 0 && (
                 <UserInfo<HootersFeedbackProps>
                   form={form}
@@ -358,13 +362,13 @@ export default function HootersCustomForm({
                   setIsLastFeedbackMoreThanOneDay={
                     setIsLastFeedbackMoreThanOneDay
                   }
-                  businessId={businessId || ''}
+                  businessId={businessId || ""}
                 />
               )}
               <div className="flex flex-col gap-2 text-center items-center justify-center py-2">
                 <Separator.Root
                   className="SeparatorRoot bg-hooters h-1.5 rounded-full mb-4"
-                  style={{ width: '15%' }}
+                  style={{ width: "15%" }}
                 />
 
                 {currentStepIndex === 0 && (
@@ -372,25 +376,25 @@ export default function HootersCustomForm({
                     form={form}
                     question={courtesyQuestion}
                     nextStep={() => {
-                      if (!form.watch('Courtesy')) {
+                      if (!form.watch("Courtesy")) {
                         toast({
                           title: formErrorMessage,
-                          variant: 'hootersDestructive',
+                          variant: "hootersDestructive",
                         });
                       }
-                      if (!form.watch('FullName') || !form.watch('Email')) {
+                      if (!form.watch("FullName") || !form.watch("Email")) {
                         toast({
                           title: formUserDataErrorMessage,
-                          variant: 'hootersDestructive',
+                          variant: "hootersDestructive",
                         });
                       }
                       if (
-                        !form.watch('PhoneNumber') &&
-                        form.watch('AcceptPromotions')
+                        !form.watch("PhoneNumber") &&
+                        form.watch("AcceptPromotions")
                       ) {
                         toast({
                           title: formUserPhoneNumberErrorMessage,
-                          variant: 'hootersDestructive',
+                          variant: "hootersDestructive",
                         });
                       } else goTo(currentStepIndex + 1);
                     }}
@@ -405,10 +409,10 @@ export default function HootersCustomForm({
                     form={form}
                     question={placeCleannessQuestion}
                     nextStep={() => {
-                      if (!form.watch('PlaceCleanness')) {
+                      if (!form.watch("PlaceCleanness")) {
                         toast({
                           title: formErrorMessage,
-                          variant: 'hootersDestructive',
+                          variant: "hootersDestructive",
                         });
                       } else goTo(currentStepIndex + 1);
                     }}
@@ -426,10 +430,10 @@ export default function HootersCustomForm({
                     form={form}
                     question={quicknessQuestion}
                     nextStep={() => {
-                      if (!form.watch('Quickness')) {
+                      if (!form.watch("Quickness")) {
                         toast({
                           title: formErrorMessage,
-                          variant: 'hootersDestructive',
+                          variant: "hootersDestructive",
                         });
                       } else goTo(currentStepIndex + 1);
                     }}
@@ -447,10 +451,10 @@ export default function HootersCustomForm({
                     form={form}
                     question={foodQualityQuestion}
                     nextStep={() => {
-                      if (!form.watch('FoodQuality')) {
+                      if (!form.watch("FoodQuality")) {
                         toast({
                           title: formErrorMessage,
-                          variant: 'hootersDestructive',
+                          variant: "hootersDestructive",
                         });
                       } else goTo(currentStepIndex + 1);
                     }}
@@ -468,10 +472,10 @@ export default function HootersCustomForm({
                     form={form}
                     question={ambienceQuestion}
                     nextStep={() => {
-                      if (!form.watch('Climate')) {
+                      if (!form.watch("Climate")) {
                         toast({
                           title: formErrorMessage,
-                          variant: 'hootersDestructive',
+                          variant: "hootersDestructive",
                         });
                       } else goTo(currentStepIndex + 1);
                     }}
@@ -489,10 +493,10 @@ export default function HootersCustomForm({
                     form={form}
                     question={experienceQuestion}
                     nextStep={() => {
-                      if (!form.watch('Experience')) {
+                      if (!form.watch("Experience")) {
                         toast({
                           title: formErrorMessage,
-                          variant: 'hootersDestructive',
+                          variant: "hootersDestructive",
                         });
                       } else goTo(currentStepIndex + 1);
                     }}
@@ -515,9 +519,8 @@ export default function HootersCustomForm({
                     prevStep={() => {
                       goTo(currentStepIndex - 1);
                     }}
-                    isRecommendingClicked={
-                      isRecommendingClicked
-                    }></RecommendingQuestion>
+                    isRecommendingClicked={isRecommendingClicked}
+                  ></RecommendingQuestion>
                 )}
 
                 {currentStepIndex === 7 && (
@@ -530,15 +533,17 @@ export default function HootersCustomForm({
                     prevStep={() => {
                       goTo(currentStepIndex - 1);
                     }}
-                    isComeBackClicked={isComeBackClicked}></ComeBackQuestion>
+                    isComeBackClicked={isComeBackClicked}
+                  ></ComeBackQuestion>
                 )}
               </div>
 
-              <div className={'md:grid md:space-y-0 items-center'}>
+              <div className={"md:grid md:space-y-0 items-center"}>
                 <Stepper
                   activeStep={0}
                   alternativeLabel
-                  connector={<CustomStepperConnector variant="hooters" />}>
+                  connector={<CustomStepperConnector variant="hooters" />}
+                >
                   {steps.map((label, index) => (
                     <Step
                       key={index}
@@ -546,7 +551,8 @@ export default function HootersCustomForm({
                         if (index < 7 && index <= currentStepIndex) goTo(index);
                       }}
                       active={index === currentStepIndex}
-                      completed={index < currentStepIndex}>
+                      completed={index < currentStepIndex}
+                    >
                       <StepLabel StepIconComponent={CustomStepperIconsHooters}>
                         {label}
                       </StepLabel>
@@ -563,7 +569,7 @@ export default function HootersCustomForm({
                     <FormItem className="pt-5 md:grid md:space-y-0 items-center text-center md:gap-12">
                       <Stack spacing={2}>
                         <FormLabel className="col-span-3 text-xl">
-                          <h4 className={'text-hooters'}>
+                          <h4 className={"text-hooters"}>
                             <b>{whyText}</b>
                           </h4>
                         </FormLabel>
@@ -575,7 +581,7 @@ export default function HootersCustomForm({
                                 : noRecommendingPlaceholder
                             }
                             className={
-                              'border-2 border-gray-300 rounded-lg focus:border-gray-500'
+                              "border-2 border-gray-300 rounded-lg focus:border-gray-500"
                             }
                             {...field}
                           />
@@ -595,7 +601,7 @@ export default function HootersCustomForm({
                       <FormItem className="pt-5 md:grid md:space-y-0 items-center text-center md:gap-12">
                         <Stack spacing={2}>
                           <FormLabel className="col-span-3 text-xl">
-                            <h4 className={'text-hooters'}>
+                            <h4 className={"text-hooters"}>
                               <b>{whyText}</b>
                             </h4>
                           </FormLabel>
@@ -603,7 +609,7 @@ export default function HootersCustomForm({
                             <Textarea
                               placeholder={recommendingPlaceholder}
                               className={
-                                'border-2 border-gray-300 rounded-lg focus:border-gray-500'
+                                "border-2 border-gray-300 rounded-lg focus:border-gray-500"
                               }
                               {...field}
                             />
@@ -615,17 +621,17 @@ export default function HootersCustomForm({
                   />
                   {watchFullName && (
                     <p className="text-center mt-2 text-lg">
-                      <b className={'text-hooters uppercase'}>
+                      <b className={"text-hooters uppercase"}>
                         {watchFullName}
                       </b>
                       , {submitText1}
-                      <b className={'text-hooters uppercase'}>{submitButton}</b>
+                      <b className={"text-hooters uppercase"}>{submitButton}</b>
                       {submitText2}
-                      <b className={'text-hooters uppercase'}>Google</b>{' '}
+                      <b className={"text-hooters uppercase"}>Google</b>{" "}
                       {submitText3}
-                      <b className={'text-hooters uppercase'}>
+                      <b className={"text-hooters uppercase"}>
                         {submitText4}
-                      </b>{' '}
+                      </b>{" "}
                       {submitText5}
                     </p>
                   )}
@@ -646,11 +652,12 @@ export default function HootersCustomForm({
                         render={({ field }) => (
                           <FormItem
                             className={cn(
-                              ' items-center rounded-md border py-1 sm:py-2 shadow hover:border-hooters hover:text-hooters transition-all',
+                              " items-center rounded-md border py-1 sm:py-2 shadow hover:border-hooters hover:text-hooters transition-all",
                               {
-                                'border-hooters text-hooters': field.value,
+                                "border-hooters text-hooters": field.value,
                               }
-                            )}>
+                            )}
+                          >
                             <FormControl>
                               <Checkbox
                                 checked={field.value}
@@ -660,11 +667,12 @@ export default function HootersCustomForm({
                             </FormControl>
                             <FormLabel
                               className={cn(
-                                'text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-hooters hover:text-hooters transition-all',
+                                "text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-hooters hover:text-hooters transition-all",
                                 {
-                                  'border-hooters text-hooters': field.value,
+                                  "border-hooters text-hooters": field.value,
                                 }
-                              )}>
+                              )}
+                            >
                               <IconToolsKitchen />
                               <p className="w-full text-[10px] sm:text-[11px]">
                                 {foodButton}
@@ -679,11 +687,12 @@ export default function HootersCustomForm({
                         render={({ field }) => (
                           <FormItem
                             className={cn(
-                              ' items-center rounded-md border py-1 sm:py-2 shadow hover:border-hooters hover:text-hooters transition-all',
+                              " items-center rounded-md border py-1 sm:py-2 shadow hover:border-hooters hover:text-hooters transition-all",
                               {
-                                'border-hooters text-hooters': field.value,
+                                "border-hooters text-hooters": field.value,
                               }
-                            )}>
+                            )}
+                          >
                             <FormControl>
                               <Checkbox
                                 checked={field.value}
@@ -693,11 +702,12 @@ export default function HootersCustomForm({
                             </FormControl>
                             <FormLabel
                               className={cn(
-                                'text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-hooters hover:text-hooters transition-all',
+                                "text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-hooters hover:text-hooters transition-all",
                                 {
-                                  'border-hooters text-hooters': field.value,
+                                  "border-hooters text-hooters": field.value,
                                 }
-                              )}>
+                              )}
+                            >
                               <IconUserScan />
                               <p className="w-full text-[10px] sm:text-[11px]">
                                 {serviceButton}
@@ -712,11 +722,12 @@ export default function HootersCustomForm({
                         render={({ field }) => (
                           <FormItem
                             className={cn(
-                              ' items-center rounded-md border py-1 sm:py-2 shadow hover:border-hooters hover:text-hooters transition-all',
+                              " items-center rounded-md border py-1 sm:py-2 shadow hover:border-hooters hover:text-hooters transition-all",
                               {
-                                'border-hooters text-hooters': field.value,
+                                "border-hooters text-hooters": field.value,
                               }
-                            )}>
+                            )}
+                          >
                             <FormControl>
                               <Checkbox
                                 checked={field.value}
@@ -726,11 +737,12 @@ export default function HootersCustomForm({
                             </FormControl>
                             <FormLabel
                               className={cn(
-                                'text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-hooters hover:text-hooters transition-all',
+                                "text-center w-full font-normal flex flex-col items-center cursor-pointer hover:border-hooters hover:text-hooters transition-all",
                                 {
-                                  'border-hooters text-hooters': field.value,
+                                  "border-hooters text-hooters": field.value,
                                 }
-                              )}>
+                              )}
+                            >
                               <IconBuildingStore />
                               <p className="w-full text-[10px] sm:text-[11px]">
                                 {ambienceButton}
@@ -749,13 +761,13 @@ export default function HootersCustomForm({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="col-span-3 text-question text-lg">
-                            {shareDetailsText}{' '}
-                            <b className={'text-hooters'}>Hooters</b>
+                            {shareDetailsText}{" "}
+                            <b className={"text-hooters"}>Hooters</b>
                           </FormLabel>
                           <FormControl>
                             <Textarea
                               className={
-                                'border-2 border-gray-300 rounded-lg focus:border-gray-500'
+                                "border-2 border-gray-300 rounded-lg focus:border-gray-500"
                               }
                               placeholder={shareDetailsPlaceholder}
                               {...field}
@@ -775,9 +787,9 @@ export default function HootersCustomForm({
                     <div>
                       <Button
                         type="button"
-                        variant={'hootersPrimary'}
-                        size={'hootersLarge'}
-                        onClick={handleNextStep}>
+                        color={`hsl(${business?.BrandColor || "var(--qik)"})`}
+                        onClick={handleNextStep}
+                      >
                         {nextButton}
                       </Button>
                     </div>
@@ -787,14 +799,14 @@ export default function HootersCustomForm({
             {currentStepIndex === 7 && comeBack != null && (
               <>
                 <Button
-                  variant={'hootersPrimary'}
-                  size={'hootersLarge'}
+                  color={`hsl(${business?.BrandColor || "var(--qik)"})`}
                   type="submit"
                   disabled={
                     !isTermsChecked || isLastFeedbackMoreThanOneDay
                       ? true
                       : form.formState.isSubmitting
-                  }>
+                  }
+                >
                   {submitButton}
                 </Button>
 
@@ -817,15 +829,17 @@ export default function HootersCustomForm({
                               className="text-primary hover:underline"
                               href="https://qikstarts.com/terms-of-service"
                               rel="noopener noreferrer"
-                              target="_blank">
+                              target="_blank"
+                            >
                               {termsAndConditions2}
-                            </a>{' '}
-                            {termsAndConditions3}{' '}
+                            </a>{" "}
+                            {termsAndConditions3}{" "}
                             <a
                               className="text-primary hover:underline"
                               href="https://qikstarts.com/privacy-policy"
                               rel="noopener noreferrer"
-                              target="_blank">
+                              target="_blank"
+                            >
                               {termsAndConditions4}
                             </a>
                             .

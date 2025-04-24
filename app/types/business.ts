@@ -74,6 +74,8 @@ export interface Business {
   PricePlan: number;
   Geopoint?: { _lat: number; _long: number };
   Category: string;
+  HasGeolocation?: boolean;
+  BrandColor?: string;
 }
 
 export type BusinessAssets = {

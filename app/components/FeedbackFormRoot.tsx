@@ -46,6 +46,7 @@ export default function FeedbackFormRoot() {
     waiterId,
     setSucursalId,
     sucursalId,
+    brandColor,
   } = useGetBusinessData();
   const [customerType, setCustomerType] = useState<CustomerRole | null>(null);
   const toggleCustomer = (customerType: CustomerRole) => {
@@ -61,7 +62,7 @@ export default function FeedbackFormRoot() {
     CUSTOM_POLLOSDCAMPO_FORM_ID,
     CUSTOM_CEBICHES_FORM_ID,
     CUSTOM_INKA_BURGER_FORM_ID,
-    CUSTOM_PIQUEOS_MORITOS_FORM_ID, 
+    CUSTOM_PIQUEOS_MORITOS_FORM_ID,
   ].includes(businessId ?? "");
   const isGusForm = businessId === CUSTOM_GUS_FORM_ID;
   const isDscSolutions = businessId === DSC_SOLUTIONS_ID;
@@ -274,7 +275,7 @@ export default function FeedbackFormRoot() {
           )}
           <Toaster />
         </div>
-        {enableGeolocation && (
+        {business?.HasGeolocation && (
           <RequestLocationDialog
             branches={getBranchesListByPermission()}
             open={requestLocation}
@@ -282,15 +283,7 @@ export default function FeedbackFormRoot() {
             denyLocation={denyLocation}
             onConfirm={handleConfirmLocation}
             grantingPermissions={grantingPermissions}
-            variant={
-              isHootersForm
-                ? "hooters"
-                : isDelCampo
-                ? "delcampo"
-                : isGusForm
-                ? "gus"
-                : undefined
-            }
+            brandColor={brandColor}
           />
         )}
       </Suspense>

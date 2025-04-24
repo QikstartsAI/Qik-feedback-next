@@ -10,6 +10,7 @@ function useGetBusinessData() {
   const [loading, setLoading] = useState("loading");
   const [business, setBusiness] = useState<Business | null>(null);
   const [sucursalId, setSucursalId] = useState<string | null>(null);
+  const [brandColor, setBrandColor] = useState("var(--qik)");
   const searchParams = useSearchParams();
 
   const businessId = searchParams.get("id");
@@ -27,6 +28,11 @@ function useGetBusinessData() {
   //   fetchBusinessCustomers();
   // }, [businessId]);
 
+  useEffect(() => {
+    if (business?.BrandColor) {
+      setBrandColor(business?.BrandColor);
+    }
+  }, [business]);
   useEffect(() => {
     if (!businessId) return;
     const fetchData = async () => {
@@ -54,6 +60,7 @@ function useGetBusinessData() {
     sucursalId,
     branchId,
     waiterId,
+    brandColor,
   };
 }
 
