@@ -26,7 +26,7 @@ const config: Config = {
           foreground: "hsl(var(--qik-foreground))",
         },
         hooters: {
-          DEFAULT: "hsl(var(--hooters))",
+          DEFAULT: "hsl(var(--hooters))", 
           foreground: "hsl(var(--hooters-foreground))",
         },
         delcampo: {
@@ -36,6 +36,10 @@ const config: Config = {
         gus: {
           DEFAULT: "hsl(var(--gus))",
           foreground: "hsl(var(--gus-foreground))",
+        },
+        cebiches: {
+          DEFAULT: "hsl(var(--cebiches))",
+          foreground: "hsl(var(--cebiches-foreground))"
         },
         colorText: {
           DEFAULT: "hsl(var(--color-text))",
