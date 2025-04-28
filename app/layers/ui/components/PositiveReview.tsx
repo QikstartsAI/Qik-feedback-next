@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Business } from "@/app/types/business";
 import { Textarea } from "@/app/components/ui/TextArea";
 import { IconCopy } from "@tabler/icons-react";
-import { cn } from "@/app/lib/utils";
+import { cn, copyToClipboard as copyUtil } from "@/app/lib/utils";
 
 interface PositiveReviewProps {
   business?: Business | null;
@@ -15,24 +15,24 @@ const PositiveReview = ({
   responses,
   onChange,
 }: PositiveReviewProps) => {
+  const [showIsCopied, setShowIsCopied] = useState(false);
   const [goodFeedback, setGoodFeedback] = useState("");
+
+  const handleCopy = async (text: string) => {
+    try {
+      await copyUtil(text);
+      setShowIsCopied(true);
+      // Optionally hide the message after a delay
+      // setTimeout(() => setShowIsCopied(false), 2000);
+    } catch (error) {
+      console.error("Copy failed:", error);
+      // Optionally show an error message to the user
+    }
+  };
 
   const handleSelectOption = (text: string) => {
     setGoodFeedback(text);
-    copyToClipboard(text);
-  };
-
-  const copyToClipboard = (text: string) => {
-    if (navigator.clipboard) {
-      navigator.clipboard
-        .writeText(text)
-        .then(() => {})
-        .catch((error) => {
-          console.error("Failed to copy text: ", error);
-        });
-    } else {
-      console.error("Clipboard API not available");
-    }
+    handleCopy(text);
   };
 
   const options = [
@@ -75,13 +75,13 @@ const PositiveReview = ({
         <IconCopy
           className="text-qik"
           cursor="pointer"
-          onClick={() => copyToClipboard(goodFeedback)}
+          onClick={() => handleCopy(goodFeedback)}
         />
       </div>
       <p
         className={cn(
           "transition-all font-bold text-[#ff0000] text-center",
-          goodFeedback ? "opacity-100" : "opacity-0"
+          showIsCopied ? "opacity-100" : "opacity-0"
         )}
       >
         {"¡Texto copiado! Solo pégalo en Google y listo."}

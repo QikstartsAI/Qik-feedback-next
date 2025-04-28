@@ -10,6 +10,7 @@ import { Wizard } from "../layers/ui/components/wizard/wizard";
 import TranslationsProvider from "../providers/TranslationsProvider"; // Import the provider
 import Thanks from "./Thanks";
 import { getLocaleFromCountry } from "@/lib/utils/getLocaleFromCountry"; // Import the new function
+import RequestLocationDialog from "./RequestLocationDialog";
 
 const Hero = lazy(() => import("./Hero"));
 
@@ -26,8 +27,6 @@ export default function FeedbackFormRoot() {
     >
       <Suspense fallback={<Loader />}>
         <TranslationsProvider locale={locale}>
-          {" "}
-          {/* Wrap content with provider */}
           <div>
             {loading === "loading" || loading === "requesting" ? (
               <Loader />
@@ -39,7 +38,9 @@ export default function FeedbackFormRoot() {
             )}
             <Toaster />
           </div>
-          {/* {business?.Powers?.includes("GEOLOCATION") && <RequestLocationDialog />} */}
+          {business?.Powers?.includes("GEOLOCATION") && (
+            <RequestLocationDialog />
+          )}
         </TranslationsProvider>
       </Suspense>
     </APIProvider>
