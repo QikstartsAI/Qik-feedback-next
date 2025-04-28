@@ -1,5 +1,6 @@
 import React from "react";
 import { FormField } from "../types/wizardTypes";
+import { useTranslation } from "react-i18next";
 
 interface CheckboxFieldProps {
   field: FormField;
@@ -12,6 +13,8 @@ const CheckboxField: React.FC<CheckboxFieldProps> = ({
   onChange,
   value,
 }) => {
+  const { t } = useTranslation("common");
+
   return (
     <div className="flex items-center">
       <input
@@ -24,7 +27,7 @@ const CheckboxField: React.FC<CheckboxFieldProps> = ({
         className="w-5 h-5 text-blue-600 border-gray-400 rounded focus:ring-2 focus:ring-blue-400"
       />
       <label htmlFor={field.id} className="ml-3 text-gray-700 font-medium">
-        {field.label}
+        {t(field.label?.trim() ?? "")}
       </label>
     </div>
   );

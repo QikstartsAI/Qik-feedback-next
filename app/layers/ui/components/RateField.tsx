@@ -2,6 +2,7 @@ import React from "react";
 import { Form, Radio, Image } from "antd";
 import cn from "classnames";
 import { FormField } from "../types/wizardTypes";
+import { useTranslation } from "react-i18next";
 
 interface RateFieldProps {
   field: FormField;
@@ -10,11 +11,18 @@ interface RateFieldProps {
 }
 
 const RateField: React.FC<RateFieldProps> = ({ field, value, onChange }) => {
+  const { t } = useTranslation("common");
+
   return (
     <Form.Item
       name={field.id}
       required={field.required}
-      rules={[{ required: field.required, message: "Selecciona una opción" }]}
+      rules={[
+        {
+          required: field.required,
+          message: t("rateField.validation.required"),
+        },
+      ]}
     >
       <Radio.Group
         value={value}
@@ -30,14 +38,18 @@ const RateField: React.FC<RateFieldProps> = ({ field, value, onChange }) => {
             <div className="flex flex-col items-center">
               <Image
                 src={`/${option.id}.png`}
-                alt={`experiencia ${option?.label?.toLowerCase()}`}
+                alt={t("rateField.image.alt", {
+                  context: option?.label?.toLowerCase(),
+                })}
                 className={cn("w-16 h-16 sm:w-10 sm:h-10 hover:opacity-100", {
                   "opacity-25": value != option.value,
                 })}
                 unselectable="on"
                 preview={false}
               />
-              <p className="text-[10px] sm:text-[11px]">{option.label}</p>
+              <p className="text-[10px] sm:text-[11px]">
+                {t(option.label ?? "")}
+              </p>
             </div>
           </Radio>
         ))}

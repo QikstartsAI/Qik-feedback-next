@@ -2,6 +2,7 @@ import React from "react";
 import { Form } from "antd";
 import cn from "classnames";
 import { FormField, Option } from "../types/wizardTypes";
+import { useTranslation } from "react-i18next";
 
 interface ChipsFieldProps {
   field: FormField;
@@ -10,6 +11,8 @@ interface ChipsFieldProps {
 }
 
 const ChipsField: React.FC<ChipsFieldProps> = ({ field, value, onChange }) => {
+  const { t } = useTranslation("common");
+
   const isOptionSelected = (id?: string): boolean =>
     field.options
       ?.find((option) => option.id === id)
@@ -18,12 +21,17 @@ const ChipsField: React.FC<ChipsFieldProps> = ({ field, value, onChange }) => {
   return (
     <div className="mt-4 flex flex-col">
       <span className="font-bold text-[24px] text-center text-qik">
-        {field.title?.trim()}
+        {t(field.title?.trim() ?? "")}
       </span>
       <Form.Item
         name={field.id}
         required={field.required}
-        rules={[{ required: field.required, message: "Selecciona una opción" }]}
+        rules={[
+          {
+            required: field.required,
+            message: t("chipsField.validation.required"),
+          },
+        ]}
       >
         <div className="mt-4 flex gap-3 justify-center items-center flex-wrap">
           {field.options?.map((option) => (
@@ -38,7 +46,7 @@ const ChipsField: React.FC<ChipsFieldProps> = ({ field, value, onChange }) => {
               )}
               onClick={() => onChange && onChange(option.id)}
             >
-              {option.label}
+              {t(option.label ?? "")}
             </button>
           ))}
         </div>

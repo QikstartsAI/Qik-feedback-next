@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import DefaultFormNew from "../../../hooks/DefaultFormNew.json";
 import { Form, Progress } from "antd";
@@ -19,12 +21,14 @@ import { findCustomerFeedbackDataInBusiness } from "@/app/lib/handleEmail";
 import { getImprovements } from "@/app/constants/form";
 import { toast } from "@/app/hooks/useToast";
 import Thanks from "@/app/components/Thanks";
+import { useTranslation } from "react-i18next";
 
 interface Data {
   [key: string]: any;
 }
 
 export const Wizard = ({ business }: { business: Business | null }) => {
+  const { t } = useTranslation("common");
   const [showOptionsPopup, setShowOptionsPopup] = useState(false);
   const [showInputPopup, setShowInputPopup] = useState(false);
   const [popupOptions, setPopupOptions] = useState<Record<string, Option[]>>(
@@ -42,7 +46,7 @@ export const Wizard = ({ business }: { business: Business | null }) => {
   useEffect(() => {
     const computeInitialValues = () => {
       const startTime = new Date();
-      const values: Data = { StartTime: startTime };
+      const values: Data = { StartTime: startTime, AcceptTerms: true };
       const processQuestions = (questions: FormField[]) => {
         questions.forEach((q) => {
           if (q.id) {
@@ -170,7 +174,6 @@ export const Wizard = ({ business }: { business: Business | null }) => {
     } else {
       form.setFieldValue(fieldId, value);
       setResponses({ ...responses, [fieldId]: value });
-      console.log(fieldId, value, responses);
       calculateProgress(form.getFieldsValue());
     }
   };
@@ -181,7 +184,9 @@ export const Wizard = ({ business }: { business: Business | null }) => {
     form.getFieldValue("Rating") > 3 && isLastStep;
 
   const canOpenNegativeReview = () =>
-    form.getFieldValue("Rating") < 3 && isLastStep;
+    form.getFieldValue("Rating") > 0 &&
+    form.getFieldValue("Rating") < 3 &&
+    isLastStep;
 
   const writeReviewURL = () => {
     if (!business?.MapsUrl) return "";
@@ -200,6 +205,14 @@ export const Wizard = ({ business }: { business: Business | null }) => {
   };
 
   async function onSubmit() {
+    if (!responses.AcceptTerms) {
+      toast({
+        title: "Debes aceptar los términos y condiciones para continuar",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const { Email, Ambience, Service, Food, ImproveText, Rating } = responses;
     const isLowRating = Rating < 3;
     try {
@@ -245,7 +258,7 @@ export const Wizard = ({ business }: { business: Business | null }) => {
     } catch (error) {
       console.log(error);
       toast({
-        title: "Ocurrio un error, intenta nuevamente",
+        title: t("wizard.toast.error.title"),
         variant: "destructive",
       });
     } finally {
@@ -320,7 +333,7 @@ export const Wizard = ({ business }: { business: Business | null }) => {
                 className="w-[20%] h-12 border border-gray-300 px-5 py-2 text-gray-900 hover:bg-gray-300 focus:ring focus:ring-blue-200 rounded-full bg-gray-100"
                 onClick={handlePrevStep}
               >
-                Atrás
+                {t("wizard.button.previous")}
               </button>
               <button
                 className="w-[80%] px-5 py-2 hover:bg-blue-800 focus:ring focus:ring-blue-200 bg-blue-600 text-white rounded-full"
@@ -330,7 +343,9 @@ export const Wizard = ({ business }: { business: Business | null }) => {
                     : () => handleNextStep()
                 }
               >
-                {isLastStep ? "ENVIAR A GOOGLE" : "Siguiente"}
+                {isLastStep
+                  ? t("wizard.button.submitToGoogle")
+                  : t("wizard.button.next")}
               </button>
             </div>
           </Form>

@@ -4,15 +4,20 @@ import { lazy, Suspense } from "react";
 import { useGetBusinessData } from "../hooks/useGetBusinessData";
 import Loader from "./Loader";
 import { Toaster } from "./ui/Toaster";
-import RequestLocationDialog from "./RequestLocationDialog";
+// import RequestLocationDialog from "./RequestLocationDialog"; // Uncomment if needed later
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { Wizard } from "../layers/ui/components/wizard/wizard";
+import TranslationsProvider from "../providers/TranslationsProvider"; // Import the provider
 import Thanks from "./Thanks";
+import { getLocaleFromCountry } from "@/lib/utils/getLocaleFromCountry"; // Import the new function
 
 const Hero = lazy(() => import("./Hero"));
 
 export default function FeedbackFormRoot() {
   const { business, loading } = useGetBusinessData();
+
+  // Determine locale based on business country
+  const locale = getLocaleFromCountry(business?.Country);
 
   return (
     <APIProvider
@@ -20,18 +25,22 @@ export default function FeedbackFormRoot() {
       solutionChannel="GMP_devsite_samples_v3_rgmautocomplete"
     >
       <Suspense fallback={<Loader />}>
-        <div>
-          {loading === "loading" || loading === "requesting" ? (
-            <Loader />
-          ) : (
-            <div className="min-h-[calc(100vh-103px)]">
-              <Hero business={business} />
-              <Wizard business={business} />
-            </div>
-          )}
-          <Toaster />
-        </div>
-        {/* {business?.Powers?.includes("GEOLOCATION") && <RequestLocationDialog />} */}
+        <TranslationsProvider locale={locale}>
+          {" "}
+          {/* Wrap content with provider */}
+          <div>
+            {loading === "loading" || loading === "requesting" ? (
+              <Loader />
+            ) : (
+              <div className="min-h-[calc(100vh-103px)]">
+                <Hero business={business} />
+                <Wizard business={business} />
+              </div>
+            )}
+            <Toaster />
+          </div>
+          {/* {business?.Powers?.includes("GEOLOCATION") && <RequestLocationDialog />} */}
+        </TranslationsProvider>
       </Suspense>
     </APIProvider>
   );

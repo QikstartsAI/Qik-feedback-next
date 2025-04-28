@@ -1,16 +1,18 @@
+import { useTranslation } from "next-i18next";
+
 export const ClientTypeSelection = ({
   setClientType,
 }: {
   setClientType: (type: "newClient" | "frequentClient") => void;
 }) => {
+  const { t } = useTranslation("common");
+
   return (
     <div className="text-center">
       <h1 className="text-primary font-bold md:text-2xl max-sm:text-2xl">
-        ¿Eres cliente nuevo o frecuente?
+        {t("wizard.clientType.title")}
       </h1>
-      <p className="text-gray-600">
-        Valoramos tu opinión 😃, te tomará menos de 1 minuto
-      </p>
+      <p className="text-gray-600">{t("wizard.clientType.subtitle")}</p>
       <div className="flex mt-7 justify-center items-center">
         <button
           className="flex flex-col items-center mx-4"
@@ -18,10 +20,12 @@ export const ClientTypeSelection = ({
         >
           <img
             src={true ? "/yellow-start.png" : "/gray-start.png"}
-            alt="Nuevo"
+            alt={t("wizard.clientType.newClientAlt")}
             style={{ maxWidth: "180px" }}
           />
-          <h1 className="text-gray-800 md:text-xl font-bold">Nuevo</h1>
+          <h1 className="text-gray-800 md:text-xl font-bold">
+            {t("wizard.clientType.newClientButton")}
+          </h1>
         </button>
         <button
           className="flex flex-col items-center mx-4"
@@ -29,10 +33,12 @@ export const ClientTypeSelection = ({
         >
           <img
             src={true ? "/red-heart.png" : "/gray-heart.png"}
-            alt="Frecuente"
+            alt={t("wizard.clientType.frequentClientAlt")}
             style={{ maxWidth: "180px" }}
           />
-          <h1 className="text-gray-800 md:text-xl font-bold">Frecuente</h1>
+          <h1 className="text-gray-800 md:text-xl font-bold">
+            {t("wizard.clientType.frequentClientButton")}
+          </h1>
         </button>
       </div>
     </div>

@@ -9,72 +9,72 @@
                 "questions": [
                     {
                         "id": "Email",
-                        "label": "Correo electrónico",
+                        "label": "form.default.newClient.Email.label",
                         "type": "email",
-                        "placeholder": "Ingresa tu correo",
+                        "placeholder": "form.default.newClient.Email.placeholder",
                         "required": true
                     },
                     {
                         "id": "FullName",
-                        "label": "Nombre completo",
+                        "label": "form.default.newClient.FullName.label",
                         "type": "text",
-                        "placeholder": "Ingresa tu nombre",
+                        "placeholder": "form.default.newClient.FullName.placeholder",
                         "required": true
                     },
                     {
                         "id": "PhoneNumber",
-                        "label": "Teléfono",
-                        "placeholder": "Ej: 3001234567",
+                        "label": "form.default.newClient.PhoneNumber.label",
+                        "placeholder": "form.default.newClient.PhoneNumber.placeholder",
                         "type": "phone",
                         "required": true
                     },
                     {
                         "id": "AcceptPromotions",
-                        "label": "Acepto recibir promociones por WhatsApp",
+                        "label": "form.default.newClient.AcceptPromotions.label",
                         "type": "checkbox",
                         "required": false
                     },
                     {
                         "id": "BirthdayDate",
-                        "label": "¿Tu fecha de cumpleaños?",
-                        "placeholder": "dd/mm/yyyy",
-                        "description": "Te sorprenderemos ese día😎",
+                        "label": "form.default.newClient.BirthdayDate.label",
+                        "placeholder": "form.default.newClient.BirthdayDate.placeholder",
+                        "description": "form.default.newClient.BirthdayDate.description",
                         "type": "date",
                         "max": "2005-12-31",
                         "required": false
                     },
                     {
                         "id": "Origin",
-                        "title": "¿Cómo nos conociste?",
+                        "title": "form.default.newClient.Origin.title",
                         "type": "chips",
                         "required": true,
                         "options": [
-                            { "id": "maps", "label": "Google Maps" },
-                            { "id": "whatsapp", "label": "WhatsApp" },
-                            { "id": "referido", "label": "Referido" },
-                            { "id": "pasePorElLocal", "label": "Pasé por el local" },
-                            { "id": "vivoCerca", "label": "Vivo cerca" },
+                            { "id": "maps", "label": "form.default.newClient.Origin.options.maps.label" },
+                            { "id": "whatsapp", "label": "form.default.newClient.Origin.options.whatsapp.label" },
+                            { "id": "referido", "label": "form.default.newClient.Origin.options.referido.label" },
+                            { "id": "pasePorElLocal", "label": "form.default.newClient.Origin.options.pasePorElLocal.label" },
+                            { "id": "vivoCerca", "label": "form.default.newClient.Origin.options.vivoCerca.label" },
                             {
                                 "id": "socialmedia",
-                                "label": "Redes Sociales",
-                                "title": "¿En que red social nos viste?",
+                                "label": "form.default.newClient.Origin.options.socialmedia.label",
+                                "title": "form.default.newClient.Origin.options.socialmedia.title",
                                 "options": [
-                                    { "id": "instagram", "label": "Instagram" },
-                                    { "id": "facebook", "label": "Facebook" },
-                                    { "id": "youtube", "label": "Youtube" },
-                                    { "id": "tiktok", "label": "Tiktok" }
+                                    { "id": "instagram", "label": "form.default.newClient.Origin.options.socialmedia.options.instagram.label" },
+                                    { "id": "facebook", "label": "form.default.newClient.Origin.options.socialmedia.options.facebook.label" },
+                                    { "id": "youtube", "label": "form.default.newClient.Origin.options.socialmedia.options.youtube.label" },
+                                    { "id": "tiktok", "label": "form.default.newClient.Origin.options.socialmedia.options.tiktok.label" }
                                 ]
                             },
                             {
                                 "id": "otro",
-                                "label": "Otro",
+                                "label": "form.default.newClient.Origin.options.otro.label",
                                 "options": [
-                                    { "id": "flyers", "label": "Flyers" },
-                                    { "id": "eventos", "label": "Eventos" },
-                                    { "id": "email", "label": "Email" },
-                                    { "id": "radio", "label": "Radio" },
-                                    { "id": "tv", "label": "TV" },
-                                    { "id": "valla", "label": "Valla" }
+                                    { "id": "flyers", "label": "form.default.newClient.Origin.options.otro.options.flyers.label" },
+                                    { "id": "eventos", "label": "form.default.newClient.Origin.options.otro.options.eventos.label" },
+                                    { "id": "email", "label": "form.default.newClient.Origin.options.otro.options.email.label" },
+                                    { "id": "radio", "label": "form.default.newClient.Origin.options.otro.options.radio.label" },
+                                    { "id": "tv", "label": "form.default.newClient.Origin.options.otro.options.tv.label" },
+                                    { "id": "valla", "label": "form.default.newClient.Origin.options.otro.options.valla.label" }
                                 ]
                             }
                         ]
@@ -86,7 +86,7 @@
                 "questions": [
                     {
                         "id": "Rating",
-                        "label": "¡Queremos escucharlo todo, lo bueno y no tan bueno!",
+                        "label": "form.default.newClient.Rating.label",
                         "placeholder": "",
                         "type": "rate",
                         "required": true,
@@ -109,63 +109,63 @@
                 "questions": [
                     {
                         "id": "Email",
-                        "label": "Correo electrónico",
+                        "label": "form.default.frequentClient.Email.label",
                         "type": "email",
-                        "placeholder": "Ingresa tu correo",
+                        "placeholder": "form.default.frequentClient.Email.placeholder",
                         "required": true
                     },
                     {
                         "id": "FullName",
-                        "label": "Nombre completo",
+                        "label": "form.default.frequentClient.FullName.label",
                         "type": "text",
-                        "placeholder": "Ingresa tu nombre",
+                        "placeholder": "form.default.frequentClient.FullName.placeholder",
                         "required": true
                     },
                     {
                         "id": "AcceptPromotions",
-                        "label": "Acepto recibir promociones por WhatsApp",
+                        "label": "form.default.frequentClient.AcceptPromotions.label",
                         "type": "checkbox",
                         "required": false
                     },
                     {
                         "id": "BirthdayDate",
-                        "label": "¿Tu fecha de cumpleaños?",
-                        "placeholder": "dd/mm/yyyy",
-                        "description": "Te sorprenderemos ese día😎",
+                        "label": "form.default.frequentClient.BirthdayDate.label",
+                        "placeholder": "form.default.frequentClient.BirthdayDate.placeholder",
+                        "description": "form.default.frequentClient.BirthdayDate.description",
                         "type": "date",
                         "max": "2005-12-31",
                         "required": false
                     },
                     {
                         "id": "Origin",
-                        "title": "¿Qué te ha motivado a visitarnos esta vez?",
+                        "title": "form.default.frequentClient.Origin.title",
                         "type": "chips",
                         "required": true,
                         "options": [
                             {
                                 "id": "promo",
-                                "label": "Vi una promo",
-                                "title": "¿Dónde viste la promo?",
+                                "label": "form.default.frequentClient.Origin.options.promo.label",
+                                "title": "form.default.frequentClient.Origin.options.promo.title",
                                 "options": [
-                                    { "id": "instagram", "label": "Instagram" },
-                                    { "id": "facebook", "label": "Facebook" },
-                                    { "id": "youtube", "label": "Youtube" },
-                                    { "id": "tiktok", "label": "Tiktok" },
-                                    { "id": "google", "label": "Google" },
-                                    { "id": "email", "label": "Email" },
-                                    { "id": "whatsapp", "label": "WhatsApp" },
-                                    { "id": "flyer", "label": "Hoja volante" },
-                                    { "id": "eventFair", "label": "Eventos o Ferias" },
-                                    { "id": "partnership", "label": "Alianzas" },
-                                    { "id": "radioTV", "label": "Radio o TV" }
+                                    { "id": "instagram", "label": "form.default.frequentClient.Origin.options.promo.options.instagram.label" },
+                                    { "id": "facebook", "label": "form.default.frequentClient.Origin.options.promo.options.facebook.label" },
+                                    { "id": "youtube", "label": "form.default.frequentClient.Origin.options.promo.options.youtube.label" },
+                                    { "id": "tiktok", "label": "form.default.frequentClient.Origin.options.promo.options.tiktok.label" },
+                                    { "id": "google", "label": "form.default.frequentClient.Origin.options.promo.options.google.label" },
+                                    { "id": "email", "label": "form.default.frequentClient.Origin.options.promo.options.email.label" },
+                                    { "id": "whatsapp", "label": "form.default.frequentClient.Origin.options.promo.options.whatsapp.label" },
+                                    { "id": "flyer", "label": "form.default.frequentClient.Origin.options.promo.options.flyer.label" },
+                                    { "id": "eventFair", "label": "form.default.frequentClient.Origin.options.promo.options.eventFair.label" },
+                                    { "id": "partnership", "label": "form.default.frequentClient.Origin.options.promo.options.partnership.label" },
+                                    { "id": "radioTV", "label": "form.default.frequentClient.Origin.options.promo.options.radioTV.label" }
                                 ]
                             },
-                            { "id": "enjoy", "label": "Disfruto venit aquí" },
-                            { "id": "maps", "label": "Google Maps" },
-                            { "id": "recommendation", "label": "Me recomendaron nuevamnete" },
+                            { "id": "enjoy", "label": "form.default.frequentClient.Origin.options.enjoy.label" },
+                            { "id": "maps", "label": "form.default.frequentClient.Origin.options.maps.label" },
+                            { "id": "recommendation", "label": "form.default.frequentClient.Origin.options.recommendation.label" },
                             {
                                 "id": "reason",
-                                "label": "Otra Razón"
+                                "label": "form.default.frequentClient.Origin.options.reason.label"
                             }
                         ]
                     }
@@ -176,7 +176,7 @@
                 "questions": [
                     {
                         "id": "Rating",
-                        "label": "¡Queremos escucharlo todo, lo bueno y no tan bueno!",
+                        "label": "form.default.frequentClient.Rating.label",
                         "placeholder": "",
                         "type": "rate",
                         "required": true,
