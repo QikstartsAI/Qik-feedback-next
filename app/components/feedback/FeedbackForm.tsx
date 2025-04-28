@@ -408,7 +408,7 @@ export default function FeedbackForm({
                             ? "Email"
                             : isCaCountry || isFrCountry
                             ? "Courrier électronique"
-                            : "Correo electrónico"}
+                            : "Correo electróniddco"}
                         </FormLabel>
                         <FormControl>
                           <Input

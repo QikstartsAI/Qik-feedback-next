@@ -34,7 +34,7 @@ const TextField: React.FC<TextFieldProps> = ({ field, value, onChange }) => {
           id={field.id}
           placeholder={field.placeholder}
           required={field.required}
-          value={value}
+          value={value ?? ""}
           onChange={onChange ? (e) => onChange(e.target.value) : undefined}
           className="relative w-full border border-gray-400 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
         />

@@ -85,7 +85,7 @@
                 "id": "Rating",
                 "questions": [
                     {
-                        "id": "rateExperience",
+                        "id": "Rating",
                         "label": "¡Queremos escucharlo todo, lo bueno y no tan bueno!",
                         "placeholder": "",
                         "type": "rate",
@@ -175,7 +175,7 @@
                 "id": "Rating",
                 "questions": [
                     {
-                        "id": "rateExperience",
+                        "id": "Rating",
                         "label": "¡Queremos escucharlo todo, lo bueno y no tan bueno!",
                         "placeholder": "",
                         "type": "rate",

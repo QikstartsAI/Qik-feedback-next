@@ -14,8 +14,6 @@ const Hero = lazy(() => import("./Hero"));
 export default function FeedbackFormRoot() {
   const { business, loading } = useGetBusinessData();
 
-
-
   return (
     <APIProvider
       apiKey={process.env.NEXT_PUBLIC_VITE_APP_GOOGLE_API_KEY ?? ""}
@@ -33,7 +31,7 @@ export default function FeedbackFormRoot() {
           )}
           <Toaster />
         </div>
-        {business?.Powers?.includes("GEOLOCATION") && <RequestLocationDialog />}
+        {/* {business?.Powers?.includes("GEOLOCATION") && <RequestLocationDialog />} */}
       </Suspense>
     </APIProvider>
   );

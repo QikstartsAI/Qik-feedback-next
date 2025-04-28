@@ -6,27 +6,16 @@ import { cn } from "@/app/lib/utils";
 
 interface PositiveReviewProps {
   business?: Business | null;
+  responses?: Record<string, any>;
   onChange?: (fieldId?: string, value?: any) => void;
 }
 
-const PositiveReview = ({ business, onChange }: PositiveReviewProps) => {
-  const [showIsCopied, setShowIsCopied] = useState(false);
+const PositiveReview = ({
+  business,
+  responses,
+  onChange,
+}: PositiveReviewProps) => {
   const [goodFeedback, setGoodFeedback] = useState("");
-
-  const [isTermsChecked, setIsTermsChecked] = useState(true);
-
-  const writeReviewURL = () => {
-    if (!business?.MapsUrl) return "";
-    if (business?.MapsUrl?.includes("https")) {
-      return business?.MapsUrl;
-    }
-    return `https://search.google.com/local/writereview?placeid=${business?.MapsUrl}`;
-  };
-
-  const handleRedirect = () => {
-    copyToClipboard(goodFeedback);
-    window.location.replace(writeReviewURL());
-  };
 
   const handleSelectOption = (text: string) => {
     setGoodFeedback(text);
@@ -37,9 +26,7 @@ const PositiveReview = ({ business, onChange }: PositiveReviewProps) => {
     if (navigator.clipboard) {
       navigator.clipboard
         .writeText(text)
-        .then(() => {
-          setShowIsCopied(true);
-        })
+        .then(() => {})
         .catch((error) => {
           console.error("Failed to copy text: ", error);
         });
@@ -103,8 +90,12 @@ const PositiveReview = ({ business, onChange }: PositiveReviewProps) => {
         <input
           type="checkbox"
           className="form-checkbox min-h-[12px] min-w-[12px] text-green-500"
-          onChange={() => setIsTermsChecked(!isTermsChecked)}
-          checked={isTermsChecked}
+          onChange={
+            onChange
+              ? (_) => onChange("AcceptTerms", !responses?.AcceptTerms)
+              : (_) => {}
+          }
+          checked={responses?.AcceptTerms}
         />
         <small className="text-gray-500">
           Al presionar &quot;Enviar&quot;, declaro que acepto los{" "}

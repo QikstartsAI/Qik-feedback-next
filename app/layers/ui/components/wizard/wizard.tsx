@@ -12,11 +12,17 @@ import {
   OptionsPopup,
   InputPopup,
 } from "./components";
-import handleSubmitFeedback, { formattedName } from "@/app/lib/handleSubmit";
+import handleSubmitFeedback, {
+  formattedName,
+} from "@/app/lib/handleSubmitFinal";
 import { findCustomerFeedbackDataInBusiness } from "@/app/lib/handleEmail";
 import { getImprovements } from "@/app/constants/form";
 import { toast } from "@/app/hooks/useToast";
 import Thanks from "@/app/components/Thanks";
+
+interface Data {
+  [key: string]: any;
+}
 
 export const Wizard = ({ business }: { business: Business | null }) => {
   const [showOptionsPopup, setShowOptionsPopup] = useState(false);
@@ -33,30 +39,59 @@ export const Wizard = ({ business }: { business: Business | null }) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [form] = Form.useForm();
 
+  useEffect(() => {
+    const computeInitialValues = () => {
+      const startTime = new Date();
+      const values: Data = { StartTime: startTime };
+      const processQuestions = (questions: FormField[]) => {
+        questions.forEach((q) => {
+          if (q.id) {
+            switch (q.type) {
+              case "checkbox":
+                values[q.id] = false;
+                break;
+              case "rate":
+              case "chips":
+                values[q.id] = null; // Or perhaps "" if null causes issues downstream
+                break;
+              case "text":
+              case "email":
+              case "phone":
+              case "date":
+              default:
+                values[q.id] = "";
+                break;
+            }
+          }
+          // Recursively process nested options if they exist (for complex fields)
+          if (q.options) {
+            q.options.forEach((opt) => {
+              if (opt.options) {
+                // Although nested options might not directly map to top-level form fields,
+                // pre-populating related state or handling default selections might be needed here.
+                // For now, we only initialize top-level field IDs.
+              }
+            });
+          }
+        });
+      };
+
+      DefaultFormNew.newClient.steps.forEach((step) =>
+        processQuestions(step.questions)
+      );
+      DefaultFormNew.frequentClient.steps.forEach((step) =>
+        processQuestions(step.questions)
+      );
+      return values;
+    };
+    setResponses(computeInitialValues());
+  }, []); // Run only once on mount
+
   const getFormData = (): FormField[] => {
     return clientType
       ? DefaultFormNew[clientType].steps[currentStep].questions
       : [];
   };
-
-  useEffect(() => {
-    setResponses({
-      FullName: "",
-      PhoneNumber: "",
-      AcceptPromotions: true,
-      AcceptTerms: true,
-      BirthdayDate: "",
-      Email: "",
-      Origin: undefined,
-      Rating: undefined,
-      StartTime: new Date(),
-      Ambience: false,
-      Food: false,
-      Service: false,
-      ImproveText: "",
-      hiddenInput: null,
-    });
-  }, []);
 
   const calculateProgress = (values: Record<string, any>) => {
     const formFields = getFormData();
@@ -143,10 +178,10 @@ export const Wizard = ({ business }: { business: Business | null }) => {
   const isLastStep = currentStep === getStepsLength() - 1;
 
   const canOpenPositiveReview = () =>
-    form.getFieldValue("rateExperience") > 3 && isLastStep;
+    form.getFieldValue("Rating") > 3 && isLastStep;
 
   const canOpenNegativeReview = () =>
-    form.getFieldValue("rateExperience") < 3 && isLastStep;
+    form.getFieldValue("Rating") < 3 && isLastStep;
 
   const writeReviewURL = () => {
     if (!business?.MapsUrl) return "";
@@ -165,8 +200,7 @@ export const Wizard = ({ business }: { business: Business | null }) => {
   };
 
   async function onSubmit() {
-    const { Email, FullName, Ambience, Service, Food, ImproveText, Rating } =
-      responses;
+    const { Email, Ambience, Service, Food, ImproveText, Rating } = responses;
     const isLowRating = Rating < 3;
     try {
       const updatedData = responses;
@@ -255,6 +289,7 @@ export const Wizard = ({ business }: { business: Business | null }) => {
             form={form}
             name="validateOnly"
             className="max-w-lg"
+            initialValues={responses}
             // onValuesChange={(_, values) => calculateProgress(values)}
           >
             <div className="flex flex-col gap-3 mt-10 w-full">
