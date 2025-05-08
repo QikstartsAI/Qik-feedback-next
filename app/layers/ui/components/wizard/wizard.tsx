@@ -44,57 +44,61 @@ export const Wizard = ({ business }: { business: Business | null }) => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    const computeInitialValues = () => {
-      const startTime = new Date();
-      const values: Data = { StartTime: startTime, AcceptTerms: true };
-      const processQuestions = (questions: FormField[]) => {
-        questions.forEach((q) => {
-          if (q.id) {
-            switch (q.type) {
-              case "checkbox":
-                values[q.id] = false;
-                break;
-              case "rate":
-              case "chips":
-                values[q.id] = null; // Or perhaps "" if null causes issues downstream
-                break;
-              case "text":
-              case "email":
-              case "phone":
-              case "date":
-              default:
-                values[q.id] = "";
-                break;
-            }
-          }
-          // Recursively process nested options if they exist (for complex fields)
-          if (q.options) {
-            q.options.forEach((opt) => {
-              if (opt.options) {
-                // Although nested options might not directly map to top-level form fields,
-                // pre-populating related state or handling default selections might be needed here.
-                // For now, we only initialize top-level field IDs.
-              }
-            });
-          }
-        });
-      };
-
-      DefaultFormNew.newClient.steps.forEach((step) =>
-        processQuestions(step.questions)
-      );
-      DefaultFormNew.frequentClient.steps.forEach((step) =>
-        processQuestions(step.questions)
-      );
-      return values;
+    resetForm();
+    return () => {
+      resetForm();
     };
-    setResponses(computeInitialValues());
   }, []); // Run only once on mount
 
   const getFormData = (): FormField[] => {
     return clientType
       ? DefaultFormNew[clientType].steps[currentStep].questions
       : [];
+  };
+
+  const computeInitialValues = () => {
+    const startTime = new Date();
+    const values: Data = { StartTime: startTime, AcceptTerms: true };
+    const processQuestions = (questions: FormField[]) => {
+      questions.forEach((q) => {
+        if (q.id) {
+          switch (q.type) {
+            case "checkbox":
+              values[q.id] = true;
+              break;
+            case "rate":
+            case "chips":
+              values[q.id] = null; // Or perhaps "" if null causes issues downstream
+              break;
+            case "text":
+            case "email":
+            case "phone":
+            case "date":
+            default:
+              values[q.id] = "";
+              break;
+          }
+        }
+        // Recursively process nested options if they exist (for complex fields)
+        if (q.options) {
+          q.options.forEach((opt) => {
+            if (opt.options) {
+              // Although nested options might not directly map to top-level form fields,
+              // pre-populating related state or handling default selections might be needed here.
+              // For now, we only initialize top-level field IDs.
+            }
+          });
+        }
+      });
+    };
+
+    DefaultFormNew.newClient.steps.forEach((step) =>
+      processQuestions(step.questions)
+    );
+    DefaultFormNew.frequentClient.steps.forEach((step) =>
+      processQuestions(step.questions)
+    );
+    return values;
   };
 
   const calculateProgress = (values: Record<string, any>) => {
@@ -201,7 +205,7 @@ export const Wizard = ({ business }: { business: Business | null }) => {
   };
 
   const resetForm = () => {
-    setResponses({});
+    setResponses(computeInitialValues());
   };
 
   async function onSubmit() {
@@ -218,6 +222,7 @@ export const Wizard = ({ business }: { business: Business | null }) => {
     try {
       const updatedData = responses;
       updatedData.ImproveText = isLowRating ? ImproveText : "";
+      updatedData.ClientType = clientType;
       const improveOptions = isLowRating
         ? getImprovements({
             Ambience,
@@ -262,7 +267,6 @@ export const Wizard = ({ business }: { business: Business | null }) => {
         variant: "destructive",
       });
     } finally {
-      resetForm();
       setIsSubmitted(true);
     }
   }
@@ -270,9 +274,8 @@ export const Wizard = ({ business }: { business: Business | null }) => {
   if (isSubmitted) {
     return (
       <Thanks
-        businessCountry={business?.Country || "EC"}
         businessName={business?.Name || ""}
-        customerName={"Jsus"}
+        customerName={responses.FullName}
       />
     );
   }
@@ -317,6 +320,7 @@ export const Wizard = ({ business }: { business: Business | null }) => {
               {canOpenPositiveReview() && (
                 <PositiveReview
                   business={business}
+                  responses={responses}
                   onChange={handleOnFieldChange}
                 />
               )}

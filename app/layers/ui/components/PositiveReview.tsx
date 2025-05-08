@@ -3,6 +3,7 @@ import { Business } from "@/app/types/business";
 import { Textarea } from "@/app/components/ui/TextArea";
 import { IconCopy } from "@tabler/icons-react";
 import { cn, copyToClipboard as copyUtil } from "@/app/lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface PositiveReviewProps {
   business?: Business | null;
@@ -15,6 +16,7 @@ const PositiveReview = ({
   responses,
   onChange,
 }: PositiveReviewProps) => {
+  const { t } = useTranslation("common");
   const [showIsCopied, setShowIsCopied] = useState(false);
   const [goodFeedback, setGoodFeedback] = useState("");
 
@@ -22,11 +24,8 @@ const PositiveReview = ({
     try {
       await copyUtil(text);
       setShowIsCopied(true);
-      // Optionally hide the message after a delay
-      // setTimeout(() => setShowIsCopied(false), 2000);
     } catch (error) {
       console.error("Copy failed:", error);
-      // Optionally show an error message to the user
     }
   };
 
@@ -36,14 +35,14 @@ const PositiveReview = ({
   };
 
   const options = [
-    "Todo increible, ¡me encantó!",
-    "Superó mis expectativas, muy recomendado",
+    t("form.default.positiveReview.option1"),
+    t("form.default.positiveReview.option2"),
   ];
 
   return (
     <div className="mt-4 flex flex-col gap-3">
       <span className="font-bold text-[24px] text-center text-qik">
-        ¿Qué fue lo mejor?
+        {t("form.default.positiveReview.title")}
       </span>
 
       <div className="mt-4 flex gap-2 justify-center items-center flex-wrap w-full">
@@ -63,12 +62,12 @@ const PositiveReview = ({
         ))}
       </div>
       <div className="my-3">
-        Comparte detalles de tu experencia en{" "}
+        {t("form.default.positiveReview.shareDetails")}{" "}
         <span className="text-qik font-bold">{business?.Name}</span>
       </div>
       <div className="w-full flex gap-3 items-center">
         <Textarea
-          placeholder="Ej: La comida estuvo muy buena, recomendado."
+          placeholder={t("form.default.positiveReview.placeholder")}
           onChange={(event) => handleSelectOption(event.target.value)}
           value={goodFeedback}
         />
@@ -84,7 +83,7 @@ const PositiveReview = ({
           showIsCopied ? "opacity-100" : "opacity-0"
         )}
       >
-        {"¡Texto copiado! Solo pégalo en Google y listo."}
+        {t("form.default.positiveReview.copied")}
       </p>
       <div className="flex gap-3">
         <input
@@ -98,23 +97,23 @@ const PositiveReview = ({
           checked={responses?.AcceptTerms}
         />
         <small className="text-gray-500">
-          Al presionar &quot;Enviar&quot;, declaro que acepto los{" "}
+          {t("form.default.termsPrefix")}{" "}
           <a
             className="text-primary hover:underline"
             href="https://qikstarts.com/terms-of-service"
             rel="noopener noreferrer"
             target="_blank"
           >
-            Términos y Condiciones
+            {t("form.default.termsLink")}
           </a>{" "}
-          y las{" "}
+          {t("form.default.termsMiddle")}{" "}
           <a
             className="text-primary hover:underline"
             href="https://qikstarts.com/privacy-policy"
             rel="noopener noreferrer"
             target="_blank"
           >
-            Políticas de Privacidad
+            {t("form.default.privacyLink")}
           </a>
           .
         </small>

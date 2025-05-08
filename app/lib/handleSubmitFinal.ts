@@ -35,6 +35,7 @@ const handleSubmitFeedback = async (
     AcceptPromotions,
     AcceptTerms,
     BirthdayDate,
+    ClientType,
   }: Record<string, any>,
   Improve: string[],
   customerType: string,
@@ -81,7 +82,7 @@ const handleSubmitFeedback = async (
     formattedId
   );
 
-  const feedbaackData = {
+  const feedbackData = {
     CreationDate: getTimesTampFromDate(new Date()),
     FullName,
     AcceptPromotions,
@@ -97,6 +98,7 @@ const handleSubmitFeedback = async (
       ? getTimesTampFromDate(new Date(BirthdayDate))
       : null,
     AttendedBy,
+    ClientType,
   };
   if (waiterId && businessId && !branchId) {
     try {
@@ -135,7 +137,7 @@ const handleSubmitFeedback = async (
       const ratingAverage = (waiterRating / (numberOfSurveys + 1)).toFixed(1);
       const customerRef = doc(waiterCustomerRef, Email);
       await setDoc(customerRef, customerContactData);
-      await addDoc(waiterFeedbackRef, feedbaackData);
+      await addDoc(waiterFeedbackRef, feedbackData);
 
       await updateDoc(waitersRef, {
         numberOfSurveys: numberOfSurveys + 1,
@@ -190,7 +192,7 @@ const handleSubmitFeedback = async (
       const ratingAverage = (waiterRating / (numberOfSurveys + 1)).toFixed(1);
       const customerRef = doc(waiterBranchCustomerRef, Email);
       await setDoc(customerRef, customerContactData);
-      await addDoc(waiterFeedbackRef, feedbaackData);
+      await addDoc(waiterFeedbackRef, feedbackData);
       await updateDoc(waitersRef, {
         numberOfSurveys: numberOfSurveys + 1,
         latestSum: waiterRating,
@@ -223,11 +225,11 @@ const handleSubmitFeedback = async (
       );
       const customerRef = doc(branchCustomerRef, Email);
       await setDoc(customerRef, customerContactData);
-      await addDoc(branchFeedbackRef, feedbaackData);
+      await addDoc(branchFeedbackRef, feedbackData);
     } else if (businessId && !waiterId) {
       const customerRef = doc(businessCustomerRef, Email);
       await setDoc(customerRef, customerContactData);
-      await addDoc(businessFeedbackRef, feedbaackData);
+      await addDoc(businessFeedbackRef, feedbackData);
     }
 
     const parentCustomerDataRef = collection(
@@ -286,7 +288,7 @@ const handleSubmitFeedback = async (
     );
     const businessFeedbackDoc = doc(customerBusinessFeedbackRef);
     await setDoc(businessFeedbackDoc, {
-      ...feedbaackData,
+      ...feedbackData,
       feedbackNumberOfVisit,
     });
   } catch (err) {

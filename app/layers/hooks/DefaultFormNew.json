@@ -181,10 +181,10 @@
                         "type": "rate",
                         "required": true,
                         "options": [
-                            { "id": "Mal", "label": "Bad", "value": 1 },
-                            { "id": "Regular", "label": "Regular", "value": 2 },
-                            { "id": "Bueno", "label": "Good", "value": 4 },
-                            { "id": "Excelente", "label": "Excellent", "value": 5 }
+                            { "id": "Mal", "label": "form.default.frequentClient.Rating.options.bad.label", "value": 1 },
+                            { "id": "Regular", "label": "form.default.frequentClient.Rating.options.regular.label", "value": 2 },
+                            { "id": "Bueno", "label": "form.default.frequentClient.Rating.options.good.label", "value": 4 },
+                            { "id": "Excelente", "label": "form.default.frequentClient.Rating.options.excellent.label", "value": 5 }
                         ]
 
                     }

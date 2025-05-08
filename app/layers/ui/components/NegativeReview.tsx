@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import { Form, Checkbox, Input } from "antd";
+import { useTranslation } from "react-i18next";
 
 interface NegativeReviewProps {
   form?: any;
@@ -9,10 +10,11 @@ interface NegativeReviewProps {
 
 const NegativeReview: React.FC<NegativeReviewProps> = React.memo(
   ({ form, responses, onChange }) => {
+    const { t } = useTranslation("common");
+
     const handleSetImprove = (event: any) => {
       const improve = responses?.Improve ?? [];
       const { name, checked } = event.target;
-      console.log(name, checked);
       if (onChange) {
         if (checked === true) {
           onChange("Improve", [...improve, name]);
@@ -40,7 +42,7 @@ const NegativeReview: React.FC<NegativeReviewProps> = React.memo(
     return (
       <>
         <Form.Item>
-          <label>¿En qué podemos mejorar?</label>
+          <label>{t("form.default.negativeReview.improveLabel")}</label>
         </Form.Item>
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-1 sm:gap-2 text-sm font-medium text-gray-900">
           <Checkbox
@@ -50,7 +52,9 @@ const NegativeReview: React.FC<NegativeReviewProps> = React.memo(
           >
             <div className="flex gap-3 items-center">
               <span>🍴</span>
-              <p className="w-full text-[10px] sm:text-[11px]">Comida</p>
+              <p className="w-full text-[10px] sm:text-[11px]">
+                {t("form.default.negativeReview.food")}
+              </p>
             </div>
           </Checkbox>
 
@@ -61,7 +65,9 @@ const NegativeReview: React.FC<NegativeReviewProps> = React.memo(
           >
             <div className="flex gap-3 items-center">
               <span>👥</span>
-              <p className="w-full text-[10px] sm:text-[11px]">Servicio</p>
+              <p className="w-full text-[10px] sm:text-[11px]">
+                {t("form.default.negativeReview.service")}
+              </p>
             </div>
           </Checkbox>
 
@@ -72,21 +78,23 @@ const NegativeReview: React.FC<NegativeReviewProps> = React.memo(
           >
             <div className="flex gap-3 items-center">
               <span>🏢</span>
-              <p className="w-full text-[10px] sm:text-[11px]">Ambiente</p>
+              <p className="w-full text-[10px] sm:text-[11px]">
+                {t("form.default.negativeReview.ambience")}
+              </p>
             </div>
           </Checkbox>
         </div>
         {form.getFieldError("hiddenInput").length > 0 && (
           <div className="text-red-500">
-            Por favor selecciona al menos una opción
+            {t("form.default.negativeReview.selectError")}
           </div>
         )}
         <Form.Item name="ImproveText">
-          <label>Compartenos detalles sobre tu experiencia en este lugar</label>
+          <label>{t("form.default.negativeReview.detailsLabel")}</label>
           <Input.TextArea
             value={responses?.ImproveText ?? null}
             onChange={handleImproveTextChange}
-            placeholder="Ej: La comida estuvo muy buena, pero el servicio fue lento."
+            placeholder={t("form.default.negativeReview.detailsPlaceholder")}
           />
         </Form.Item>
         <div className="flex gap-3">
@@ -101,23 +109,23 @@ const NegativeReview: React.FC<NegativeReviewProps> = React.memo(
             checked={responses?.AcceptTerms}
           />
           <small className="text-gray-500">
-            Al presionar &quot;Enviar&quot;, declaro que acepto los{" "}
+            {t("form.default.negativeReview.termsPrefix")}{" "}
             <a
               className="text-primary hover:underline"
               href="https://qikstarts.com/terms-of-service"
               rel="noopener noreferrer"
               target="_blank"
             >
-              Términos y Condiciones
+              {t("form.default.termsLink")}
             </a>{" "}
-            y las{" "}
+            {t("form.default.termsMiddle")}{" "}
             <a
               className="text-primary hover:underline"
               href="https://qikstarts.com/privacy-policy"
               rel="noopener noreferrer"
               target="_blank"
             >
-              Políticas de Privacidad
+              {t("form.default.privacyLink")}
             </a>
             .
           </small>
