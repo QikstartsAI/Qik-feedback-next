@@ -282,7 +282,10 @@ export const Wizard = ({ business }: { business: Business | null }) => {
   return (
     <div className="mt-10 w-full flex justify-center px-4">
       {!clientType ? (
-        <ClientTypeSelection setClientType={setClientType} />
+        <ClientTypeSelection
+          business={business}
+          setClientType={setClientType}
+        />
       ) : (
         <div className="flex flex-col">
           <Progress
@@ -291,7 +294,7 @@ export const Wizard = ({ business }: { business: Business | null }) => {
             status="active"
             percent={progress}
             strokeWidth={35}
-            strokeColor="#2B82F6"
+            strokeColor={business?.BrandColor ?? "#2B82F6"}
             percentPosition={{ align: "end", type: "inner" }}
             format={(percent) => (
               <span style={{ fontWeight: "bold", fontSize: "17px" }}>
@@ -315,6 +318,7 @@ export const Wizard = ({ business }: { business: Business | null }) => {
                   field={field}
                   value={responses[field.id ?? ""]}
                   onChange={handleOnFieldChange}
+                  brandColor={business?.BrandColor}
                 />
               ))}
               {canOpenPositiveReview() && (
@@ -322,6 +326,7 @@ export const Wizard = ({ business }: { business: Business | null }) => {
                   business={business}
                   responses={responses}
                   onChange={handleOnFieldChange}
+                  brandColor={business?.BrandColor}
                 />
               )}
               {canOpenNegativeReview() && (
@@ -329,6 +334,7 @@ export const Wizard = ({ business }: { business: Business | null }) => {
                   form={form}
                   responses={responses}
                   onChange={handleOnFieldChange}
+                  brandColor={business?.BrandColor}
                 />
               )}
             </div>
@@ -340,7 +346,12 @@ export const Wizard = ({ business }: { business: Business | null }) => {
                 {t("wizard.button.previous")}
               </button>
               <button
-                className="w-[80%] px-5 py-2 hover:bg-blue-800 focus:ring focus:ring-blue-200 bg-blue-600 text-white rounded-full"
+                className="w-[80%] px-5 py-2 focus:ring focus:ring-blue-200 text-white rounded-full"
+                style={{
+                  backgroundColor: business?.BrandColor
+                    ? business?.BrandColor
+                    : "#058FFF",
+                }}
                 onClick={
                   currentStep === getStepsLength() - 1
                     ? () => onSubmit()
@@ -356,6 +367,7 @@ export const Wizard = ({ business }: { business: Business | null }) => {
         </div>
       )}
       <InputPopup
+        brandColor={business?.BrandColor}
         show={showInputPopup}
         onClose={handlePopupClose}
         onChange={handleOnFieldChange}
@@ -366,6 +378,7 @@ export const Wizard = ({ business }: { business: Business | null }) => {
         responses={responses}
         onSelect={handleSelectOption}
         onClose={handlePopupClose}
+        brandColor={business?.BrandColor}
       />
     </div>
   );

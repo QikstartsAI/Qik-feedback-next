@@ -1,6 +1,7 @@
 import { cn } from "@/app/lib/utils";
 import { useEffect, useRef } from "react";
 import { Option } from "../../../types/wizardTypes";
+import { useTranslation } from "react-i18next";
 
 interface OptionsPopupProps {
   show: boolean;
@@ -8,6 +9,7 @@ interface OptionsPopupProps {
   onSelect: (fieldId: string, option: Option) => void;
   options: Record<string, Option[]>;
   responses: Record<string, any>;
+  brandColor?: string;
 }
 
 export const OptionsPopup: React.FC<OptionsPopupProps> = ({
@@ -16,7 +18,10 @@ export const OptionsPopup: React.FC<OptionsPopupProps> = ({
   onSelect,
   options,
   responses,
+  brandColor,
 }) => {
+  const { t } = useTranslation("common");
+
   const popupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -48,7 +53,12 @@ export const OptionsPopup: React.FC<OptionsPopupProps> = ({
         ref={popupRef}
         className="!text-center bg-white p-6 rounded-xl border border-black border-opacity-60 shadow-lg max-w-md w-full"
       >
-        <h2 className="text-blue-500 text-2xl font-bold mb-4">
+        <h2
+          className="text-2xl font-bold mb-4"
+          style={{
+            color: brandColor ? brandColor : "#058FFF",
+          }}
+        >
           Selecciona una opción
         </h2>
         <div className="flex flex-wrap justify-center gap-4">
@@ -56,18 +66,28 @@ export const OptionsPopup: React.FC<OptionsPopupProps> = ({
             <button
               key={option.id}
               className={cn(
-                "border border-gray-400 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-qik hover:border-qik transition",
+                "border border-gray-400 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition",
                 {
-                  "bg-qik text-white border-qik":
+                  "text-white":
                     responses[Object.keys(options)[0]] === option.id,
                 }
               )}
+              style={{
+                color:
+                  responses[Object.keys(options)[0]] === option.id && brandColor
+                    ? "#ffffff"
+                    : undefined,
+                backgroundColor:
+                  responses[Object.keys(options)[0]] === option.id && brandColor
+                    ? brandColor
+                    : undefined,
+              }}
               onClick={() => {
                 onSelect(Object.keys(options)[0], option);
                 onClose();
               }}
             >
-              {option.label}
+              {t(option.label ?? "")}
             </button>
           ))}
         </div>

@@ -8,21 +8,35 @@ interface ChipsFieldProps {
   field: FormField;
   value?: any;
   onChange?: (value: any) => void;
+  brandColor?: string;
 }
 
-const ChipsField: React.FC<ChipsFieldProps> = ({ field, value, onChange }) => {
+const ChipsField: React.FC<ChipsFieldProps> = ({
+  field,
+  value,
+  onChange,
+  brandColor,
+}) => {
   const { t } = useTranslation("common");
 
   const isOptionSelected = (id?: string): boolean =>
-    field.options
+    (field.options
       ?.find((option) => option.id === id)
-      ?.options?.some((opt) => opt.id === value) ?? false;
+      ?.options?.some((opt) => opt.id === value) ??
+      false) ||
+    value == id;
 
   return (
     <div className="mt-4 flex flex-col">
-      <span className="font-bold text-[24px] text-center text-qik">
+      <span
+        className="font-bold text-[24px] text-center "
+        style={{
+          color: brandColor || "#058FFF",
+        }}
+      >
         {t(field.title?.trim() ?? "")}
       </span>
+
       <Form.Item
         name={field.id}
         required={field.required}
@@ -38,12 +52,25 @@ const ChipsField: React.FC<ChipsFieldProps> = ({ field, value, onChange }) => {
             <button
               key={option.id}
               className={cn(
-                "border border-gray-400 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-qik hover:border-qik transition",
+                "border border-gray-400 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition",
                 {
-                  "bg-qik text-white border-qik":
-                    isOptionSelected(option.id) || value == option.id,
+                  [`text-white ${
+                    value
+                      ? `bg-[${brandColor}] border-[${brandColor}]`
+                      : "bg-qik border-qik"
+                  }`]: isOptionSelected(option.id),
                 }
               )}
+              style={{
+                color:
+                  isOptionSelected(option.id) && brandColor
+                    ? "#ffffff"
+                    : undefined,
+                backgroundColor:
+                  isOptionSelected(option.id) && brandColor
+                    ? brandColor
+                    : undefined,
+              }}
               onClick={() => onChange && onChange(option.id)}
             >
               {t(option.label ?? "")}

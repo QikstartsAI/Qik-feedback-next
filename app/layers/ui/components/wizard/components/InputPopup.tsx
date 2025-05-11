@@ -4,12 +4,14 @@ interface InputPopupProps {
   show: boolean;
   onClose: () => void;
   onChange: (fieldId: string, value: any) => void;
+  brandColor?: string;
 }
 
 export const InputPopup: React.FC<InputPopupProps> = ({
   show,
   onClose,
   onChange,
+  brandColor,
 }) => {
   const popupRef = useRef<HTMLDivElement>(null);
 
@@ -42,16 +44,27 @@ export const InputPopup: React.FC<InputPopupProps> = ({
         ref={popupRef}
         className="!text-center bg-white p-6 rounded-xl border border-black border-opacity-60 shadow-lg max-w-md w-full"
       >
-        <h2 className="text-blue-500 text-2xl font-bold mb-4">
+        <h2
+          className="text-2xl font-bold mb-4"
+          style={{
+            color: brandColor ? brandColor : "#058FFF",
+          }}
+        >
           ¿Decribe la razón de visitarnos?
         </h2>
         <textarea
-          className="w-full border-2 border-blue-500 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="w-full border-2 p-3 rounded-lg "
+          style={{
+            borderColor: brandColor ? brandColor : "#058FFF",
+          }}
           placeholder="Ej: En una reunión de amigos"
           rows={3}
         />
         <button
-          className="mt-4 px-5 py-2 hover:bg-blue-800 focus:ring focus:ring-blue-200 bg-blue-600 text-white rounded-full"
+          className="mt-4 px-5 py-2 focus:ring text-white rounded-full"
+          style={{
+            backgroundColor: brandColor ? brandColor : "#058FFF",
+          }}
           onClick={onClose}
         >
           Aceptar

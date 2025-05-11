@@ -9,12 +9,14 @@ interface FormFieldRendererProps {
   field: any;
   value: any;
   onChange: (fieldId: string, value: any) => void;
+  brandColor?: string;
 }
 
 export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
   field,
   value,
   onChange,
+  brandColor,
 }) => {
   switch (field.type) {
     case "phone":
@@ -33,6 +35,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
           field={field}
           value={value}
           onChange={(checked) => onChange(field.id, checked)}
+          brandColor={brandColor}
         />
       );
     case "date":
@@ -41,6 +44,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
           field={field}
           value={value}
           onChange={(value) => onChange(field.id, value)}
+          // brandColor={brandColor}
         />
       );
     case "chips":
@@ -49,6 +53,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
           field={field}
           value={value}
           onChange={(value) => onChange(field.id, value)}
+          brandColor={brandColor}
         />
       );
     case "rate":
@@ -57,6 +62,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
           field={field}
           value={value}
           onChange={(value) => onChange(field.id, value)}
+          // brandColor={brandColor}
         />
       );
     default:
@@ -65,6 +71,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
           field={field}
           value={value}
           onChange={(value) => onChange(field.id, value)}
+          // brandColor={brandColor}
         />
       );
   }

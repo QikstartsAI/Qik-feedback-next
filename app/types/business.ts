@@ -76,6 +76,7 @@ export interface Business {
   Geopoint?: { _lat: number; _long: number };
   Category: string;
   Powers: Power[];
+  BrandColor?: string;
 }
 
 export type BusinessAssets = {

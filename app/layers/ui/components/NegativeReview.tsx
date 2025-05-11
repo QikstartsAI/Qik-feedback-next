@@ -1,15 +1,17 @@
 import React, { useCallback } from "react";
-import { Form, Checkbox, Input } from "antd";
+import { Form, Input } from "antd";
 import { useTranslation } from "react-i18next";
+import CheckboxField from "./CheckboxField";
 
 interface NegativeReviewProps {
   form?: any;
   responses?: Record<string, any>;
   onChange?: (fieldId?: string, value?: any) => void;
+  brandColor?: string;
 }
 
 const NegativeReview: React.FC<NegativeReviewProps> = React.memo(
-  ({ form, responses, onChange }) => {
+  ({ form, responses, onChange, brandColor }) => {
     const { t } = useTranslation("common");
 
     const handleSetImprove = (event: any) => {
@@ -45,10 +47,15 @@ const NegativeReview: React.FC<NegativeReviewProps> = React.memo(
           <label>{t("form.default.negativeReview.improveLabel")}</label>
         </Form.Item>
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-1 sm:gap-2 text-sm font-medium text-gray-900">
-          <Checkbox
-            name="Food"
-            onChange={handleSetImprove}
-            checked={isChecked("Food")}
+          <CheckboxField
+            field={{}}
+            onChange={(value) =>
+              handleSetImprove({
+                target: { checked: value, name: "Food" },
+              })
+            }
+            value={isChecked("Food")}
+            brandColor={brandColor}
           >
             <div className="flex gap-3 items-center">
               <span>🍴</span>
@@ -56,12 +63,16 @@ const NegativeReview: React.FC<NegativeReviewProps> = React.memo(
                 {t("form.default.negativeReview.food")}
               </p>
             </div>
-          </Checkbox>
-
-          <Checkbox
-            name="Service"
-            onChange={handleSetImprove}
-            checked={isChecked("Service")}
+          </CheckboxField>
+          <CheckboxField
+            field={{}}
+            onChange={(value) =>
+              handleSetImprove({
+                target: { checked: value, name: "Service" },
+              })
+            }
+            value={isChecked("Service")}
+            brandColor={brandColor}
           >
             <div className="flex gap-3 items-center">
               <span>👥</span>
@@ -69,12 +80,16 @@ const NegativeReview: React.FC<NegativeReviewProps> = React.memo(
                 {t("form.default.negativeReview.service")}
               </p>
             </div>
-          </Checkbox>
-
-          <Checkbox
-            name="Ambience"
-            onChange={handleSetImprove}
-            checked={isChecked("Ambience")}
+          </CheckboxField>
+          <CheckboxField
+            field={{}}
+            onChange={(value) =>
+              handleSetImprove({
+                target: { checked: value, name: "Ambience" },
+              })
+            }
+            value={isChecked("Ambience")}
+            brandColor={brandColor}
           >
             <div className="flex gap-3 items-center">
               <span>🏢</span>
@@ -82,7 +97,7 @@ const NegativeReview: React.FC<NegativeReviewProps> = React.memo(
                 {t("form.default.negativeReview.ambience")}
               </p>
             </div>
-          </Checkbox>
+          </CheckboxField>
         </div>
         {form.getFieldError("hiddenInput").length > 0 && (
           <div className="text-red-500">
@@ -97,19 +112,18 @@ const NegativeReview: React.FC<NegativeReviewProps> = React.memo(
             placeholder={t("form.default.negativeReview.detailsPlaceholder")}
           />
         </Form.Item>
-        <div className="flex gap-3">
-          <input
-            type="checkbox"
-            className="form-checkbox min-h-[12px] min-w-[12px] text-green-500"
-            onChange={
-              onChange
-                ? (_) => onChange("AcceptTerms", !responses?.AcceptTerms)
-                : (_) => {}
-            }
-            checked={responses?.AcceptTerms}
-          />
+        <CheckboxField
+          field={{}}
+          onChange={
+            onChange
+              ? (_) => onChange("AcceptTerms", !responses?.AcceptTerms)
+              : (_) => {}
+          }
+          value={responses?.AcceptTerms}
+          brandColor={brandColor}
+        >
           <small className="text-gray-500">
-            {t("form.default.negativeReview.termsPrefix")}{" "}
+            {t("form.default.termsPrefix")}{" "}
             <a
               className="text-primary hover:underline"
               href="https://qikstarts.com/terms-of-service"
@@ -129,7 +143,7 @@ const NegativeReview: React.FC<NegativeReviewProps> = React.memo(
             </a>
             .
           </small>
-        </div>
+        </CheckboxField>
       </>
     );
   }

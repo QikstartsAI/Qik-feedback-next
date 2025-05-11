@@ -1,20 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Business } from "@/app/types/business";
 import { Textarea } from "@/app/components/ui/TextArea";
 import { IconCopy } from "@tabler/icons-react";
 import { cn, copyToClipboard as copyUtil } from "@/app/lib/utils";
 import { useTranslation } from "react-i18next";
+import CheckboxField from "./CheckboxField";
 
 interface PositiveReviewProps {
   business?: Business | null;
   responses?: Record<string, any>;
   onChange?: (fieldId?: string, value?: any) => void;
+  brandColor?: string;
 }
 
 const PositiveReview = ({
   business,
   responses,
   onChange,
+  brandColor,
 }: PositiveReviewProps) => {
   const { t } = useTranslation("common");
   const [showIsCopied, setShowIsCopied] = useState(false);
@@ -41,7 +44,12 @@ const PositiveReview = ({
 
   return (
     <div className="mt-4 flex flex-col gap-3">
-      <span className="font-bold text-[24px] text-center text-qik">
+      <span
+        className="font-bold text-[24px] text-center"
+        style={{
+          color: business?.BrandColor ? business?.BrandColor : "#058FFF",
+        }}
+      >
         {t("form.default.positiveReview.title")}
       </span>
 
@@ -50,11 +58,21 @@ const PositiveReview = ({
           <button
             key={option}
             className={cn(
-              "w-full border border-gray-400 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-qik hover:border-qik transition",
+              "w-full border border-gray-400 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition",
               {
-                "bg-qik text-white border-qik": goodFeedback.includes(option),
+                "bg-qik text-white": goodFeedback.includes(option),
               }
             )}
+            style={{
+              color:
+                goodFeedback.includes(option) && brandColor
+                  ? "#ffffff"
+                  : undefined,
+              backgroundColor:
+                goodFeedback.includes(option) && brandColor
+                  ? brandColor
+                  : undefined,
+            }}
             onClick={() => handleSelectOption(option)}
           >
             {option}
@@ -63,7 +81,14 @@ const PositiveReview = ({
       </div>
       <div className="my-3">
         {t("form.default.positiveReview.shareDetails")}{" "}
-        <span className="text-qik font-bold">{business?.Name}</span>
+        <span
+          className="font-bold"
+          style={{
+            color: business?.BrandColor ? business?.BrandColor : "#058FFF",
+          }}
+        >
+          {business?.Name}
+        </span>
       </div>
       <div className="w-full flex gap-3 items-center">
         <Textarea
@@ -72,8 +97,10 @@ const PositiveReview = ({
           value={goodFeedback}
         />
         <IconCopy
-          className="text-qik"
           cursor="pointer"
+          style={{
+            color: business?.BrandColor ? business?.BrandColor : "#058FFF",
+          }}
           onClick={() => handleCopy(goodFeedback)}
         />
       </div>
@@ -85,19 +112,18 @@ const PositiveReview = ({
       >
         {t("form.default.positiveReview.copied")}
       </p>
-      <div className="flex gap-3">
-        <input
-          type="checkbox"
-          className="form-checkbox min-h-[12px] min-w-[12px] text-green-500"
-          onChange={
-            onChange
-              ? (_) => onChange("AcceptTerms", !responses?.AcceptTerms)
-              : (_) => {}
-          }
-          checked={responses?.AcceptTerms}
-        />
+      <CheckboxField
+        field={{}}
+        onChange={
+          onChange
+            ? (_) => onChange("AcceptTerms", !responses?.AcceptTerms)
+            : (_) => {}
+        }
+        value={responses?.AcceptTerms}
+        brandColor={brandColor}
+      >
         <small className="text-gray-500">
-          {t("form.default.termsPrefix")}{" "}
+          {t("form.default.negativeReview.termsPrefix")}{" "}
           <a
             className="text-primary hover:underline"
             href="https://qikstarts.com/terms-of-service"
@@ -117,7 +143,7 @@ const PositiveReview = ({
           </a>
           .
         </small>
-      </div>
+      </CheckboxField>
     </div>
   );
 };

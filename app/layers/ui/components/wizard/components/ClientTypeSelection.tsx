@@ -1,15 +1,27 @@
+import { cn } from "@/app/lib/utils";
+import { Business } from "@/app/types/business";
 import { useTranslation } from "next-i18next";
 
 export const ClientTypeSelection = ({
+  business,
   setClientType,
 }: {
   setClientType: (type: "newClient" | "frequentClient") => void;
+  business?: Business | null;
 }) => {
   const { t } = useTranslation("common");
 
   return (
     <div className="text-center">
-      <h1 className="text-primary font-bold md:text-2xl max-sm:text-2xl">
+      <h1
+        className={cn("font-bold md:text-2xl max-sm:text-2xl", {
+          [`text-[${business?.BrandColor}]`]: !!business?.BrandColor,
+          "text-primary": !business?.BrandColor,
+        })}
+        style={{
+          color: business?.BrandColor ? business?.BrandColor : "#058FFF",
+        }}
+      >
         {t("wizard.clientType.title")}
       </h1>
       <p className="text-gray-600">{t("wizard.clientType.subtitle")}</p>
