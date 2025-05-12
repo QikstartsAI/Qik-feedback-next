@@ -2,9 +2,9 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
   content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/layout.tsx",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/layers/ui/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     container: {
@@ -26,20 +26,12 @@ const config: Config = {
           foreground: "hsl(var(--qik-foreground))",
         },
         hooters: {
-          DEFAULT: "hsl(var(--hooters))", 
+          DEFAULT: "hsl(var(--hooters))",
           foreground: "hsl(var(--hooters-foreground))",
-        },
-        delcampo: {
-          DEFAULT: "hsl(var(--delcampo))",
-          foreground: "hsl(var(--delcampo-foreground))",
         },
         gus: {
           DEFAULT: "hsl(var(--gus))",
           foreground: "hsl(var(--gus-foreground))",
-        },
-        cebiches: {
-          DEFAULT: "hsl(var(--cebiches))",
-          foreground: "hsl(var(--cebiches-foreground))"
         },
         colorText: {
           DEFAULT: "hsl(var(--color-text))",
@@ -105,6 +97,6 @@ const config: Config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("postcss-import")],
 };
 export default config;

@@ -4,9 +4,8 @@ import { useEffect, useState } from "react";
 import { findBusiness } from "@/app/services/business";
 import { Business } from "@/app/types/business";
 import { useSearchParams } from "next/navigation";
-import { getBusinessCustomers } from "../lib/getBusinessCustomers";
 
-function useGetBusinessData() {
+const useGetBusinessData = () => {
   const [loading, setLoading] = useState("loading");
   const [business, setBusiness] = useState<Business | null>(null);
   const [sucursalId, setSucursalId] = useState<string | null>(null);
@@ -62,6 +61,6 @@ function useGetBusinessData() {
     waiterId,
     brandColor,
   };
-}
+};
 
 export default useGetBusinessData;

@@ -1,10 +1,9 @@
 import {
   COLLECTION_NAME,
   CUSTOMERS_COLLECTION_NAME,
-} from '@/app/constants/general';
-import { getFirebase, getTimesTampFromDate } from '@/app/lib/firebase';
-import { Waiter } from '@/app/types/business';
-import { FeedbackProps } from '@/app/validators/feedbackSchema';
+} from "@/app/constants/general";
+import { getFirebase, getTimesTampFromDate } from "@/app/lib/firebase";
+import { Waiter } from "@/app/types/business";
 import {
   addDoc,
   updateDoc,
@@ -12,16 +11,16 @@ import {
   doc,
   getDoc,
   setDoc,
-} from 'firebase/firestore';
-import { findBusiness } from '../services/business';
-import { Customer } from '../types/customer';
-import { findCustomerDataByEmail } from './handleEmail';
+} from "firebase/firestore";
+import { findBusiness } from "../services/business";
+import { Customer } from "../types/customer";
+import { findCustomerDataByEmail } from "./handleEmail";
 
 const formattedName = (name?: string | null): string => {
-  if (name?.includes(' ')) {
-    return name ? name.toLocaleLowerCase().split(' ').join('-').trim() : '';
+  if (name?.includes(" ")) {
+    return name ? name.toLocaleLowerCase().split(" ").join("-").trim() : "";
   }
-  return name ?? '';
+  return name ?? "";
 };
 
 const handleSubmitFeedback = async (
@@ -32,14 +31,11 @@ const handleSubmitFeedback = async (
     PhoneNumber,
     Rating,
     StartTime,
-    Dinners,
-    AverageTicket,
-    PaymentMethod,
     Email,
     AcceptPromotions,
     AcceptTerms,
     BirthdayDate,
-  }: FeedbackProps,
+  }: Record<string, any>,
   Improve: string[],
   customerType: string,
   AttendedBy: string,
@@ -48,16 +44,16 @@ const handleSubmitFeedback = async (
 ) => {
   const searchParams = new URLSearchParams(document.location.search);
 
-  const businessId = searchParams.get('id');
-  const branchId = searchParams.get('sucursal');
-  const waiterId = searchParams.get('mesero');
+  const businessId = searchParams.get("id");
+  const branchId = searchParams.get("sucursal");
+  const waiterId = searchParams.get("mesero");
   const customerContactData: Customer = {
     email: Email,
     name: FullName,
-    phoneNumber: PhoneNumber || '',
-    birthdayDate: BirthdayDate || '',
-    origin: Origin || '',
-    customerType: customerType || '',
+    phoneNumber: PhoneNumber || "",
+    birthdayDate: BirthdayDate || "",
+    origin: Origin || "",
+    customerType: customerType || "",
     acceptPromotions: !PhoneNumber ? false : true,
     lastFeedbackFilled: getTimesTampFromDate(new Date()),
   };
@@ -66,22 +62,22 @@ const handleSubmitFeedback = async (
 
   const businessFeedbackRef = collection(
     getFirebase().db,
-    COLLECTION_NAME || '',
+    COLLECTION_NAME || "",
     formattedId,
-    'customers',
+    "customers",
     Email,
-    'feedbacks'
+    "feedbacks"
   );
 
   const businessCustomerRef = collection(
     getFirebase().db,
-    COLLECTION_NAME || '',
+    COLLECTION_NAME || "",
     formattedId,
-    'customers'
+    "customers"
   );
   const businessDocRef = doc(
     getFirebase().db,
-    COLLECTION_NAME || '',
+    COLLECTION_NAME || "",
     formattedId
   );
 
@@ -96,9 +92,6 @@ const handleSubmitFeedback = async (
     PhoneNumber,
     Rating: parseInt(Rating),
     StartTime: getTimesTampFromDate(StartTime),
-    Dinners,
-    AverageTicket,
-    PaymentMethod,
     Email,
     BirthdayDate: BirthdayDate
       ? getTimesTampFromDate(new Date(BirthdayDate))
@@ -109,25 +102,25 @@ const handleSubmitFeedback = async (
     try {
       const waiterFeedbackRef = collection(
         getFirebase().db,
-        COLLECTION_NAME || '',
+        COLLECTION_NAME || "",
         formattedId,
-        'meseros',
-        waiterId || '',
-        'customers',
+        "meseros",
+        waiterId || "",
+        "customers",
         Email,
-        'feedbacks'
+        "feedbacks"
       );
       const waiterCustomerRef = collection(
         getFirebase().db,
-        COLLECTION_NAME || '',
+        COLLECTION_NAME || "",
         formattedId,
-        'meseros',
-        waiterId || '',
-        'customers'
+        "meseros",
+        waiterId || "",
+        "customers"
       );
       const waitersRef = doc(
-        collection(businessDocRef, 'meseros'),
-        waiterId || ''
+        collection(businessDocRef, "meseros"),
+        waiterId || ""
       );
       const waitersDocSnap = await getDoc(waitersRef);
       const waiterData = waitersDocSnap.data() as Waiter;
@@ -156,33 +149,33 @@ const handleSubmitFeedback = async (
     try {
       const waiterFeedbackRef = collection(
         getFirebase().db,
-        COLLECTION_NAME || '',
+        COLLECTION_NAME || "",
         formattedId,
-        'sucursales',
-        branchId || '',
-        'meseros',
-        waiterId || '',
-        'customers',
+        "sucursales",
+        branchId || "",
+        "meseros",
+        waiterId || "",
+        "customers",
         Email,
-        'feedbacks'
+        "feedbacks"
       );
       const waiterBranchCustomerRef = collection(
         getFirebase().db,
-        COLLECTION_NAME || '',
+        COLLECTION_NAME || "",
         formattedId,
-        'sucursales',
-        branchId || '',
-        'meseros',
-        waiterId || '',
-        'customers'
+        "sucursales",
+        branchId || "",
+        "meseros",
+        waiterId || "",
+        "customers"
       );
       const branchDocRef = doc(
-        collection(businessDocRef, 'sucursales'),
-        branchId || ''
+        collection(businessDocRef, "sucursales"),
+        branchId || ""
       );
       const waitersRef = doc(
-        collection(branchDocRef, 'meseros'),
-        waiterId || ''
+        collection(branchDocRef, "meseros"),
+        waiterId || ""
       );
       const waitersDocSnap = await getDoc(waitersRef);
       const waiterData = waitersDocSnap.data() as Waiter;
@@ -212,21 +205,21 @@ const handleSubmitFeedback = async (
     if (branchId && !waiterId) {
       const branchFeedbackRef = collection(
         getFirebase().db,
-        COLLECTION_NAME || '',
+        COLLECTION_NAME || "",
         formattedId,
-        'sucursales',
-        branchId || '',
-        'customers',
+        "sucursales",
+        branchId || "",
+        "customers",
         Email,
-        'feedbacks'
+        "feedbacks"
       );
       const branchCustomerRef = collection(
         getFirebase().db,
-        COLLECTION_NAME || '',
+        COLLECTION_NAME || "",
         formattedId,
-        'sucursales',
-        branchId || '',
-        'customers'
+        "sucursales",
+        branchId || "",
+        "customers"
       );
       const customerRef = doc(branchCustomerRef, Email);
       await setDoc(customerRef, customerContactData);
@@ -239,13 +232,13 @@ const handleSubmitFeedback = async (
 
     const parentCustomerDataRef = collection(
       getFirebase().db,
-      CUSTOMERS_COLLECTION_NAME || ''
+      CUSTOMERS_COLLECTION_NAME || ""
     );
     const parentCustomerBusinessRef = collection(
       getFirebase().db,
-      CUSTOMERS_COLLECTION_NAME || '',
+      CUSTOMERS_COLLECTION_NAME || "",
       Email,
-      'business'
+      "business"
     );
 
     const businessData = await findBusiness(businessId);
@@ -285,11 +278,11 @@ const handleSubmitFeedback = async (
 
     const customerBusinessFeedbackRef = collection(
       getFirebase().db,
-      CUSTOMERS_COLLECTION_NAME || '',
+      CUSTOMERS_COLLECTION_NAME || "",
       Email,
-      'business',
+      "business",
       formattedId,
-      'feedbacks'
+      "feedbacks"
     );
     const businessFeedbackDoc = doc(customerBusinessFeedbackRef);
     await setDoc(businessFeedbackDoc, {
