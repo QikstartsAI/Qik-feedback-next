@@ -26,19 +26,21 @@ export default function FeedbackFormRoot() {
       <Suspense fallback={<Loader />}>
         <TranslationsProvider locale={locale}>
           <div>
-            {loading === "loading" || loading === "requesting" ? (
+            {loading === "loading" && business == null ? (
               <Loader />
             ) : (
-              <div className="min-h-[calc(100vh-103px)]">
-                <Hero business={business} />
-                <Wizard business={business} />
-              </div>
+              <>
+                <div className="min-h-[calc(100vh-103px)]">
+                  <Hero business={business} />
+                  <Wizard business={business} />
+                </div>
+                {business?.Powers?.includes("GEOLOCATION") && (
+                  <RequestLocationDialog />
+                )}
+              </>
             )}
             <Toaster />
           </div>
-          {business?.Powers?.includes("GEOLOCATION") && (
-            <RequestLocationDialog />
-          )}
         </TranslationsProvider>
       </Suspense>
     </APIProvider>

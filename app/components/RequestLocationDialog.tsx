@@ -45,7 +45,7 @@ const RequestLocationDialog = ({
   return (
     <div
       className={cn(
-        "fixed bottom-0 h-[0px] w-screen flex flex-col justify-between items-center gap-10 bg-white transition-all ease-in-out duration-100  overflow-hidden",
+        "fixed bottom-0 top-0 h-[0px] w-screen flex flex-col justify-between items-center gap-10 bg-white transition-all ease-in-out duration-100  overflow-hidden",
         { "h-screen": open },
         { "p-10": open }
       )}

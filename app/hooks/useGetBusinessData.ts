@@ -16,17 +16,6 @@ const useGetBusinessData = () => {
   const branchId = searchParams.get("sucursal");
   const waiterId = searchParams.get("mesero");
 
-  // useEffect(() => {
-  //   console.log("BUSINESS:", businessId);
-  //   const fetchBusinessCustomers = async () => {
-  //     if (businessId) {
-  //       const customers = await getBusinessCustomers(businessId, true);
-  //       console.log("Customers", customers);
-  //     }
-  //   };
-  //   fetchBusinessCustomers();
-  // }, [businessId]);
-
   useEffect(() => {
     if (business?.BrandColor) {
       setBrandColor(business?.BrandColor);
@@ -35,7 +24,6 @@ const useGetBusinessData = () => {
   useEffect(() => {
     if (!businessId) return;
     const fetchData = async () => {
-      setLoading("requesting");
       try {
         const res =
           (await findBusiness(businessId, sucursalId || branchId, waiterId)) ||
@@ -45,7 +33,9 @@ const useGetBusinessData = () => {
       } catch (error) {
         console.error(error);
       } finally {
-        setLoading("loaded");
+        setTimeout(() => {
+          setLoading("loaded");
+        }, 200);
       }
     };
     fetchData();
