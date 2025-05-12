@@ -319,7 +319,7 @@ export default function FeedbackForm({
       }, 1000);
     }
     return () => clearTimeout(timeout);
-  }, [showGoodFeedbackModal, goodFeedback]);
+  }, [showGoodFeedbackModal, goodFeedback, finalGoodFeedback]);
 
   return (
     <>
