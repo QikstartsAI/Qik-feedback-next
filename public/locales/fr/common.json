@@ -82,7 +82,7 @@
   "form.default.negativeReview.selectError": "Veuillez sélectionner au moins une option",
   "form.default.negativeReview.detailsLabel": "Partagez les détails de votre expérience dans cet établissement",
   "form.default.negativeReview.detailsPlaceholder": "Ex : La nourriture était très bonne, mais le service était lent.",
-  "form.default.termsPrefix": " En appuyant sur &quot;Envoyer&quot;, je déclare accepter les",
+  "form.default.termsPrefix": " En appuyant sur 'Envoyer', je déclare accepter les",
   "form.default.termsLink": "Conditions Générales",
   "form.default.termsMiddle": "et la ",
   "form.default.privacyLink": "Politique de Confidentialité.",
@@ -101,5 +101,16 @@
   "textField.default.validation.invalid": "Veuillez entrer une valeur valide",
   "chipsField.validation.required": "Ce champ est requis",
   "thanks.name.label": "Nom",
-  "thanks.business.label": "Établissement"
+  "thanks.business.label": "Établissement",
+  "locationDialog.locationPermissions": "Autorisations de localisation",
+  "locationDialog.improveExperience": "Améliorez votre expérience",
+  "locationDialog.tellUsLocation": "Dites-nous dans quelle succursale vous êtes",
+  "locationDialog.shareLocation": "Partager la localisation",
+  "locationDialog.seeBranches": "Voir les succursales",
+  "locationDialog.whereAreYou": "Où êtes-vous ?",
+  "locationDialog.selectBranch": "Sélectionnez la succursale où vous êtes",
+  "locationDialog.noBranchesNearby": "Pas de succursales à proximité",
+  "locationDialog.seeAllBranches": "Voir toutes les succursales",
+  "locationDialog.waitingPermissions": "En attente des autorisations...",
+  "locationDialog.imHere": "Je suis ici !"
 }

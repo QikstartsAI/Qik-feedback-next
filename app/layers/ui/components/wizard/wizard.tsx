@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import DefaultFormNew from "../../../hooks/DefaultFormNew.json";
-import { Form, Progress } from "antd";
+import { ConfigProvider, Form, Progress, Spin } from "antd";
 import "./wizard-styles.css";
 import PositiveReview from "../PositiveReview";
 import { Business } from "@/app/types/business";
@@ -41,6 +41,7 @@ export const Wizard = ({ business }: { business: Business | null }) => {
   >("");
   const [responses, setResponses] = useState<Record<string, any>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -105,21 +106,32 @@ export const Wizard = ({ business }: { business: Business | null }) => {
     const formFields = getFormData();
 
     const totalFields = formFields.filter((field) => field.required);
+
     const filledFields = totalFields.filter((field) => {
       if (!field.id) return false;
+      console.log("values:::", values[field.id], values);
       return (
-        field.required &&
-        !form.getFieldError(field.id)[0] &&
-        values[field.id] &&
-        values[field.id].length > 1
+        field.required && !form.getFieldError(field.id)[0] && values[field.id]
       );
     });
 
     const stepPercentage = (currentStep / getStepsLength()) * 90;
     const filledFieldsPercentage =
       (filledFields.length / totalFields.length) * 90;
-    const newProgress =
-      stepPercentage + filledFieldsPercentage / getStepsLength();
+    const newProgress = Math.ceil(
+      stepPercentage + filledFieldsPercentage / getStepsLength()
+    );
+
+    console.log(
+      "formFields:::",
+      currentStep,
+      getStepsLength(),
+      stepPercentage,
+      filledFieldsPercentage,
+      filledFields,
+      formFields,
+      totalFields
+    );
     setProgress(newProgress);
   };
 
@@ -169,6 +181,7 @@ export const Wizard = ({ business }: { business: Business | null }) => {
     if (!fieldId || value == undefined) return;
     const field = getFormData().find((e) => e.id === fieldId);
     const options = field?.options?.find((e) => e.id === value)?.options;
+    console.log("FieldID", fieldId, value);
     if (fieldId === "Origin" && value == "reason") {
       setShowInputPopup(true);
     }
@@ -178,8 +191,8 @@ export const Wizard = ({ business }: { business: Business | null }) => {
     } else {
       form.setFieldValue(fieldId, value);
       setResponses({ ...responses, [fieldId]: value });
-      calculateProgress(form.getFieldsValue());
     }
+    calculateProgress(form.getFieldsValue());
   };
 
   const isLastStep = currentStep === getStepsLength() - 1;
@@ -219,6 +232,7 @@ export const Wizard = ({ business }: { business: Business | null }) => {
 
     const { Email, Ambience, Service, Food, ImproveText, Rating } = responses;
     const isLowRating = Rating < 3;
+    setSubmitting(true);
     try {
       const updatedData = responses;
       updatedData.ImproveText = isLowRating ? ImproveText : "";
@@ -268,6 +282,7 @@ export const Wizard = ({ business }: { business: Business | null }) => {
       });
     } finally {
       setIsSubmitted(true);
+      setSubmitting(false);
     }
   }
 
@@ -276,6 +291,7 @@ export const Wizard = ({ business }: { business: Business | null }) => {
       <Thanks
         businessName={business?.Name || ""}
         customerName={responses.FullName}
+        brandColor={business?.BrandColor}
       />
     );
   }
@@ -358,9 +374,24 @@ export const Wizard = ({ business }: { business: Business | null }) => {
                     : () => handleNextStep()
                 }
               >
-                {isLastStep
-                  ? t("wizard.button.submitToGoogle")
-                  : t("wizard.button.next")}
+                {submitting ? (
+                  <ConfigProvider
+                    theme={{
+                      components: {
+                        Spin: {
+                          colorPrimary: "#fff",
+                          algorithm: true, // Enable algorithm
+                        },
+                      },
+                    }}
+                  >
+                    <Spin percent="auto" />
+                  </ConfigProvider>
+                ) : isLastStep ? (
+                  t("wizard.button.submitToGoogle")
+                ) : (
+                  t("wizard.button.next")
+                )}
               </button>
             </div>
           </Form>

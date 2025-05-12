@@ -82,7 +82,7 @@
   "form.default.negativeReview.selectError": "Por favor selecione pelo menos uma opção",
   "form.default.negativeReview.detailsLabel": "Compartilhe detalhes sobre sua experiência neste lugar",
   "form.default.negativeReview.detailsPlaceholder": "Ex: A comida estava muito boa, mas o serviço foi lento.",
-  "form.default.termsPrefix": " Ao pressionar &quot;Enviar&quot;, declaro que aceito os",
+  "form.default.termsPrefix": " Ao pressionar 'Enviar', declaro que aceito os",
   "form.default.termsLink": "Termos e Condições",
   "form.default.termsMiddle": "e a ",
   "form.default.privacyLink": "Política de Privacidade.",
@@ -101,5 +101,16 @@
   "textField.default.validation.invalid": "Por favor digite um valor válido",
   "chipsField.validation.required": "Este campo é obrigatório",
   "thanks.name.label": "Nome",
-  "thanks.business.label": "Filial"
+  "thanks.business.label": "Filial",
+  "locationDialog.locationPermissions": "Permissões de localização",
+  "locationDialog.improveExperience": "Melhore sua experiência",
+  "locationDialog.tellUsLocation": "Nos diga em qual filial você está",
+  "locationDialog.shareLocation": "Compartilhar localização",
+  "locationDialog.seeBranches": "Ver filiais",
+  "locationDialog.whereAreYou": "Onde você está?",
+  "locationDialog.selectBranch": "Selecione em qual filial você está",
+  "locationDialog.noBranchesNearby": "Não há filiais próximas",
+  "locationDialog.seeAllBranches": "Ver todas as filiais",
+  "locationDialog.waitingPermissions": "Aguardando permissões...",
+  "locationDialog.imHere": "Estou aqui!"
 } 

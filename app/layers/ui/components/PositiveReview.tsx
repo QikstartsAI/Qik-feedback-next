@@ -141,7 +141,6 @@ const PositiveReview = ({
           >
             {t("form.default.privacyLink")}
           </a>
-          .
         </small>
       </CheckboxField>
     </div>

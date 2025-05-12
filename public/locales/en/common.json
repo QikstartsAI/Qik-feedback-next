@@ -101,5 +101,16 @@
   "textField.default.validation.invalid": "Please enter a valid value",
   "chipsField.validation.required": "This field is required",
   "thanks.name.label": "Name",
-  "thanks.business.label": "Branch"
+  "thanks.business.label": "Branch",
+  "locationDialog.locationPermissions": "Location permissions",
+  "locationDialog.improveExperience": "Improve your experience",
+  "locationDialog.tellUsLocation": "Tell us which branch you're at",
+  "locationDialog.shareLocation": "Share location",
+  "locationDialog.seeBranches": "See branches",
+  "locationDialog.whereAreYou": "Where are you?",
+  "locationDialog.selectBranch": "Select which branch you're at",
+  "locationDialog.noBranchesNearby": "No branches nearby",
+  "locationDialog.seeAllBranches": "See all branches",
+  "locationDialog.waitingPermissions": "Waiting for permissions...",
+  "locationDialog.imHere": "I'm here!"
 }

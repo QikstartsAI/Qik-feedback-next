@@ -19,7 +19,6 @@ const CheckboxField: React.FC<CheckboxFieldProps> = ({
   children,
 }) => {
   const { t } = useTranslation("common");
-  console.log("VALUE: ", value);
   return (
     <div className="flex items-center cursor-pointer">
       <input

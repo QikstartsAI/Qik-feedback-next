@@ -141,7 +141,6 @@ const NegativeReview: React.FC<NegativeReviewProps> = React.memo(
             >
               {t("form.default.privacyLink")}
             </a>
-            .
           </small>
         </CheckboxField>
       </>

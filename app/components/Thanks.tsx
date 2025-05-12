@@ -6,9 +6,10 @@ import { useTranslation } from "react-i18next";
 interface Props {
   businessName: string;
   customerName: string;
+  brandColor?: string;
 }
 
-function Thanks({ businessName, customerName }: Props) {
+function Thanks({ businessName, customerName, brandColor }: Props) {
   const { t } = useTranslation("common");
   const date = new Date();
   const currentDate = date.toLocaleDateString();
@@ -19,8 +20,9 @@ function Thanks({ businessName, customerName }: Props) {
   return (
     <div
       className={cn(
-        "w-full h-[calc(100vh-198px)] items-center flex flex-col justify-center bg-qik shadow z-10 gap-4"
+        "w-full h-[calc(100vh-198px)] items-center flex flex-col justify-center shadow z-10 gap-4"
       )}
+      style={{ backgroundColor: brandColor ? brandColor : "#058FFF" }}
     >
       <div className="flex flex-col gap-3">
         <div>

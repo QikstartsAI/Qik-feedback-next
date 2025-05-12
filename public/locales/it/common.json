@@ -82,7 +82,7 @@
   "form.default.negativeReview.selectError": "Seleziona almeno un'opzione",
   "form.default.negativeReview.detailsLabel": "Condividi i dettagli sulla tua esperienza in questo posto",
   "form.default.negativeReview.detailsPlaceholder": "Es: Il cibo era molto buono, ma il servizio era lento.",
-  "form.default.termsPrefix": " Premendo &quot;Invia&quot;, dichiaro di accettare i",
+  "form.default.termsPrefix": " Premendo 'Invia', dichiaro di accettare i",
   "form.default.termsLink": "Termini e Condizioni",
   "form.default.termsMiddle": "e la ",
   "form.default.privacyLink": "Privacy Policy.",
@@ -101,5 +101,16 @@
   "textField.default.validation.invalid": "Inserisci un valore valido",
   "chipsField.validation.required": "Questo campo è obbligatorio",
   "thanks.name.label": "Nome",
-  "thanks.business.label": "Filiale"
+  "thanks.business.label": "Filiale",
+  "locationDialog.locationPermissions": "Permessi di localizzazione",
+  "locationDialog.improveExperience": "Migliora la tua esperienza",
+  "locationDialog.tellUsLocation": "Dicci in quale filiale ti trovi",
+  "locationDialog.shareLocation": "Condividi posizione",
+  "locationDialog.seeBranches": "Vedi filiali",
+  "locationDialog.whereAreYou": "Dove ti trovi?",
+  "locationDialog.selectBranch": "Seleziona in quale filiale ti trovi",
+  "locationDialog.noBranchesNearby": "Non ci sono filiali nelle vicinanze",
+  "locationDialog.seeAllBranches": "Vedi tutte le filiali",
+  "locationDialog.waitingPermissions": "In attesa dei permessi...",
+  "locationDialog.imHere": "Sono qui!"
 } 

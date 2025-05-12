@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from "react";
-
 import { cn } from "../lib/utils";
 import { Button } from "./ui/Button";
-
-import Image from "next/image";
 import { Branch } from "../types/business";
 import { IconCircle, IconCircleCheck, IconPinned } from "@tabler/icons-react";
 import { useLocation } from "../layers";
 import { useGetBusinessData } from "../hooks/useGetBusinessData";
+import { useTranslation } from "react-i18next";
+import LocationIcon from "./ui/LocationIcon";
+
 const RequestLocationDialog = ({
   isHootersForm = false,
 }: {
   isHootersForm?: boolean;
 }) => {
+  const { t } = useTranslation("common");
   const { business, setSucursalId } = useGetBusinessData();
+
+  const brandColor = business?.BrandColor;
 
   const {
     requestLocation: open,
@@ -52,45 +55,41 @@ const RequestLocationDialog = ({
         <>
           <div className="grow"></div>
 
-          <Image
-            src={isHootersForm ? "/location-orange.svg" : "/location.svg"}
-            alt={"Permisos de ubicación"}
-            className="animate-bounce delay-100"
-            width={120}
-            height={120}
-          />
+          <LocationIcon color={brandColor} />
 
           <div className="flex flex-col items-center gap-3">
             <h2
-              className={cn("font-bold text-[1.5rem] text-center ", {
-                "text-hooters": isHootersForm,
-                "text-qik": !isHootersForm,
-              })}
+              className={cn("font-bold text-[1.5rem] text-center")}
+              style={{
+                color: brandColor ? brandColor : "#058FFF",
+              }}
             >
-              Mejora tu experiencia
+              {t("locationDialog.improveExperience")}
             </h2>
             <p className="text-center text-sky-900">
-              Cuéntanos en qué sucursales te encuentras
+              {t("locationDialog.tellUsLocation")}
             </p>
           </div>
           <div className="grow"></div>
           <div className="flex flex-col gap-3 w-full">
-            <Button
+            <button
+              className="h-12 px-5 py-2 focus:ring focus:ring-blue-200 text-white rounded-full"
+              style={{
+                backgroundColor: business?.BrandColor
+                  ? business?.BrandColor
+                  : "#058FFF",
+              }}
               onClick={handleOnGrant}
-              className="w-full"
-              type="button"
-              variant={isHootersForm ? "hootersPrimary" : "default"}
             >
-              Compartir ubicación
-            </Button>
-            <Button
+              {t("locationDialog.shareLocation")}
+            </button>
+
+            <button
+              className="h-12 border border-gray-300 px-5 py-2 text-gray-900 hover:bg-gray-300 focus:ring focus:ring-blue-200 rounded-full bg-gray-100"
               onClick={handleOnDeny}
-              className="w-full"
-              type="button"
-              variant={isHootersForm ? "hootersSecondary" : "secondary"}
             >
-              Ver sucursales
-            </Button>
+              {t("locationDialog.seeBranches")}
+            </button>
           </div>
         </>
       )}
@@ -101,6 +100,7 @@ const RequestLocationDialog = ({
           handleOnDeny={handleOnDeny}
           grantingPermissions={loading}
           isHootersForm={isHootersForm}
+          brandColor={brandColor}
         />
       )}
     </div>
@@ -113,13 +113,17 @@ const SuggestedLocations = ({
   handleOnDeny,
   grantingPermissions,
   isHootersForm,
+  brandColor,
 }: {
   onConfirm: (branch: Branch | undefined) => void;
   handleOnDeny: () => void;
   branches: (Branch | undefined)[];
   grantingPermissions: boolean;
   isHootersForm: boolean;
+  brandColor?: string;
 }) => {
+  const { t } = useTranslation("common");
+
   const getNormalizedBusinessName = (name: string | undefined) => {
     if (!name) {
       return "";
@@ -138,43 +142,40 @@ const SuggestedLocations = ({
   const handleClickSelected = (branchName: string | undefined) => {
     setSelected(getNormalizedBusinessName(branchName));
   };
+
+  console.log("brandColor:::", brandColor);
+
   return (
     <div className="flex flex-col w-full h-full justify-between items-center ">
       <div className="grow"></div>
       <div className="flex flex-col items-center gap-3">
-        <Image
-          src={isHootersForm ? "/location-orange.svg" : "/location.svg"}
-          alt={"Permisos de ubicación"}
-          className="animate-bounce delay-100"
-          width={120}
-          height={120}
-        />
+        <LocationIcon color={brandColor} />
         {grantingPermissions ? (
           <>
             <h2
-              className={cn("font-bold text-[1.5rem] text-center ", {
-                "text-hooters": isHootersForm,
-                "text-qik": !isHootersForm,
-              })}
+              className={cn("font-bold text-[1.5rem] text-center")}
+              style={{
+                color: brandColor ? brandColor : "#058FFF",
+              }}
             >
-              Para mejorar tu experiencia
+              {t("locationDialog.improveExperience")}
             </h2>
             <p className="text-center text-sky-900 mb-3">
-              Comparte tu ubicación
+              {t("locationDialog.shareLocation")}
             </p>
           </>
         ) : (
           <>
             <h2
-              className={cn("font-bold text-[1.5rem] text-center ", {
-                "text-hooters": isHootersForm,
-                "text-qik": !isHootersForm,
-              })}
+              className={cn("font-bold text-[1.5rem] text-center")}
+              style={{
+                color: brandColor ? brandColor : "#058FFF",
+              }}
             >
-              ¿Dónde te encuentras?
+              {t("locationDialog.whereAreYou")}
             </h2>
             <p className="text-center text-sky-900 mb-3">
-              Selecciona en qué sucursal estás
+              {t("locationDialog.selectBranch")}
             </p>
           </>
         )}
@@ -182,37 +183,28 @@ const SuggestedLocations = ({
       <div className="grow"></div>
 
       <div className="flex flex-col gap-3 w-full overflow-y-auto">
-        {grantingPermissions && (
-          <div className="grid place-items-center h-[50vh]">
-            <Image
-              src="/qik.svg"
-              className="w-40 sm:w-44 animate-pulse"
-              alt="QikStarts"
-              width={155}
-              height={62}
-              priority={true}
-            />
-          </div>
-        )}
+        {grantingPermissions && <LocationIcon color={brandColor} />}
         {!grantingPermissions &&
           (branches.length == 0 || branches[0] == undefined ? (
             <div>
               <h3
-                className={cn("text-[1.5rem] text-center", {
-                  "text-hooters": isHootersForm,
-                  "text-qik": !isHootersForm,
-                })}
+                className={cn("text-[1.5rem] text-center")}
+                style={{
+                  color: brandColor ? brandColor : "#058FFF",
+                }}
               >
-                No tienes sucursales cerca
+                {t("locationDialog.noBranchesNearby")}
               </h3>
-              <Button
+              <button
+                className="w-full h-12 px-5 py-2 mt-5 focus:ring focus:ring-blue-200 text-white rounded-full"
+                disabled={grantingPermissions}
+                style={{
+                  backgroundColor: brandColor ? brandColor : "#058FFF",
+                }}
                 onClick={handleOnDeny}
-                className="w-full"
-                type="button"
-                variant={isHootersForm ? "hootersPrimary" : "default"}
               >
-                Ver todas las sucursales
-              </Button>
+                {t("locationDialog.seeAllBranches")}
+              </button>
             </div>
           ) : (
             <>
@@ -229,27 +221,27 @@ const SuggestedLocations = ({
                         <IconCircleCheck
                           size={18}
                           strokeWidth={3}
-                          className={
-                            isHootersForm ? "text-hooters" : "text-qik"
-                          }
+                          style={{
+                            color: brandColor ? brandColor : "#058FFF",
+                          }}
                         />
                       </span>
                     ) : (
                       <span>
                         <IconCircle
                           size={18}
-                          className={
-                            isHootersForm ? "text-hooters" : "text-qik"
-                          }
+                          style={{
+                            color: brandColor ? brandColor : "#058FFF",
+                          }}
                         />
                       </span>
                     )}
                     <div className="flex flex-col">
                       <h4
-                        className={cn("text-[1rem] font-bold", {
-                          "text-hooters": isHootersForm,
-                          "text-qik": !isHootersForm,
-                        })}
+                        className={cn("text-[1rem] font-bold")}
+                        style={{
+                          color: brandColor ? brandColor : "#058FFF",
+                        }}
                       >
                         {branch?.Name}
                       </h4>
@@ -270,24 +262,25 @@ const SuggestedLocations = ({
       </div>
       {!grantingPermissions &&
         !(branches.length == 0 || branches[0] == undefined) && (
-          <div className="flex flex-col gap-3 w-full mt-10">
-            <Button
-              onClick={() =>
-                onConfirm(
-                  branches.find(
-                    (branch) =>
-                      getNormalizedBusinessName(branch?.Name) === selected
-                  )
+          <button
+            className="w-full h-12 px-5 py-2 mt-5 focus:ring focus:ring-blue-200 text-white rounded-full"
+            disabled={grantingPermissions}
+            style={{
+              backgroundColor: brandColor ? brandColor : "#058FFF",
+            }}
+            onClick={() =>
+              onConfirm(
+                branches.find(
+                  (branch) =>
+                    getNormalizedBusinessName(branch?.Name) === selected
                 )
-              }
-              className="w-full"
-              disabled={grantingPermissions}
-              type="button"
-              variant={isHootersForm ? "hootersPrimary" : "default"}
-            >
-              {grantingPermissions ? "Esperando permisos..." : "¡Aquí estoy!"}
-            </Button>
-          </div>
+              )
+            }
+          >
+            {grantingPermissions
+              ? t("locationDialog.waitingPermissions")
+              : t("locationDialog.imHere")}
+          </button>
         )}
     </div>
   );

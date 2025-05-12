@@ -101,5 +101,16 @@
   "textField.default.validation.invalid": "请输入有效值",
   "chipsField.validation.required": "此字段为必填项",
   "thanks.name.label": "姓名",
-  "thanks.business.label": "分店"
+  "thanks.business.label": "分店",
+  "locationDialog.locationPermissions": "位置权限",
+  "locationDialog.improveExperience": "改善您的体验",
+  "locationDialog.tellUsLocation": "告诉我们您在哪个分店",
+  "locationDialog.shareLocation": "分享位置",
+  "locationDialog.seeBranches": "查看分店",
+  "locationDialog.whereAreYou": "您在哪里？",
+  "locationDialog.selectBranch": "选择您所在的分店",
+  "locationDialog.noBranchesNearby": "附近没有分店",
+  "locationDialog.seeAllBranches": "查看所有分店",
+  "locationDialog.waitingPermissions": "等待权限...",
+  "locationDialog.imHere": "我在这里！"
 }
