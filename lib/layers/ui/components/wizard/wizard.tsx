@@ -287,8 +287,6 @@ export const Wizard = ({
     );
   }
 
-  console.log("ClientTypeSelection:", ClientTypeSelection); // ¿es undefined?
-
   return (
     <div className="mt-10 w-full flex justify-center px-4">
       {!clientType ? (

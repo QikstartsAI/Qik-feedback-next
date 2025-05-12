@@ -7,7 +7,7 @@ export const ClientTypeSelection = ({
   setClientType,
 }: {
   setClientType: (type: "newClient" | "frequentClient") => void;
-  business?: Business | null | undefined;
+  business?: Business | null;
 }) => {
   const { t } = useTranslation("common");
 
