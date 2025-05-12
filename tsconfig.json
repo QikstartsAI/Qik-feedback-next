@@ -22,7 +22,8 @@
     "paths": {
       "@/*": ["./*"],
       "@/data": ["./app/layers/data/index.ts"],
-      "@/domain": ["./app/layers/domain/index.ts"]
+      "@/domain": ["./app/layers/domain/index.ts"],
+      "@/lib": ["./lib/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/layers/domain/index.js", "app/layers/data/data.js"],

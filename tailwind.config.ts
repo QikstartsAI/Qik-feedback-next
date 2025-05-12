@@ -4,7 +4,8 @@ const config: Config = {
   content: [
     "./app/layout.tsx",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/layers/ui/**/*.{js,ts,jsx,tsx}",
+    "./lib/**/*.{js,ts,jsx,tsx,mdx}",
+    "./lib/layers/ui/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     container: {
