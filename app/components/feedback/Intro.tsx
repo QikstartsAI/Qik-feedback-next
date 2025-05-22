@@ -4,21 +4,17 @@ import { Button } from "../ui/Button";
 import { Business } from "@/app/types/business";
 import ImageRounded from "../ui/ImageRounded";
 import { CustomerRole } from "@/app/types/customer";
-import useGetBusinessData from "@/app/hooks/useGetBusinessData";
 
 type IntroProps = {
   business: Business | null;
   toogleCustomerType: (customer: CustomerRole) => void;
 };
 
-function Intro({ toogleCustomerType }: IntroProps) {
-  const { business, brandColor } = useGetBusinessData();
-
+function Intro({ business, toogleCustomerType }: IntroProps) {
   const country = business?.Country || "EC";
   const waiter = business?.Waiter;
   const isUsCountry = country === "US" || country === "HK";
   const isCaCountry = country === "CA";
-  const isItCountry = country === "IT";
 
   return (
     <div className="mx-auto py-12 lg:py-24 max-w-xl px-6">
@@ -29,20 +25,9 @@ function Intro({ toogleCustomerType }: IntroProps) {
               ? "We value your opinion 😊, it will take you less than "
               : isCaCountry
               ? "Nous apprécions votre avis 😊, cela vous prendra moins de "
-              : isItCountry
-              ? "Apprezziamo la tua opinione 😊, ci vorrà meno di "
-              : "Valoramos tu opinión 😊, te tomará menos de "}
-            <span
-              className="font-medium"
-              style={{ color: `hsl(${brandColor || "var(--qik)"}` }}
-            >
-              {isUsCountry
-                ? "1 minute"
-                : isCaCountry
-                ? "1 minute"
-                : isItCountry
-                ? "1 minuto"
-                : "1 minuto"}
+              : "Valoramodds tu opinión 😊, te tomará menos de "}
+            <span className="text-sky-500 font-medium">
+              {isUsCountry ? "1 minute" : isCaCountry ? "1 minute" : "1 minuto"}
             </span>
           </CardTitle>
         </CardHeader>
@@ -67,8 +52,6 @@ function Intro({ toogleCustomerType }: IntroProps) {
                   ? "Today I attended to you:"
                   : isCaCountry
                   ? "Aujourd'hui, je me suis occupé de vous:"
-                  : isItCountry
-                  ? "Oggi ti ho servito:"
                   : "Hoy te atendí:"}
               </p>
               <p className="text-center text-base sm:text-lg pb-1 font-semibold">
@@ -77,29 +60,21 @@ function Intro({ toogleCustomerType }: IntroProps) {
             </div>
           )}
           <div className="flex flex-row justify-center items-center space-x-4 mt-4">
-            <Button
-              onClick={() => toogleCustomerType("new")}
-              color={`hsl(${brandColor || "var(--qik)"})`}
-            >
+            <Button onClick={() => toogleCustomerType("new")}>
               {isUsCountry
                 ? "New client"
                 : isCaCountry
                 ? "Nouveau client"
-                : isItCountry
-                ? "Nuovo cliente"
                 : "Nuevo cliente"}
             </Button>
             <Button
               variant="secondary"
-              color={`hsl(${brandColor || "var(--qik)"})`}
               onClick={() => toogleCustomerType("frequent")}
             >
               {isUsCountry
                 ? "I am already a client"
                 : isCaCountry
                 ? "Je suis déjà client"
-                : isItCountry
-                ? "Sono già cliente"
                 : "Ya soy cliente"}
             </Button>
           </div>

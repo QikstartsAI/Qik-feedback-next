@@ -56,8 +56,9 @@ export type Country =
   | "GT"
   | "ES"
   | "FR"
-  | "HK"
-  | "IT";
+  | "HK";
+
+export type Power = "GEOLOCATION";
 export interface Business {
   BusinessId: string;
   Address: string;
@@ -74,7 +75,7 @@ export interface Business {
   PricePlan: number;
   Geopoint?: { _lat: number; _long: number };
   Category: string;
-  HasGeolocation?: boolean;
+  Powers: Power[];
   BrandColor?: string;
 }
 
