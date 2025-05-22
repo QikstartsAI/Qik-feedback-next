@@ -1,13 +1,11 @@
-import { cn } from "@/lib/lib/utils";
-import { Business } from "@/lib/types/business";
 import { useTranslation } from "next-i18next";
 
 export const ClientTypeSelection = ({
-  business,
   setClientType,
+  brandColor,
 }: {
   setClientType: (type: "newClient" | "frequentClient") => void;
-  business?: Business | null;
+  brandColor?: string;
 }) => {
   const { t } = useTranslation("common");
 
@@ -16,7 +14,7 @@ export const ClientTypeSelection = ({
       <h1
         className="font-bold md:text-2xl max-sm:text-2xl"
         style={{
-          color: business?.BrandColor ? business?.BrandColor : "#058FFF",
+          color: brandColor ?? "#058FFF",
         }}
       >
         {t("wizard.clientType.title")}

@@ -2,13 +2,11 @@ import { Business } from "@/lib/types/business";
 import { IconMapPin } from "@tabler/icons-react";
 import ImageRounded from "./ui/ImageRounded";
 import Image from "next/image";
+import useGetBusinessData from "../hooks/useGetBusinessData";
 
-interface HeroProps {
-  business: Business | null;
-  branchIndex?: number;
-}
+function Hero() {
+  const { business } = useGetBusinessData();
 
-function Hero({ business }: HeroProps) {
   return (
     <div className="relative">
       <Image

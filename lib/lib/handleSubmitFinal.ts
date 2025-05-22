@@ -3,7 +3,7 @@ import {
   CUSTOMERS_COLLECTION_NAME,
 } from "@/lib/constants/general";
 import { getFirebase, getTimesTampFromDate } from "@/lib/lib/firebase";
-import { Waiter } from "@/lib/types/business";
+import { Branch, Business, Waiter } from "@/lib/types/business";
 import {
   addDoc,
   updateDoc,
@@ -15,6 +15,7 @@ import {
 import { findBusiness } from "../../lib/services/business";
 import { Customer } from "../../lib/types/customer";
 import { findCustomerDataByEmail } from "./handleEmail";
+import useGetBusinessData from "../hooks/useGetBusinessData";
 
 const formattedName = (name?: string | null): string => {
   if (name?.includes(" ")) {
@@ -23,6 +24,11 @@ const formattedName = (name?: string | null): string => {
   return name ?? "";
 };
 
+const _getBranchId = (business: Business) => {
+  const branchName = business?.Name;
+  return business?.sucursales?.find((e: Branch) => e.Name == branchName)
+    ?.BusinessId;
+};
 const handleSubmitFeedback = async (
   {
     FullName,
@@ -36,6 +42,7 @@ const handleSubmitFeedback = async (
     AcceptTerms,
     BirthdayDate,
     ClientType,
+    Business,
   }: Record<string, any>,
   Improve: string[],
   customerType: string,
@@ -46,7 +53,8 @@ const handleSubmitFeedback = async (
   const searchParams = new URLSearchParams(document.location.search);
 
   const businessId = searchParams.get("id");
-  const branchId = searchParams.get("sucursal");
+  const branchId = _getBranchId(Business) ?? searchParams.get("sucursal");
+
   const waiterId = searchParams.get("mesero");
   const customerContactData: Customer = {
     email: Email,
@@ -88,7 +96,7 @@ const handleSubmitFeedback = async (
     AcceptPromotions,
     AcceptTerms,
     Improve,
-    ImproveText,
+    ImproveText: ImproveText ?? "",
     Origin,
     PhoneNumber,
     Rating: parseInt(Rating),

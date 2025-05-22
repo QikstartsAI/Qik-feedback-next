@@ -20,16 +20,15 @@ import { getImprovements } from "@/lib/constants/form";
 import { toast } from "@/lib/hooks/useToast";
 import Thanks from "@/lib/components/Thanks";
 import { useTranslation } from "react-i18next";
+import useGetBusinessData from "@/lib/hooks/useGetBusinessData";
 
 interface Data {
   [key: string]: any;
 }
 
-export const Wizard = ({
-  business,
-}: {
-  business: Business | null | undefined;
-}) => {
+export const Wizard = () => {
+  const { business, brandColor } = useGetBusinessData();
+
   const { t } = useTranslation("common");
   const [showOptionsPopup, setShowOptionsPopup] = useState(false);
   const [showInputPopup, setShowInputPopup] = useState(false);
@@ -172,7 +171,6 @@ export const Wizard = ({
     if (!fieldId || value == undefined) return;
     const field = getFormData().find((e) => e.id === fieldId);
     const options = field?.options?.find((e) => e.id === value)?.options;
-    console.log("FieldID", fieldId, value);
     if (fieldId === "Origin" && value == "reason") {
       setShowInputPopup(true);
     }
@@ -228,6 +226,7 @@ export const Wizard = ({
       const updatedData = responses;
       updatedData.ImproveText = isLowRating ? ImproveText : "";
       updatedData.ClientType = clientType;
+      updatedData.Business = business;
       const improveOptions = isLowRating
         ? getImprovements({
             Ambience,
@@ -282,7 +281,7 @@ export const Wizard = ({
       <Thanks
         businessName={business?.Name || ""}
         customerName={responses.FullName}
-        brandColor={business?.BrandColor}
+        brandColor={brandColor}
       />
     );
   }
@@ -292,8 +291,8 @@ export const Wizard = ({
       {!clientType ? (
         <>
           <ClientTypeSelection
-            business={business}
             setClientType={setClientType}
+            brandColor={brandColor}
           />
         </>
       ) : (
@@ -305,7 +304,7 @@ export const Wizard = ({
             status="active"
             percent={progress}
             strokeWidth={35}
-            strokeColor={business?.BrandColor ?? "#2B82F6"}
+            strokeColor={brandColor ?? "#2B82F6"}
             percentPosition={{ align: "end", type: "inner" }}
             format={(percent) => (
               <span style={{ fontWeight: "bold", fontSize: "17px" }}>
@@ -329,7 +328,7 @@ export const Wizard = ({
                   field={field}
                   value={responses[field.id ?? ""]}
                   onChange={handleOnFieldChange}
-                  brandColor={business?.BrandColor}
+                  brandColor={brandColor}
                 />
               ))}
               {canOpenPositiveReview() && (
@@ -337,7 +336,7 @@ export const Wizard = ({
                   business={business}
                   responses={responses}
                   onChange={handleOnFieldChange}
-                  brandColor={business?.BrandColor}
+                  brandColor={brandColor}
                 />
               )}
               {canOpenNegativeReview() && (
@@ -345,7 +344,7 @@ export const Wizard = ({
                   form={form}
                   responses={responses}
                   onChange={handleOnFieldChange}
-                  brandColor={business?.BrandColor}
+                  brandColor={brandColor}
                 />
               )}
             </div>
@@ -359,9 +358,7 @@ export const Wizard = ({
               <button
                 className="w-[80%] px-5 py-2 focus:ring focus:ring-blue-200 text-white rounded-full"
                 style={{
-                  backgroundColor: business?.BrandColor
-                    ? business?.BrandColor
-                    : "#058FFF",
+                  backgroundColor: brandColor ? brandColor : "#058FFF",
                 }}
                 onClick={
                   currentStep === getStepsLength() - 1
@@ -393,7 +390,7 @@ export const Wizard = ({
         </div>
       )}
       <InputPopup
-        brandColor={business?.BrandColor}
+        brandColor={brandColor}
         show={showInputPopup}
         onClose={handlePopupClose}
         onChange={handleOnFieldChange}
@@ -404,7 +401,7 @@ export const Wizard = ({
         responses={responses}
         onSelect={handleSelectOption}
         onClose={handlePopupClose}
-        brandColor={business?.BrandColor}
+        brandColor={brandColor}
       />
     </div>
   );

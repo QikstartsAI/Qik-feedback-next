@@ -56,7 +56,7 @@ export const OptionsPopup: React.FC<OptionsPopupProps> = ({
         <h2
           className="text-2xl font-bold mb-4"
           style={{
-            color: brandColor ? brandColor : "#058FFF",
+            color: brandColor ?? "#058FFF",
           }}
         >
           Selecciona una opción

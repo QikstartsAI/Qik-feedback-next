@@ -22,7 +22,7 @@ function Thanks({ businessName, customerName, brandColor }: Props) {
       className={cn(
         "w-full h-[calc(100vh-198px)] items-center flex flex-col justify-center shadow z-10 gap-4"
       )}
-      style={{ backgroundColor: brandColor ? brandColor : "#058FFF" }}
+      style={{ backgroundColor: brandColor ?? "#058FFF" }}
     >
       <div className="flex flex-col gap-3">
         <div>

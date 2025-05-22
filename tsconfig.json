@@ -21,8 +21,10 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@/data": ["./app/layers/data/index.ts"],
-      "@/domain": ["./app/layers/domain/index.ts"],
+      "@/data": ["./lib/layers/data/index.ts"],
+      "@/domain": ["./lib/layers/domain/index.ts"],
+      "@/hooks": ["./lib/layers/hooks/index.ts"],
+      "@/ui": ["./lib/layers/ui/index.ts"],
       "@/lib": ["./lib/*"]
     }
   },
