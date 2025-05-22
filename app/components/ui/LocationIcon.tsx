@@ -1,7 +1,6 @@
 import React from "react";
 
 const LocationIcon = ({ color }: { color?: string }) => {
-  // PARA EL ROLLBACK
   const darkerColor = color
     ?.split(",")
     .map((c, i) => (i == 2 ? `${parseInt(c.split("%")[0]) - 10}%` : c));
@@ -48,3 +47,5 @@ const LocationIcon = ({ color }: { color?: string }) => {
 };
 
 export default LocationIcon;
+
+// PARA EL ROLLBACK
