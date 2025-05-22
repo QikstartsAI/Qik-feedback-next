@@ -1,6 +1,7 @@
 import { Suspense, lazy } from "react";
-import Loader from "../lib/components/Loader";
-import FeedbackFormRoot from "@/lib/components/FeedbackFormRoot";
+import Loader from "./components/Loader";
+
+const FeedbackFormRoot = lazy(() => import("./components/FeedbackFormRoot"));
 
 export default function Home() {
   return (
