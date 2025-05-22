@@ -1,10 +1,12 @@
 import type { Config } from "tailwindcss";
+const { addDynamicIconSelectors } = require("@iconify/tailwind");
 
 const config: Config = {
   content: [
     "./app/layout.tsx",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/layers/ui/**/*.{js,ts,jsx,tsx}",
+    "./lib/**/*.{js,ts,jsx,tsx,mdx}",
+    "./lib/layers/ui/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     container: {
@@ -97,6 +99,10 @@ const config: Config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), require("postcss-import")],
+  plugins: [
+    require("tailwindcss-animate"),
+    require("postcss-import"),
+    addDynamicIconSelectors(),
+  ],
 };
 export default config;
