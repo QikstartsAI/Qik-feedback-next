@@ -3,11 +3,10 @@ import { Inter } from "next/font/google";
 import "./tailwind.css";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import dynamic from "next/dynamic";
-import { AntdRegistry } from "@ant-design/nextjs-registry";
 
 const inter = Inter({ subsets: ["latin"] });
 
-const DynamicFooter = dynamic(() => import("../lib/components/Footer"), {
+const DynamicFooter = dynamic(() => import("./components/feedback/Footer"), {
   ssr: false,
 });
 
@@ -29,7 +28,7 @@ export default function RootLayout({
     <html lang="en">
       <link rel="icon" type="image/svg+xml" href="/qik.svg" />
       <body className={inter.className}>
-        {/* <AntdRegistry>{children}</AntdRegistry> */}
+        {/* Removed locale prop, provider will use detected language */}
         {children}
         <DynamicFooter />
       </body>
