@@ -50,3 +50,5 @@ const LocationIcon = ({ color = "hsl(207 100% 51%)" }: { color?: string }) => {
 };
 
 export default LocationIcon;
+
+// PARA EL ROLLBACK
