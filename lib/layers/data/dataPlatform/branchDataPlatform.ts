@@ -28,7 +28,6 @@ export const createBranch = async (branchData: BranchDTO) => {
 export const getBranchById = async (branchId: string): Promise<BranchModel> => {
   try {
     const branch = await httpClient.get(`/branch/${branchId}`);
-    console.log("branch:", branch);
     return branch as BranchModel;
   } catch (error) {
     console.error("Error fetching branch:", error);

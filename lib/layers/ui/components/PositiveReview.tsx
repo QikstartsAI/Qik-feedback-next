@@ -47,7 +47,7 @@ const PositiveReview = ({
       <span
         className="font-bold text-[24px] text-center"
         style={{
-          color: business?.BrandColor ? business?.BrandColor : "#058FFF",
+          color: brandColor ?? "#058FFF",
         }}
       >
         {t("form.default.positiveReview.title")}
@@ -123,7 +123,7 @@ const PositiveReview = ({
         brandColor={brandColor}
       >
         <small className="text-gray-500">
-          {t("form.default.negativeReview.termsPrefix")}{" "}
+          {t("form.default.termsPrefix")}{" "}
           <a
             className="text-primary hover:underline"
             href="https://qikstarts.com/terms-of-service"

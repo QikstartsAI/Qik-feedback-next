@@ -3,17 +3,17 @@ import { setCookie } from "./../../lib/utils";
 import { Branch, Business } from "@/lib/types/business";
 
 import { useEffect, useState } from "react";
+import useGetBusinessData from "@/lib/hooks/useGetBusinessData";
 
-const useLocation = (
-  business: Business | null,
-  setSucursalId: (id: string | null) => void
-) => {
+const useLocation = () => {
   const [requestLocation, setRequestLocation] = useState(true);
   const [loadingPermissions, setLoadingPermissions] = useState(false);
   const [locationPermission, setLocationPermission] = useState(false);
   const [locationConfirmated, setLocationConfirmated] = useState(false);
 
   const { closestDestination, setDistanceMatrix } = useDistanceMatrix();
+  const { business, setSucursalId } = useGetBusinessData();
+
   const [originPosition, setOriginPosition] = useState<{
     latitude: number | null;
     longitude: number | null;

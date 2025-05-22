@@ -47,7 +47,7 @@ export const InputPopup: React.FC<InputPopupProps> = ({
         <h2
           className="text-2xl font-bold mb-4"
           style={{
-            color: brandColor ? brandColor : "#058FFF",
+            color: brandColor ?? "#058FFF",
           }}
         >
           ¿Decribe la razón de visitarnos?
@@ -55,7 +55,7 @@ export const InputPopup: React.FC<InputPopupProps> = ({
         <textarea
           className="w-full border-2 p-3 rounded-lg "
           style={{
-            borderColor: brandColor ? brandColor : "#058FFF",
+            borderColor: brandColor ?? "#058FFF",
           }}
           placeholder="Ej: En una reunión de amigos"
           rows={3}
@@ -63,7 +63,7 @@ export const InputPopup: React.FC<InputPopupProps> = ({
         <button
           className="mt-4 px-5 py-2 focus:ring text-white rounded-full"
           style={{
-            backgroundColor: brandColor ? brandColor : "#058FFF",
+            backgroundColor: brandColor ?? "#058FFF",
           }}
           onClick={onClose}
         >

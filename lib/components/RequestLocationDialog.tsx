@@ -15,9 +15,7 @@ export default function RequestLocationDialog({
   isHootersForm?: boolean;
 }) {
   const { t } = useTranslation("common");
-  const { business, setSucursalId } = useGetBusinessData();
-
-  const brandColor = business?.BrandColor;
+  const { business, brandColor } = useGetBusinessData();
 
   const {
     requestLocation: open,
@@ -26,7 +24,7 @@ export default function RequestLocationDialog({
     onLocationSelect,
     branches,
     loading,
-  } = useLocation(business, setSucursalId);
+  } = useLocation();
 
   const [currentView, setCurrentView] = React.useState("grantPermissions");
 
@@ -62,7 +60,7 @@ export default function RequestLocationDialog({
             <h2
               className={cn("font-bold text-[1.5rem] text-center")}
               style={{
-                color: brandColor ? brandColor : "#058FFF",
+                color: brandColor ?? "#058FFF",
               }}
             >
               {t("locationDialog.improveExperience")}
@@ -76,9 +74,7 @@ export default function RequestLocationDialog({
             <button
               className="h-12 px-5 py-2 focus:ring focus:ring-blue-200 text-white rounded-full"
               style={{
-                backgroundColor: business?.BrandColor
-                  ? business?.BrandColor
-                  : "#058FFF",
+                backgroundColor: brandColor ?? "#058FFF",
               }}
               onClick={handleOnGrant}
             >
@@ -100,7 +96,6 @@ export default function RequestLocationDialog({
           onConfirm={onLocationSelect}
           handleOnDeny={handleOnDeny}
           grantingPermissions={loading}
-          isHootersForm={isHootersForm}
           brandColor={brandColor}
         />
       )}
@@ -113,14 +108,14 @@ const SuggestedLocations = ({
   onConfirm,
   handleOnDeny,
   grantingPermissions,
-  isHootersForm,
+
   brandColor,
 }: {
   onConfirm: (branch: Branch | undefined) => void;
   handleOnDeny: () => void;
   branches: (Branch | undefined)[];
   grantingPermissions: boolean;
-  isHootersForm: boolean;
+
   brandColor?: string;
 }) => {
   const { t } = useTranslation("common");
@@ -143,8 +138,6 @@ const SuggestedLocations = ({
     setSelected(getNormalizedBusinessName(branchName));
   };
 
-  console.log("brandColor:::", brandColor);
-
   return (
     <div className="flex flex-col w-full h-full justify-between items-center ">
       <div className="grow"></div>
@@ -155,7 +148,7 @@ const SuggestedLocations = ({
             <h2
               className={cn("font-bold text-[1.5rem] text-center")}
               style={{
-                color: brandColor ? brandColor : "#058FFF",
+                color: brandColor ?? "#058FFF",
               }}
             >
               {t("locationDialog.improveExperience")}
@@ -169,7 +162,7 @@ const SuggestedLocations = ({
             <h2
               className={cn("font-bold text-[1.5rem] text-center")}
               style={{
-                color: brandColor ? brandColor : "#058FFF",
+                color: brandColor ?? "#058FFF",
               }}
             >
               {t("locationDialog.whereAreYou")}
@@ -190,7 +183,7 @@ const SuggestedLocations = ({
               <h3
                 className={cn("text-[1.5rem] text-center")}
                 style={{
-                  color: brandColor ? brandColor : "#058FFF",
+                  color: brandColor ?? "#058FFF",
                 }}
               >
                 {t("locationDialog.noBranchesNearby")}
@@ -199,7 +192,7 @@ const SuggestedLocations = ({
                 className="w-full h-12 px-5 py-2 mt-5 focus:ring focus:ring-blue-200 text-white rounded-full"
                 disabled={grantingPermissions}
                 style={{
-                  backgroundColor: brandColor ? brandColor : "#058FFF",
+                  backgroundColor: brandColor ?? "#058FFF",
                 }}
                 onClick={handleOnDeny}
               >
@@ -222,7 +215,7 @@ const SuggestedLocations = ({
                           size={18}
                           strokeWidth={3}
                           style={{
-                            color: brandColor ? brandColor : "#058FFF",
+                            color: brandColor ?? "#058FFF",
                           }}
                         />
                       </span>
@@ -231,7 +224,7 @@ const SuggestedLocations = ({
                         <IconCircle
                           size={18}
                           style={{
-                            color: brandColor ? brandColor : "#058FFF",
+                            color: brandColor ?? "#058FFF",
                           }}
                         />
                       </span>
@@ -240,7 +233,7 @@ const SuggestedLocations = ({
                       <h4
                         className={cn("text-[1rem] font-bold")}
                         style={{
-                          color: brandColor ? brandColor : "#058FFF",
+                          color: brandColor ?? "#058FFF",
                         }}
                       >
                         {branch?.Name}
@@ -266,7 +259,7 @@ const SuggestedLocations = ({
             className="w-full h-12 px-5 py-2 mt-5 focus:ring focus:ring-blue-200 text-white rounded-full"
             disabled={grantingPermissions}
             style={{
-              backgroundColor: brandColor ? brandColor : "#058FFF",
+              backgroundColor: brandColor ?? "#058FFF",
             }}
             onClick={() =>
               onConfirm(

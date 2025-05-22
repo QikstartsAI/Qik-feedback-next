@@ -43,7 +43,9 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@iconify/json": "^2.2.340",
     "@iconify/react": "^4.1.1",
+    "@iconify/tailwind": "^1.2.0",
     "@types/mapbox__mapbox-sdk": "^0.15.1",
     "@types/node": "^20",
     "@types/react": "^18",
