@@ -1,32 +1,38 @@
 import React, { useEffect, useState } from "react";
+
 import { cn } from "../lib/utils";
+import { Button } from "./ui/Button";
+
+import Image from "next/image";
 import { Branch } from "../types/business";
 import { IconCircle, IconCircleCheck, IconPinned } from "@tabler/icons-react";
-import { useLocation } from "../layers";
-import { useTranslation } from "react-i18next";
+import Loader from "./Loader";
 import LocationIcon from "./ui/LocationIcon";
-import useGetBusinessData from "../hooks/useGetBusinessData";
 
 const RequestLocationDialog = ({
-  isHootersForm = false,
+  view = "grantPermissions",
+  branches = [],
+  open = false,
+  grantingPermissions = false,
+  brandColor,
+  getLocation,
+  denyLocation,
+  onConfirm,
 }: {
-  isHootersForm?: boolean;
+  branches?: (Branch | undefined)[];
+  open?: boolean;
+  view?: string;
+  grantingPermissions?: boolean;
+  getLocation: () => void;
+  denyLocation: () => void;
+  onConfirm: (branch: Branch | undefined) => void;
+  brandColor?: string;
 }) => {
-  const { t } = useTranslation("common");
-  const { business, setSucursalId } = useGetBusinessData();
-
-  const brandColor = business?.BrandColor;
-
-  const {
-    requestLocation: open,
-    denyLocation,
-    getLocation,
-    onLocationSelect,
-    branches,
-    loading,
-  } = useLocation(business, setSucursalId);
-
   const [currentView, setCurrentView] = React.useState("grantPermissions");
+
+  useEffect(() => {
+    setCurrentView(view);
+  }, [view]);
 
   const goToSuggestedView = () => {
     setCurrentView("suggestedLocations");
@@ -45,7 +51,7 @@ const RequestLocationDialog = ({
   return (
     <div
       className={cn(
-        "fixed bottom-0 top-0 h-[0px] w-screen flex flex-col justify-between items-center gap-10 bg-white transition-all ease-in-out duration-100  overflow-hidden",
+        "fixed bottom-0 h-[0px] w-screen flex flex-col justify-between items-center gap-10 bg-white transition-all ease-in-out duration-100  overflow-hidden",
         { "h-screen": open },
         { "p-10": open }
       )}
@@ -58,47 +64,43 @@ const RequestLocationDialog = ({
 
           <div className="flex flex-col items-center gap-3">
             <h2
-              className={cn("font-bold text-[1.5rem] text-center")}
-              style={{
-                color: brandColor ? brandColor : "#058FFF",
-              }}
+              className="font-bold text-[1.5rem] text-center"
+              style={{ color: `hsl(${brandColor || "var(--qik)"})` }}
             >
-              {t("locationDialog.improveExperience")}
+              Mejora tu experiencia
             </h2>
             <p className="text-center text-sky-900">
-              {t("locationDialog.tellUsLocation")}
+              Cuéntanos en qué sucursales te encuentras
             </p>
           </div>
           <div className="grow"></div>
           <div className="flex flex-col gap-3 w-full">
-            <button
-              className="h-12 px-5 py-2 focus:ring focus:ring-blue-200 text-white rounded-full"
-              style={{
-                backgroundColor: business?.BrandColor
-                  ? business?.BrandColor
-                  : "#058FFF",
-              }}
+            <Button
               onClick={handleOnGrant}
+              className="w-full"
+              type="button"
+              color={`hsl(${brandColor || "var(--qik)"})`}
             >
-              {t("locationDialog.shareLocation")}
-            </button>
-
-            <button
-              className="h-12 border border-gray-300 px-5 py-2 text-gray-900 hover:bg-gray-300 focus:ring focus:ring-blue-200 rounded-full bg-gray-100"
+              Compartir ubicación
+            </Button>
+            <Button
               onClick={handleOnDeny}
+              className="w-full"
+              type="button"
+              variant="secondary"
+              color={`hsl(${brandColor || "var(--qik)"})`}
             >
-              {t("locationDialog.seeBranches")}
-            </button>
+              Ver sucursales
+            </Button>
           </div>
         </>
       )}
       {currentView == "suggestedLocations" && (
         <SuggestedLocations
           branches={branches}
-          onConfirm={onLocationSelect}
+          onConfirm={onConfirm}
           handleOnDeny={handleOnDeny}
-          grantingPermissions={loading}
-          isHootersForm={isHootersForm}
+          grantingPermissions={grantingPermissions}
           brandColor={brandColor}
         />
       )}
@@ -111,18 +113,16 @@ const SuggestedLocations = ({
   onConfirm,
   handleOnDeny,
   grantingPermissions,
-  isHootersForm,
+
   brandColor,
 }: {
   onConfirm: (branch: Branch | undefined) => void;
   handleOnDeny: () => void;
   branches: (Branch | undefined)[];
   grantingPermissions: boolean;
-  isHootersForm: boolean;
+
   brandColor?: string;
 }) => {
-  const { t } = useTranslation("common");
-
   const getNormalizedBusinessName = (name: string | undefined) => {
     if (!name) {
       return "";
@@ -140,9 +140,6 @@ const SuggestedLocations = ({
   const handleClickSelected = (branchName: string | undefined) => {
     setSelected(getNormalizedBusinessName(branchName));
   };
-
-  console.log("brandColor:::", brandColor);
-
   return (
     <div className="flex flex-col w-full h-full justify-between items-center ">
       <div className="grow"></div>
@@ -151,29 +148,25 @@ const SuggestedLocations = ({
         {grantingPermissions ? (
           <>
             <h2
-              className={cn("font-bold text-[1.5rem] text-center")}
-              style={{
-                color: brandColor ? brandColor : "#058FFF",
-              }}
+              className="font-bold text-[1.5rem] text-center"
+              style={{ color: `hsl(${brandColor || "var(--qik)"})` }}
             >
-              {t("locationDialog.improveExperience")}
+              Para mejorar tu experiencia
             </h2>
             <p className="text-center text-sky-900 mb-3">
-              {t("locationDialog.shareLocation")}
+              Comparte tu ubicación
             </p>
           </>
         ) : (
           <>
             <h2
-              className={cn("font-bold text-[1.5rem] text-center")}
-              style={{
-                color: brandColor ? brandColor : "#058FFF",
-              }}
+              className="font-bold text-[1.5rem] text-center"
+              style={{ color: `hsl(${brandColor || "var(--qik)"})` }}
             >
-              {t("locationDialog.whereAreYou")}
+              ¿Dónde te encuentras?
             </h2>
             <p className="text-center text-sky-900 mb-3">
-              {t("locationDialog.selectBranch")}
+              Selecciona en qué sucursal estás
             </p>
           </>
         )}
@@ -181,28 +174,35 @@ const SuggestedLocations = ({
       <div className="grow"></div>
 
       <div className="flex flex-col gap-3 w-full overflow-y-auto">
-        {grantingPermissions && <LocationIcon color={brandColor} />}
+        {grantingPermissions && (
+          <div className="grid place-items-center h-[50vh]">
+            <Image
+              src="/qik.svg"
+              className="w-40 sm:w-44 animate-pulse"
+              alt="QikStarts"
+              width={155}
+              height={62}
+              priority={true}
+            />
+          </div>
+        )}
         {!grantingPermissions &&
           (branches.length == 0 || branches[0] == undefined ? (
             <div>
               <h3
-                className={cn("text-[1.5rem] text-center")}
-                style={{
-                  color: brandColor ? brandColor : "#058FFF",
-                }}
+                className="text-[1.5rem] text-center"
+                style={{ color: `hsl(${brandColor || "var(--qik)"})` }}
               >
-                {t("locationDialog.noBranchesNearby")}
+                No tienes sucursales cerca
               </h3>
-              <button
-                className="w-full h-12 px-5 py-2 mt-5 focus:ring focus:ring-blue-200 text-white rounded-full"
-                disabled={grantingPermissions}
-                style={{
-                  backgroundColor: brandColor ? brandColor : "#058FFF",
-                }}
+              <Button
                 onClick={handleOnDeny}
+                className="w-full"
+                type="button"
+                color={`hsl(${brandColor})`}
               >
-                {t("locationDialog.seeAllBranches")}
-              </button>
+                Ver todas las sucursales
+              </Button>
             </div>
           ) : (
             <>
@@ -215,31 +215,22 @@ const SuggestedLocations = ({
                   >
                     {selected ==
                     getNormalizedBusinessName(branch?.Name ?? "") ? (
-                      <span>
-                        <IconCircleCheck
-                          size={18}
-                          strokeWidth={3}
-                          style={{
-                            color: brandColor ? brandColor : "#058FFF",
-                          }}
-                        />
+                      <span
+                        style={{ color: `hsl(${brandColor || "var(--qik)"})` }}
+                      >
+                        <IconCircleCheck size={18} strokeWidth={3} />
                       </span>
                     ) : (
-                      <span>
-                        <IconCircle
-                          size={18}
-                          style={{
-                            color: brandColor ? brandColor : "#058FFF",
-                          }}
-                        />
+                      <span
+                        style={{ color: `hsl(${brandColor || "var(--qik)"})` }}
+                      >
+                        <IconCircle size={18} />
                       </span>
                     )}
                     <div className="flex flex-col">
                       <h4
-                        className={cn("text-[1rem] font-bold")}
-                        style={{
-                          color: brandColor ? brandColor : "#058FFF",
-                        }}
+                        className="text-[1rem] font-bold"
+                        style={{ color: `hsl(${brandColor || "var(--qik)"})` }}
                       >
                         {branch?.Name}
                       </h4>
@@ -260,25 +251,24 @@ const SuggestedLocations = ({
       </div>
       {!grantingPermissions &&
         !(branches.length == 0 || branches[0] == undefined) && (
-          <button
-            className="w-full h-12 px-5 py-2 mt-5 focus:ring focus:ring-blue-200 text-white rounded-full"
-            disabled={grantingPermissions}
-            style={{
-              backgroundColor: brandColor ? brandColor : "#058FFF",
-            }}
-            onClick={() =>
-              onConfirm(
-                branches.find(
-                  (branch) =>
-                    getNormalizedBusinessName(branch?.Name) === selected
+          <div className="flex flex-col gap-3 w-full mt-10">
+            <Button
+              onClick={() =>
+                onConfirm(
+                  branches.find(
+                    (branch) =>
+                      getNormalizedBusinessName(branch?.Name) === selected
+                  )
                 )
-              )
-            }
-          >
-            {grantingPermissions
-              ? t("locationDialog.waitingPermissions")
-              : t("locationDialog.imHere")}
-          </button>
+              }
+              className="w-full"
+              disabled={grantingPermissions}
+              type="button"
+              color={`hsl(${brandColor})`}
+            >
+              {grantingPermissions ? "Esperando permisos..." : "¡Aquí estoy!"}
+            </Button>
+          </div>
         )}
     </div>
   );
