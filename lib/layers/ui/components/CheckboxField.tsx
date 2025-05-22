@@ -28,10 +28,10 @@ const CheckboxField: React.FC<CheckboxFieldProps> = ({
         checked={value}
         defaultChecked={field.defaultValue}
         onChange={onChange ? (e) => onChange(e.target.checked) : undefined}
-        className="hidden w-5 h-5 border border-gray-400 rounded focus:ring-2 focus:ring-blue-400"
+        className="hidden min-w-5 max-w-5 w-5 h-5 border border-gray-400 rounded focus:ring-2 focus:ring-blue-400"
       />
       <div
-        className="flex justify-center items-center w-5 h-5 border border-gray-400 rounded focus:ring-2 focus:ring-blue-400 bg-[#000000] transition"
+        className="flex justify-center items-center  min-w-5 max-w-5 w-5 h-5 border border-gray-400 rounded focus:ring-2 focus:ring-blue-400 bg-[#000000] transition"
         style={{
           backgroundColor: value ? brandColor ?? "#058FFF" : "transparent",
         }}

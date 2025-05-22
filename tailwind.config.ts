@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+const { addDynamicIconSelectors } = require("@iconify/tailwind");
 
 const config: Config = {
   content: [
@@ -98,6 +99,10 @@ const config: Config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), require("postcss-import")],
+  plugins: [
+    require("tailwindcss-animate"),
+    require("postcss-import"),
+    addDynamicIconSelectors(),
+  ],
 };
 export default config;

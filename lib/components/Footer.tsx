@@ -3,8 +3,6 @@
 import Image from "next/image";
 
 function Footer() {
-  const searchParams = new URLSearchParams(document.location.search);
-
   return (
     <footer className="py-4 flex justify-center items-center border-t">
       <div className="flex justify-center items-center space-x-1 sm:space-x-2">
@@ -20,12 +18,6 @@ function Footer() {
             height={127}
           />
         </a>
-        <Image
-          src="/inspectify.webp"
-          alt="DSC Solutions"
-          width={113}
-          height={110}
-        />
       </div>
     </footer>
   );

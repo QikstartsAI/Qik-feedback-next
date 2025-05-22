@@ -58,7 +58,11 @@ const NegativeReview: React.FC<NegativeReviewProps> = React.memo(
             brandColor={brandColor}
           >
             <div className="flex gap-3 items-center">
-              <span>🍴</span>
+              <span
+                className="icon-[mdi--food] text-[50px]"
+                style={{ color: brandColor }}
+              ></span>
+
               <p className="w-full text-[10px] sm:text-[11px]">
                 {t("form.default.negativeReview.food")}
               </p>
@@ -75,7 +79,11 @@ const NegativeReview: React.FC<NegativeReviewProps> = React.memo(
             brandColor={brandColor}
           >
             <div className="flex gap-3 items-center">
-              <span>👥</span>
+              <span
+                className="icon-[fluent--service-bell-16-filled] text-[50px]"
+                style={{ color: brandColor }}
+              ></span>
+
               <p className="w-full text-[10px] sm:text-[11px]">
                 {t("form.default.negativeReview.service")}
               </p>
@@ -92,7 +100,10 @@ const NegativeReview: React.FC<NegativeReviewProps> = React.memo(
             brandColor={brandColor}
           >
             <div className="flex gap-3 items-center">
-              <span>🏢</span>
+              <span
+                className="icon-[fa-solid--building] text-[40px]"
+                style={{ color: brandColor }}
+              ></span>{" "}
               <p className="w-full text-[10px] sm:text-[11px]">
                 {t("form.default.negativeReview.ambience")}
               </p>
