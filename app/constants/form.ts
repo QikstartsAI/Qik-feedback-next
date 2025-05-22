@@ -306,7 +306,7 @@ const getOriginLabel = (
   isUsCountry: boolean,
   isCaCountry: boolean,
   isFrCountry: boolean,
-
+  isItCountry: boolean,
   customerType: CustomerRole
 ) => {
   let originLabel = "";
@@ -315,12 +315,16 @@ const getOriginLabel = (
       ? "Where do you know us from?"
       : isCaCountry || isFrCountry
       ? "D'où nous connaissez-vous?"
+      : isItCountry
+      ? "Da dove ci conosci?"
       : "¿De dónde nos conoces?";
   } else if (customerType === "frequent") {
     originLabel = isUsCountry
       ? "Where have you seen us lately?"
       : isCaCountry || isFrCountry
       ? "Où nous as-tu vu dernièrement ?"
+      : isItCountry
+      ? "Dove ci hai visto ultimamente?"
       : "¿Dónde nos has visto últimamente?";
   }
   return originLabel;

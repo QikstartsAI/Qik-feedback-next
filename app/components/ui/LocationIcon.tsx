@@ -1,12 +1,9 @@
 import React from "react";
 
-const LocationIcon = ({ color = "hsl(207 100% 51%)" }: { color?: string }) => {
-  const finalColor = color ? color : "hsl(207 100% 51%)";
-  const darkerColor = finalColor?.replace(
-    /(\d+)%\)/,
-    (match) => `${parseInt(match) - 10}%)`
-  );
-
+const LocationIcon = ({ color }: { color?: string }) => {
+  const darkerColor = color
+    ?.split(",")
+    .map((c, i) => (i == 2 ? `${parseInt(c.split("%")[0]) - 10}%` : c));
   return (
     <svg
       id="Layer_1"
@@ -19,12 +16,12 @@ const LocationIcon = ({ color = "hsl(207 100% 51%)" }: { color?: string }) => {
       <defs>
         <style>
           {`.cls-1 {
-            fill: ${finalColor};
+            fill: hsl(${color || "var(--qik)"});
             fill-rule: evenodd;
             stroke-width: 0px;
           }
           .cls-2 {
-            fill: ${darkerColor};
+            fill: hsl(${darkerColor || "var(--qik)"});
             stroke-width: 0px;
           }`}
         </style>

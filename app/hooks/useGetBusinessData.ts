@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { findBusiness } from "@/app/services/business";
 import { Business } from "@/app/types/business";
 import { useSearchParams } from "next/navigation";
+import { getBusinessCustomers } from "../lib/getBusinessCustomers";
 
-const useGetBusinessData = () => {
+function useGetBusinessData() {
   const [loading, setLoading] = useState("loading");
   const [business, setBusiness] = useState<Business | null>(null);
   const [sucursalId, setSucursalId] = useState<string | null>(null);
@@ -16,6 +17,17 @@ const useGetBusinessData = () => {
   const branchId = searchParams.get("sucursal");
   const waiterId = searchParams.get("mesero");
 
+  // useEffect(() => {
+  //   console.log("BUSINESS:", businessId);
+  //   const fetchBusinessCustomers = async () => {
+  //     if (businessId) {
+  //       const customers = await getBusinessCustomers(businessId, true);
+  //       console.log("Customers", customers);
+  //     }
+  //   };
+  //   fetchBusinessCustomers();
+  // }, [businessId]);
+
   useEffect(() => {
     if (business?.BrandColor) {
       setBrandColor(business?.BrandColor);
@@ -24,6 +36,7 @@ const useGetBusinessData = () => {
   useEffect(() => {
     if (!businessId) return;
     const fetchData = async () => {
+      setLoading("requesting");
       try {
         const res =
           (await findBusiness(businessId, sucursalId || branchId, waiterId)) ||
@@ -33,9 +46,7 @@ const useGetBusinessData = () => {
       } catch (error) {
         console.error(error);
       } finally {
-        setTimeout(() => {
-          setLoading("loaded");
-        }, 200);
+        setLoading("loaded");
       }
     };
     fetchData();
@@ -51,6 +62,6 @@ const useGetBusinessData = () => {
     waiterId,
     brandColor,
   };
-};
+}
 
 export default useGetBusinessData;
