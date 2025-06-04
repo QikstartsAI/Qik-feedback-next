@@ -67,15 +67,12 @@ import { lastFeedbackFilledIsGreaterThanOneDay } from "@/app/lib/utils";
 import { getCustomerDataInBusiness } from "@/app/lib/handleEmail";
 import { useSearchParams } from "next/navigation";
 import {
-  commonPaymentMethods,
   walletsByCountry,
-  walletsIdsByCountry,
   walletsIdsByCountryWithCommon,
 } from "@/app/constants/wallets";
 import { IconCopy } from "@tabler/icons-react";
 
 import Image from "next/image";
-import { Wizard } from "@/app/layers/ui/wizard";
 import useGetBusinessData from "@/app/hooks/useGetBusinessData";
 
 interface FeedbackFormProps {
@@ -84,6 +81,8 @@ interface FeedbackFormProps {
   setRating: Dispatch<SetStateAction<string>>;
   customerType: CustomerRole;
   setCustomerName: Dispatch<SetStateAction<string>>;
+  branchId: string | null;
+  waiterId: string | null;
 }
 
 export default function FeedbackForm({
@@ -92,6 +91,8 @@ export default function FeedbackForm({
   setRating,
   setCustomerName,
   customerType,
+  branchId,
+  waiterId,
 }: FeedbackFormProps) {
   const { brandColor } = useGetBusinessData();
 
@@ -115,8 +116,6 @@ export default function FeedbackForm({
     useState<boolean | undefined>(false);
 
   const businessId = searchParams.get("id");
-  const branchId = searchParams.get("sucursal");
-  const waiterId = searchParams.get("mesero");
 
   const { toast } = useToast();
 
@@ -252,7 +251,10 @@ export default function FeedbackForm({
         customerType,
         attendantName,
         customerNumberOfVisits,
-        feedbackNumberOfVisit
+        feedbackNumberOfVisit,
+        businessId,
+        branchId,
+        waiterId
       );
       setLoadingPercentage(70);
       if (!isLowRating && business?.MapsUrl) {
