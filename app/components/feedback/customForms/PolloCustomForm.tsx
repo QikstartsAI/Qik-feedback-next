@@ -207,6 +207,10 @@ export default function PolloCustomForm({
       return;
     }
 
+    if (!isLowRating && !showGoodFeedbackModal) {
+      setShowGoodFeedbackModal(true);
+      return;
+    }
     setLoadingPercentage(20);
 
     try {

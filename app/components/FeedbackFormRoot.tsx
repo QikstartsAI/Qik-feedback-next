@@ -258,6 +258,8 @@ export default function FeedbackFormRoot() {
                         setRating={setRating}
                         customerType={customerType}
                         setCustomerName={setCustomerName}
+                        branchId={sucursalId}
+                        waiterId={waiterId}
                       />
                     ))}
                 </div>
