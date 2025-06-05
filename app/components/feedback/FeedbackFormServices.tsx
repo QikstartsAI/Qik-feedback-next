@@ -249,7 +249,10 @@ export default function FeedbackForm({
         customerType,
         attendantName,
         customerNumberOfVisits,
-        feedbackNumberOfVisit
+        feedbackNumberOfVisit,
+        businessId,
+        branchId,
+        waiterId
       );
       setLoadingPercentage(70);
       if (!isLowRating && business?.MapsUrl) {
