@@ -52,6 +52,7 @@ export default function FeedbackFormRoot() {
   const toggleCustomer = (customerType: CustomerRole) => {
     setCustomerType(customerType);
   };
+
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isQr, setIsQr] = useState(false);
   const [rating, setRating] = useState("");
@@ -223,7 +224,7 @@ export default function FeedbackFormRoot() {
                         setIsSubmitted={setIsSubmitted}
                         setRating={setRating}
                         customerType={customerType}
-                        branchId={sucursalId}
+                        branchId={sucursalId ?? branchId}
                         waiterId={waiterId}
                       />
                     ) : isGusForm ? (
@@ -248,7 +249,7 @@ export default function FeedbackFormRoot() {
                         setRating={setRating}
                         customerType={customerType}
                         setCustomerName={setCustomerName}
-                        branchId={sucursalId}
+                        branchId={sucursalId ?? branchId}
                         waiterId={waiterId}
                       />
                     ) : (
@@ -258,7 +259,7 @@ export default function FeedbackFormRoot() {
                         setRating={setRating}
                         customerType={customerType}
                         setCustomerName={setCustomerName}
-                        branchId={sucursalId}
+                        branchId={sucursalId ?? branchId}
                         waiterId={waiterId}
                       />
                     ))}
