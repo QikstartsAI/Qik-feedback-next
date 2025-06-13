@@ -143,10 +143,18 @@ export default function FeedbackFormRoot() {
     ) {
       return;
     }
-    setDistanceMatrix({
-      origin: originPosition,
-      destinations: business?.sucursales,
-    });
+    try {
+      const matrizInfo = business ? [business as Branch] : [];
+      setDistanceMatrix({
+        origin: originPosition,
+        destinations: business?.sucursales?.concat(matrizInfo),
+      });
+    } catch (error) {
+      setDistanceMatrix({
+        origin: originPosition,
+        destinations: business?.sucursales,
+      });
+    }
   }, [originPosition, business, setDistanceMatrix]);
 
   useEffect(() => {
