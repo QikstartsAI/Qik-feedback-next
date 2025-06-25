@@ -20,6 +20,7 @@ import { APIProvider } from "@vis.gl/react-google-maps";
 import { Branch } from "../types/business";
 import BenitoMiamiForm from "./feedback/customForms/BenitoMiamiForm";
 import DelcampoCustomForm from "./feedback/customForms/PolloCustomForm";
+import { Wizard } from "../layers/ui/wizard";
 
 const Hero = lazy(() => import("./Hero"));
 const FeedbackForm = lazy(() => import("./feedback/FeedbackForm"));
@@ -186,98 +187,21 @@ export default function FeedbackFormRoot() {
       solutionChannel="GMP_devsite_samples_v3_rgmautocomplete"
     >
       <Suspense fallback={<Loader />}>
-        <div>
+        <div className="min-h-screen bg-gradient-to-b from-purple-100 via-blue-50 to-white">
           {loading === "loading" || loading === "requesting" ? (
             <Loader />
           ) : (
             <>
-              {!isDscSolutions ? (
-                <div className="min-h-[calc(100vh-103px)]">
-                  <Hero
-                    business={business}
-                    locationPermission={locationPermission}
-                  />
-                  {!customerType &&
-                    (isHootersForm || isGusForm || isDelCampo ? (
-                      <CustomIntro
-                        business={business}
-                        toogleCustomerType={toggleCustomer}
-                        variant={
-                          isHootersForm
-                            ? "hooters"
-                            : isDelCampo
-                            ? "delcampo"
-                            : "gus"
-                        }
-                      />
-                    ) : (
-                      <Intro
-                        business={business}
-                        toogleCustomerType={toggleCustomer}
-                      />
-                    ))}
-                  {customerType &&
-                    (isHootersForm ? (
-                      <HootersCustomForm
-                        business={business}
-                        setIsSubmitted={setIsSubmitted}
-                        setRating={setRating}
-                        customerType={customerType}
-                        branchId={sucursalId}
-                        waiterId={waiterId}
-                      />
-                    ) : isGusForm ? (
-                      <GusCustomForm
-                        business={business}
-                        setIsSubmitted={setIsSubmitted}
-                        setRating={setRating}
-                        customerType={customerType}
-                      />
-                    ) : isBenitoMiami ? (
-                      <BenitoMiamiForm
-                        business={business}
-                        setIsSubmitted={setIsSubmitted}
-                        setRating={setRating}
-                        customerType={customerType}
-                        setCustomerName={setCustomerName}
-                      />
-                    ) : isDelCampo ? (
-                      <DelcampoCustomForm
-                        business={business}
-                        setIsSubmitted={setIsSubmitted}
-                        setRating={setRating}
-                        customerType={customerType}
-                        setCustomerName={setCustomerName}
-                        branchId={sucursalId}
-                        waiterId={waiterId}
-                      />
-                    ) : (
-                      <FeedbackForm
-                        business={business}
-                        setIsSubmitted={setIsSubmitted}
-                        setRating={setRating}
-                        customerType={customerType}
-                        setCustomerName={setCustomerName}
-                        branchId={sucursalId}
-                        waiterId={waiterId}
-                      />
-                    ))}
-                </div>
-              ) : (
-                <SimpleForm
-                  business={business}
-                  setIsSubmitted={setIsSubmitted}
-                  setRating={setRating}
-                  setIsQr={setIsQr}
-                  branchId={branchId}
-                  waiterId={waiterId}
-                />
-              )}
+              <Hero
+                business={business}
+                locationPermission={locationPermission}
+              />
+              <Wizard />
             </>
           )}
           <Toaster />
         </div>
-        {business?.HasGeolocation && (
+        {/* {business?.HasGeolocation && (
           <RequestLocationDialog
             branches={getBranchesListByPermission()}
             open={requestLocation}
@@ -287,7 +211,7 @@ export default function FeedbackFormRoot() {
             grantingPermissions={grantingPermissions}
             brandColor={brandColor}
           />
-        )}
+        )} */}
       </Suspense>
     </APIProvider>
   );
