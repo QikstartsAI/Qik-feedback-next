@@ -1,11 +1,15 @@
-import type { Config } from "tailwindcss";
+import type { Config } from "tailwindcss"
 
-const config: Config = {
+const config = {
+  darkMode: ["class"],
   content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+    "*.{js,ts,jsx,tsx,mdx}",
   ],
+  prefix: "",
   theme: {
     container: {
       center: true,
@@ -21,34 +25,8 @@ const config: Config = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        qik: {
-          DEFAULT: "hsl(var(--qik))",
-          foreground: "hsl(var(--qik-foreground))",
-        },
-        hooters: {
-          DEFAULT: "hsl(var(--hooters))", 
-          foreground: "hsl(var(--hooters-foreground))",
-        },
-        delcampo: {
-          DEFAULT: "hsl(var(--delcampo))",
-          foreground: "hsl(var(--delcampo-foreground))",
-        },
-        gus: {
-          DEFAULT: "hsl(var(--gus))",
-          foreground: "hsl(var(--gus-foreground))",
-        },
-        cebiches: {
-          DEFAULT: "hsl(var(--cebiches))",
-          foreground: "hsl(var(--cebiches-foreground))"
-        },
-        colorText: {
-          DEFAULT: "hsl(var(--color-text))",
-        },
-        question: {
-          DEFAULT: "hsl(var(--question))",
-        },
         primary: {
-          DEFAULT: "hsl(var(--primary))",
+          DEFAULT: "#0088cc", // Color principal de Qik
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
@@ -58,14 +36,6 @@ const config: Config = {
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
-        },
-        success: {
-          DEFAULT: "hsl(var(--success))",
-          foreground: "hsl(var(--success-foreground))",
-        },
-        warning: {
-          DEFAULT: "hsl(var(--warning))",
-          foreground: "hsl(var(--warning-foreground))",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
@@ -106,5 +76,6 @@ const config: Config = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-};
-export default config;
+} satisfies Config
+
+export default config
