@@ -1,3 +1,5 @@
+"use client";
+
 import React, {
   createContext,
   useContext,
@@ -22,12 +24,13 @@ import {
 
 interface CustomerContextState {
   currentCustomer: Customer | null;
-  customers: Customer[];
+
   loading: boolean;
   error: string | null;
 }
 
 interface CustomerContextActions {
+  editCustomer: (customerData: CustomerPayload) => void;
   getCustomerById: (id: string) => Promise<Customer | null>;
   getCustomerByPhone: (phoneNumber: string) => Promise<Customer | null>;
   createCustomer: (customerData: CustomerPayload) => Promise<Customer | null>;
@@ -37,7 +40,6 @@ interface CustomerContextActions {
   ) => Promise<Customer | null>;
   clearError: () => void;
   clearCurrentCustomer: () => void;
-  clearCustomers: () => void;
 }
 
 interface CustomerContextType
@@ -55,7 +57,6 @@ export function CustomerProvider({ children }: CustomerProviderProps) {
 
   const [state, setState] = useState<CustomerContextState>({
     currentCustomer: null,
-    customers: [],
     loading: false,
     error: null,
   });
@@ -76,14 +77,14 @@ export function CustomerProvider({ children }: CustomerProviderProps) {
     setState((prev) => ({ ...prev, currentCustomer: customer }));
   }, []);
 
-  const addCustomerToList = useCallback((customer: Customer) => {
-    setState((prev) => ({
-      ...prev,
-      customers: prev.customers.some((c) => c.id === customer.id)
-        ? prev.customers.map((c) => (c.id === customer.id ? customer : c))
-        : [...prev.customers, customer],
-    }));
-  }, []);
+  const editCustomer = (customerData: CustomerPayload): void => {
+    const editedCustomer = {
+      ...state.currentCustomer,
+      payload: customerData,
+    } as Customer;
+
+    setCurrentCustomer(editedCustomer);
+  };
 
   const getCustomerById = useCallback(
     async (id: string): Promise<Customer | null> => {
@@ -101,7 +102,6 @@ export function CustomerProvider({ children }: CustomerProviderProps) {
         const customer = await useCase.execute(id);
 
         setCurrentCustomer(customer);
-        addCustomerToList(customer);
 
         return customer;
       } catch (error) {
@@ -115,14 +115,7 @@ export function CustomerProvider({ children }: CustomerProviderProps) {
         setLoading(false);
       }
     },
-    [
-      isInitialized,
-      getService,
-      setLoading,
-      setError,
-      setCurrentCustomer,
-      addCustomerToList,
-    ]
+    [isInitialized, getService, setLoading, setError, setCurrentCustomer]
   );
 
   const getCustomerByPhone = useCallback(
@@ -142,7 +135,6 @@ export function CustomerProvider({ children }: CustomerProviderProps) {
 
         if (customer) {
           setCurrentCustomer(customer);
-          addCustomerToList(customer);
         }
 
         return customer;
@@ -157,14 +149,7 @@ export function CustomerProvider({ children }: CustomerProviderProps) {
         setLoading(false);
       }
     },
-    [
-      isInitialized,
-      getService,
-      setLoading,
-      setError,
-      setCurrentCustomer,
-      addCustomerToList,
-    ]
+    [isInitialized, getService, setLoading, setError, setCurrentCustomer]
   );
 
   const createCustomer = useCallback(
@@ -183,7 +168,6 @@ export function CustomerProvider({ children }: CustomerProviderProps) {
         const customer = await useCase.execute(customerData);
 
         setCurrentCustomer(customer);
-        addCustomerToList(customer);
 
         return customer;
       } catch (error) {
@@ -195,14 +179,7 @@ export function CustomerProvider({ children }: CustomerProviderProps) {
         setLoading(false);
       }
     },
-    [
-      isInitialized,
-      getService,
-      setLoading,
-      setError,
-      setCurrentCustomer,
-      addCustomerToList,
-    ]
+    [isInitialized, getService, setLoading, setError, setCurrentCustomer]
   );
 
   const updateCustomer = useCallback(
@@ -224,7 +201,6 @@ export function CustomerProvider({ children }: CustomerProviderProps) {
         const customer = await useCase.execute(id, customerData);
 
         setCurrentCustomer(customer);
-        addCustomerToList(customer);
 
         return customer;
       } catch (error) {
@@ -236,14 +212,7 @@ export function CustomerProvider({ children }: CustomerProviderProps) {
         setLoading(false);
       }
     },
-    [
-      isInitialized,
-      getService,
-      setLoading,
-      setError,
-      setCurrentCustomer,
-      addCustomerToList,
-    ]
+    [isInitialized, getService, setLoading, setError, setCurrentCustomer]
   );
 
   const clearError = useCallback(() => {
@@ -254,19 +223,15 @@ export function CustomerProvider({ children }: CustomerProviderProps) {
     setCurrentCustomer(null);
   }, [setCurrentCustomer]);
 
-  const clearCustomers = useCallback(() => {
-    setState((prev) => ({ ...prev, customers: [] }));
-  }, []);
-
   const contextValue: CustomerContextType = {
     ...state,
+    editCustomer,
     getCustomerById,
     getCustomerByPhone,
     createCustomer,
     updateCustomer,
     clearError,
     clearCurrentCustomer,
-    clearCustomers,
   };
 
   return (

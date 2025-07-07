@@ -6,9 +6,11 @@ export class CustomerRepositoryImpl implements CustomerRepository {
   private httpClient: IHttpClient;
   private baseUrl: string;
 
-  constructor(httpClient: IHttpClient, baseUrl: string = "/api") {
+  constructor(httpClient: IHttpClient, baseUrl?: string) {
     this.httpClient = httpClient;
-    this.baseUrl = baseUrl;
+    // Only use baseUrl if HttpClient doesn't already have a baseURL configured
+    // This prevents double base URL issues
+    this.baseUrl = baseUrl || "";
   }
 
   /**
@@ -39,21 +41,17 @@ export class CustomerRepositoryImpl implements CustomerRepository {
    */
   async getCustomerByPhoneNumber(phone: string): Promise<Customer | null> {
     try {
-      const response = await this.httpClient.get<Customer[]>(
-        `${this.baseUrl}/customers`,
+      const response = await this.httpClient.get<Customer>(
+        `${this.baseUrl}/customers/by-number`,
         {
           params: { phone },
         }
       );
 
-      if (response.data && response.data.length > 0) {
-        return response.data[0];
-      }
-
-      return null;
+      return response.data;
     } catch (error) {
-      console.error("Error fetching customer by email:", error);
-      // Return null instead of throwing for email lookups
+      console.error("Error fetching customer by phone:", error);
+      // Return null instead of throwing for phone lookups
       return null;
     }
   }
@@ -115,13 +113,66 @@ export const createCustomerRepository = (
   return new CustomerRepositoryImpl(httpClient, baseUrl);
 };
 
-// Legacy factory function for backward compatibility
-export const createCustomerRepositoryLegacy = (
-  baseUrl?: string
-): CustomerRepository => {
-  const httpClient = HttpClient.createWithEnv();
-  return new CustomerRepositoryImpl(httpClient, baseUrl);
-};
-
 // Default export for convenience
-export default createCustomerRepositoryLegacy;
+export default createCustomerRepository;
+
+// {
+//   "email": "test@test.com",
+//   "firstName": "TEST",
+//   "lastName": "TEST",
+//   "phoneNumber": "+573183147981",
+//   "password": "TEST12345!"
+// }
+
+// {
+//   "id": "ac34c402-73a1-4a2b-b920-b9a147471ecb",
+//   "owner": "686c2f50539c8f5a48487bbc",
+//   "payload": {
+//     "name": "Negocio de Prueba",
+//     "address": "Calle 20 # 20 - 20",
+//     "country": "CO",
+//     "city": "Neiva",
+//     "coverImgURL": "https://marketplace.canva.com/EAF8OQTDry0/1/0/1600w/canva-logo-restaurante-circular-blanco-y-negro-yoLE4F7rTeQ.jpg",
+//     "logo": "https://marketplace.canva.com/EAF8OQTDry0/1/0/1600w/canva-logo-restaurante-circular-blanco-y-negro-yoLE4F7rTeQ.jpg"
+//   },
+//   "_id": "686c32b6539c8f5a48487bc0",
+//   "createdAt": "2025-07-07T20:48:54.520Z",
+//   "updatedAt": "2025-07-07T20:48:54.520Z",
+//   "__v": 0
+// }
+
+// {
+//   "id": "d66bc78e-516f-46b3-ba3b-4bc042200908",
+//   "brand": "ac34c402-73a1-4a2b-b920-b9a147471ecb",
+//   "owner": "686c2f50539c8f5a48487bbc",
+//   "payload": {
+//     "name": "Negocio de Prueba",
+//     "address": "Calle 20 # 20 - 20",
+//     "country": "CO",
+//     "city": "Neiva",
+//     "coverImgURL": "https://marketplace.canva.com/EAF8OQTDry0/1/0/1600w/canva-logo-restaurante-circular-blanco-y-negro-yoLE4F7rTeQ.jpg",
+//     "logo": "https://marketplace.canva.com/EAF8OQTDry0/1/0/1600w/canva-logo-restaurante-circular-blanco-y-negro-yoLE4F7rTeQ.jpg"
+//   },
+//   "_id": "686c3305539c8f5a48487bc4",
+//   "createdAt": "2025-07-07T20:50:13.418Z",
+//   "updatedAt": "2025-07-07T20:50:13.418Z",
+//   "__v": 0
+// }
+
+// {
+//   "origin": "a",
+//   "customerType": "new",
+//   "email": "a@a.com",
+//   "payload": {
+//     "fullName": "Jesus Sanchez",
+//     "phoneNumber": "+573183147984",
+//     "branches": [
+//       "d66bc78e-516f-46b3-ba3b-4bc042200908"
+//     ]
+//   },
+//   "_id": "686c3420539c8f5a48487bc6",
+//   "createdAt": "2025-07-07T20:54:56.501Z",
+//   "updatedAt": "2025-07-07T20:54:56.501Z",
+//   "__v": 0,
+//   "id": "686c3420539c8f5a48487bc6"
+// }

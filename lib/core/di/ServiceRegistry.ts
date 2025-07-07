@@ -39,8 +39,8 @@ export class ServiceRegistry {
     // Register repositories
     container.registerSingleton(CUSTOMER_REPOSITORY, async () => {
       const httpClient = await container.resolve<IHttpClient>(HTTP_CLIENT);
-      const baseUrl = await container.resolve<string>(API_BASE_URL);
-      return createCustomerRepository(httpClient, baseUrl);
+      // Don't pass baseUrl since HttpClient already has it configured
+      return createCustomerRepository(httpClient);
     });
 
     // Register use cases

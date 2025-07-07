@@ -81,11 +81,17 @@ export class HttpClient implements IHttpClient {
   private errorInterceptors: ErrorInterceptor[] = [];
 
   constructor(config: HttpClientConfig = {}) {
+    // Sanitize baseURL if provided
+    const sanitizedBaseURL = config.baseURL
+      ? config.baseURL.replace(/[;'"]/g, "").trim()
+      : "";
+
     this.config = {
-      baseURL: "",
+      baseURL: sanitizedBaseURL,
       timeout: 10000,
       headers: {
         "Content-Type": "application/json",
+        "x-api-key": `${process.env.NEXT_PUBLIC_API_KEY}`,
       },
       withCredentials: false,
       ...config,
@@ -107,6 +113,7 @@ export class HttpClient implements IHttpClient {
       baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "",
       headers: {
         "Content-Type": "application/json",
+        "x-api-key": `${process.env.NEXT_PUBLIC_API_KEY}`,
       },
     });
   }
@@ -126,7 +133,12 @@ export class HttpClient implements IHttpClient {
 
   // Helper method to build URL with query parameters
   private buildURL(url: string, params?: Record<string, any>): string {
-    const fullURL = this.config.baseURL ? `${this.config.baseURL}${url}` : url;
+    // Sanitize baseURL to remove any malformed characters
+    const sanitizedBaseURL = this.config.baseURL
+      ? this.config.baseURL.replace(/[;'"]/g, "").trim()
+      : "";
+
+    const fullURL = sanitizedBaseURL ? `${sanitizedBaseURL}${url}` : url;
 
     if (!params || Object.keys(params).length === 0) {
       return fullURL;
@@ -358,7 +370,7 @@ httpClient.addErrorInterceptor((error: HttpError) => {
   if (error.isNetworkError) {
     toast.error("Network error - please check your connection");
   } else if (error.status === 401) {
-    toast.error("Unauthorized - please log in again");
+    toast.error("Session expired - please log in again");
   } else if (error.status === 403) {
     toast.error("Access denied");
   } else if (error.status === 404) {
@@ -370,20 +382,6 @@ httpClient.addErrorInterceptor((error: HttpError) => {
   }
 
   return error;
-});
-
-// Default request interceptor to add auth token
-httpClient.addRequestInterceptor((config) => {
-  // Add auth token if available
-  const token = localStorage.getItem("authToken");
-  if (token) {
-    config.headers = {
-      ...config.headers,
-      Authorization: `Bearer ${token}`,
-    };
-  }
-
-  return config;
 });
 
 // Default response interceptor for common data transformations

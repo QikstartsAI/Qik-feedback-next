@@ -1,9 +1,12 @@
 import { createCustomerRepository } from "./customerRepository";
-import { CustomerDTO } from "@/app/layers/domain";
+import { HttpClient } from "@/lib/core/httpClient";
+import { Customer, CustomerPayload, CustomerType } from "@/lib/domain/entities";
 
 // Example usage of the Customer Repository
 export class CustomerService {
-  private customerRepository = createCustomerRepository();
+  private customerRepository = createCustomerRepository(
+    HttpClient.createWithEnv()
+  );
 
   /**
    * Example: Get a customer by ID
@@ -20,22 +23,22 @@ export class CustomerService {
   }
 
   /**
-   * Example: Get a customer by email
+   * Example: Get a customer by phone number
    */
-  async getCustomerByPhoneNumber(email: string) {
+  async getCustomerByPhoneNumber(phone: string) {
     try {
       const customer = await this.customerRepository.getCustomerByPhoneNumber(
-        email
+        phone
       );
       if (customer) {
         console.log("Customer found:", customer);
         return customer;
       } else {
-        console.log("No customer found with email:", email);
+        console.log("No customer found with phone:", phone);
         return null;
       }
     } catch (error) {
-      console.error("Failed to get customer by email:", error);
+      console.error("Failed to get customer by phone:", error);
       throw error;
     }
   }
@@ -43,7 +46,7 @@ export class CustomerService {
   /**
    * Example: Create a new customer
    */
-  async createNewCustomer(customerData: CustomerDTO) {
+  async createNewCustomer(customerData: CustomerPayload) {
     try {
       const newCustomer = await this.customerRepository.createCustomer(
         customerData
@@ -59,7 +62,10 @@ export class CustomerService {
   /**
    * Example: Update an existing customer
    */
-  async updateExistingCustomer(id: string, updateData: Partial<CustomerDTO>) {
+  async updateExistingCustomer(
+    id: string,
+    updateData: Partial<CustomerPayload>
+  ) {
     try {
       const updatedCustomer = await this.customerRepository.updateCustomer(
         id,
@@ -76,10 +82,7 @@ export class CustomerService {
   /**
    * Example: Complete workflow - find or create customer
    */
-  async findOrCreateCustomer(
-    phone: string,
-    customerData: Omit<CustomerDTO, "id">
-  ) {
+  async findOrCreateCustomer(phone: string, customerData: CustomerPayload) {
     try {
       // First, try to find existing customer
       let customer = await this.customerRepository.getCustomerByPhoneNumber(
@@ -93,10 +96,9 @@ export class CustomerService {
 
       // If not found, create new customer
       console.log("Creating new customer for phone:", phone);
-      const newCustomer = await this.customerRepository.createCustomer({
-        ...customerData,
-        id: phone, // Using phone as ID for this example
-      });
+      const newCustomer = await this.customerRepository.createCustomer(
+        customerData
+      );
 
       console.log("New customer created:", newCustomer);
       return newCustomer;
@@ -114,40 +116,29 @@ const customerService = new CustomerService();
 // Get customer by ID
 await customerService.getCustomerById("customer123");
 
-// Get customer by email
-await customerService.getCustomerByPhoneNumber("user@example.com");
+// Get customer by phone number
+await customerService.getCustomerByPhoneNumber("+1234567890");
 
 // Create new customer
-const newCustomerData: CustomerDTO = {
-  id: "user@example.com",
-  email: "user@example.com",
-  customerType: "new",
-  origin: "web",
-  payload: {
-    name: "John Doe",
-    phoneNumber: "+1234567890"
-  }
+const newCustomerData: CustomerPayload = {
+  fullName: "John Doe",
+  customerType: CustomerType.New,
+  birthDate: new Date("1990-01-01"),
+  phoneNumber: "+1234567890"
 };
 await customerService.createNewCustomer(newCustomerData);
 
 // Update customer
-await customerService.updateExistingCustomer("user@example.com", {
-  payload: {
-    name: "John Smith",
-    phoneNumber: "+1234567890"
-  }
+await customerService.updateExistingCustomer("customer123", {
+  fullName: "John Smith",
+  phoneNumber: "+1234567890"
 });
 
-// Get all customers with filter
-await customerService.getAllCustomers({ customerType: "frequent" });
-
 // Find or create customer
-await customerService.findOrCreateCustomer("user@example.com", {
-  email: "user@example.com",
-  customerType: "new",
-  origin: "web",
-  payload: {
-    name: "John Doe"
-  }
+await customerService.findOrCreateCustomer("+1234567890", {
+  fullName: "John Doe",
+  customerType: CustomerType.New,
+  birthDate: new Date("1990-01-01"),
+  phoneNumber: "+1234567890"
 });
 */

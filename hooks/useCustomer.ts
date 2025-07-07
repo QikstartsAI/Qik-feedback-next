@@ -5,11 +5,11 @@ import { useCustomerContext } from "@/lib/data/context";
 export interface UseCustomerReturn {
   // State
   currentCustomer: Customer | null;
-  customers: Customer[];
   loading: boolean;
   error: string | null;
 
   // Actions
+  editCustomer: (customer: CustomerPayload) => void;
   getCustomerById: (id: string) => Promise<Customer | null>;
   getCustomerByPhone: (phoneNumber: string) => Promise<Customer | null>;
   createCustomer: (customerData: CustomerPayload) => Promise<Customer | null>;
@@ -21,13 +21,6 @@ export interface UseCustomerReturn {
   // Utility functions
   clearError: () => void;
   clearCurrentCustomer: () => void;
-  clearCustomers: () => void;
-
-  // Convenience methods
-  findCustomerById: (id: string) => Customer | undefined;
-  findCustomerByPhone: (phoneNumber: string) => Customer | undefined;
-  hasCustomer: (id: string) => boolean;
-  getCustomerCount: () => number;
 }
 
 /**
@@ -38,41 +31,15 @@ export function useCustomer(): UseCustomerReturn {
   const context = useCustomerContext();
 
   // Convenience methods
-  const findCustomerById = useCallback(
-    (id: string): Customer | undefined => {
-      return context.customers.find((customer) => customer.id === id);
-    },
-    [context.customers]
-  );
-
-  const findCustomerByPhone = useCallback(
-    (phoneNumber: string): Customer | undefined => {
-      return context.customers.find(
-        (customer) => customer.payload.phoneNumber === phoneNumber
-      );
-    },
-    [context.customers]
-  );
-
-  const hasCustomer = useCallback(
-    (id: string): boolean => {
-      return context.customers.some((customer) => customer.id === id);
-    },
-    [context.customers]
-  );
-
-  const getCustomerCount = useCallback((): number => {
-    return context.customers.length;
-  }, [context.customers]);
 
   return {
     // State
     currentCustomer: context.currentCustomer,
-    customers: context.customers,
     loading: context.loading,
     error: context.error,
 
     // Actions
+    editCustomer: context.editCustomer,
     getCustomerById: context.getCustomerById,
     getCustomerByPhone: context.getCustomerByPhone,
     createCustomer: context.createCustomer,
@@ -81,13 +48,6 @@ export function useCustomer(): UseCustomerReturn {
     // Utility functions
     clearError: context.clearError,
     clearCurrentCustomer: context.clearCurrentCustomer,
-    clearCustomers: context.clearCustomers,
-
-    // Convenience methods
-    findCustomerById,
-    findCustomerByPhone,
-    hasCustomer,
-    getCustomerCount,
   };
 }
 
