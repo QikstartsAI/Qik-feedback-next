@@ -62,3 +62,21 @@ export interface Feedback extends ModelResponseBase<FeedbackPayload> {
   updatedAt: Date;
   payload: FeedbackPayload;
 }
+
+export type BranchPayload = {
+  name: string;
+  address: string;
+  country: string;
+  city: string;
+  coverImgURL?: string;
+  logo?: string;
+  geopoint?: { _lat: number; _long: number };
+  hasGeolocation?: boolean;
+};
+
+export interface Branch extends ModelResponseBase<BranchPayload> {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  payload: BranchPayload;
+}

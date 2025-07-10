@@ -15,10 +15,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { Star, MapPin, CheckCircle } from "lucide-react";
 import { useCustomer } from "@/hooks/useCustomer";
-import { IconChevronCompactLeft, IconChevronLeft } from "@tabler/icons-react";
+import { useBranch } from "@/hooks/useBranch";
+import { useSearchParams } from "next/navigation";
+import { IconChevronLeft } from "@tabler/icons-react";
 
 export default function QikLoyaltyPlatform() {
   const { currentCustomer, getCustomerByPhone, editCustomer } = useCustomer();
+  const { currentBranch, getBranchById, loading: branchLoading } = useBranch();
+  const searchParams = useSearchParams();
+
   const [currentView, setCurrentView] = useState<
     "welcome" | "survey" | "thankyou"
   >("welcome");
@@ -31,6 +36,9 @@ export default function QikLoyaltyPlatform() {
   const [referralSource, setReferralSource] = useState("");
   const [rating, setRating] = useState<string>("");
   const [comment, setComment] = useState("");
+
+  // Get branch ID from URL parameters
+  const branchId = searchParams.get("id");
 
   const progress = (step / 2) * 100;
 
@@ -50,6 +58,13 @@ export default function QikLoyaltyPlatform() {
     { id: "social_media", label: "Redes sociales" },
     { id: "other", label: "Otro" },
   ];
+
+  // Fetch branch data when component mounts or branchId changes
+  useEffect(() => {
+    if (branchId) {
+      getBranchById(branchId);
+    }
+  }, [branchId, getBranchById]);
 
   const validatePhone = (phoneNumber: string) => {
     const cleanPhone = phoneNumber.replace("+593 ", "").replace(/\s/g, "");
@@ -81,6 +96,11 @@ export default function QikLoyaltyPlatform() {
     setStep(3);
   };
 
+  const backToWelcome = () => {
+    setCurrentView("welcome");
+    setStep(1);
+  };
+
   useEffect(() => {
     if (!currentCustomer?.payload) return;
     const { fullName } = currentCustomer?.payload;
@@ -89,6 +109,13 @@ export default function QikLoyaltyPlatform() {
 
   const canContinueStep1 = name && phone && !phoneError && referralSource;
   const isPositiveRating = rating === "good" || rating === "excellent";
+
+  // Get branch information for header
+  const branchName = currentBranch?.payload?.name || "Restaurante";
+  const branchLogo = currentBranch?.payload?.logo || "/logo.png";
+  const branchCoverImage =
+    currentBranch?.payload?.coverImgURL || "/restaurant-bg.jpg";
+  const branchAddress = currentBranch?.payload?.address || "Ubicación";
 
   const Thankyou = () => {
     return (
@@ -122,22 +149,22 @@ export default function QikLoyaltyPlatform() {
       {/* Header */}
       <div
         className="relative h-32 bg-cover bg-center"
-        style={{ backgroundImage: "url('/restaurant-bg.jpg')" }}
+        style={{ backgroundImage: `url('${branchCoverImage}')` }}
       >
         <div className="absolute inset-0 bg-black/50"></div>
         <div className="relative z-10 flex items-center justify-center h-full px-4">
           <div className="flex items-center space-x-3 w-full max-w-md">
             <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
               <img
-                src="/logo.png"
+                src={branchLogo}
                 alt="Logo"
                 className="w-8 h-8 rounded-full"
               />
             </div>
             <div className="text-white">
-              <h1 className="text-lg font-bold">La Romagna</h1>
+              <h1 className="text-lg font-bold">{branchName}</h1>
               <p className="text-sm text-gray-200">
-                Restaurante Italiano • 0.2 km
+                {branchAddress} • {branchLoading ? "Cargando..." : "0.2 km"}
               </p>
             </div>
           </div>
@@ -153,7 +180,7 @@ export default function QikLoyaltyPlatform() {
                 <div>
                   <IconChevronLeft
                     className="cursor-pointer"
-                    onClick={() => setCurrentView("welcome")}
+                    onClick={backToWelcome}
                   />
                 </div>
                 <div className="text-4xl mb-2">😊</div>
@@ -172,10 +199,6 @@ export default function QikLoyaltyPlatform() {
               <CardContent className="space-y-4">
                 {/* Progress bar */}
                 <div className="mb-4">
-                  <div className="flex justify-between text-xs text-gray-500 mb-2">
-                    <span>Encuesta rápida</span>
-                    <span>{"< 25 segundos"}</span>
-                  </div>
                   <Progress value={progress} className="h-2" />
                 </div>
 
@@ -362,8 +385,9 @@ export default function QikLoyaltyPlatform() {
                               htmlFor="terms"
                               className="text-xs text-gray-600 leading-tight"
                             >
-                              Al presionar "Enviar", acepto los Términos y
-                              Condiciones y las Políticas de Privacidad.
+                              Al presionar &apos;Enviar&apos;, acepto los
+                              Términos y Condiciones y las Políticas de
+                              Privacidad.
                             </Label>
                           </div>
                         </div>

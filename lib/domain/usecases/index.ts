@@ -14,3 +14,7 @@ export {
   UpdateCustomerUseCase,
   type IUpdateCustomerUseCase,
 } from "./UpdateCustomerUseCase";
+export {
+  GetBranchByIdUseCase,
+  type IGetBranchByIdUseCase,
+} from "./GetBranchByIdUseCase";

@@ -4,10 +4,12 @@ import {
   HTTP_CLIENT,
   API_BASE_URL,
   CUSTOMER_REPOSITORY,
+  BRANCH_REPOSITORY,
   GET_CUSTOMER_BY_ID_USE_CASE,
   GET_CUSTOMER_BY_PHONE_USE_CASE,
   CREATE_CUSTOMER_USE_CASE,
   UPDATE_CUSTOMER_USE_CASE,
+  GET_BRANCH_BY_ID_USE_CASE,
 } from "./ServiceIdentifiers";
 
 import { HttpClient, IHttpClient } from "../httpClient";
@@ -15,12 +17,18 @@ import {
   CustomerRepositoryImpl,
   createCustomerRepository,
 } from "@/lib/data/repositories/customerRepository";
+import {
+  BranchRepositoryImpl,
+  createBranchRepository,
+} from "@/lib/data/repositories/branchRepository";
 import { CustomerRepository } from "@/lib/domain/repositories/iCustomerRepository";
+import { BranchRepository } from "@/lib/domain/repositories/iBranchRepository";
 import {
   GetCustomerByIdUseCase,
   GetCustomerByPhoneNumberUseCase,
   CreateCustomerUseCase,
   UpdateCustomerUseCase,
+  GetBranchByIdUseCase,
 } from "@/lib/domain/usecases";
 
 export class ServiceRegistry {
@@ -41,6 +49,12 @@ export class ServiceRegistry {
       const httpClient = await container.resolve<IHttpClient>(HTTP_CLIENT);
       // Don't pass baseUrl since HttpClient already has it configured
       return createCustomerRepository(httpClient);
+    });
+
+    container.registerSingleton(BRANCH_REPOSITORY, async () => {
+      const httpClient = await container.resolve<IHttpClient>(HTTP_CLIENT);
+      // Don't pass baseUrl since HttpClient already has it configured
+      return createBranchRepository(httpClient);
     });
 
     // Register use cases
@@ -70,6 +84,13 @@ export class ServiceRegistry {
         CUSTOMER_REPOSITORY
       );
       return new UpdateCustomerUseCase(customerRepository);
+    });
+
+    container.registerSingleton(GET_BRANCH_BY_ID_USE_CASE, async () => {
+      const branchRepository = await container.resolve<BranchRepository>(
+        BRANCH_REPOSITORY
+      );
+      return new GetBranchByIdUseCase(branchRepository);
     });
 
     return container;
