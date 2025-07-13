@@ -46,7 +46,7 @@ import {
 } from "@/lib/utils/constants";
 
 export default function QikLoyaltyPlatform() {
-  const { currentCustomer, getCustomerByPhone, editCustomer } = useCustomer();
+  const { currentCustomer, getCustomerByPhone } = useCustomer();
   const { currentBranch, getBranchById, loading: branchLoading } = useBranch();
   const { getWaiterById, loading: waiterLoading } = useWaiter();
   const searchParams = useSearchParams();
@@ -55,7 +55,8 @@ export default function QikLoyaltyPlatform() {
     (typeof VIEWS)[keyof typeof VIEWS]
   >(VIEWS.WELCOME);
   const [step, setStep] = useState<number>(FORM_STEPS.WELCOME);
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [acceptPromotions, setAcceptPromotions] = useState(true);
@@ -153,10 +154,16 @@ export default function QikLoyaltyPlatform() {
   useEffect(() => {
     if (!currentCustomer?.payload) return;
     const { name, lastName } = currentCustomer?.payload;
-    setName(`${name} ${lastName}`.trim());
+    setFirstName(name || "");
+    setLastName(lastName || "");
   }, [currentCustomer]);
 
-  const canContinue = canContinueStep1(name, phone, phoneError, referralSource);
+  const canContinue = canContinueStep1(
+    firstName,
+    phone,
+    phoneError,
+    referralSource
+  );
   const positiveRating = isPositiveRating(rating);
 
   // Get branch information for header
@@ -355,20 +362,37 @@ export default function QikLoyaltyPlatform() {
                         </Label>
                       </div>
 
-                      <div>
-                        <Label
-                          htmlFor="name"
-                          className="text-sm font-medium text-gray-700"
-                        >
-                          Nombre completo
-                        </Label>
-                        <Input
-                          id="name"
-                          placeholder="Tu nombre completo"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          className="mt-1"
-                        />
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label
+                            htmlFor="firstName"
+                            className="text-sm font-medium text-gray-700"
+                          >
+                            Nombre
+                          </Label>
+                          <Input
+                            id="firstName"
+                            placeholder="Tu nombre"
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label
+                            htmlFor="lastName"
+                            className="text-sm font-medium text-gray-700"
+                          >
+                            Apellido
+                          </Label>
+                          <Input
+                            id="lastName"
+                            placeholder="Tu apellido"
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            className="mt-1"
+                          />
+                        </div>
                       </div>
 
                       <div>
@@ -431,7 +455,7 @@ export default function QikLoyaltyPlatform() {
                           <div className="text-center">
                             <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-2" />
                             <h3 className="font-bold text-green-600">
-                              ¡Gracias {name.split(" ")[0]}!
+                              ¡Gracias {firstName}!
                             </h3>
                             <p className="text-sm text-gray-600">
                               +500 puntos agregados

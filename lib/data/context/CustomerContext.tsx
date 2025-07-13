@@ -133,6 +133,7 @@ export function CustomerProvider({ children }: CustomerProviderProps) {
         );
         const customer = await useCase.execute(phoneNumber);
 
+        console.log("customer:::", customer);
         if (customer) {
           setCurrentCustomer(customer);
         }
