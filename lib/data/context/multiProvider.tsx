@@ -6,6 +6,7 @@ import { APIProvider } from "@vis.gl/react-google-maps";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { CustomerProvider } from "./CustomerContext";
+import { BrandProvider } from "./BrandContext";
 import { BranchProvider } from "./BranchContext";
 import { FeedbackProvider } from "./FeedbackContext";
 
@@ -26,9 +27,11 @@ export const MultiProvider = ({ children }: MultiProviderProps) => {
         disableTransitionOnChange
       >
         <CustomerProvider>
-          <BranchProvider>
-            <FeedbackProvider>{children}</FeedbackProvider>
-          </BranchProvider>
+          <BrandProvider>
+            <BranchProvider>
+              <FeedbackProvider>{children}</FeedbackProvider>
+            </BranchProvider>
+          </BrandProvider>
         </CustomerProvider>
       </ThemeProvider>
       {/* <BusinessDataProvider>{children}</BusinessDataProvider> */}

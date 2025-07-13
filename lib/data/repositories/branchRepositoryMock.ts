@@ -13,6 +13,7 @@ const mockBranches: Branch[] = [
       coverImgURL: "/restaurant-bg.jpg",
       name: "Restaurante El Buen Sabor",
       category: "Restaurante",
+      powers: ["GEOLOCATION"],
       location: {
         address: "Calle 15 #23-45, Neiva, Huila",
         countryCode: "CO",
@@ -31,6 +32,7 @@ const mockBranches: Branch[] = [
       coverImgURL: "/restaurant-bg.jpg",
       name: "Restaurante El Buen Sabor - Centro",
       category: "Restaurante",
+      powers: ["GEOLOCATION"],
       location: {
         address: "Carrera 5 #18-32, Centro, Neiva, Huila",
         countryCode: "CO",
@@ -49,6 +51,7 @@ const mockBranches: Branch[] = [
       coverImgURL: "/business_icon_cover.jpg",
       name: "Café Delicioso",
       category: "Café",
+      powers: ["GEOLOCATION"],
       location: {
         address: "Avenida 26 #15-67, Neiva, Huila",
         countryCode: "CO",

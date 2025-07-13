@@ -1,6 +1,6 @@
 "use client";
 
-import {
+import React, {
   createContext,
   useContext,
   useState,
@@ -10,39 +10,41 @@ import {
 } from "react";
 
 import { useSearchParams } from "next/navigation";
-import { findBusiness } from "../services/business";
+import { Brand } from "../lib/domain/entities";
+import { useBrand } from "./useBrand";
 
-interface BusinessDataContextType {
+interface BrandDataContextType {
   loading: string;
-  business: any;
-  businessId: string | null;
+  brand: Brand | null;
+  brandId: string | null;
   setSucursalId: (id: string | null) => void;
-  setBusiness: (business: any) => void;
+  setBrand: (brand: Brand | null) => void;
   sucursalId: string | null;
   branchId: string | null;
   waiterId: string | null;
   brandColor: string;
 }
 
-const BusinessDataContext = createContext<BusinessDataContextType | undefined>(
+const BrandDataContext = createContext<BrandDataContextType | undefined>(
   undefined
 );
 
-export const BusinessDataProvider = ({ children }: { children: ReactNode }) => {
+export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState<string>("loading");
-  const [business, setBusiness] = useState<any>(null);
+  const [brand, setBrand] = useState<Brand | null>(null);
   const [sucursalId, setSucursalId] = useState<string | null>(null);
-  const [brandColor, setBrandColor] = useState<string>("");
+  const [brandColor, setBrandColor] = useState<string>("var(--qik)");
+  const { getBrandById } = useBrand();
 
   const searchParams = useSearchParams();
-  const businessId = searchParams.get("id");
+  const brandId = searchParams.get("id");
   const branchId = searchParams.get("sucursal");
   const waiterId = searchParams.get("mesero");
   const isFetching = useRef(false);
 
   useEffect(() => {
-    const fetchBusinessData = async () => {
-      if (!businessId || isFetching.current) {
+    const fetchBrandData = async () => {
+      if (!brandId || isFetching.current) {
         return;
       }
 
@@ -50,40 +52,33 @@ export const BusinessDataProvider = ({ children }: { children: ReactNode }) => {
       setLoading("loading");
 
       try {
-        const res = await findBusiness(
-          businessId,
-          sucursalId || branchId,
-          waiterId
-        );
-
-        setBusiness(res);
+        const res = await getBrandById(brandId);
+        setBrand(res);
       } catch (error) {
-        console.error("Error fetching business data:", error);
-        setBusiness(null);
+        console.error("Error fetching brand data:", error);
+        setBrand(null);
       } finally {
         setLoading("loaded");
         isFetching.current = false;
       }
     };
 
-    fetchBusinessData();
-  }, [businessId, branchId, waiterId, sucursalId]);
+    fetchBrandData();
+  }, [brandId, getBrandById]);
 
   useEffect(() => {
-    console.log("business?.BrandColor:::: ", business?.BrandColor);
-    if (!business?.BrandColor) return;
-    console.log("CURRENT:: ", brandColor);
-    if (business?.BrandColor !== brandColor) {
-      setBrandColor(business.BrandColor);
+    if (brand?.payload?.logoImgURL) {
+      // Set brand color based on brand data if available
+      setBrandColor("var(--qik)");
     }
-  }, [business?.BrandColor, brandColor]);
+  }, [brand]);
 
   const value = {
     loading,
-    business,
-    businessId,
+    brand,
+    brandId,
     setSucursalId,
-    setBusiness,
+    setBrand,
     sucursalId,
     branchId,
     waiterId,
@@ -91,20 +86,18 @@ export const BusinessDataProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <BusinessDataContext.Provider value={value}>
+    <BrandDataContext.Provider value={value}>
       {children}
-    </BusinessDataContext.Provider>
+    </BrandDataContext.Provider>
   );
 };
 
-export const useBusinessData = () => {
-  const context = useContext(BusinessDataContext);
+export const useBrandData = () => {
+  const context = useContext(BrandDataContext);
   if (context === undefined) {
-    throw new Error(
-      "useBusinessData must be used within a BusinessDataProvider"
-    );
+    throw new Error("useBrandData must be used within a BrandDataProvider");
   }
   return context;
 };
 
-export default useBusinessData;
+export default useBrandData;

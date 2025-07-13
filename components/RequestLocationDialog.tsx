@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 
 import { cn } from "../lib/utils";
-import { Button } from "./ui/Button";
+import { Button } from "./ui/button";
 
 import Image from "next/image";
-import { Branch } from "../types/business";
+import { Branch } from "../lib/domain/entities";
 import { IconCircle, IconCircleCheck, IconPinned } from "@tabler/icons-react";
 import Loader from "./Loader";
 import LocationIcon from "./ui/LocationIcon";
@@ -134,7 +134,7 @@ const SuggestedLocations = ({
 
   useEffect(() => {
     if (branches.length == 0) return;
-    setSelected(getNormalizedBusinessName(branches[0]?.Name));
+    setSelected(getNormalizedBusinessName(branches[0]?.payload?.name));
   }, [branches]);
 
   const handleClickSelected = (branchName: string | undefined) => {
@@ -209,12 +209,12 @@ const SuggestedLocations = ({
               {branches.map((branch, idx) => {
                 return (
                   <div
-                    onClick={() => handleClickSelected(branch?.Name)}
+                    onClick={() => handleClickSelected(branch?.payload?.name)}
                     className="flex items-center gap-4 border py-2 px-3 rounded-lg cursor-pointer focus:ring"
                     key={idx}
                   >
                     {selected ==
-                    getNormalizedBusinessName(branch?.Name ?? "") ? (
+                    getNormalizedBusinessName(branch?.payload?.name ?? "") ? (
                       <span
                         style={{ color: `hsl(${brandColor || "var(--qik)"})` }}
                       >
@@ -232,14 +232,14 @@ const SuggestedLocations = ({
                         className="text-[1rem] font-bold"
                         style={{ color: `hsl(${brandColor || "var(--qik)"})` }}
                       >
-                        {branch?.Name}
+                        {branch?.payload?.name}
                       </h4>
                       <div className="flex items-center gap-1">
                         <span>
                           <IconPinned size={10} />
                         </span>
                         <p className="text-sky-900 text-[0.7rem] font-light">
-                          {branch?.Address}
+                          {branch?.payload?.location?.address}
                         </p>
                       </div>
                     </div>
@@ -257,7 +257,8 @@ const SuggestedLocations = ({
                 onConfirm(
                   branches.find(
                     (branch) =>
-                      getNormalizedBusinessName(branch?.Name) === selected
+                      getNormalizedBusinessName(branch?.payload?.name) ===
+                      selected
                   )
                 )
               }

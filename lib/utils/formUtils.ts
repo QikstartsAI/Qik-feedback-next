@@ -9,9 +9,18 @@ export const isPositiveRating = (rating: string): boolean => {
 export const getBranchInfo = (branch: any) => {
   return {
     name: branch?.payload?.name || "Restaurante",
-    logo: branch?.payload?.logo || "/logo.png",
+    logo: branch?.payload?.logoImgURL || "/logo.png",
     coverImage: branch?.payload?.coverImgURL || "/restaurant-bg.jpg",
-    address: branch?.payload?.address || "Ubicación",
+    address: branch?.payload?.location?.address || "Ubicación",
+  };
+};
+
+export const getBrandInfo = (brand: any) => {
+  return {
+    name: brand?.payload?.name || "Restaurante",
+    logo: brand?.payload?.logoImgURL || "/logo.png",
+    coverImage: brand?.payload?.coverImgURL || "/restaurant-bg.jpg",
+    address: brand?.payload?.location?.address || "Ubicación",
   };
 };
 

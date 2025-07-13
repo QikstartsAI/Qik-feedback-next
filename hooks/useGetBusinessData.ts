@@ -1,48 +1,36 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { findBusiness } from "@/app/services/business";
-import { Business } from "@/app/types/business";
+import { Brand } from "../lib/domain/entities";
 import { useSearchParams } from "next/navigation";
-import { getBusinessCustomers } from "../lib/getBusinessCustomers";
+import { useBrand } from "./useBrand";
 
-function useGetBusinessData() {
+function useGetBrandData() {
   const [loading, setLoading] = useState("loading");
-  const [business, setBusiness] = useState<Business | null>(null);
+  const [brand, setBrand] = useState<Brand | null>(null);
   const [sucursalId, setSucursalId] = useState<string | null>(null);
   const [brandColor, setBrandColor] = useState("var(--qik)");
   const searchParams = useSearchParams();
+  const { getBrandById } = useBrand();
 
-  const businessId = searchParams.get("id");
-  const branchId = searchParams.get("sucursal");
-  const waiterId = searchParams.get("mesero");
-
-  // useEffect(() => {
-  //   console.log("BUSINESS:", businessId);
-  //   const fetchBusinessCustomers = async () => {
-  //     if (businessId) {
-  //       const customers = await getBusinessCustomers(businessId, true);
-  //       console.log("Customers", customers);
-  //     }
-  //   };
-  //   fetchBusinessCustomers();
-  // }, [businessId]);
+  const brandId = searchParams.get("id");
+  const branchId = searchParams.get("branch");
+  const waiterId = searchParams.get("waiter");
 
   useEffect(() => {
-    if (business?.BrandColor) {
-      setBrandColor(business?.BrandColor);
+    if (brand?.payload?.logoImgURL) {
+      // Set brand color based on brand data if available
+      setBrandColor("var(--qik)");
     }
-  }, [business]);
+  }, [brand]);
+
   useEffect(() => {
-    if (!businessId) return;
+    if (!brandId) return;
     const fetchData = async () => {
       setLoading("requesting");
       try {
-        const res =
-          (await findBusiness(businessId, sucursalId || branchId, waiterId)) ||
-          null;
-
-        setBusiness(res);
+        const res = await getBrandById(brandId);
+        setBrand(res);
       } catch (error) {
         console.error(error);
       } finally {
@@ -50,12 +38,12 @@ function useGetBusinessData() {
       }
     };
     fetchData();
-  }, [businessId, branchId, waiterId, sucursalId]);
+  }, [brandId, getBrandById]);
 
   return {
     loading,
-    business,
-    businessId,
+    brand: brand,
+    brandId: brandId,
     setSucursalId,
     sucursalId,
     branchId,
@@ -64,4 +52,4 @@ function useGetBusinessData() {
   };
 }
 
-export default useGetBusinessData;
+export default useGetBrandData;

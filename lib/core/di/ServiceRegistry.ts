@@ -4,6 +4,7 @@ import {
   HTTP_CLIENT,
   API_BASE_URL,
   CUSTOMER_REPOSITORY,
+  BRAND_REPOSITORY,
   BRANCH_REPOSITORY,
   FEEDBACK_REPOSITORY,
   WAITER_REPOSITORY,
@@ -11,6 +12,7 @@ import {
   GET_CUSTOMER_BY_PHONE_USE_CASE,
   CREATE_CUSTOMER_USE_CASE,
   UPDATE_CUSTOMER_USE_CASE,
+  GET_BRAND_BY_ID_USE_CASE,
   GET_BRANCH_BY_ID_USE_CASE,
   GET_WAITER_BY_ID_USE_CASE,
   SEND_FEEDBACK_USE_CASE,
@@ -25,10 +27,12 @@ import {
   BranchRepositoryImpl,
   createBranchRepository,
 } from "@/lib/data/repositories/branchRepository";
+import { createBrandRepositoryMock } from "@/lib/data/repositories/brandRepositoryMock";
 import { createBranchRepositoryMock } from "@/lib/data/repositories/branchRepositoryMock";
 import { createFeedbackRepository } from "@/lib/data/repositories/feedbackRepository";
 import { createWaiterRepositoryMock } from "@/lib/data/repositories/waiterRepositoryMock";
 import { CustomerRepository } from "@/lib/domain/repositories/iCustomerRepository";
+import { BrandRepository } from "@/lib/domain/repositories/iBrandRepository";
 import { BranchRepository } from "@/lib/domain/repositories/iBranchRepository";
 import { FeedbackRepository } from "@/lib/domain/repositories/iFeedbackRepository";
 import { WaiterRepository } from "@/lib/domain/repositories/iWaiterRepository";
@@ -37,6 +41,7 @@ import {
   GetCustomerByPhoneNumberUseCase,
   CreateCustomerUseCase,
   UpdateCustomerUseCase,
+  GetBrandByIdUseCase,
   GetBranchByIdUseCase,
   GetWaiterByIdUseCase,
   SendFeedbackUseCase,
@@ -60,6 +65,11 @@ export class ServiceRegistry {
       const httpClient = await container.resolve<IHttpClient>(HTTP_CLIENT);
       // Don't pass baseUrl since HttpClient already has it configured
       return createCustomerRepository(httpClient);
+    });
+
+    container.registerSingleton(BRAND_REPOSITORY, async () => {
+      // Using mock repository for now
+      return createBrandRepositoryMock();
     });
 
     container.registerSingleton(BRANCH_REPOSITORY, async () => {
@@ -105,6 +115,13 @@ export class ServiceRegistry {
         CUSTOMER_REPOSITORY
       );
       return new UpdateCustomerUseCase(customerRepository);
+    });
+
+    container.registerSingleton(GET_BRAND_BY_ID_USE_CASE, async () => {
+      const brandRepository = await container.resolve<BrandRepository>(
+        BRAND_REPOSITORY
+      );
+      return new GetBrandByIdUseCase(brandRepository);
     });
 
     container.registerSingleton(GET_BRANCH_BY_ID_USE_CASE, async () => {

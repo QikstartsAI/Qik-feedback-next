@@ -1,44 +1,47 @@
-import { useState, useCallback } from "react";
-import { useDependencyInjection } from "./useDependencyInjection";
-import { GetBrandByIdUseCase } from "@/lib/domain/usecases";
+import { useCallback } from "react";
 import { Brand } from "@/lib/domain/entities";
+import { useBrandContext } from "@/lib/data/context/BrandContext";
 
-export const useBrand = () => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const { getService } = useDependencyInjection();
-
-  const getBrandById = useCallback(
-    async (id: string): Promise<Brand | null> => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const getBrandByIdUseCase = await getService<GetBrandByIdUseCase>(
-          "GetBrandByIdUseCase"
-        );
-        const brand = await getBrandByIdUseCase.execute(id);
-        return brand;
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Failed to get brand";
-        setError(errorMessage);
-        return null;
-      } finally {
-        setLoading(false);
-      }
-    },
-    [getService]
-  );
-
-  const clearError = useCallback(() => {
-    setError(null);
-  }, []);
+/**
+ * Custom hook for brand operations
+ * Provides easy access to all brand-related functionality
+ */
+export function useBrand() {
+  const context = useBrandContext();
 
   return {
-    getBrandById,
+    // State
+    currentBrand: context.currentBrand,
+    loading: context.loading,
+    error: context.error,
+
+    // Actions
+    getBrandById: context.getBrandById,
+
+    // Utility functions
+    clearError: context.clearError,
+    clearCurrentBrand: context.clearCurrentBrand,
+  };
+}
+
+/**
+ * Hook for brand search operations
+ */
+export function useBrandSearch() {
+  const { getBrandById, loading, error, clearError } = useBrand();
+
+  const searchById = useCallback(
+    async (id: string): Promise<Brand | null> => {
+      clearError();
+      return await getBrandById(id);
+    },
+    [getBrandById, clearError]
+  );
+
+  return {
+    searchById,
     loading,
     error,
     clearError,
   };
-};
+}

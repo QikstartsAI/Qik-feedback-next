@@ -53,6 +53,7 @@ export type BrandPayload = {
   coverImgURL: string;
   name: string;
   category: string;
+  powers: string[];
   location: {
     address: string;
     countryCode: string;
@@ -74,6 +75,7 @@ export type BranchPayload = {
   coverImgURL: string;
   name: string;
   category: string;
+
   location: {
     address: string;
     countryCode: string;
@@ -114,7 +116,7 @@ export type CustomerPayload = {
   phoneNumber: string;
   email?: string;
   birthDate?: Date;
-  businesses: Array<{
+  branches: Array<{
     branchId: string;
     acceptPromotions: boolean;
   }>;

@@ -15,9 +15,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { Star, MapPin, CheckCircle, ChevronDown } from "lucide-react";
 import { useCustomer } from "@/hooks/useCustomer";
+import { useBrand } from "@/hooks/useBrand";
 import { useBranch } from "@/hooks/useBranch";
 import { useWaiter } from "@/hooks/useWaiter";
 import { useSearchParams } from "next/navigation";
+// import { hasGeolocationPower } from "@/app/services/business";
 import { IconChevronLeft } from "@tabler/icons-react";
 import {
   countryCodes,
@@ -32,6 +34,7 @@ import {
   calculateProgress,
   isPositiveRating,
   getBranchInfo,
+  getBrandInfo,
   canContinueStep1,
   canSubmitFeedback,
 } from "@/lib/utils/formUtils";
@@ -47,6 +50,7 @@ import {
 
 export default function QikLoyaltyPlatform() {
   const { currentCustomer, getCustomerByPhone } = useCustomer();
+  const { currentBrand, getBrandById, loading: brandLoading } = useBrand();
   const { currentBranch, getBranchById, loading: branchLoading } = useBranch();
   const { getWaiterById, loading: waiterLoading } = useWaiter();
   const searchParams = useSearchParams();
@@ -71,7 +75,8 @@ export default function QikLoyaltyPlatform() {
   const [currentWaiter, setCurrentWaiter] = useState<any>(null);
 
   // Get parameters from URL
-  const branchId = searchParams.get("id");
+  const brandId = searchParams.get("id");
+  const branchId = searchParams.get("branch");
   const waiterId = searchParams.get("waiter");
 
   const progress = calculateProgress(step, 2);
@@ -79,7 +84,7 @@ export default function QikLoyaltyPlatform() {
   // Fetch data when component mounts or parameters change
   useEffect(() => {
     if (waiterId) {
-      // If waiter ID is provided, get waiter first, then branch
+      // If waiter is provided, fetch waiter first, then branch
       const fetchWaiterAndBranch = async () => {
         try {
           const waiter = await getWaiterById(waiterId);
@@ -94,10 +99,23 @@ export default function QikLoyaltyPlatform() {
       };
       fetchWaiterAndBranch();
     } else if (branchId) {
-      // If only branch ID is provided, get branch directly
+      // If branch is provided, fetch branch directly
       getBranchById(branchId);
+    } else if (brandId) {
+      // If only brandId is provided, fetch brand
+      getBrandById(brandId);
     }
-  }, [waiterId, branchId, getWaiterById, getBranchById]);
+  }, [waiterId, branchId, brandId, getWaiterById, getBranchById, getBrandById]);
+
+  // Check for geolocation power and run RequestLocationDialog logic
+  useEffect(() => {
+    if (currentBrand) {
+      // Run the RequestLocationDialog logic here
+      console.log("Brand loaded:", currentBrand.payload.name);
+      // This would trigger the RequestLocationDialog component
+      // You can implement the actual dialog logic here or use the existing RequestLocationDialog component
+    }
+  }, [currentBrand]);
 
   // Close country selector when clicking outside
   useEffect(() => {
@@ -166,8 +184,10 @@ export default function QikLoyaltyPlatform() {
   );
   const positiveRating = isPositiveRating(rating);
 
-  // Get branch information for header
-  const branchInfo = getBranchInfo(currentBranch);
+  // Get branch or brand information for header
+  const branchInfo = currentBranch
+    ? getBranchInfo(currentBranch)
+    : getBrandInfo(currentBrand);
 
   const Thankyou = () => {
     return (
