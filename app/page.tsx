@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,11 +13,35 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
-import { Star, MapPin, CheckCircle } from "lucide-react";
+import { Star, MapPin, CheckCircle, ChevronDown } from "lucide-react";
 import { useCustomer } from "@/hooks/useCustomer";
 import { useBranch } from "@/hooks/useBranch";
 import { useSearchParams } from "next/navigation";
 import { IconChevronLeft } from "@tabler/icons-react";
+import {
+  countryCodes,
+  ratingEmojis,
+  referralSources,
+  applyPhoneMask,
+  validatePhone,
+  formatPhoneWithCountryCode,
+  extractDigitsFromPhone,
+} from "@/lib/utils/phoneUtils";
+import {
+  calculateProgress,
+  isPositiveRating,
+  getBranchInfo,
+  canContinueStep1,
+  canSubmitFeedback,
+} from "@/lib/utils/formUtils";
+import {
+  DEFAULT_COUNTRY_CODE,
+  PHONE_MAX_LENGTH,
+  GOOGLE_REVIEW_URL,
+  VIEWS,
+  FORM_STEPS,
+  PHONE_DIGITS_MAX_LENGTH,
+} from "@/lib/utils/constants";
 
 export default function QikLoyaltyPlatform() {
   const { currentCustomer, getCustomerByPhone, editCustomer } = useCustomer();
@@ -25,9 +49,9 @@ export default function QikLoyaltyPlatform() {
   const searchParams = useSearchParams();
 
   const [currentView, setCurrentView] = useState<
-    "welcome" | "survey" | "thankyou"
-  >("welcome");
-  const [step, setStep] = useState(1);
+    (typeof VIEWS)[keyof typeof VIEWS]
+  >(VIEWS.WELCOME);
+  const [step, setStep] = useState<number>(FORM_STEPS.WELCOME);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [phoneError, setPhoneError] = useState("");
@@ -36,28 +60,15 @@ export default function QikLoyaltyPlatform() {
   const [referralSource, setReferralSource] = useState("");
   const [rating, setRating] = useState<string>("");
   const [comment, setComment] = useState("");
+  const [selectedCountryCode, setSelectedCountryCode] =
+    useState(DEFAULT_COUNTRY_CODE);
+  const [showCountrySelector, setShowCountrySelector] = useState(false);
+  const countrySelectorRef = useRef<HTMLDivElement>(null);
 
   // Get branch ID from URL parameters
   const branchId = searchParams.get("id");
 
-  const progress = (step / 2) * 100;
-
-  const ratingEmojis = [
-    { id: "terrible", emoji: "😡", label: "Terrible" },
-    { id: "bad", emoji: "😞", label: "Malo" },
-    { id: "regular", emoji: "😐", label: "Regular" },
-    { id: "good", emoji: "😊", label: "Bueno" },
-    { id: "excellent", emoji: "🤩", label: "Excelente" },
-  ];
-
-  const sources = [
-    { id: "google_maps", label: "Google Maps" },
-    { id: "whatsapp", label: "WhatsApp" },
-    { id: "referral", label: "Referido" },
-    { id: "walking", label: "Caminaba" },
-    { id: "social_media", label: "Redes sociales" },
-    { id: "other", label: "Otro" },
-  ];
+  const progress = calculateProgress(step, 2);
 
   // Fetch branch data when component mounts or branchId changes
   useEffect(() => {
@@ -66,25 +77,42 @@ export default function QikLoyaltyPlatform() {
     }
   }, [branchId, getBranchById]);
 
-  const validatePhone = (phoneNumber: string) => {
-    const cleanPhone = phoneNumber.replace("+593 ", "").replace(/\s/g, "");
-    if (cleanPhone.length > 10) {
-      setPhoneError("Número incorrecto - máximo 10 dígitos");
-      return false;
-    } else if (cleanPhone.length < 10 && cleanPhone.length > 0) {
-      setPhoneError("Número incompleto");
-      return false;
-    } else {
-      setPhoneError("");
-      return true;
+  // Close country selector when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        countrySelectorRef.current &&
+        !countrySelectorRef.current.contains(event.target as Node)
+      ) {
+        setShowCountrySelector(false);
+      }
+    };
+
+    if (showCountrySelector) {
+      document.addEventListener("mousedown", handleClickOutside);
     }
-  };
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showCountrySelector]);
 
   const handlePhoneChange = async (value: string) => {
-    const formattedPhone = "+593 " + value;
-    await getCustomerByPhone(value);
+    const digitsOnly = value.replace(/\D/g, "");
+    const maskedValue = applyPhoneMask(digitsOnly);
+    const formattedPhone = formatPhoneWithCountryCode(
+      maskedValue,
+      selectedCountryCode
+    );
+
     setPhone(formattedPhone);
-    validatePhone(formattedPhone);
+
+    const validation = validatePhone(formattedPhone, selectedCountryCode);
+    setPhoneError(validation.error);
+
+    if (!validation.error && digitsOnly.length === PHONE_DIGITS_MAX_LENGTH) {
+      await getCustomerByPhone(digitsOnly);
+    }
   };
 
   const handleSourceSelect = (sourceId: string) => {
@@ -92,13 +120,13 @@ export default function QikLoyaltyPlatform() {
   };
 
   const openGoogleMaps = () => {
-    window.open("https://g.page/r/CdUpuKOxF_CvEBM/review", "_blank");
-    setStep(3);
+    window.open(GOOGLE_REVIEW_URL, "_blank");
+    setStep(FORM_STEPS.THANK_YOU);
   };
 
   const backToWelcome = () => {
-    setCurrentView("welcome");
-    setStep(1);
+    setCurrentView(VIEWS.WELCOME);
+    setStep(FORM_STEPS.WELCOME);
   };
 
   useEffect(() => {
@@ -107,15 +135,11 @@ export default function QikLoyaltyPlatform() {
     setName(fullName);
   }, [currentCustomer]);
 
-  const canContinueStep1 = name && phone && !phoneError && referralSource;
-  const isPositiveRating = rating === "good" || rating === "excellent";
+  const canContinue = canContinueStep1(name, phone, phoneError, referralSource);
+  const positiveRating = isPositiveRating(rating);
 
   // Get branch information for header
-  const branchName = currentBranch?.payload?.name || "Restaurante";
-  const branchLogo = currentBranch?.payload?.logo || "/logo.png";
-  const branchCoverImage =
-    currentBranch?.payload?.coverImgURL || "/restaurant-bg.jpg";
-  const branchAddress = currentBranch?.payload?.address || "Ubicación";
+  const branchInfo = getBranchInfo(currentBranch);
 
   const Thankyou = () => {
     return (
@@ -129,7 +153,7 @@ export default function QikLoyaltyPlatform() {
         </CardHeader>
         <CardContent className="text-center">
           <p className="text-sm text-gray-600">
-            {isPositiveRating
+            {positiveRating
               ? "¡Esperamos verte pronto de nuevo!"
               : "Trabajaremos para mejorar tu próxima experiencia."}
           </p>
@@ -149,22 +173,23 @@ export default function QikLoyaltyPlatform() {
       {/* Header */}
       <div
         className="relative h-32 bg-cover bg-center"
-        style={{ backgroundImage: `url('${branchCoverImage}')` }}
+        style={{ backgroundImage: `url('${branchInfo.coverImage}')` }}
       >
         <div className="absolute inset-0 bg-black/50"></div>
         <div className="relative z-10 flex items-center justify-center h-full px-4">
           <div className="flex items-center space-x-3 w-full max-w-md">
             <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
               <img
-                src={branchLogo}
+                src={branchInfo.logo}
                 alt="Logo"
                 className="w-8 h-8 rounded-full"
               />
             </div>
             <div className="text-white">
-              <h1 className="text-lg font-bold">{branchName}</h1>
+              <h1 className="text-lg font-bold">{branchInfo.name}</h1>
               <p className="text-sm text-gray-200">
-                {branchAddress} • {branchLoading ? "Cargando..." : "0.2 km"}
+                {branchInfo.address} •{" "}
+                {branchLoading ? "Cargando..." : "0.2 km"}
               </p>
             </div>
           </div>
@@ -172,7 +197,7 @@ export default function QikLoyaltyPlatform() {
       </div>
       <div className="min-h-screen bg-gradient-to-b from-purple-100 via-blue-50 to-white">
         <div className="max-w-md mx-auto p-6 -mt-8 relative z-20">
-          {currentView === "thankyou" ? (
+          {currentView === VIEWS.THANK_YOU ? (
             <Thankyou />
           ) : (
             <Card className="shadow-xl border-0 bg-white/95 backdrop-blur">
@@ -202,7 +227,7 @@ export default function QikLoyaltyPlatform() {
                   <Progress value={progress} className="h-2" />
                 </div>
 
-                {currentView === "welcome" && (
+                {currentView === VIEWS.WELCOME && (
                   <div className="space-y-4 animate-in slide-in-from-top duration-300">
                     <div>
                       <Label
@@ -212,18 +237,75 @@ export default function QikLoyaltyPlatform() {
                         Teléfono
                       </Label>
                       <div className="flex mt-1">
-                        <div className="flex items-center px-3 bg-gray-50 border border-r-0 rounded-l-md">
-                          <span className="text-lg">🇪🇨</span>
-                          <span className="ml-1 text-sm">+593</span>
+                        <div className="relative" ref={countrySelectorRef}>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setShowCountrySelector(!showCountrySelector)
+                            }
+                            className="flex items-center px-3 h-10 bg-gray-50 border border-r-0 rounded-l-md hover:bg-gray-100 transition-colors"
+                          >
+                            <span className="text-lg">
+                              {countryCodes.find(
+                                (c) => c.code === selectedCountryCode
+                              )?.flag || "🇪🇨"}
+                            </span>
+                            <span className="ml-1 text-sm">
+                              {selectedCountryCode}
+                            </span>
+                            <ChevronDown className="ml-1 h-4 w-4 text-gray-500" />
+                          </button>
+
+                          {showCountrySelector && (
+                            <div className="absolute top-full left-0 z-50 mt-1 w-64 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                              {countryCodes.map((country) => (
+                                <button
+                                  key={country.code}
+                                  type="button"
+                                  onClick={() => {
+                                    const currentDigits = phone
+                                      .replace(selectedCountryCode + " ", "")
+                                      .replace(/\D/g, "");
+
+                                    setSelectedCountryCode(country.code);
+                                    setShowCountrySelector(false);
+
+                                    // Update phone with new country code
+                                    if (currentDigits) {
+                                      const maskedValue =
+                                        applyPhoneMask(currentDigits);
+                                      const formattedPhone =
+                                        formatPhoneWithCountryCode(
+                                          maskedValue,
+                                          country.code
+                                        );
+                                      setPhone(formattedPhone);
+                                    }
+                                  }}
+                                  className="flex items-center w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors"
+                                >
+                                  <span className="text-lg mr-2">
+                                    {country.flag}
+                                  </span>
+                                  <span className="text-sm font-medium">
+                                    {country.code}
+                                  </span>
+                                  <span className="text-xs text-gray-500 ml-2">
+                                    {country.name}
+                                  </span>
+                                </button>
+                              ))}
+                            </div>
+                          )}
                         </div>
                         <Input
                           id="phone"
                           type="tel"
-                          placeholder="99 123 4567"
-                          value={phone.replace("+593 ", "")}
+                          placeholder="(99) 123-4567"
+                          value={phone.replace(selectedCountryCode + " ", "")}
                           onChange={(e) => handlePhoneChange(e.target.value)}
-                          className="rounded-l-none"
-                          maxLength={10}
+                          className="rounded-l-none h-10"
+                          maxLength={PHONE_MAX_LENGTH}
                         />
                       </div>
                       {phoneError && (
@@ -270,7 +352,7 @@ export default function QikLoyaltyPlatform() {
                         ¿De dónde nos conoces?
                       </Label>
                       <div className="grid grid-cols-2 gap-2 mt-2">
-                        {sources.map((source) => (
+                        {referralSources.map((source) => (
                           <button
                             key={source.id}
                             onClick={() => handleSourceSelect(source.id)}
@@ -288,17 +370,17 @@ export default function QikLoyaltyPlatform() {
 
                     <Button
                       onClick={() => {
-                        setCurrentView("survey");
-                        setStep(2);
+                        setCurrentView(VIEWS.SURVEY);
+                        setStep(FORM_STEPS.SURVEY);
                       }}
                       className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                      disabled={!canContinueStep1}
+                      disabled={!canContinue}
                     >
                       Continuar
                     </Button>
                   </div>
                 )}
-                {currentView === "survey" && (
+                {currentView === VIEWS.SURVEY && (
                   <div className="space-y-4 animate-in slide-in-from-top duration-300">
                     <div className="grid grid-cols-5 gap-2">
                       {ratingEmojis.map((item) => (
@@ -320,7 +402,7 @@ export default function QikLoyaltyPlatform() {
                     </div>
 
                     {/* Feedback positivo */}
-                    {isPositiveRating && (
+                    {positiveRating && (
                       <div className="mt-6 space-y-4">
                         <div className="text-center">
                           <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-2" />
@@ -363,7 +445,7 @@ export default function QikLoyaltyPlatform() {
                     )}
 
                     {/* Feedback negativo */}
-                    {!isPositiveRating && rating && (
+                    {!positiveRating && rating && (
                       <div className="mt-6 space-y-4">
                         <Textarea
                           placeholder="Cuéntanos más detalles (opcional)"
@@ -393,7 +475,7 @@ export default function QikLoyaltyPlatform() {
                         </div>
 
                         <Button
-                          onClick={() => setCurrentView("thankyou")}
+                          onClick={() => setCurrentView(VIEWS.THANK_YOU)}
                           className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                           disabled={!rating || !acceptTerms}
                         >
