@@ -5,11 +5,13 @@ import {
   API_BASE_URL,
   CUSTOMER_REPOSITORY,
   BRANCH_REPOSITORY,
+  FEEDBACK_REPOSITORY,
   GET_CUSTOMER_BY_ID_USE_CASE,
   GET_CUSTOMER_BY_PHONE_USE_CASE,
   CREATE_CUSTOMER_USE_CASE,
   UPDATE_CUSTOMER_USE_CASE,
   GET_BRANCH_BY_ID_USE_CASE,
+  SEND_FEEDBACK_USE_CASE,
 } from "./ServiceIdentifiers";
 
 import { HttpClient, IHttpClient } from "../httpClient";
@@ -21,14 +23,17 @@ import {
   BranchRepositoryImpl,
   createBranchRepository,
 } from "@/lib/data/repositories/branchRepository";
+import { createFeedbackRepository } from "@/lib/data/repositories/feedbackRepository";
 import { CustomerRepository } from "@/lib/domain/repositories/iCustomerRepository";
 import { BranchRepository } from "@/lib/domain/repositories/iBranchRepository";
+import { FeedbackRepository } from "@/lib/domain/repositories/iFeedbackRepository";
 import {
   GetCustomerByIdUseCase,
   GetCustomerByPhoneNumberUseCase,
   CreateCustomerUseCase,
   UpdateCustomerUseCase,
   GetBranchByIdUseCase,
+  SendFeedbackUseCase,
 } from "@/lib/domain/usecases";
 
 export class ServiceRegistry {
@@ -55,6 +60,12 @@ export class ServiceRegistry {
       const httpClient = await container.resolve<IHttpClient>(HTTP_CLIENT);
       // Don't pass baseUrl since HttpClient already has it configured
       return createBranchRepository(httpClient);
+    });
+
+    container.registerSingleton(FEEDBACK_REPOSITORY, async () => {
+      const httpClient = await container.resolve<IHttpClient>(HTTP_CLIENT);
+      // Don't pass baseUrl since HttpClient already has it configured
+      return createFeedbackRepository(httpClient);
     });
 
     // Register use cases
@@ -91,6 +102,13 @@ export class ServiceRegistry {
         BRANCH_REPOSITORY
       );
       return new GetBranchByIdUseCase(branchRepository);
+    });
+
+    container.registerSingleton(SEND_FEEDBACK_USE_CASE, async () => {
+      const feedbackRepository = await container.resolve<FeedbackRepository>(
+        FEEDBACK_REPOSITORY
+      );
+      return new SendFeedbackUseCase(feedbackRepository);
     });
 
     return container;

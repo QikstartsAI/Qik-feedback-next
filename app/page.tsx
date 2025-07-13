@@ -131,8 +131,8 @@ export default function QikLoyaltyPlatform() {
 
   useEffect(() => {
     if (!currentCustomer?.payload) return;
-    const { fullName } = currentCustomer?.payload;
-    setName(fullName);
+    const { name, lastName } = currentCustomer?.payload;
+    setName(`${name} ${lastName}`.trim());
   }, [currentCustomer]);
 
   const canContinue = canContinueStep1(name, phone, phoneError, referralSource);

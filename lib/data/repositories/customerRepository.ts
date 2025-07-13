@@ -57,6 +57,28 @@ export class CustomerRepositoryImpl implements CustomerRepository {
   }
 
   /**
+   * Get customer by email
+   * @param email - Customer email
+   * @returns Promise<Customer | null>
+   */
+  async getCustomerByEmail(email: string): Promise<Customer | null> {
+    try {
+      const response = await this.httpClient.get<Customer>(
+        `${this.baseUrl}/customers/by-email`,
+        {
+          params: { email },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching customer by email:", error);
+      // Return null instead of throwing for email lookups
+      return null;
+    }
+  }
+
+  /**
    * Create a new customer
    * @param customerData - Customer data to create
    * @returns Promise<Customer>
@@ -98,6 +120,24 @@ export class CustomerRepositoryImpl implements CustomerRepository {
       console.error("Error updating customer:", error);
       throw new Error(
         `Failed to update customer with ID ${id}: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
+  }
+
+  /**
+   * Delete a customer
+   * @param id - Customer ID
+   * @returns Promise<void>
+   */
+  async deleteCustomer(id: string): Promise<void> {
+    try {
+      await this.httpClient.delete(`${this.baseUrl}/customers/${id}`);
+    } catch (error) {
+      console.error("Error deleting customer:", error);
+      throw new Error(
+        `Failed to delete customer ${id}: ${
           error instanceof Error ? error.message : "Unknown error"
         }`
       );

@@ -18,3 +18,19 @@ export {
   GetBranchByIdUseCase,
   type IGetBranchByIdUseCase,
 } from "./GetBranchByIdUseCase";
+export {
+  SendFeedbackUseCase,
+  type ISendFeedbackUseCase,
+} from "./SendFeedbackUseCase";
+export {
+  GetUserByIdUseCase,
+  type IGetUserByIdUseCase,
+} from "./GetUserByIdUseCase";
+export {
+  GetBrandByIdUseCase,
+  type IGetBrandByIdUseCase,
+} from "./GetBrandByIdUseCase";
+export {
+  GetWaiterByIdUseCase,
+  type IGetWaiterByIdUseCase,
+} from "./GetWaiterByIdUseCase";

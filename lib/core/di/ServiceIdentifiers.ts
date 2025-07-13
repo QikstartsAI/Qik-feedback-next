@@ -5,6 +5,7 @@ export const API_BASE_URL = Symbol("ApiBaseUrl");
 // Repository services
 export const CUSTOMER_REPOSITORY = Symbol("CustomerRepository");
 export const BRANCH_REPOSITORY = Symbol("BranchRepository");
+export const FEEDBACK_REPOSITORY = Symbol("FeedbackRepository");
 
 // Use case services
 export const GET_CUSTOMER_BY_ID_USE_CASE = Symbol("GetCustomerByIdUseCase");
@@ -14,3 +15,4 @@ export const GET_CUSTOMER_BY_PHONE_USE_CASE = Symbol(
 export const CREATE_CUSTOMER_USE_CASE = Symbol("CreateCustomerUseCase");
 export const UPDATE_CUSTOMER_USE_CASE = Symbol("UpdateCustomerUseCase");
 export const GET_BRANCH_BY_ID_USE_CASE = Symbol("GetBranchByIdUseCase");
+export const SEND_FEEDBACK_USE_CASE = Symbol("SendFeedbackUseCase");
