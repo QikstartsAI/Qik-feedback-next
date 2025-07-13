@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { useDependencyInjection } from "./useDependencyInjection";
 import { GetWaiterByIdUseCase } from "@/lib/domain/usecases";
 import { Waiter } from "@/lib/domain/entities";
+import { GET_WAITER_BY_ID_USE_CASE } from "@/lib/core/di/ServiceIdentifiers";
 
 export const useWaiter = () => {
   const [loading, setLoading] = useState(false);
@@ -15,7 +16,7 @@ export const useWaiter = () => {
 
       try {
         const getWaiterByIdUseCase = await getService<GetWaiterByIdUseCase>(
-          "GetWaiterByIdUseCase"
+          GET_WAITER_BY_ID_USE_CASE
         );
         const waiter = await getWaiterByIdUseCase.execute(id);
         return waiter;

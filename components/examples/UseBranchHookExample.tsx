@@ -4,120 +4,118 @@ import React, { useState } from "react";
 import { useBranch } from "@/hooks/useBranch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MapPin, Building } from "lucide-react";
 
-export const UseBranchHookExample: React.FC = () => {
-  const { currentBranch, loading, error, getBranchById, clearError } =
-    useBranch();
+function UseBranchHookExample() {
+  const { getBranchById, loading, error, clearError } = useBranch();
   const [branchId, setBranchId] = useState("");
+  const [branch, setBranch] = useState<any>(null);
 
-  const handleGetBranch = async () => {
-    if (branchId.trim()) {
-      await getBranchById(branchId);
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    clearError();
+    setBranch(null);
+
+    try {
+      const result = await getBranchById(branchId);
+      setBranch(result);
+    } catch (err) {
+      console.error("Search error:", err);
     }
   };
 
-  const handleClearError = () => {
-    clearError();
-    setBranchId("");
-  };
-
   return (
-    <div className="max-w-2xl mx-auto p-6 space-y-6">
+    <div className="max-w-md mx-auto p-6 space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Branch Hook Example</CardTitle>
+          <CardTitle>Branch Search Example</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex gap-2">
-            <Input
-              type="text"
-              placeholder="Enter Branch ID"
-              value={branchId}
-              onChange={(e) => setBranchId(e.target.value)}
-              className="flex-1"
-            />
-            <Button
-              onClick={handleGetBranch}
-              disabled={loading || !branchId.trim()}
-            >
-              {loading ? "Loading..." : "Get Branch"}
+          <form onSubmit={handleSearch} className="space-y-4">
+            <div>
+              <Label htmlFor="branchId">Branch ID</Label>
+              <Input
+                id="branchId"
+                value={branchId}
+                onChange={(e) => setBranchId(e.target.value)}
+                placeholder="Enter branch ID (e.g., branch-1, branch-2, branch-3)"
+                className="mt-1"
+              />
+            </div>
+            <Button type="submit" disabled={loading || !branchId}>
+              {loading ? "Searching..." : "Search Branch"}
             </Button>
-          </div>
+          </form>
 
           {error && (
-            <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-              <p className="font-semibold">Error:</p>
-              <p>{error}</p>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleClearError}
-                className="mt-2"
-              >
-                Clear Error
-              </Button>
+            <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+              <p className="text-red-600 text-sm">{error}</p>
             </div>
           )}
 
-          {currentBranch && (
-            <div className="p-4 bg-green-50 border border-green-200 rounded">
-              <h3 className="font-semibold text-green-800 mb-2">
-                Branch Found:
-              </h3>
-              <div className="space-y-2 text-sm">
-                <p>
-                  <strong>ID:</strong> {currentBranch.id}
-                </p>
-                <p>
-                  <strong>Name:</strong> {currentBranch.payload.name}
-                </p>
-                <p>
-                  <strong>Address:</strong> {currentBranch.payload.address}
-                </p>
-                <p>
-                  <strong>City:</strong> {currentBranch.payload.city}
-                </p>
-                <p>
-                  <strong>Country:</strong> {currentBranch.payload.country}
-                </p>
-                {currentBranch.payload.coverImgURL && (
-                  <p>
-                    <strong>Cover Image:</strong>{" "}
-                    {currentBranch.payload.coverImgURL}
-                  </p>
-                )}
-                {currentBranch.payload.logo && (
-                  <p>
-                    <strong>Logo:</strong> {currentBranch.payload.logo}
-                  </p>
-                )}
-                {currentBranch.payload.geopoint && (
-                  <div>
-                    <p>
-                      <strong>Location:</strong>
-                    </p>
-                    <p className="ml-4">
-                      Lat: {currentBranch.payload.geopoint._lat}
-                    </p>
-                    <p className="ml-4">
-                      Long: {currentBranch.payload.geopoint._long}
-                    </p>
+          {branch && (
+            <div className="mt-6">
+              <h3 className="text-lg font-semibold mb-4">Branch Found:</h3>
+              <Card className="border-2 border-blue-100">
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                      <img
+                        src={branch.payload.logoImgURL}
+                        alt="Branch logo"
+                        className="w-8 h-8 rounded-full"
+                      />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-800">
+                        {branch.payload.name}
+                      </h4>
+                      <p className="text-sm text-gray-600">
+                        {branch.payload.category}
+                      </p>
+                    </div>
                   </div>
-                )}
-                <p>
-                  <strong>Created:</strong>{" "}
-                  {new Date(currentBranch.createdAt).toLocaleDateString()}
-                </p>
-                <p>
-                  <strong>Updated:</strong>{" "}
-                  {new Date(currentBranch.updatedAt).toLocaleDateString()}
-                </p>
-              </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2 text-sm text-gray-600">
+                      <MapPin className="h-4 w-4" />
+                      <span>{branch.payload.location.address}</span>
+                    </div>
+                    <div className="flex items-center space-x-2 text-sm text-gray-600">
+                      <Building className="h-4 w-4" />
+                      <span>Brand ID: {branch.brandId}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           )}
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Available Mock Branches</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2 text-sm">
+            <p>
+              <strong>branch-1:</strong> Restaurante El Buen Sabor (Quito)
+            </p>
+            <p>
+              <strong>branch-2:</strong> Restaurante El Buen Sabor - Centro
+              (Quito)
+            </p>
+            <p>
+              <strong>branch-3:</strong> Café Delicioso (Plaza Grande, Quito)
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
-};
+}
+
+export default UseBranchHookExample;

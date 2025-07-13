@@ -2,6 +2,13 @@ import { Waiter, WaiterPayload } from "@/lib/domain/entities";
 import { WaiterRepository } from "@/lib/domain/repositories/iWaiterRepository";
 import { IHttpClient } from "@/lib/core/httpClient";
 
+export function createWaiterRepository(
+  httpClient: IHttpClient,
+  baseUrl?: string
+): WaiterRepository {
+  return new WaiterRepositoryImpl(httpClient, baseUrl);
+}
+
 export class WaiterRepositoryImpl implements WaiterRepository {
   constructor(private httpClient: IHttpClient, private baseUrl?: string) {}
 

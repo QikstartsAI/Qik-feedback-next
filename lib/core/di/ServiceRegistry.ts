@@ -6,11 +6,13 @@ import {
   CUSTOMER_REPOSITORY,
   BRANCH_REPOSITORY,
   FEEDBACK_REPOSITORY,
+  WAITER_REPOSITORY,
   GET_CUSTOMER_BY_ID_USE_CASE,
   GET_CUSTOMER_BY_PHONE_USE_CASE,
   CREATE_CUSTOMER_USE_CASE,
   UPDATE_CUSTOMER_USE_CASE,
   GET_BRANCH_BY_ID_USE_CASE,
+  GET_WAITER_BY_ID_USE_CASE,
   SEND_FEEDBACK_USE_CASE,
 } from "./ServiceIdentifiers";
 
@@ -23,16 +25,20 @@ import {
   BranchRepositoryImpl,
   createBranchRepository,
 } from "@/lib/data/repositories/branchRepository";
+import { createBranchRepositoryMock } from "@/lib/data/repositories/branchRepositoryMock";
 import { createFeedbackRepository } from "@/lib/data/repositories/feedbackRepository";
+import { createWaiterRepositoryMock } from "@/lib/data/repositories/waiterRepositoryMock";
 import { CustomerRepository } from "@/lib/domain/repositories/iCustomerRepository";
 import { BranchRepository } from "@/lib/domain/repositories/iBranchRepository";
 import { FeedbackRepository } from "@/lib/domain/repositories/iFeedbackRepository";
+import { WaiterRepository } from "@/lib/domain/repositories/iWaiterRepository";
 import {
   GetCustomerByIdUseCase,
   GetCustomerByPhoneNumberUseCase,
   CreateCustomerUseCase,
   UpdateCustomerUseCase,
   GetBranchByIdUseCase,
+  GetWaiterByIdUseCase,
   SendFeedbackUseCase,
 } from "@/lib/domain/usecases";
 
@@ -57,15 +63,19 @@ export class ServiceRegistry {
     });
 
     container.registerSingleton(BRANCH_REPOSITORY, async () => {
-      const httpClient = await container.resolve<IHttpClient>(HTTP_CLIENT);
-      // Don't pass baseUrl since HttpClient already has it configured
-      return createBranchRepository(httpClient);
+      // Using mock repository for now
+      return createBranchRepositoryMock();
     });
 
     container.registerSingleton(FEEDBACK_REPOSITORY, async () => {
       const httpClient = await container.resolve<IHttpClient>(HTTP_CLIENT);
       // Don't pass baseUrl since HttpClient already has it configured
       return createFeedbackRepository(httpClient);
+    });
+
+    container.registerSingleton(WAITER_REPOSITORY, async () => {
+      // Using mock repository for now
+      return createWaiterRepositoryMock();
     });
 
     // Register use cases
@@ -102,6 +112,13 @@ export class ServiceRegistry {
         BRANCH_REPOSITORY
       );
       return new GetBranchByIdUseCase(branchRepository);
+    });
+
+    container.registerSingleton(GET_WAITER_BY_ID_USE_CASE, async () => {
+      const waiterRepository = await container.resolve<WaiterRepository>(
+        WAITER_REPOSITORY
+      );
+      return new GetWaiterByIdUseCase(waiterRepository);
     });
 
     container.registerSingleton(SEND_FEEDBACK_USE_CASE, async () => {
