@@ -7,7 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useFeedback } from "@/hooks/useFeedback";
-import { FeedbackPayload, FeedbackDataPayload } from "@/lib/domain/entities";
+import {
+  FeedbackPayload,
+  FeedbackDataPayload,
+  CustomerType,
+} from "@/lib/domain/entities";
 
 export function UseFeedbackHookExample() {
   const { sendFeedback, loading, error, clearError } = useFeedback();
@@ -17,6 +21,7 @@ export function UseFeedbackHookExample() {
     customerId: "",
     acceptTerms: false,
     acceptPromotions: false,
+    customerType: CustomerType.New,
     payload: {
       averageTicket: "",
       origin: "",

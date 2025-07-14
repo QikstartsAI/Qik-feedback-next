@@ -1,17 +1,21 @@
 import { useCallback } from "react";
-import { Customer, CustomerPayload } from "@/lib/domain/entities";
+import { Customer, CustomerPayload, CustomerType } from "@/lib/domain/entities";
 import { useCustomerContext } from "@/lib/data/context";
 
 export interface UseCustomerReturn {
   // State
   currentCustomer: Customer | null;
+  customerType: CustomerType;
   loading: boolean;
   error: string | null;
 
   // Actions
   editCustomer: (customer: CustomerPayload) => void;
   getCustomerById: (id: string) => Promise<Customer | null>;
-  getCustomerByPhone: (phoneNumber: string) => Promise<Customer | null>;
+  getCustomerByPhone: (
+    phoneNumber: string,
+    currentBranchId?: string
+  ) => Promise<Customer | null>;
   createCustomer: (customerData: CustomerPayload) => Promise<Customer | null>;
   updateCustomer: (
     id: string,
@@ -35,6 +39,7 @@ export function useCustomer(): UseCustomerReturn {
   return {
     // State
     currentCustomer: context.currentCustomer,
+    customerType: context.customerType,
     loading: context.loading,
     error: context.error,
 
@@ -67,9 +72,12 @@ export function useCustomerSearch() {
   );
 
   const searchByPhone = useCallback(
-    async (phoneNumber: string): Promise<Customer | null> => {
+    async (
+      phoneNumber: string,
+      currentBranchId?: string
+    ): Promise<Customer | null> => {
       clearError();
-      return await getCustomerByPhone(phoneNumber);
+      return await getCustomerByPhone(phoneNumber, currentBranchId);
     },
     [getCustomerByPhone, clearError]
   );

@@ -7,7 +7,7 @@ import React, {
   useCallback,
   ReactNode,
 } from "react";
-import { Customer, CustomerPayload } from "@/lib/domain/entities";
+import { Customer, CustomerPayload, CustomerType } from "@/lib/domain/entities";
 import {
   IGetCustomerByIdUseCase,
   IGetCustomerByPhoneNumberUseCase,
@@ -24,7 +24,7 @@ import {
 
 interface CustomerContextState {
   currentCustomer: Customer | null;
-
+  customerType: CustomerType;
   loading: boolean;
   error: string | null;
 }
@@ -32,7 +32,10 @@ interface CustomerContextState {
 interface CustomerContextActions {
   editCustomer: (customerData: CustomerPayload) => void;
   getCustomerById: (id: string) => Promise<Customer | null>;
-  getCustomerByPhone: (phoneNumber: string) => Promise<Customer | null>;
+  getCustomerByPhone: (
+    phoneNumber: string,
+    currentBranchId?: string
+  ) => Promise<Customer | null>;
   createCustomer: (customerData: CustomerPayload) => Promise<Customer | null>;
   updateCustomer: (
     id: string,
@@ -46,17 +49,20 @@ interface CustomerContextType
   extends CustomerContextState,
     CustomerContextActions {}
 
-const CustomerContext = createContext<CustomerContextType | null>(null);
-
 interface CustomerProviderProps {
   children: ReactNode;
 }
+
+const CustomerContext = createContext<CustomerContextType | undefined>(
+  undefined
+);
 
 export function CustomerProvider({ children }: CustomerProviderProps) {
   const { getService, isInitialized } = useDependencyInjection();
 
   const [state, setState] = useState<CustomerContextState>({
     currentCustomer: null,
+    customerType: CustomerType.New,
     loading: false,
     error: null,
   });
@@ -75,6 +81,10 @@ export function CustomerProvider({ children }: CustomerProviderProps) {
 
   const setCurrentCustomer = useCallback((customer: Customer | null) => {
     setState((prev) => ({ ...prev, currentCustomer: customer }));
+  }, []);
+
+  const setCustomerType = useCallback((customerType: CustomerType) => {
+    setState((prev) => ({ ...prev, customerType }));
   }, []);
 
   const editCustomer = (customerData: CustomerPayload): void => {
@@ -119,7 +129,10 @@ export function CustomerProvider({ children }: CustomerProviderProps) {
   );
 
   const getCustomerByPhone = useCallback(
-    async (phoneNumber: string): Promise<Customer | null> => {
+    async (
+      phoneNumber: string,
+      currentBranchId?: string
+    ): Promise<Customer | null> => {
       if (!isInitialized) {
         setError("Services not initialized");
         return null;
@@ -136,6 +149,23 @@ export function CustomerProvider({ children }: CustomerProviderProps) {
         console.log("customer:::", customer);
         if (customer) {
           setCurrentCustomer(customer);
+
+          // Determine customer type based on whether customer exists and has current branch
+          if (currentBranchId) {
+            const hasCurrentBranch = customer.payload.branches.some(
+              (branch) => branch.branchId === currentBranchId
+            );
+            const customerType = hasCurrentBranch
+              ? CustomerType.Frequent
+              : CustomerType.New;
+            setCustomerType(customerType);
+          } else {
+            // If no current branch, treat as New
+            setCustomerType(CustomerType.New);
+          }
+        } else {
+          // If customer doesn't exist, treat as New
+          setCustomerType(CustomerType.New);
         }
 
         return customer;
@@ -145,12 +175,21 @@ export function CustomerProvider({ children }: CustomerProviderProps) {
             ? error.message
             : "Failed to get customer by phone";
         setError(errorMessage);
+        // If error occurs, treat as New
+        setCustomerType(CustomerType.New);
         return null;
       } finally {
         setLoading(false);
       }
     },
-    [isInitialized, getService, setLoading, setError, setCurrentCustomer]
+    [
+      isInitialized,
+      getService,
+      setLoading,
+      setError,
+      setCurrentCustomer,
+      setCustomerType,
+    ]
   );
 
   const createCustomer = useCallback(
@@ -222,7 +261,8 @@ export function CustomerProvider({ children }: CustomerProviderProps) {
 
   const clearCurrentCustomer = useCallback(() => {
     setCurrentCustomer(null);
-  }, [setCurrentCustomer]);
+    setCustomerType(CustomerType.New);
+  }, [setCurrentCustomer, setCustomerType]);
 
   const contextValue: CustomerContextType = {
     ...state,

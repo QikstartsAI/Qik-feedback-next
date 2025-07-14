@@ -41,9 +41,6 @@ export type UserPayload = {
 };
 
 export interface User extends ModelResponseBase<UserPayload> {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
   payload: UserPayload;
 }
 
@@ -63,9 +60,6 @@ export type BrandPayload = {
 };
 
 export interface Brand extends ModelResponseBase<BrandPayload> {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
   payload: BrandPayload;
 }
 
@@ -75,7 +69,6 @@ export type BranchPayload = {
   coverImgURL: string;
   name: string;
   category: string;
-
   location: {
     address: string;
     countryCode: string;
@@ -85,10 +78,7 @@ export type BranchPayload = {
 };
 
 export interface Branch extends ModelResponseBase<BranchPayload> {
-  id: string;
   brandId: string; // Reference to parent brand
-  createdAt: Date;
-  updatedAt: Date;
   payload: BranchPayload;
 }
 
@@ -102,10 +92,7 @@ export type WaiterPayload = {
 };
 
 export interface Waiter extends ModelResponseBase<WaiterPayload> {
-  id: string;
   branchId: string; // Reference to parent branch
-  createdAt: Date;
-  updatedAt: Date;
   payload: WaiterPayload;
 }
 
@@ -123,9 +110,6 @@ export type CustomerPayload = {
 };
 
 export interface Customer extends ModelResponseBase<CustomerPayload> {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
   payload: CustomerPayload;
 }
 
@@ -133,11 +117,10 @@ export interface Customer extends ModelResponseBase<CustomerPayload> {
 export interface FeedbackDataPayload {
   averageTicket: string;
   origin: string;
-  feedback?: {
-    rate: number;
-    experienceText?: string;
-    improve?: string[];
-  };
+  feedback?: string;
+  rate: number;
+  experienceText?: string;
+  improve?: string[];
 }
 
 export interface FeedbackPayload {
@@ -146,15 +129,13 @@ export interface FeedbackPayload {
   customerId: string;
   acceptTerms: boolean;
   acceptPromotions: boolean;
+  customerType: CustomerType;
   payload: FeedbackDataPayload;
 }
 
 export interface Feedback extends ModelResponseBase<FeedbackPayload> {
-  id: string;
   branchId: string;
   waiterId?: string;
   customerId: string;
-  createdAt: Date;
-  updatedAt: Date;
   payload: FeedbackPayload;
 }

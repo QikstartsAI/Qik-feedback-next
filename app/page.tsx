@@ -18,6 +18,7 @@ import { useCustomer } from "@/hooks/useCustomer";
 import { useBrand } from "@/hooks/useBrand";
 import { useBranch } from "@/hooks/useBranch";
 import { useWaiter } from "@/hooks/useWaiter";
+import { useFeedback } from "@/hooks/useFeedback";
 import { useSearchParams } from "next/navigation";
 // import { hasGeolocationPower } from "@/app/services/business";
 import { IconChevronLeft } from "@tabler/icons-react";
@@ -41,7 +42,7 @@ import {
 } from "@/lib/utils/formUtils";
 import { WaiterCard } from "@/components/WaiterCard";
 import { BranchSelectionDialog } from "@/components/BranchSelectionDialog";
-import { Branch } from "@/lib/domain/entities";
+import { Branch, FeedbackPayload, CustomerType } from "@/lib/domain/entities";
 
 // Mock branches data for branch selection
 const mockBranches: Branch[] = [
@@ -110,10 +111,11 @@ import {
 } from "@/lib/utils/constants";
 
 export default function QikLoyaltyPlatform() {
-  const { currentCustomer, getCustomerByPhone } = useCustomer();
+  const { currentCustomer, getCustomerByPhone, customerType } = useCustomer();
   const { currentBrand, getBrandById, loading: brandLoading } = useBrand();
   const { currentBranch, getBranchById, loading: branchLoading } = useBranch();
   const { getWaiterById, loading: waiterLoading } = useWaiter();
+  const { sendFeedback, loading: feedbackLoading } = useFeedback();
   const searchParams = useSearchParams();
 
   const [currentView, setCurrentView] = useState<
@@ -225,7 +227,9 @@ export default function QikLoyaltyPlatform() {
     setPhoneError(validation.error);
 
     if (!validation.error && digitsOnly.length === PHONE_DIGITS_MAX_LENGTH) {
-      await getCustomerByPhone(digitsOnly);
+      // Pass the current branch ID to determine customer type
+      const currentBranchId = currentBranch?.id || branchId || undefined;
+      await getCustomerByPhone(digitsOnly, currentBranchId);
     }
   };
 
@@ -247,6 +251,38 @@ export default function QikLoyaltyPlatform() {
     setShowBranchSelection(false);
     // Load the selected branch
     getBranchById(branch.id);
+  };
+
+  const handleFeedbackSubmit = async () => {
+    if (!currentCustomer || !currentBranch) {
+      console.error("Missing customer or branch data");
+      return;
+    }
+
+    const feedbackData: FeedbackPayload = {
+      branchId: currentBranch.id,
+      waiterId: currentWaiter?.id,
+      customerId: currentCustomer.id,
+      acceptTerms,
+      acceptPromotions,
+      customerType,
+      payload: {
+        averageTicket: "0", // This would need to be collected from the form
+        origin: referralSource,
+        feedback: comment,
+        rate: parseInt(rating),
+        experienceText: comment,
+        improve: [], // This would need to be collected from the form
+      },
+    };
+
+    try {
+      await sendFeedback(feedbackData);
+      setCurrentView(VIEWS.THANK_YOU);
+    } catch (error) {
+      console.error("Failed to send feedback:", error);
+      // Handle error - maybe show an error message to the user
+    }
   };
 
   useEffect(() => {
@@ -623,11 +659,15 @@ export default function QikLoyaltyPlatform() {
                           </div>
 
                           <Button
-                            onClick={() => setCurrentView(VIEWS.THANK_YOU)}
+                            onClick={handleFeedbackSubmit}
                             className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                            disabled={!rating || !acceptTerms}
+                            disabled={
+                              !rating || !acceptTerms || feedbackLoading
+                            }
                           >
-                            Enviar feedback
+                            {feedbackLoading
+                              ? "Enviando..."
+                              : "Enviar feedback"}
                           </Button>
                         </div>
                       )}
