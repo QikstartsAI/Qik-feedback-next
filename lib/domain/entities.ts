@@ -133,10 +133,11 @@ export interface Customer extends ModelResponseBase<CustomerPayload> {
 export interface FeedbackDataPayload {
   averageTicket: string;
   origin: string;
-  feedback?: string;
-  rate: number;
-  experienceText?: string;
-  improve?: string[];
+  feedback?: {
+    rate: number;
+    experienceText?: string;
+    improve?: string[];
+  };
 }
 
 export interface FeedbackPayload {

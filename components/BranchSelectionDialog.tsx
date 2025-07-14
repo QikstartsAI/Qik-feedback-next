@@ -10,6 +10,8 @@ import {
   IconMapPin,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
+import { useLocation } from "@/hooks/useLocation";
+import LocationIcon from "./ui/LocationIcon";
 
 interface BranchSelectionDialogProps {
   branches: Branch[];
@@ -29,16 +31,43 @@ export const BranchSelectionDialog: React.FC<BranchSelectionDialogProps> = ({
   const [selectedBranchId, setSelectedBranchId] = useState<string | null>(null);
   const [showAllBranches, setShowAllBranches] = useState(false);
   const [nearestBranch, setNearestBranch] = useState<Branch | null>(null);
+  const [currentView, setCurrentView] = useState<
+    "grantPermissions" | "suggestedLocations"
+  >("grantPermissions");
+  const [isCalculatingDistance, setIsCalculatingDistance] = useState(false);
 
+  const {
+    userLocation,
+    isLoadingLocation,
+    locationError,
+    hasLocationPermission,
+    getCurrentLocation,
+    findNearestBranch,
+    requestLocationPermission,
+    clearLocation,
+    closestDestination,
+  } = useLocation();
+
+  // Initialize nearest branch when branches change
   useEffect(() => {
     if (branches.length > 0 && !selectedBranchId) {
-      // For demo purposes, we'll consider the first branch as the nearest
-      // In a real implementation, this would be calculated based on user's location
-      const nearest = branches[0];
-      setNearestBranch(nearest);
-      setSelectedBranchId(nearest.id);
+      // For demo purposes, we'll consider the first branch as the nearest initially
+      // This will be updated when we get real location data
+      const initialNearest = branches[0];
+      setNearestBranch(initialNearest);
+      setSelectedBranchId(initialNearest.id);
     }
   }, [branches, selectedBranchId]);
+
+  // Update nearest branch when we get real location data
+  useEffect(() => {
+    if (closestDestination && branches.length > 0) {
+      setNearestBranch(closestDestination);
+      if (!selectedBranchId) {
+        setSelectedBranchId(closestDestination.id);
+      }
+    }
+  }, [closestDestination, branches, selectedBranchId]);
 
   const handleBranchSelect = (branchId: string) => {
     setSelectedBranchId(branchId);
@@ -64,6 +93,30 @@ export const BranchSelectionDialog: React.FC<BranchSelectionDialogProps> = ({
     }
   };
 
+  const handleGrantLocation = async () => {
+    setIsCalculatingDistance(true);
+    const hasPermission = await requestLocationPermission();
+
+    if (hasPermission) {
+      // Find the nearest branch based on real location
+      const nearest = await findNearestBranch(branches);
+      if (nearest) {
+        setNearestBranch(nearest);
+        setSelectedBranchId(nearest.id);
+      }
+      setCurrentView("suggestedLocations");
+    } else {
+      // If permission denied, show all branches
+      setCurrentView("suggestedLocations");
+    }
+    setIsCalculatingDistance(false);
+  };
+
+  const handleDenyLocation = () => {
+    clearLocation();
+    setCurrentView("suggestedLocations");
+  };
+
   if (!open) return null;
 
   return (
@@ -79,7 +132,9 @@ export const BranchSelectionDialog: React.FC<BranchSelectionDialogProps> = ({
               {brandName}
             </h1>
             <p className="text-sm text-gray-600">
-              {showAllBranches
+              {currentView === "grantPermissions"
+                ? "Mejora tu experiencia"
+                : showAllBranches
                 ? "Todas las sucursales disponibles"
                 : "Sucursal más cercana"}
             </p>
@@ -89,7 +144,22 @@ export const BranchSelectionDialog: React.FC<BranchSelectionDialogProps> = ({
         {/* Content */}
         <div className="flex-1 p-4 overflow-y-auto">
           <div className="max-w-md mx-auto">
-            {!showAllBranches && nearestBranch ? (
+            {currentView === "grantPermissions" ? (
+              // Location permission request view
+              <div className="flex flex-col items-center justify-center h-full">
+                <div className="text-center space-y-3">
+                  <h2
+                    className="font-bold text-[1.5rem]"
+                    style={{ color: `hsl(${brandColor})` }}
+                  >
+                    Mejora tu experiencia
+                  </h2>
+                  <p className="text-sky-900">
+                    Cuéntanos en qué sucursales te encuentras
+                  </p>
+                </div>
+              </div>
+            ) : !showAllBranches && nearestBranch ? (
               // Show nearest branch view
               <div className="space-y-4">
                 <div className="space-y-2">
@@ -199,50 +269,75 @@ export const BranchSelectionDialog: React.FC<BranchSelectionDialogProps> = ({
         {/* Fixed Bottom Buttons */}
         <div className="border-t bg-white p-4">
           <div className="max-w-md mx-auto">
-            {!showAllBranches ? (
-              <div className="flex flex-col gap-2">
-                {branches.length > 1 && (
-                  <Button
-                    onClick={handleShowAllBranches}
-                    variant="outline"
-                    className="w-full"
-                    style={{
-                      borderColor: `hsl(${brandColor})`,
-                      color: `hsl(${brandColor})`,
-                    }}
-                  >
-                    Ver todas las sucursales ({branches.length})
-                  </Button>
-                )}
+            {currentView === "grantPermissions" ? (
+              <div className="flex flex-col gap-3 w-full">
                 <Button
-                  onClick={handleConfirm}
+                  onClick={handleGrantLocation}
                   className="w-full"
-                  disabled={!selectedBranchId}
+                  disabled={isLoadingLocation || isCalculatingDistance}
                 >
-                  Continuar
+                  {isLoadingLocation || isCalculatingDistance
+                    ? "Obteniendo ubicación..."
+                    : "Compartir ubicación"}
+                </Button>
+                <Button
+                  onClick={handleDenyLocation}
+                  className="w-full"
+                  variant="secondary"
+                >
+                  Ver sucursales
                 </Button>
               </div>
             ) : (
-              <div className="flex gap-2">
-                <Button
-                  onClick={handleBackToNearest}
-                  variant="outline"
-                  className="flex-1"
-                  style={{
-                    borderColor: `hsl(${brandColor})`,
-                    color: `hsl(${brandColor})`,
-                  }}
-                >
-                  Volver
-                </Button>
-                <Button
-                  onClick={handleConfirm}
-                  className="flex-1"
-                  disabled={!selectedBranchId}
-                >
-                  Continuar
-                </Button>
-              </div>
+              currentView === "suggestedLocations" && (
+                <>
+                  {!showAllBranches ? (
+                    <div className="flex flex-col gap-2">
+                      {branches.length > 1 && (
+                        <Button
+                          onClick={handleShowAllBranches}
+                          variant="outline"
+                          className="w-full"
+                          style={{
+                            borderColor: `hsl(${brandColor})`,
+                            color: `hsl(${brandColor})`,
+                          }}
+                        >
+                          Ver todas las sucursales ({branches.length})
+                        </Button>
+                      )}
+                      <Button
+                        onClick={handleConfirm}
+                        className="w-full"
+                        disabled={!selectedBranchId}
+                      >
+                        Continuar
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={handleBackToNearest}
+                        variant="outline"
+                        className="flex-1"
+                        style={{
+                          borderColor: `hsl(${brandColor})`,
+                          color: `hsl(${brandColor})`,
+                        }}
+                      >
+                        Volver
+                      </Button>
+                      <Button
+                        onClick={handleConfirm}
+                        className="flex-1"
+                        disabled={!selectedBranchId}
+                      >
+                        Continuar
+                      </Button>
+                    </div>
+                  )}
+                </>
+              )
             )}
           </div>
         </div>

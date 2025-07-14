@@ -76,8 +76,8 @@ const mockBranches: Branch[] = [
       location: {
         address: "Carrera 5 #18-32, Centro, Neiva, Huila",
         countryCode: "CO",
-        geopoint: { lat: 2.9273, lon: -75.2819 },
-        googleMapURL: "https://maps.google.com/?q=2.9273,-75.2819",
+        geopoint: { lat: 2.928, lon: -75.2825 },
+        googleMapURL: "https://maps.google.com/?q=2.9280,-75.2825",
       },
     },
   },
@@ -94,8 +94,8 @@ const mockBranches: Branch[] = [
       location: {
         address: "Avenida 26 #15-67, Neiva, Huila",
         countryCode: "CO",
-        geopoint: { lat: 2.9273, lon: -75.2819 },
-        googleMapURL: "https://maps.google.com/?q=2.9273,-75.2819",
+        geopoint: { lat: 2.9265, lon: -75.28 },
+        googleMapURL: "https://maps.google.com/?q=2.9265,-75.2800",
       },
     },
   },
