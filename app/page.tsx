@@ -35,10 +35,71 @@ import {
   isPositiveRating,
   getBranchInfo,
   getBrandInfo,
+  hasGeolocationPower,
   canContinueStep1,
   canSubmitFeedback,
 } from "@/lib/utils/formUtils";
 import { WaiterCard } from "@/components/WaiterCard";
+import { BranchSelectionDialog } from "@/components/BranchSelectionDialog";
+import { Branch } from "@/lib/domain/entities";
+
+// Mock branches data for branch selection
+const mockBranches: Branch[] = [
+  {
+    id: "branch-1",
+    brandId: "brand-1",
+    createdAt: new Date("2024-01-01"),
+    updatedAt: new Date("2024-01-01"),
+    payload: {
+      logoImgURL: "/placeholder-logo.png",
+      coverImgURL: "/restaurant-bg.jpg",
+      name: "Restaurante El Buen Sabor",
+      category: "Restaurante",
+      location: {
+        address: "Calle 15 #23-45, Neiva, Huila",
+        countryCode: "CO",
+        geopoint: { lat: 2.9273, lon: -75.2819 },
+        googleMapURL: "https://maps.google.com/?q=2.9273,-75.2819",
+      },
+    },
+  },
+  {
+    id: "branch-2",
+    brandId: "brand-1",
+    createdAt: new Date("2024-01-01"),
+    updatedAt: new Date("2024-01-01"),
+    payload: {
+      logoImgURL: "/placeholder-logo.png",
+      coverImgURL: "/restaurant-bg.jpg",
+      name: "Restaurante El Buen Sabor - Centro",
+      category: "Restaurante",
+      location: {
+        address: "Carrera 5 #18-32, Centro, Neiva, Huila",
+        countryCode: "CO",
+        geopoint: { lat: 2.9273, lon: -75.2819 },
+        googleMapURL: "https://maps.google.com/?q=2.9273,-75.2819",
+      },
+    },
+  },
+  {
+    id: "branch-3",
+    brandId: "brand-2",
+    createdAt: new Date("2024-01-01"),
+    updatedAt: new Date("2024-01-01"),
+    payload: {
+      logoImgURL: "/googleqik.png",
+      coverImgURL: "/business_icon_cover.jpg",
+      name: "Café Delicioso",
+      category: "Café",
+      location: {
+        address: "Avenida 26 #15-67, Neiva, Huila",
+        countryCode: "CO",
+        geopoint: { lat: 2.9273, lon: -75.2819 },
+        googleMapURL: "https://maps.google.com/?q=2.9273,-75.2819",
+      },
+    },
+  },
+];
 import {
   DEFAULT_COUNTRY_CODE,
   PHONE_MAX_LENGTH,
@@ -73,6 +134,8 @@ export default function QikLoyaltyPlatform() {
   const [showCountrySelector, setShowCountrySelector] = useState(false);
   const countrySelectorRef = useRef<HTMLDivElement>(null);
   const [currentWaiter, setCurrentWaiter] = useState<any>(null);
+  const [showBranchSelection, setShowBranchSelection] = useState(false);
+  const [availableBranches, setAvailableBranches] = useState<any[]>([]);
 
   // Get parameters from URL
   const brandId = searchParams.get("id");
@@ -107,15 +170,26 @@ export default function QikLoyaltyPlatform() {
     }
   }, [waiterId, branchId, brandId, getWaiterById, getBranchById, getBrandById]);
 
-  // Check for geolocation power and run RequestLocationDialog logic
+  // Check for geolocation power and handle branch selection
   useEffect(() => {
-    if (currentBrand) {
-      // Run the RequestLocationDialog logic here
+    if (currentBrand && !branchId && !waiterId) {
       console.log("Brand loaded:", currentBrand.payload.name);
-      // This would trigger the RequestLocationDialog component
-      // You can implement the actual dialog logic here or use the existing RequestLocationDialog component
+
+      // Check if brand has GEOLOCATION power
+      if (hasGeolocationPower(currentBrand)) {
+        // Get branches for this brand
+        const brandBranches = mockBranches.filter(
+          (branch) => branch.brandId === currentBrand.id
+        );
+        setAvailableBranches(brandBranches);
+
+        if (brandBranches.length > 0) {
+          // Show branch selection dialog
+          setShowBranchSelection(true);
+        }
+      }
     }
-  }, [currentBrand]);
+  }, [currentBrand, branchId, waiterId]);
 
   // Close country selector when clicking outside
   useEffect(() => {
@@ -167,6 +241,12 @@ export default function QikLoyaltyPlatform() {
   const backToWelcome = () => {
     setCurrentView(VIEWS.WELCOME);
     setStep(FORM_STEPS.WELCOME);
+  };
+
+  const handleBranchSelect = (branch: Branch) => {
+    setShowBranchSelection(false);
+    // Load the selected branch
+    getBranchById(branch.id);
   };
 
   useEffect(() => {
@@ -559,6 +639,15 @@ export default function QikLoyaltyPlatform() {
           )}
         </div>
       </div>
+
+      {/* Branch Selection Dialog */}
+      <BranchSelectionDialog
+        branches={availableBranches}
+        open={showBranchSelection}
+        onBranchSelect={handleBranchSelect}
+        brandColor="var(--qik)"
+        brandName={currentBrand?.payload?.name}
+      />
     </div>
   );
 }

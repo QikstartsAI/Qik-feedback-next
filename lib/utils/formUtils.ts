@@ -24,6 +24,10 @@ export const getBrandInfo = (brand: any) => {
   };
 };
 
+export const hasGeolocationPower = (brand: any): boolean => {
+  return brand?.payload?.powers?.includes("GEOLOCATION") || false;
+};
+
 export const canContinueStep1 = (
   name: string,
   phone: string,
