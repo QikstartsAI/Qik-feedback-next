@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useBrand } from "@/hooks/useBrand";
 import { useSearchParams } from "next/navigation";
 
-export default function TestBranchSelectionPage() {
+function TestBranchSelectionContent() {
   const { currentBrand, getBrandById, loading, error } = useBrand();
   const searchParams = useSearchParams();
   const brandId = searchParams.get("id") || "brand-1";
@@ -99,5 +99,15 @@ export default function TestBranchSelectionPage() {
         </ul>
       </div>
     </div>
+  );
+}
+
+export default function TestBranchSelectionPage() {
+  return (
+    <Suspense
+      fallback={<div className="container mx-auto py-8">Loading...</div>}
+    >
+      <TestBranchSelectionContent />
+    </Suspense>
   );
 }

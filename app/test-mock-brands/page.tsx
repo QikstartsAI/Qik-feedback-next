@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useBrand } from "@/hooks/useBrand";
 import { useSearchParams } from "next/navigation";
 
-export default function TestMockBrandsPage() {
+function TestMockBrandsContent() {
   const { currentBrand, getBrandById, loading, error } = useBrand();
   const searchParams = useSearchParams();
   const brandId = searchParams.get("id") || "brand-1";
@@ -85,5 +85,15 @@ export default function TestMockBrandsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function TestMockBrandsPage() {
+  return (
+    <Suspense
+      fallback={<div className="container mx-auto py-8">Loading...</div>}
+    >
+      <TestMockBrandsContent />
+    </Suspense>
   );
 }

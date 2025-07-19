@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -110,7 +110,7 @@ import {
   PHONE_DIGITS_MAX_LENGTH,
 } from "@/lib/utils/constants";
 
-export default function QikLoyaltyPlatform() {
+function QikLoyaltyPlatformContent() {
   const { currentCustomer, getCustomerByPhone, customerType } = useCustomer();
   const { currentBrand, getBrandById, loading: brandLoading } = useBrand();
   const { currentBranch, getBranchById, loading: branchLoading } = useBranch();
@@ -352,8 +352,7 @@ export default function QikLoyaltyPlatform() {
             <div className="text-white">
               <h1 className="text-lg font-bold">{branchInfo.name}</h1>
               <p className="text-sm text-gray-200">
-                {branchInfo.address} •{" "}
-                {branchLoading ? "Cargando..." : "0.2 km"}
+                {branchInfo.address} • {brandLoading ? "Cargando..." : "0.2 km"}
               </p>
             </div>
           </div>
@@ -689,5 +688,19 @@ export default function QikLoyaltyPlatform() {
         brandName={currentBrand?.payload?.name}
       />
     </div>
+  );
+}
+
+export default function QikLoyaltyPlatform() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-b from-purple-100 via-blue-50 to-white flex items-center justify-center">
+          Loading...
+        </div>
+      }
+    >
+      <QikLoyaltyPlatformContent />
+    </Suspense>
   );
 }
