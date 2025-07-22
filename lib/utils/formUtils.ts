@@ -1,3 +1,5 @@
+import { countryCodes } from "./phoneUtils";
+
 export const calculateProgress = (step: number, totalSteps: number): number => {
   return (step / totalSteps) * 100;
 };
@@ -32,9 +34,20 @@ export const canContinueStep1 = (
   name: string,
   phone: string,
   phoneError: string,
-  referralSource: string
+  referralSource: string,
+  selectedCountryCode: string
 ): boolean => {
-  return Boolean(name && phone && !phoneError && referralSource);
+  // Check if phone number is complete for the selected country
+  const phoneDigits = phone
+    .replace(selectedCountryCode + " ", "")
+    .replace(/\D/g, "");
+  const country = countryCodes.find((c) => c.code === selectedCountryCode);
+  const expectedLength = country?.phoneLength || 10;
+  const isPhoneComplete = phoneDigits.length === expectedLength;
+
+  return Boolean(
+    name && phone && !phoneError && referralSource && isPhoneComplete
+  );
 };
 
 export const canSubmitFeedback = (

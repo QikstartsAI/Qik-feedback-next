@@ -20,7 +20,7 @@ const exampleBranches: Branch[] = [
       category: "Restaurante",
       location: {
         address: "Calle 15 #23-45, Neiva, Huila",
-        countryCode: "CO",
+        countryCode: "MX",
         geopoint: { lat: 2.9273, lon: -75.2819 },
         googleMapURL: "https://maps.google.com/?q=2.9273,-75.2819",
       },

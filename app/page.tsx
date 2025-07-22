@@ -30,6 +30,7 @@ import {
   validatePhone,
   formatPhoneWithCountryCode,
   extractDigitsFromPhone,
+  getCountryCodeFromISO,
 } from "@/lib/utils/phoneUtils";
 import {
   calculateProgress,
@@ -58,7 +59,7 @@ const mockBranches: Branch[] = [
       category: "Restaurante",
       location: {
         address: "Calle 15 #23-45, Neiva, Huila",
-        countryCode: "CO",
+        countryCode: "MX",
         geopoint: { lat: 2.9273, lon: -75.2819 },
         googleMapURL: "https://maps.google.com/?q=2.9273,-75.2819",
       },
@@ -103,11 +104,9 @@ const mockBranches: Branch[] = [
 ];
 import {
   DEFAULT_COUNTRY_CODE,
-  PHONE_MAX_LENGTH,
   GOOGLE_REVIEW_URL,
   VIEWS,
   FORM_STEPS,
-  PHONE_DIGITS_MAX_LENGTH,
 } from "@/lib/utils/constants";
 
 function QikLoyaltyPlatformContent() {
@@ -172,6 +171,54 @@ function QikLoyaltyPlatformContent() {
     }
   }, [waiterId, branchId, brandId, getWaiterById, getBranchById, getBrandById]);
 
+  // Pre-select country based on branch's country code
+  useEffect(() => {
+    if (currentBranch?.payload?.location?.countryCode) {
+      const countryCode = getCountryCodeFromISO(
+        currentBranch.payload.location.countryCode
+      );
+      if (countryCode && countryCode.code !== selectedCountryCode) {
+        setSelectedCountryCode(countryCode.code);
+        // Reformat existing phone number with new country code if there is one
+        if (phone && phone !== countryCode.code + " ") {
+          const currentDigits = phone
+            .replace(selectedCountryCode + " ", "")
+            .replace(/\D/g, "");
+          if (currentDigits) {
+            const maskedValue = applyPhoneMask(currentDigits, countryCode.code);
+            const formattedPhone = formatPhoneWithCountryCode(
+              maskedValue,
+              countryCode.code
+            );
+            setPhone(formattedPhone);
+          }
+        }
+      }
+    } else if (currentBrand?.payload?.location?.countryCode) {
+      // Fallback to brand's country code if branch doesn't have one
+      const countryCode = getCountryCodeFromISO(
+        currentBrand.payload.location.countryCode
+      );
+      if (countryCode && countryCode.code !== selectedCountryCode) {
+        setSelectedCountryCode(countryCode.code);
+        // Reformat existing phone number with new country code if there is one
+        if (phone && phone !== countryCode.code + " ") {
+          const currentDigits = phone
+            .replace(selectedCountryCode + " ", "")
+            .replace(/\D/g, "");
+          if (currentDigits) {
+            const maskedValue = applyPhoneMask(currentDigits, countryCode.code);
+            const formattedPhone = formatPhoneWithCountryCode(
+              maskedValue,
+              countryCode.code
+            );
+            setPhone(formattedPhone);
+          }
+        }
+      }
+    }
+  }, [currentBranch, currentBrand, selectedCountryCode, phone]);
+
   // Check for geolocation power and handle branch selection
   useEffect(() => {
     if (currentBrand && !branchId && !waiterId) {
@@ -215,7 +262,7 @@ function QikLoyaltyPlatformContent() {
 
   const handlePhoneChange = async (value: string) => {
     const digitsOnly = value.replace(/\D/g, "");
-    const maskedValue = applyPhoneMask(digitsOnly);
+    const maskedValue = applyPhoneMask(digitsOnly, selectedCountryCode);
     const formattedPhone = formatPhoneWithCountryCode(
       maskedValue,
       selectedCountryCode
@@ -226,7 +273,11 @@ function QikLoyaltyPlatformContent() {
     const validation = validatePhone(formattedPhone, selectedCountryCode);
     setPhoneError(validation.error);
 
-    if (!validation.error && digitsOnly.length === PHONE_DIGITS_MAX_LENGTH) {
+    // Get the expected phone length for the selected country
+    const country = countryCodes.find((c) => c.code === selectedCountryCode);
+    const expectedLength = country?.phoneLength || 10;
+
+    if (!validation.error && digitsOnly.length === expectedLength) {
       // Pass the current branch ID to determine customer type
       const currentBranchId = currentBranch?.id || branchId || undefined;
       await getCustomerByPhone(digitsOnly, currentBranchId);
@@ -296,7 +347,8 @@ function QikLoyaltyPlatformContent() {
     firstName,
     phone,
     phoneError,
-    referralSource
+    referralSource,
+    selectedCountryCode
   );
   const positiveRating = isPositiveRating(rating);
 
@@ -400,7 +452,7 @@ function QikLoyaltyPlatformContent() {
                           htmlFor="phone"
                           className="text-sm font-medium text-gray-700"
                         >
-                          Teléfono
+                          Teléfono <span className="text-red-500">*</span>
                         </Label>
                         <div className="flex mt-1">
                           <div className="relative" ref={countrySelectorRef}>
@@ -438,8 +490,10 @@ function QikLoyaltyPlatformContent() {
 
                                       // Update phone with new country code
                                       if (currentDigits) {
-                                        const maskedValue =
-                                          applyPhoneMask(currentDigits);
+                                        const maskedValue = applyPhoneMask(
+                                          currentDigits,
+                                          country.code
+                                        );
                                         const formattedPhone =
                                           formatPhoneWithCountryCode(
                                             maskedValue,
@@ -467,16 +521,26 @@ function QikLoyaltyPlatformContent() {
                           <Input
                             id="phone"
                             type="tel"
-                            placeholder="(99) 123-4567"
+                            placeholder="Número de teléfono"
                             value={phone.replace(selectedCountryCode + " ", "")}
                             onChange={(e) => handlePhoneChange(e.target.value)}
                             className="rounded-l-none h-10"
-                            maxLength={PHONE_MAX_LENGTH}
+                            maxLength={20} // Increased to accommodate different country formats
                           />
                         </div>
                         {phoneError && (
                           <p className="text-red-500 text-xs mt-1">
                             {phoneError}
+                          </p>
+                        )}
+                        {!phoneError && phone && (
+                          <p className="text-green-600 text-xs mt-1">
+                            ✓ Número válido
+                          </p>
+                        )}
+                        {!phone && (
+                          <p className="text-gray-500 text-xs mt-1">
+                            Ingresa tu número de teléfono para continuar
                           </p>
                         )}
                       </div>
@@ -559,7 +623,9 @@ function QikLoyaltyPlatformContent() {
                         className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                         disabled={!canContinue}
                       >
-                        Continuar
+                        {!canContinue && phone && phoneError === ""
+                          ? "Completa tu número de teléfono"
+                          : "Continuar"}
                       </Button>
                     </div>
                   )}
