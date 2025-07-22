@@ -2,6 +2,13 @@ import { Brand, BrandPayload } from "@/lib/domain/entities";
 import { BrandRepository } from "@/lib/domain/repositories/iBrandRepository";
 import { IHttpClient } from "@/lib/core/httpClient";
 
+export function createBrandRepository(
+  httpClient: IHttpClient,
+  baseUrl?: string
+): BrandRepository {
+  return new BrandRepositoryImpl(httpClient, baseUrl);
+}
+
 export class BrandRepositoryImpl implements BrandRepository {
   constructor(private httpClient: IHttpClient, private baseUrl?: string) {}
 

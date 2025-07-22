@@ -27,10 +27,9 @@ import {
   BranchRepositoryImpl,
   createBranchRepository,
 } from "@/lib/data/repositories/branchRepository";
-import { createBrandRepositoryMock } from "@/lib/data/repositories/brandRepositoryMock";
-import { createBranchRepositoryMock } from "@/lib/data/repositories/branchRepositoryMock";
+import { createBrandRepository } from "@/lib/data/repositories/brandRepository";
 import { createFeedbackRepository } from "@/lib/data/repositories/feedbackRepository";
-import { createWaiterRepositoryMock } from "@/lib/data/repositories/waiterRepositoryMock";
+import { createWaiterRepository } from "@/lib/data/repositories/waiterRepository";
 import { CustomerRepository } from "@/lib/domain/repositories/iCustomerRepository";
 import { BrandRepository } from "@/lib/domain/repositories/iBrandRepository";
 import { BranchRepository } from "@/lib/domain/repositories/iBranchRepository";
@@ -68,13 +67,15 @@ export class ServiceRegistry {
     });
 
     container.registerSingleton(BRAND_REPOSITORY, async () => {
-      // Using mock repository for now
-      return createBrandRepositoryMock();
+      const httpClient = await container.resolve<IHttpClient>(HTTP_CLIENT);
+      // Don't pass baseUrl since HttpClient already has it configured
+      return createBrandRepository(httpClient);
     });
 
     container.registerSingleton(BRANCH_REPOSITORY, async () => {
-      // Using mock repository for now
-      return createBranchRepositoryMock();
+      const httpClient = await container.resolve<IHttpClient>(HTTP_CLIENT);
+      // Don't pass baseUrl since HttpClient already has it configured
+      return createBranchRepository(httpClient);
     });
 
     container.registerSingleton(FEEDBACK_REPOSITORY, async () => {
@@ -84,8 +85,9 @@ export class ServiceRegistry {
     });
 
     container.registerSingleton(WAITER_REPOSITORY, async () => {
-      // Using mock repository for now
-      return createWaiterRepositoryMock();
+      const httpClient = await container.resolve<IHttpClient>(HTTP_CLIENT);
+      // Don't pass baseUrl since HttpClient already has it configured
+      return createWaiterRepository(httpClient);
     });
 
     // Register use cases
