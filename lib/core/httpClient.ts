@@ -113,7 +113,7 @@ export class HttpClient implements IHttpClient {
       baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "",
       headers: {
         "Content-Type": "application/json",
-        "X-Api-Key": `${process.env.NEXT_PUBLIC_API_KEY}`,
+        "x-api-key": `${process.env.NEXT_PUBLIC_API_KEY}`,
         // Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ODZjMmY1MDUzOWM4ZjVhNDg0ODdiYmMiLCJyb2xlcyI6WyJ1c2VyIl0sImJyYW5kSWQiOiJhYzM0YzQwMi03M2ExLTRhMmItYjkyMC1iOWExNDc0NzFlY2IiLCJpYXQiOjE3NTIxNTcxNzcsImV4cCI6MTc1MjI0MzU3N30.QgwliL6ju1bC3HZZquLGtOD9snKcJ9umb6MaEzicBoI`,
       },
     });
