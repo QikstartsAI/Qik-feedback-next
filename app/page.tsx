@@ -26,6 +26,7 @@ import {
   countryCodes,
   ratingEmojis,
   referralSources,
+  socialMediaOptions,
   applyPhoneMask,
   validatePhone,
   formatPhoneWithCountryCode,
@@ -128,6 +129,8 @@ function QikLoyaltyPlatformContent() {
   const [acceptPromotions, setAcceptPromotions] = useState(true);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [referralSource, setReferralSource] = useState("");
+  const [socialMediaSource, setSocialMediaSource] = useState("");
+  const [otherSource, setOtherSource] = useState("");
   const [rating, setRating] = useState<string>("");
   const [comment, setComment] = useState("");
   const [selectedCountryCode, setSelectedCountryCode] =
@@ -286,6 +289,17 @@ function QikLoyaltyPlatformContent() {
 
   const handleSourceSelect = (sourceId: string) => {
     setReferralSource(sourceId);
+    // Reset sub-selections when main source changes
+    if (sourceId !== "social_media") {
+      setSocialMediaSource("");
+    }
+    if (sourceId !== "other") {
+      setOtherSource("");
+    }
+  };
+
+  const handleSocialMediaSelect = (socialMediaId: string) => {
+    setSocialMediaSource(socialMediaId);
   };
 
   const openGoogleMaps = () => {
@@ -310,6 +324,14 @@ function QikLoyaltyPlatformContent() {
       return;
     }
 
+    // Build the origin string based on selections
+    let originString = referralSource;
+    if (referralSource === "social_media" && socialMediaSource) {
+      originString = `${referralSource}:${socialMediaSource}`;
+    } else if (referralSource === "other" && otherSource) {
+      originString = `${referralSource}:${otherSource}`;
+    }
+
     const feedbackData: FeedbackPayload = {
       branchId: currentBranch.id,
       waiterId: currentWaiter?.id,
@@ -319,7 +341,7 @@ function QikLoyaltyPlatformContent() {
       customerType,
       payload: {
         averageTicket: "0", // This would need to be collected from the form
-        origin: referralSource,
+        origin: originString,
         feedback: comment,
         rate: parseInt(rating),
         experienceText: comment,
@@ -348,6 +370,8 @@ function QikLoyaltyPlatformContent() {
     phone,
     phoneError,
     referralSource,
+    socialMediaSource,
+    otherSource,
     selectedCountryCode
   );
   const positiveRating = isPositiveRating(rating);
@@ -614,6 +638,48 @@ function QikLoyaltyPlatformContent() {
                           ))}
                         </div>
                       </div>
+
+                      {/* Conditional Social Media Selection */}
+                      {referralSource === "social_media" && (
+                        <div className="mt-4">
+                          <Label className="text-sm font-medium text-gray-700">
+                            ¿Cuál red social?
+                          </Label>
+                          <div className="grid grid-cols-2 gap-2 mt-2">
+                            {socialMediaOptions.map((option) => (
+                              <button
+                                key={option.id}
+                                onClick={() =>
+                                  handleSocialMediaSelect(option.id)
+                                }
+                                className={`p-2 text-center rounded-lg border transition-all text-xs ${
+                                  socialMediaSource === option.id
+                                    ? "border-purple-500 bg-purple-50"
+                                    : "border-gray-300 hover:border-gray-400"
+                                }`}
+                              >
+                                {option.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Conditional Other Text Input */}
+                      {referralSource === "other" && (
+                        <div className="mt-4">
+                          <Label className="text-sm font-medium text-gray-700">
+                            ¿Dónde nos conociste?
+                          </Label>
+                          <Input
+                            placeholder="¿Dónde nos conociste?"
+                            value={otherSource}
+                            onChange={(e) => setOtherSource(e.target.value)}
+                            maxLength={100}
+                            className="mt-2"
+                          />
+                        </div>
+                      )}
 
                       <Button
                         onClick={() => {

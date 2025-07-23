@@ -35,6 +35,8 @@ export const canContinueStep1 = (
   phone: string,
   phoneError: string,
   referralSource: string,
+  socialMediaSource: string,
+  otherSource: string,
   selectedCountryCode: string
 ): boolean => {
   // Check if phone number is complete for the selected country
@@ -45,8 +47,26 @@ export const canContinueStep1 = (
   const expectedLength = country?.phoneLength || 10;
   const isPhoneComplete = phoneDigits.length === expectedLength;
 
+  // Check if referral source is selected
+  const hasReferralSource = Boolean(referralSource);
+
+  // Check conditional validation
+  let hasValidSubSelection = true;
+  if (referralSource === "social_media") {
+    hasValidSubSelection = Boolean(socialMediaSource);
+  } else if (referralSource === "other") {
+    hasValidSubSelection = Boolean(
+      otherSource && otherSource.trim().length > 0
+    );
+  }
+
   return Boolean(
-    name && phone && !phoneError && referralSource && isPhoneComplete
+    name &&
+      phone &&
+      !phoneError &&
+      hasReferralSource &&
+      hasValidSubSelection &&
+      isPhoneComplete
   );
 };
 

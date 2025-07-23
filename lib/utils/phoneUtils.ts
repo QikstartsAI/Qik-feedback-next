@@ -93,8 +93,16 @@ export const referralSources = [
   { id: "whatsapp", label: "WhatsApp" },
   { id: "referral", label: "Referido" },
   { id: "walking", label: "Caminaba" },
-  { id: "social_media", label: "Redes sociales" },
+  { id: "lives_nearby", label: "Vivo Cerca" },
+  { id: "social_media", label: "Redes Sociales" },
   { id: "other", label: "Otro" },
+];
+
+export const socialMediaOptions = [
+  { id: "google", label: "Google" },
+  { id: "instagram", label: "Instagram" },
+  { id: "tiktok", label: "TikTok" },
+  { id: "youtube", label: "YouTube" },
 ];
 
 export const applyPhoneMask = (
