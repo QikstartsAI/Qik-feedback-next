@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { IconChevronLeft } from "@tabler/icons-react";
 import { ProgressIndicator } from "@/components/ui/ProgressIndicator";
+import { LoadingPulse } from "@/components/ui/LoadingPulse";
 import { WaiterCard } from "@/components/WaiterCard";
 import { BranchSelectionDialog } from "@/components/BranchSelectionDialog";
 import { Header } from "@/components/layout/Header";
@@ -13,6 +14,7 @@ import { ThankYouView } from "@/components/views/ThankYouView";
 import { useFeedbackForm } from "@/hooks/useFeedbackForm";
 import { getBranchInfo, getBrandInfo } from "@/lib/utils/formUtils";
 import { VIEWS } from "@/lib/utils/constants";
+import Image from "next/image";
 
 function FeedbackFormContent() {
   const {
@@ -71,7 +73,7 @@ function FeedbackFormContent() {
     : getBrandInfo(currentBrand);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-100 via-blue-50 to-white">
+    <div className="bg-gradient-to-b from-purple-100 via-blue-50 to-white">
       {/* Header */}
       <Header
         logo={branchInfo.logo}
@@ -81,7 +83,7 @@ function FeedbackFormContent() {
         loading={brandLoading}
       />
 
-      <div className="min-h-screen bg-gradient-to-b from-purple-100 via-blue-50 to-white">
+      <div className="bg-gradient-to-b from-purple-100 via-blue-50 to-white">
         <div className="max-w-md mx-auto p-6 -mt-8 relative z-20">
           {currentView === VIEWS.THANK_YOU ? (
             <ThankYouView rating={rating} />
@@ -151,6 +153,12 @@ function FeedbackFormContent() {
               </Card>
             </>
           )}
+          <div className="w-full flex gap-2 justify-center items-center mt-3">
+            Powered by{" "}
+            <a href="https://www.qikstarts.com" target="_blank">
+              <Image src="/qik.svg" alt="Qik Logo" width={60} height={30} />
+            </a>
+          </div>
         </div>
       </div>
 
@@ -171,7 +179,7 @@ export function FeedbackForm() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-gradient-to-b from-purple-100 via-blue-50 to-white flex items-center justify-center">
-          Loading...
+          <LoadingPulse size={100} />
         </div>
       }
     >

@@ -80,8 +80,25 @@ export function SurveyView({
                 htmlFor="terms-positive"
                 className="text-xs text-gray-600 leading-tight"
               >
-                Al continuar, acepto los Términos y Condiciones y las Políticas
-                de Privacidad.
+                Al continuar, acepto los{" "}
+                <a
+                  href="https://qikstarts.com/terms-of-service"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 underline"
+                >
+                  Términos y Condiciones
+                </a>{" "}
+                y las{" "}
+                <a
+                  href="https://qikstarts.com/privacy-policy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 underline"
+                >
+                  Políticas de Privacidad
+                </a>
+                .
               </Label>
             </div>
           </div>
@@ -125,8 +142,25 @@ export function SurveyView({
                 htmlFor="terms"
                 className="text-xs text-gray-600 leading-tight"
               >
-                Al presionar &apos;Enviar&apos;, acepto los Términos y
-                Condiciones y las Políticas de Privacidad.
+                Al presionar &apos;Enviar&apos;, acepto los{" "}
+                <a
+                  href="https://qikstarts.com/terms-of-service"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 underline"
+                >
+                  Términos y Condiciones
+                </a>{" "}
+                y las{" "}
+                <a
+                  href="https://qikstarts.com/privacy-policy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 underline"
+                >
+                  Políticas de Privacidad
+                </a>
+                .
               </Label>
             </div>
           </div>
