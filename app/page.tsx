@@ -12,8 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Progress } from "@/components/ui/progress";
-import { Star, MapPin, CheckCircle, ChevronDown } from "lucide-react";
+import { MapPin, CheckCircle, ChevronDown } from "lucide-react";
 import { useCustomer } from "@/hooks/useCustomer";
 import { useBrand } from "@/hooks/useBrand";
 import { useBranch } from "@/hooks/useBranch";
@@ -27,24 +26,25 @@ import {
   ratingEmojis,
   referralSources,
   socialMediaOptions,
+  improvementOptions,
   applyPhoneMask,
   validatePhone,
   formatPhoneWithCountryCode,
-  extractDigitsFromPhone,
   getCountryCodeFromISO,
 } from "@/lib/utils/phoneUtils";
 import {
   calculateProgress,
+  calculateDetailedProgress,
   isPositiveRating,
   getBranchInfo,
   getBrandInfo,
   hasGeolocationPower,
   canContinueStep1,
-  canSubmitFeedback,
 } from "@/lib/utils/formUtils";
 import { WaiterCard } from "@/components/WaiterCard";
 import { BranchSelectionDialog } from "@/components/BranchSelectionDialog";
-import { Branch, FeedbackPayload, CustomerType } from "@/lib/domain/entities";
+import { ProgressIndicator } from "@/components/ui/ProgressIndicator";
+import { Branch, Feedback } from "@/lib/domain/entities";
 
 // Mock branches data for branch selection
 const mockBranches: Branch[] = [
@@ -133,6 +133,9 @@ function QikLoyaltyPlatformContent() {
   const [otherSource, setOtherSource] = useState("");
   const [rating, setRating] = useState<string>("");
   const [comment, setComment] = useState("");
+  const [selectedImprovements, setSelectedImprovements] = useState<string[]>(
+    []
+  );
   const [selectedCountryCode, setSelectedCountryCode] =
     useState(DEFAULT_COUNTRY_CODE);
   const [showCountrySelector, setShowCountrySelector] = useState(false);
@@ -145,6 +148,22 @@ function QikLoyaltyPlatformContent() {
   const brandId = searchParams.get("id");
   const branchId = searchParams.get("branch");
   const waiterId = searchParams.get("waiter");
+
+  // Calculate detailed progress based on form completion
+  const detailedProgress = calculateDetailedProgress({
+    phone,
+    phoneError,
+    firstName,
+    lastName,
+    referralSource,
+    socialMediaSource,
+    otherSource,
+    selectedCountryCode,
+    rating,
+    comment,
+    acceptTerms,
+    acceptPromotions,
+  });
 
   const progress = calculateProgress(step, 2);
 
@@ -302,6 +321,16 @@ function QikLoyaltyPlatformContent() {
     setSocialMediaSource(socialMediaId);
   };
 
+  const handleImprovementSelect = (improvementId: string) => {
+    setSelectedImprovements((prev) => {
+      if (prev.includes(improvementId)) {
+        return prev.filter((id) => id !== improvementId);
+      } else {
+        return [...prev, improvementId];
+      }
+    });
+  };
+
   const openGoogleMaps = () => {
     window.open(GOOGLE_REVIEW_URL, "_blank");
     setStep(FORM_STEPS.THANK_YOU);
@@ -332,20 +361,23 @@ function QikLoyaltyPlatformContent() {
       originString = `${referralSource}:${otherSource}`;
     }
 
-    const feedbackData: FeedbackPayload = {
+    const feedbackData: Feedback = {
+      id: "",
+      updatedAt: new Date(),
+      createdAt: new Date(),
       branchId: currentBranch.id,
       waiterId: currentWaiter?.id,
       customerId: currentCustomer.id,
-      acceptTerms,
-      acceptPromotions,
-      customerType,
       payload: {
+        acceptTerms,
+        acceptPromotions,
+        customerType,
         averageTicket: "0", // This would need to be collected from the form
         origin: originString,
         feedback: comment,
         rate: parseInt(rating),
         experienceText: comment,
-        improve: [], // This would need to be collected from the form
+        improve: selectedImprovements,
       },
     };
 
@@ -444,30 +476,22 @@ function QikLoyaltyPlatformContent() {
               {currentWaiter && <WaiterCard waiter={currentWaiter} />}
               <Card className="shadow-xl border-0 bg-white/95 backdrop-blur">
                 <CardHeader className="text-center pb-4">
-                  <div>
+                  <div className="flex gap-3">
                     <IconChevronLeft
                       className="cursor-pointer"
                       onClick={backToWelcome}
                     />
+                    <ProgressIndicator progress={detailedProgress.progress} />
                   </div>
                   <div className="text-4xl mb-2">😊</div>
                   <CardTitle className="text-xl text-gray-800">
                     ¡Bienvenido!
                   </CardTitle>
-                  <CardDescription className="text-purple-600 font-medium">
-                    Valoramos tu opinión
-                    <br />
-                    <span className="text-sm text-gray-600">
-                      Te tomará menos de 60 segundos
-                    </span>
-                  </CardDescription>
                 </CardHeader>
 
                 <CardContent className="space-y-4">
-                  {/* Progress bar */}
-                  <div className="mb-4">
-                    <Progress value={progress} className="h-2" />
-                  </div>
+                  {/* Progress indicator */}
+                  <div className="mb-4"></div>
 
                   {currentView === VIEWS.WELCOME && (
                     <div className="space-y-4 animate-in slide-in-from-top duration-300">
@@ -697,11 +721,22 @@ function QikLoyaltyPlatformContent() {
                   )}
                   {currentView === VIEWS.SURVEY && (
                     <div className="space-y-4 animate-in slide-in-from-top duration-300">
+                      {/* Survey Progress */}
+
                       <div className="grid grid-cols-5 gap-2">
                         {ratingEmojis.map((item) => (
                           <button
                             key={item.id}
-                            onClick={() => setRating(item.id)}
+                            onClick={() => {
+                              setRating(item.id);
+                              // Reset improvement selections only when switching to positive ratings
+                              if (
+                                item.id === "good" ||
+                                item.id === "excellent"
+                              ) {
+                                setSelectedImprovements([]);
+                              }
+                            }}
                             className={`p-3 rounded-lg border-2 transition-all flex flex-col items-center justify-center ${
                               rating === item.id
                                 ? "border-purple-500 bg-purple-50"
@@ -719,15 +754,12 @@ function QikLoyaltyPlatformContent() {
                       {/* Feedback positivo */}
                       {positiveRating && (
                         <div className="mt-6 space-y-4">
-                          <div className="text-center">
-                            <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-2" />
-                            <h3 className="font-bold text-green-600">
-                              ¡Gracias {firstName}!
-                            </h3>
-                            <p className="text-sm text-gray-600">
-                              +500 puntos agregados
-                            </p>
-                          </div>
+                          <Textarea
+                            placeholder="Cuéntanos más detalles (opcional)"
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                            className="min-h-[80px]"
+                          />
 
                           <div className="pt-4 border-t border-gray-200">
                             <div className="flex items-start space-x-2">
@@ -762,6 +794,39 @@ function QikLoyaltyPlatformContent() {
                       {/* Feedback negativo */}
                       {!positiveRating && rating && (
                         <div className="mt-6 space-y-4">
+                          {/* Improvement question for negative ratings */}
+                          <div>
+                            <Label className="text-sm font-medium text-gray-700">
+                              ¿Qué podemos mejorar?
+                            </Label>
+                            <div className="grid grid-cols-3 gap-2 mt-2">
+                              {improvementOptions.map((option) => (
+                                <button
+                                  key={option.id}
+                                  onClick={() =>
+                                    handleImprovementSelect(option.id)
+                                  }
+                                  className={`p-3 rounded-lg border-2 transition-all flex flex-col items-center justify-center ${
+                                    selectedImprovements.includes(option.id)
+                                      ? "border-purple-500 bg-purple-50"
+                                      : "border-gray-200 hover:border-gray-300"
+                                  }`}
+                                >
+                                  <div className="text-2xl mb-1">
+                                    {option.emoji}
+                                  </div>
+                                  <div className="text-xs font-medium text-center">
+                                    {option.label}
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
+                            {selectedImprovements.length === 0 && (
+                              <p className="text-red-500 text-xs mt-1">
+                                Selecciona al menos una opción
+                              </p>
+                            )}
+                          </div>
                           <Textarea
                             placeholder="Cuéntanos más detalles (opcional)"
                             value={comment}
@@ -793,7 +858,10 @@ function QikLoyaltyPlatformContent() {
                             onClick={handleFeedbackSubmit}
                             className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                             disabled={
-                              !rating || !acceptTerms || feedbackLoading
+                              !rating ||
+                              !acceptTerms ||
+                              feedbackLoading ||
+                              selectedImprovements.length === 0
                             }
                           >
                             {feedbackLoading

@@ -2,7 +2,7 @@ import { Feedback, FeedbackPayload } from "@/lib/domain/entities";
 import { FeedbackRepository } from "@/lib/domain/repositories/iFeedbackRepository";
 
 export interface ISendFeedbackUseCase {
-  execute(feedbackData: FeedbackPayload): Promise<Feedback>;
+  execute(feedbackData: Feedback): Promise<Feedback>;
 }
 
 export class SendFeedbackUseCase implements ISendFeedbackUseCase {
@@ -14,7 +14,7 @@ export class SendFeedbackUseCase implements ISendFeedbackUseCase {
    * @returns Promise<Feedback>
    * @throws Error if validation fails or repository fails
    */
-  async execute(feedbackData: FeedbackPayload): Promise<Feedback> {
+  async execute(feedbackData: Feedback): Promise<Feedback> {
     // Validate feedback data
     this.validateFeedbackData(feedbackData);
 
@@ -34,7 +34,7 @@ export class SendFeedbackUseCase implements ISendFeedbackUseCase {
    * @param feedbackData - Feedback data to validate
    * @throws Error if validation fails
    */
-  private validateFeedbackData(feedbackData: FeedbackPayload): void {
+  private validateFeedbackData(feedbackData: Feedback): void {
     if (!feedbackData.branchId || feedbackData.branchId.trim() === "") {
       throw new Error("Branch ID is required");
     }
@@ -43,11 +43,11 @@ export class SendFeedbackUseCase implements ISendFeedbackUseCase {
       throw new Error("Customer ID is required");
     }
 
-    if (typeof feedbackData.acceptTerms !== "boolean") {
+    if (typeof feedbackData.payload.acceptTerms !== "boolean") {
       throw new Error("Accept terms must be a boolean value");
     }
 
-    if (typeof feedbackData.acceptPromotions !== "boolean") {
+    if (typeof feedbackData.payload.acceptPromotions !== "boolean") {
       throw new Error("Accept promotions must be a boolean value");
     }
 

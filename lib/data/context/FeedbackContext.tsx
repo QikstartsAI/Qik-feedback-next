@@ -19,7 +19,7 @@ interface FeedbackContextState {
 }
 
 interface FeedbackContextActions {
-  sendFeedback: (feedbackData: FeedbackPayload) => Promise<Feedback | null>;
+  sendFeedback: (feedbackData: Feedback) => Promise<Feedback | null>;
   clearError: () => void;
   clearCurrentFeedback: () => void;
 }
@@ -60,7 +60,7 @@ export function FeedbackProvider({ children }: FeedbackProviderProps) {
   }, []);
 
   const sendFeedback = useCallback(
-    async (feedbackData: FeedbackPayload): Promise<Feedback | null> => {
+    async (feedbackData: Feedback): Promise<Feedback | null> => {
       if (!isInitialized) {
         setError("Services not initialized");
         return null;

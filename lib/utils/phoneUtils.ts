@@ -105,6 +105,12 @@ export const socialMediaOptions = [
   { id: "youtube", label: "YouTube" },
 ];
 
+export const improvementOptions = [
+  { id: "food", emoji: "🍽️", label: "Comida" },
+  { id: "service", emoji: "👥", label: "Servicio" },
+  { id: "ambiance", emoji: "🏪", label: "Ambiente" },
+];
+
 export const applyPhoneMask = (
   digitsOnly: string,
   countryCode: string

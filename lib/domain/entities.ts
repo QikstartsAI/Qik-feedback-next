@@ -114,23 +114,17 @@ export interface Customer extends ModelResponseBase<CustomerPayload> {
 }
 
 // Feedback entity (updated to match specification)
-export interface FeedbackDataPayload {
+
+export interface FeedbackPayload {
+  acceptTerms: boolean;
+  acceptPromotions: boolean;
+  customerType: CustomerType;
   averageTicket: string;
   origin: string;
   feedback?: string;
   rate: number;
   experienceText?: string;
   improve?: string[];
-}
-
-export interface FeedbackPayload {
-  branchId: string;
-  waiterId?: string;
-  customerId: string;
-  acceptTerms: boolean;
-  acceptPromotions: boolean;
-  customerType: CustomerType;
-  payload: FeedbackDataPayload;
 }
 
 export interface Feedback extends ModelResponseBase<FeedbackPayload> {

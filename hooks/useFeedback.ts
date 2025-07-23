@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { FeedbackPayload } from "@/lib/domain/entities";
+import { Feedback } from "@/lib/domain/entities";
 import { useFeedbackContext } from "@/lib/data/context";
 
 export function useFeedback() {
@@ -13,7 +13,7 @@ export function useFeedback() {
   } = useFeedbackContext();
 
   const handleSendFeedback = useCallback(
-    async (feedbackData: FeedbackPayload) => {
+    async (feedbackData: Feedback) => {
       try {
         const result = await sendFeedback(feedbackData);
         return result;

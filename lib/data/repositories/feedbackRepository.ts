@@ -102,11 +102,13 @@ export class FeedbackRepositoryImpl implements FeedbackRepository {
    * @param feedbackData - Feedback data to send
    * @returns Promise<Feedback>
    */
-  async sendFeedback(feedbackData: FeedbackPayload): Promise<Feedback> {
+  async sendFeedback(feedbackData: Feedback): Promise<Feedback> {
     try {
+      const { id, createdAt, updatedAt, ...data } = feedbackData;
+
       const response = await this.httpClient.post<Feedback>(
         `${this.baseUrl}/feedback`,
-        feedbackData
+        data
       );
       return response.data;
     } catch (error) {

@@ -5,7 +5,7 @@ export interface FeedbackRepository {
   getFeedbacksByBranchId(branchId: string): Promise<Feedback[]>;
   getFeedbacksByCustomerId(customerId: string): Promise<Feedback[]>;
   getFeedbacksByWaiterId(waiterId: string): Promise<Feedback[]>;
-  sendFeedback(feedbackData: FeedbackPayload): Promise<Feedback>;
+  sendFeedback(feedbackData: Feedback): Promise<Feedback>;
   updateFeedback(
     id: string,
     feedbackData: Partial<FeedbackPayload>
