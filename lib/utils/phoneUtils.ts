@@ -111,6 +111,25 @@ export const improvementOptions = [
   { id: "ambiance", emoji: "🏪", label: "Ambiente" },
 ];
 
+export const reviewExamples = [
+  {
+    id: "review-1",
+    text: "Todo increíble, ¡me encantó! 🌟✨",
+  },
+  {
+    id: "review-2",
+    text: "Superó mis expectativas, muy recomendado 👍💯",
+  },
+  {
+    id: "review-3",
+    text: "Gran experiencia, ¡voleveré sin duda! 😃👏",
+  },
+  {
+    id: "review-4",
+    text: "Excelente en todos los aspectos, ¡felicitaciones! 🎉🙌",
+  },
+];
+
 export const applyPhoneMask = (
   digitsOnly: string,
   countryCode: string

@@ -27,6 +27,7 @@ import {
   referralSources,
   socialMediaOptions,
   improvementOptions,
+  reviewExamples,
   applyPhoneMask,
   validatePhone,
   formatPhoneWithCountryCode,
@@ -136,6 +137,7 @@ function QikLoyaltyPlatformContent() {
   const [selectedImprovements, setSelectedImprovements] = useState<string[]>(
     []
   );
+  const [copiedReviewId, setCopiedReviewId] = useState<string | null>(null);
   const [selectedCountryCode, setSelectedCountryCode] =
     useState(DEFAULT_COUNTRY_CODE);
   const [showCountrySelector, setShowCountrySelector] = useState(false);
@@ -329,6 +331,19 @@ function QikLoyaltyPlatformContent() {
         return [...prev, improvementId];
       }
     });
+  };
+
+  const handleCopyReview = async (reviewText: string, reviewId: string) => {
+    try {
+      await navigator.clipboard.writeText(reviewText);
+      setCopiedReviewId(reviewId);
+      // Reset the copied state after 2 seconds
+      setTimeout(() => {
+        setCopiedReviewId(null);
+      }, 2000);
+    } catch (error) {
+      console.error("Failed to copy text: ", error);
+    }
   };
 
   const openGoogleMaps = () => {
@@ -754,6 +769,69 @@ function QikLoyaltyPlatformContent() {
                       {/* Feedback positivo */}
                       {positiveRating && (
                         <div className="mt-6 space-y-4">
+                          {/* Review examples */}
+                          <div>
+                            <Label className="text-sm font-medium text-gray-700">
+                              ¿Nos ayudas con una reseña?
+                            </Label>
+                            <div className="space-y-3 mt-2">
+                              {reviewExamples.map((review) => (
+                                <div
+                                  key={review.id}
+                                  className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg"
+                                >
+                                  <div className="flex-1">
+                                    <p className="text-sm text-gray-800">
+                                      {review.text}
+                                    </p>
+                                  </div>
+                                  <button
+                                    onClick={() =>
+                                      handleCopyReview(review.text, review.id)
+                                    }
+                                    className={`p-2 rounded-lg transition-all ${
+                                      copiedReviewId === review.id
+                                        ? "bg-green-100 text-green-600"
+                                        : "bg-white text-gray-500 hover:bg-gray-100"
+                                    }`}
+                                    title={
+                                      copiedReviewId === review.id
+                                        ? "¡Copiado!"
+                                        : "Copiar reseña"
+                                    }
+                                  >
+                                    {copiedReviewId === review.id ? (
+                                      <CheckCircle className="h-4 w-4" />
+                                    ) : (
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="h-4 w-4"
+                                      >
+                                        <rect
+                                          width="14"
+                                          height="14"
+                                          x="8"
+                                          y="8"
+                                          rx="2"
+                                          ry="2"
+                                        ></rect>
+                                        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+                                      </svg>
+                                    )}
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
                           <Textarea
                             placeholder="Cuéntanos más detalles (opcional)"
                             value={comment}
