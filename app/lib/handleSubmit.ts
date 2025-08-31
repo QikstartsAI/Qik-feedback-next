@@ -17,10 +17,10 @@ import { findBusiness } from "../services/business";
 import { Customer } from "../types/customer";
 import { findCustomerDataByEmail } from "./handleEmail";
 
-const formattedName = (name?: string | null): string => {
-  if (name?.includes(" ")) {
-    return name ? name.toLocaleLowerCase().split(" ").join("-").trim() : "";
-  }
+const formattedName = (name: string | null) => {
+  console.log("=== DEBUG: formattedName ===");
+  console.log("Input name:", name);
+  console.log("Formatted result:", name ?? "");
   return name ?? "";
 };
 
@@ -49,6 +49,16 @@ const handleSubmitFeedback = async (
   branchId: string | null,
   waiterId: string | null
 ) => {
+  console.log("=== DEBUG: handleSubmitFeedback START ===");
+  console.log("Parameters received:", {
+    businessId,
+    branchId,
+    waiterId,
+    Email,
+    FullName,
+    Rating
+  });
+
   const searchParams = new URLSearchParams(document.location.search);
 
   const customerContactData: Customer = {
@@ -63,6 +73,7 @@ const handleSubmitFeedback = async (
   };
 
   const formattedId = formattedName(businessId);
+  console.log("formattedId:", formattedId);
 
   const businessFeedbackRef = collection(
     getFirebase().db,
@@ -85,6 +96,12 @@ const handleSubmitFeedback = async (
     formattedId
   );
 
+  console.log("Firebase references:", {
+    businessFeedbackRef: businessFeedbackRef.path,
+    businessCustomerRef: businessCustomerRef.path,
+    businessDocRef: businessDocRef.path
+  });
+
   const feedbaackData = {
     CreationDate: getTimesTampFromDate(new Date()),
     FullName,
@@ -105,7 +122,15 @@ const handleSubmitFeedback = async (
       : null,
     AttendedBy,
   };
+
+  console.log("=== DEBUG: Checking conditional logic ===");
+  console.log("Condition 1 (waiterId && businessId && !branchId):", waiterId && businessId && !branchId);
+  console.log("Condition 2 (waiterId && businessId && branchId):", waiterId && businessId && branchId);
+  console.log("Condition 3 (isRealBranch && !waiterId):", (branchId && branchId !== businessId) && !waiterId);
+  console.log("Condition 4 (businessId && !waiterId):", businessId && !waiterId);
+
   if (waiterId && businessId && !branchId) {
+    console.log("=== DEBUG: Executing Case 1 - Waiter in business principal ===");
     try {
       const waiterFeedbackRef = collection(
         getFirebase().db,
@@ -129,6 +154,12 @@ const handleSubmitFeedback = async (
         collection(businessDocRef, "meseros"),
         waiterId || ""
       );
+      console.log("Waiter references:", {
+        waiterFeedbackRef: waiterFeedbackRef.path,
+        waiterCustomerRef: waiterCustomerRef.path,
+        waitersRef: waitersRef.path
+      });
+
       const waitersDocSnap = await getDoc(waitersRef);
       const waiterData = waitersDocSnap.data() as Waiter;
       const latestSum = waiterData.latestSum || 0;
@@ -141,6 +172,7 @@ const handleSubmitFeedback = async (
       }
       const ratingAverage = (waiterRating / (numberOfSurveys + 1)).toFixed(1);
       const customerRef = doc(waiterCustomerRef, Email);
+      console.log("Attempting to save waiter feedback...");
       await setDoc(customerRef, customerContactData);
       await addDoc(waiterFeedbackRef, feedbaackData);
 
@@ -149,10 +181,12 @@ const handleSubmitFeedback = async (
         latestSum: waiterRating,
         ratingAverage,
       });
+      console.log("Waiter feedback saved successfully");
     } catch (err) {
-      console.error(err);
+      console.error("Error saving waiter feedback:", err);
     }
   } else if (waiterId && businessId && branchId) {
+    console.log("=== DEBUG: Executing Case 2 - Waiter in branch ===");
     try {
       const waiterFeedbackRef = collection(
         getFirebase().db,
@@ -184,6 +218,12 @@ const handleSubmitFeedback = async (
         collection(branchDocRef, "meseros"),
         waiterId || ""
       );
+      console.log("Branch waiter references:", {
+        waiterFeedbackRef: waiterFeedbackRef.path,
+        waiterBranchCustomerRef: waiterBranchCustomerRef.path,
+        waitersRef: waitersRef.path
+      });
+
       const waitersDocSnap = await getDoc(waitersRef);
       const waiterData = waitersDocSnap.data() as Waiter;
       const latestSum = waiterData.latestSum || 0;
@@ -196,6 +236,7 @@ const handleSubmitFeedback = async (
       }
       const ratingAverage = (waiterRating / (numberOfSurveys + 1)).toFixed(1);
       const customerRef = doc(waiterBranchCustomerRef, Email);
+      console.log("Attempting to save branch waiter feedback...");
       await setDoc(customerRef, customerContactData);
       await addDoc(waiterFeedbackRef, feedbaackData);
       await updateDoc(waitersRef, {
@@ -203,13 +244,25 @@ const handleSubmitFeedback = async (
         latestSum: waiterRating,
         ratingAverage,
       });
+      console.log("Branch waiter feedback saved successfully");
     } catch (err) {
-      console.error(err);
+      console.error("Error saving branch waiter feedback:", err);
     }
   }
 
   try {
-    if (branchId && !waiterId) {
+    console.log("=== DEBUG: Executing main storage logic ===");
+    
+    // Check if branchId is actually a real branch (not the business principal ID)
+    const isRealBranch = branchId && branchId !== businessId;
+    
+    console.log("=== DEBUG: Branch vs Business Principal Check ===");
+    console.log("branchId:", branchId);
+    console.log("businessId:", businessId);
+    console.log("isRealBranch:", isRealBranch);
+    
+    if (isRealBranch && !waiterId) {
+      console.log("=== DEBUG: Executing Case 3 - Branch feedback (no waiter) ===");
       const branchFeedbackRef = collection(
         getFirebase().db,
         COLLECTION_NAME || "",
@@ -228,15 +281,46 @@ const handleSubmitFeedback = async (
         branchId || "",
         "customers"
       );
+      console.log("Branch references:", {
+        branchFeedbackRef: branchFeedbackRef.path,
+        branchCustomerRef: branchCustomerRef.path
+      });
+
       const customerRef = doc(branchCustomerRef, Email);
+      console.log("Attempting to save branch feedback...");
       await setDoc(customerRef, customerContactData);
       await addDoc(branchFeedbackRef, feedbaackData);
+      console.log("Branch feedback saved successfully");
     } else if (businessId && !waiterId) {
+      console.log("=== DEBUG: Executing Case 4 - Business principal feedback (casa matriz) ===");
+      console.log("This is the case for casa matriz - should create customers collection in business principal");
+      
       const customerRef = doc(businessCustomerRef, Email);
-      await setDoc(customerRef, customerContactData);
-      await addDoc(businessFeedbackRef, feedbaackData);
+      console.log("Business customer reference:", customerRef.path);
+      console.log("Attempting to save business principal feedback...");
+      console.log("Customer data to save:", customerContactData);
+      console.log("Feedback data to save:", feedbaackData);
+      
+      try {
+        await setDoc(customerRef, customerContactData);
+        console.log("Customer data saved successfully");
+        await addDoc(businessFeedbackRef, feedbaackData);
+        console.log("Feedback data saved successfully");
+        console.log("=== SUCCESS: Casa matriz feedback stored correctly ===");
+      } catch (error) {
+        console.error("Error saving casa matriz feedback:", error);
+        console.error("Error details:", {
+          errorCode: (error as any)?.code,
+          errorMessage: (error as any)?.message,
+          errorStack: (error as any)?.stack
+        });
+      }
+    } else {
+      console.log("=== DEBUG: No matching condition found ===");
+      console.log("This should not happen - check the conditional logic");
     }
 
+    console.log("=== DEBUG: Executing parent customer storage ===");
     const parentCustomerDataRef = collection(
       getFirebase().db,
       CUSTOMERS_COLLECTION_NAME || ""
@@ -260,6 +344,7 @@ const handleSubmitFeedback = async (
       creationDate = getTimesTampFromDate(new Date());
     }
 
+    console.log("Saving to parent customer collections...");
     await setDoc(customerDoc, customerContactData);
     if (customerData) {
       await setDoc(businessDoc, {
@@ -296,9 +381,17 @@ const handleSubmitFeedback = async (
       ...feedbaackData,
       feedbackNumberOfVisit,
     });
+    console.log("Parent customer data saved successfully");
   } catch (err) {
-    console.error(err);
+    console.error("=== ERROR: Main storage logic failed ===", err);
+    console.error("Error details:", {
+      errorCode: (err as any)?.code,
+      errorMessage: (err as any)?.message,
+      errorStack: (err as any)?.stack
+    });
   }
+  
+  console.log("=== DEBUG: handleSubmitFeedback END ===");
 };
 
 export default handleSubmitFeedback;
