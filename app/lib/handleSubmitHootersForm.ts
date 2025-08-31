@@ -43,7 +43,7 @@ const handleSubmitHootersForm = async (
   const customerContactData:Customer = {
     email: Email,
     name: FullName,
-    phoneNumber: PhoneNumber  || '',
+    phoneNumber: PhoneNumber || '',
     birthdayDate: BirthdayDate || '',
     origin: Origin || '',
     customerType: customerType || '',
@@ -72,7 +72,7 @@ const handleSubmitHootersForm = async (
     CreationDate: getTimesTampFromDate(new Date()),
     FullName,
     AcceptTerms,
-    PhoneNumber,
+    PhoneNumber: PhoneNumber || '',
     BirthdayDate,
     AcceptPromotions,
     Origin,
