@@ -245,6 +245,19 @@ export default function FeedbackForm({
         feedbackNumberOfVisit = 1;
       }
 
+      console.log("=== DEBUG: FeedbackForm onSubmit ===");
+      console.log("Parameters being passed to handleSubmitFeedback:", {
+        businessId,
+        branchId,
+        waiterId,
+        customerType,
+        attendantName,
+        customerNumberOfVisits,
+        feedbackNumberOfVisit
+      });
+      console.log("Updated data:", updatedData);
+      console.log("Improve options:", improveOptions);
+
       await handleSubmitFeedback(
         updatedData,
         improveOptions,
@@ -261,7 +274,7 @@ export default function FeedbackForm({
         handleRedirect();
       }
     } catch (error) {
-      console.log(error);
+      console.log("=== ERROR: FeedbackForm onSubmit failed ===", error);
       toast({
         title: isUsCountry
           ? "An error occurred, try again"

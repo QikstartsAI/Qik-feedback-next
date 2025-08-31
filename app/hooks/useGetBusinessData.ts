@@ -17,6 +17,14 @@ function useGetBusinessData() {
   const branchId = searchParams.get("sucursal");
   const waiterId = searchParams.get("mesero");
 
+  console.log("=== DEBUG: useGetBusinessData ===");
+  console.log("URL Parameters:", {
+    businessId,
+    branchId,
+    waiterId,
+    sucursalId
+  });
+
   // useEffect(() => {
   //   console.log("BUSINESS:", businessId);
   //   const fetchBusinessCustomers = async () => {
@@ -38,13 +46,21 @@ function useGetBusinessData() {
     const fetchData = async () => {
       setLoading("requesting");
       try {
+        console.log("=== DEBUG: Fetching business data ===");
+        console.log("Parameters for findBusiness:", {
+          businessId,
+          sucursalId: sucursalId || branchId,
+          waiterId
+        });
+        
         const res =
           (await findBusiness(businessId, sucursalId || branchId, waiterId)) ||
           null;
 
+        console.log("Business data fetched:", res);
         setBusiness(res);
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching business data:", error);
       } finally {
         setLoading("loaded");
       }
@@ -52,7 +68,7 @@ function useGetBusinessData() {
     fetchData();
   }, [businessId, branchId, waiterId, sucursalId]);
 
-  return {
+  const returnData = {
     loading,
     business,
     businessId,
@@ -62,6 +78,10 @@ function useGetBusinessData() {
     waiterId,
     brandColor,
   };
+
+  console.log("=== DEBUG: useGetBusinessData return data ===", returnData);
+
+  return returnData;
 }
 
 export default useGetBusinessData;
