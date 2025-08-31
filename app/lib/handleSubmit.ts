@@ -93,7 +93,7 @@ const handleSubmitFeedback = async (
     Improve,
     ImproveText,
     Origin,
-    PhoneNumber,
+    PhoneNumber: PhoneNumber || "",
     Rating: parseInt(Rating),
     StartTime: getTimesTampFromDate(StartTime),
     Dinners,
