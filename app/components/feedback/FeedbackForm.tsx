@@ -480,12 +480,14 @@ export default function FeedbackForm({
                                   lastFeedbackFilledIsGreaterThanOneDay(
                                     lastFeedbackFilledInBusiness
                                   );
-                                setIsCustomerInBusiness(
-                                  await findIsCustomerInBusiness(
-                                    email,
-                                    formattedName(business?.BusinessId)
-                                  )
-                                );
+                                        if (business?.BusinessId) {
+          setIsCustomerInBusiness(
+            await findIsCustomerInBusiness(
+              email,
+              formattedName(business.BusinessId)
+            )
+          );
+        }
                                 setShowLastFeedbackFilledModal(
                                   lastFeedbackGreaterThanOneDay
                                 );
