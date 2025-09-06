@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PhoneInput } from "@/components/forms/PhoneInput";
 import { ReferralSourceSelector } from "@/components/forms/ReferralSourceSelector";
+import { ConsumptionSelector } from "@/components/forms/ConsumptionSelector";
 
 interface WelcomeViewProps {
   // Form state
@@ -18,6 +19,7 @@ interface WelcomeViewProps {
   socialMediaSource: string;
   otherSource: string;
   selectedCountryCode: string;
+  averageTicket: string;
 
   // Form handlers
   onFirstNameChange: (value: string) => void;
@@ -28,6 +30,7 @@ interface WelcomeViewProps {
   onReferralSourceSelect: (sourceId: string) => void;
   onSocialMediaSelect: (socialMediaId: string) => void;
   onOtherSourceChange: (value: string) => void;
+  onAverageTicketSelect: (ticket: string) => void;
   onContinue: () => void;
 
   // Validation
@@ -44,6 +47,7 @@ export function WelcomeView({
   socialMediaSource,
   otherSource,
   selectedCountryCode,
+  averageTicket,
   onFirstNameChange,
   onLastNameChange,
   onPhoneChange,
@@ -52,6 +56,7 @@ export function WelcomeView({
   onReferralSourceSelect,
   onSocialMediaSelect,
   onOtherSourceChange,
+  onAverageTicketSelect,
   onContinue,
   canContinue,
 }: WelcomeViewProps) {
@@ -119,6 +124,13 @@ export function WelcomeView({
         onSourceSelect={onReferralSourceSelect}
         onSocialMediaSelect={onSocialMediaSelect}
         onOtherSourceChange={onOtherSourceChange}
+      />
+
+      {/* Consumption Selector */}
+      <ConsumptionSelector
+        selectedConsumption={averageTicket}
+        onConsumptionSelect={onAverageTicketSelect}
+        countryCode="MX"
       />
 
       <Button
