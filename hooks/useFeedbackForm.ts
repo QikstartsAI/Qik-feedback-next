@@ -24,6 +24,7 @@ import {
   hasGeolocationPower,
   canContinueStep1,
 } from "@/lib/utils/formUtils";
+import { getAverageTicket } from "@/app/constants/form";
 
 // Mock branches data for branch selection
 const mockBranches: Branch[] = [
@@ -111,6 +112,7 @@ export function useFeedbackForm() {
   const [selectedImprovements, setSelectedImprovements] = useState<string[]>(
     []
   );
+  const [averageTicket, setAverageTicket] = useState<string>("");
   const [copiedReviewId, setCopiedReviewId] = useState<string | null>(null);
   const [selectedCountryCode, setSelectedCountryCode] =
     useState(DEFAULT_COUNTRY_CODE);
@@ -295,8 +297,43 @@ export function useFeedbackForm() {
   };
 
   const handleFeedbackSubmit = async () => {
-    if (!currentCustomer || !currentBranch) {
-      console.error("Missing customer or branch data");
+    // Create temporary customer and branch data if not available
+    const customerData = currentCustomer || {
+      id: "temp-customer-" + Date.now(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      payload: {
+        name: firstName,
+        lastName: lastName,
+        phoneNumber: phone,
+        email: "",
+        birthdayDate: "",
+        origin: "",
+        customerType: "new" as const,
+        acceptPromotions,
+        lastFeedbackFilled: new Date(),
+      },
+    };
+
+    const branchData = currentBranch || mockBranches[0];
+
+    if (!customerData || !branchData) {
+      console.error("Unable to create customer or branch data");
+      return;
+    }
+
+    // Map text rating to numeric value
+    const ratingMap: { [key: string]: number } = {
+      "terrible": 1,
+      "bad": 2,
+      "regular": 3,
+      "good": 4,
+      "excellent": 5
+    };
+    
+    const ratingValue = ratingMap[rating] || parseInt(rating) || 0;
+    if (ratingValue < 1 || ratingValue > 5) {
+      console.error("Invalid rating value:", rating, "mapped to:", ratingValue);
       return;
     }
 
@@ -311,23 +348,51 @@ export function useFeedbackForm() {
       id: "",
       updatedAt: new Date(),
       createdAt: new Date(),
-      branchId: currentBranch.id,
+      branchId: branchData.id,
       waiterId: currentWaiter?.id,
-      customerId: currentCustomer.id,
+      customerId: customerData.id,
       payload: {
         acceptTerms,
         acceptPromotions,
-        customerType,
-        averageTicket: "0",
+        customerType: (customerData.payload as any).customerType || "new",
+        averageTicket: averageTicket || "0",
         origin: originString,
         feedback: comment,
-        rate: parseInt(rating),
+        rate: ratingValue,
         experienceText: comment,
         improve: selectedImprovements,
       },
     };
 
     try {
+      console.log("🔍 Debug rating value:", {
+        rating,
+        ratingType: typeof rating,
+        mappedRating: ratingMap[rating],
+        parsedRating: parseInt(rating),
+        finalRating: ratingValue
+      });
+      
+      console.log("📤 Sending feedback with payload:", {
+        feedbackData,
+        payload: feedbackData.payload,
+        customerData: {
+          id: customerData.id,
+          name: customerData.payload.name,
+          lastName: customerData.payload.lastName,
+          phoneNumber: customerData.payload.phoneNumber,
+          customerType: (customerData.payload as any).customerType || "new",
+        },
+        branchData: {
+          id: branchData.id,
+          name: branchData.payload?.name,
+        },
+        waiterData: currentWaiter ? {
+          id: currentWaiter.id,
+          name: currentWaiter.payload?.name,
+        } : null,
+      });
+      
       await sendFeedback(feedbackData);
       setCurrentView(VIEWS.THANK_YOU);
     } catch (error) {
@@ -358,7 +423,8 @@ export function useFeedbackForm() {
     referralSource,
     socialMediaSource,
     otherSource,
-    selectedCountryCode
+    selectedCountryCode,
+    averageTicket
   );
 
   return {
@@ -376,6 +442,7 @@ export function useFeedbackForm() {
     otherSource,
     rating,
     comment,
+    averageTicket,
     selectedImprovements,
     copiedReviewId,
     selectedCountryCode,
@@ -408,6 +475,7 @@ export function useFeedbackForm() {
     setOtherSource,
     setRating,
     setComment,
+    setAverageTicket,
     handleImprovementSelect,
     handleCopyReview,
     handleBranchSelect,

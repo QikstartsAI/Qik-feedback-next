@@ -31,6 +31,7 @@ function FeedbackFormContent() {
     otherSource,
     rating,
     comment,
+    averageTicket,
     selectedImprovements,
     copiedReviewId,
     selectedCountryCode,
@@ -58,6 +59,7 @@ function FeedbackFormContent() {
     setOtherSource,
     setRating,
     setComment,
+    setAverageTicket,
     handleImprovementSelect,
     handleCopyReview,
     handleBranchSelect,
@@ -119,6 +121,7 @@ function FeedbackFormContent() {
                       socialMediaSource={socialMediaSource}
                       otherSource={otherSource}
                       selectedCountryCode={selectedCountryCode}
+                      averageTicket={averageTicket}
                       onFirstNameChange={setFirstName}
                       onLastNameChange={setLastName}
                       onPhoneChange={handlePhoneChange}
@@ -127,6 +130,7 @@ function FeedbackFormContent() {
                       onReferralSourceSelect={handleSourceSelect}
                       onSocialMediaSelect={handleSocialMediaSelect}
                       onOtherSourceChange={setOtherSource}
+                      onAverageTicketSelect={setAverageTicket}
                       onContinue={goToSurvey}
                       canContinue={canContinue}
                     />

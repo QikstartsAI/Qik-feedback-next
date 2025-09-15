@@ -1,3 +1,7 @@
+// DEPRECATED: This file is kept for backward compatibility
+// New consumption ranges are now managed via /public/data/consumption-ranges.json
+// Use the useConsumptionRanges hook instead
+
 type CurrencyPrices = {
   [key: string]: [string, ...string[]];
 };

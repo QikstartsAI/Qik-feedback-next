@@ -153,7 +153,8 @@ export const canContinueStep1 = (
   referralSource: string,
   socialMediaSource: string,
   otherSource: string,
-  selectedCountryCode: string
+  selectedCountryCode: string,
+  averageTicket: string
 ): boolean => {
   // Check if phone number is complete for the selected country
   const phoneDigits = phone
@@ -182,7 +183,8 @@ export const canContinueStep1 = (
       !phoneError &&
       hasReferralSource &&
       hasValidSubSelection &&
-      isPhoneComplete
+      isPhoneComplete &&
+      averageTicket
   );
 };
 
