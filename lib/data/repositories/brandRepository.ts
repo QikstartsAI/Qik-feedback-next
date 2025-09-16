@@ -12,16 +12,20 @@ export function createBrandRepository(
 export class BrandRepositoryImpl implements BrandRepository {
   constructor(private httpClient: IHttpClient, private baseUrl?: string) {}
 
+  private buildUrl(path: string): string {
+    return this.baseUrl ? `${this.baseUrl}${path}` : path;
+  }
+
   async getBrandById(id: string): Promise<Brand> {
     const response = await this.httpClient.get<Brand>(
-      `${this.baseUrl}/brands/${id}`
+      this.buildUrl(`/brands/${id}`)
     );
     return response.data;
   }
 
   async getBrandByOwner(owner: string): Promise<Brand[]> {
     const response = await this.httpClient.get<Brand[]>(
-      `${this.baseUrl}/brands/owner/${owner}`
+      this.buildUrl(`/brands/owner/${owner}`)
     );
     return response.data;
   }
@@ -30,7 +34,7 @@ export class BrandRepositoryImpl implements BrandRepository {
     brand: Omit<Brand, "id" | "createdAt" | "updatedAt">
   ): Promise<Brand> {
     const response = await this.httpClient.post<Brand>(
-      `${this.baseUrl}/brands`,
+      this.buildUrl(`/brands`),
       brand
     );
     return response.data;
@@ -38,13 +42,13 @@ export class BrandRepositoryImpl implements BrandRepository {
 
   async updateBrand(id: string, brand: Partial<Brand>): Promise<Brand> {
     const response = await this.httpClient.put<Brand>(
-      `${this.baseUrl}/brands/${id}`,
+      this.buildUrl(`/brands/${id}`),
       brand
     );
     return response.data;
   }
 
   async deleteBrand(id: string): Promise<void> {
-    await this.httpClient.delete(`${this.baseUrl}/brands/${id}`);
+    await this.httpClient.delete(this.buildUrl(`/brands/${id}`));
   }
 }

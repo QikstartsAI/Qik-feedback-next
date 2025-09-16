@@ -86,7 +86,7 @@ export function PhoneInput({
 
   return (
     <div>
-      <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
+      <Label htmlFor="phone" className="text-sm font-semibold text-gray-800">
         {label} {required && <span className="text-red-500">*</span>}
       </Label>
       <div className="flex mt-1">
@@ -94,28 +94,38 @@ export function PhoneInput({
           <button
             type="button"
             onClick={() => setShowCountrySelector(!showCountrySelector)}
-            className="flex items-center px-3 h-10 bg-gray-50 border border-r-0 rounded-l-md hover:bg-gray-100 transition-colors"
+            className={`flex items-center px-3 h-10 border-2 border-r-0 rounded-l-md transition-colors ${
+              showCountrySelector
+                ? "bg-purple-50 border-purple-400 text-purple-700"
+                : "bg-white border-gray-400 text-gray-800 hover:bg-gray-50 hover:border-gray-500"
+            }`}
           >
             <span className="text-lg">
               {countryCodes.find((c) => c.code === selectedCountryCode)?.flag ||
                 "🇪🇨"}
             </span>
-            <span className="ml-1 text-sm">{selectedCountryCode}</span>
-            <ChevronDown className="ml-1 h-4 w-4 text-gray-500" />
+            <span className="ml-1 text-sm font-semibold">{selectedCountryCode}</span>
+            <ChevronDown className={`ml-1 h-4 w-4 transition-colors ${
+              showCountrySelector ? "text-purple-600" : "text-gray-600"
+            }`} />
           </button>
 
           {showCountrySelector && (
-            <div className="absolute top-full left-0 z-50 mt-1 w-64 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+            <div className="absolute top-full left-0 z-50 mt-1 w-64 bg-white border-2 border-gray-300 rounded-md shadow-xl max-h-60 overflow-y-auto">
               {countryCodes.map((country) => (
                 <button
                   key={country.code}
                   type="button"
                   onClick={() => handleCountryCodeChange(country.code)}
-                  className="flex items-center w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors"
+                  className={`flex items-center w-full px-3 py-3 text-left transition-colors border-b border-gray-100 last:border-b-0 ${
+                    selectedCountryCode === country.code
+                      ? "bg-purple-50 text-purple-700"
+                      : "bg-white text-gray-700 hover:bg-gray-50"
+                  }`}
                 >
-                  <span className="text-lg mr-2">{country.flag}</span>
-                  <span className="text-sm font-medium">{country.code}</span>
-                  <span className="text-xs text-gray-500 ml-2">
+                  <span className="text-lg mr-3">{country.flag}</span>
+                  <span className="text-sm font-semibold">{country.code}</span>
+                  <span className="text-xs text-gray-600 ml-2 font-medium">
                     {country.name}
                   </span>
                 </button>
@@ -129,7 +139,7 @@ export function PhoneInput({
           placeholder={placeholder}
           value={value.replace(selectedCountryCode + " ", "")}
           onChange={(e) => handlePhoneChange(e.target.value)}
-          className="rounded-l-none h-10"
+          className="rounded-l-none h-10 border-2 border-gray-400 border-l-0 focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
           maxLength={20}
         />
       </div>

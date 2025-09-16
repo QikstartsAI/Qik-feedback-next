@@ -20,6 +20,7 @@ interface BranchContextState {
 
 interface BranchContextActions {
   getBranchById: (id: string) => Promise<Branch | null>;
+  setCurrentBranch: (branch: Branch | null) => void;
   clearError: () => void;
   clearCurrentBranch: () => void;
 }
@@ -98,6 +99,7 @@ export function BranchProvider({ children }: BranchProviderProps) {
   const contextValue: BranchContextType = {
     ...state,
     getBranchById,
+    setCurrentBranch,
     clearError,
     clearCurrentBranch,
   };

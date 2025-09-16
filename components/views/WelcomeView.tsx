@@ -35,6 +35,7 @@ interface WelcomeViewProps {
 
   // Validation
   canContinue: boolean;
+  referralSourceError?: boolean;
 }
 
 export function WelcomeView({
@@ -59,6 +60,7 @@ export function WelcomeView({
   onAverageTicketSelect,
   onContinue,
   canContinue,
+  referralSourceError = false,
 }: WelcomeViewProps) {
   return (
     <div className="space-y-4 animate-in slide-in-from-top duration-300">
@@ -124,6 +126,7 @@ export function WelcomeView({
         onSourceSelect={onReferralSourceSelect}
         onSocialMediaSelect={onSocialMediaSelect}
         onOtherSourceChange={onOtherSourceChange}
+        hasError={referralSourceError}
       />
 
       {/* Consumption Selector */}

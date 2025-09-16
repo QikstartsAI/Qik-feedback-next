@@ -58,13 +58,8 @@ export function SurveyView({
           <ReviewExamples
             onCopyReview={onCopyReview}
             copiedReviewId={copiedReviewId}
-          />
-
-          <Textarea
-            placeholder="Cuéntanos más detalles (opcional)"
-            value={comment}
-            onChange={(e) => onCommentChange(e.target.value)}
-            className="min-h-[80px]"
+            onCommentChange={onCommentChange}
+            comment={comment}
           />
 
           <div className="pt-4 border-t border-gray-200">
@@ -123,11 +118,14 @@ export function SurveyView({
           />
 
           <Textarea
-            placeholder="Cuéntanos más detalles (opcional)"
+            placeholder="Cuéntanos más detalles"
             value={comment}
             onChange={(e) => onCommentChange(e.target.value)}
-            className="min-h-[80px]"
+            className={`min-h-[80px] ${!comment.trim() ? 'border-red-500' : ''}`}
           />
+          {!comment.trim() && (
+            <p className="text-red-500 text-xs mt-1">Este campo es obligatorio</p>
+          )}
 
           <div className="pt-4 border-t border-gray-200">
             <div className="flex items-start space-x-2">
@@ -172,7 +170,8 @@ export function SurveyView({
               !rating ||
               !acceptTerms ||
               feedbackLoading ||
-              selectedImprovements.length === 0
+              selectedImprovements.length === 0 ||
+              !comment.trim()
             }
           >
             {feedbackLoading ? "Enviando..." : "Enviar feedback"}

@@ -1,95 +1,98 @@
-import React, { useCallback, useEffect, useState } from "react";
-import "@mapbox/mapbox-sdk";
-import { Branch } from "../lib/domain/entities";
-import { MAPBOX_API_KEY } from "../app/constants/general";
-import Matrix from "@mapbox/mapbox-sdk/services/matrix";
+"use client";
 
-const matrixService = Matrix({ accessToken: MAPBOX_API_KEY || "" });
+import { useState, useEffect } from "react";
+import { MAPBOX_API_KEY } from "@/app/constants/general";
+import { Branch } from "@/lib/domain/entities";
 
-export const useDistanceMatrix = () => {
-  const [origin, setOrigin] = useState<{
-    latitude: number | null;
-    longitude: number | null;
-  }>({ latitude: null, longitude: null });
-  const [destinations, setDestinations] = useState<Branch[]>([]);
-  const [closestDestination, setClosestDestination] = useState<Branch>();
-  const coordinates = destinations.map((destination) => [
-    destination.payload.location.geopoint.lon,
-    destination.payload.location.geopoint.lat,
-  ]);
+interface OriginPosition {
+  latitude: number;
+  longitude: number;
+}
 
-  const setDistanceMatrix = useCallback(
-    ({
-      origin,
-      destinations = [],
-    }: {
-      origin: { latitude: number | null; longitude: number | null };
-      destinations?: Branch[];
-    }) => {
-      setOrigin(origin);
-      setDestinations(destinations);
-    },
-    []
-  );
+interface DistanceMatrixParams {
+  origin: OriginPosition;
+  destinations: Branch[];
+}
 
-  const getDistanceMatrix = useCallback(async () => {
-    try {
-      if (origin.latitude === null || origin.longitude === null) {
-        return;
-      }
-      coordinates.unshift([origin.longitude, origin.latitude]);
+interface DistanceMatrixResult {
+  closestDestination: Branch | null;
+  loading: boolean;
+  error: string | null;
+}
 
-      const points = coordinates.map((coordinate) => ({
-        coordinates: coordinate as [number, number],
-      }));
-
-      const destinationsPoints = points
-        .map((_, index) => index)
-        .filter((index) => index !== 0);
-
-      const response = await matrixService
-        .getMatrix({
-          points: points,
-          sources: [0],
-          destinations: destinationsPoints,
-          profile: "driving",
-          annotations: ["distance", "duration"],
-        })
-        .send();
-
-      if (response.statusCode !== 200) {
-        return;
-      }
-
-      if (response.body.code === "NoRoute") {
-        console.error(
-          "There is origin but for the distance routes were not found."
-        );
-        return;
-      }
-      const distances = response.body.distances;
-      if (distances) {
-        const minDistance: number = Math.min(...distances[0]);
-        setClosestDestination(destinations[distances[0].indexOf(minDistance)]);
-      } else {
-        console.error("There is an error with distances in the response.");
-        return;
-      }
-    } catch (err) {
-      console.error("Error fetching data to the API: ", err);
-    }
-  }, [coordinates, destinations, origin.latitude, origin.longitude]);
+export function useDistanceMatrix() {
+  const [distanceMatrixParams, setDistanceMatrixParams] = useState<DistanceMatrixParams | null>(null);
+  const [closestDestination, setClosestDestination] = useState<Branch | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (
-      origin.latitude == null ||
-      origin.longitude == null ||
-      destinations.length === 0
-    ) {
+    if (!distanceMatrixParams || !MAPBOX_API_KEY || MAPBOX_API_KEY === 'undefined') {
       return;
     }
-    getDistanceMatrix();
-  }, [origin, destinations, coordinates, getDistanceMatrix]);
 
-  return { closestDestination, setDistanceMatrix };
-};
+    const calculateDistances = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const { origin, destinations } = distanceMatrixParams;
+
+        // Prepare points for Mapbox Matrix API
+        const originPoint = `${origin.longitude},${origin.latitude}`;
+        const destinationPoints = destinations
+          .map((branch) => {
+            // Use Geopoint if available, otherwise use location.geopoint
+            const geopoint = branch.Geopoint || branch.payload.location.geopoint;
+            return `${geopoint.lon || geopoint.longitude},${geopoint.lat || geopoint.latitude}`;
+          })
+          .join(";");
+
+        const points = `${originPoint};${destinationPoints}`;
+        const destinationsPoints = Array.from({ length: destinations.length }, (_, i) => i + 1);
+
+        // Call Mapbox Matrix API
+        const response = await fetch(
+          `https://api.mapbox.com/directions-matrix/v1/mapbox/driving/${points}?sources=0&destinations=${destinationsPoints.join(";")}&annotations=distance,duration&access_token=${MAPBOX_API_KEY}`
+        );
+
+        if (!response.ok) {
+          throw new Error(`Mapbox API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.code === "NoRoute") {
+          console.error("There is origin but for the distance routes were not found.");
+          setError("No se pudieron calcular las rutas");
+          return;
+        }
+
+        if (data.distances && data.distances[0]) {
+          const distances = data.distances[0];
+          const minDistance = Math.min(...distances);
+          const closestIndex = distances.indexOf(minDistance);
+          setClosestDestination(destinations[closestIndex]);
+        }
+      } catch (err) {
+        console.error("Error calculating distances:", err);
+        setError(err instanceof Error ? err.message : "Error al calcular distancias");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    calculateDistances();
+  }, [distanceMatrixParams]);
+
+  const setDistanceMatrix = (params: DistanceMatrixParams) => {
+    setDistanceMatrixParams(params);
+  };
+
+  return {
+    closestDestination,
+    loading,
+    error,
+    setDistanceMatrix,
+  };
+}

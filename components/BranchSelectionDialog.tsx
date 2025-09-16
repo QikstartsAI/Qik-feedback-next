@@ -10,7 +10,7 @@ import {
   IconMapPin,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
-import { useLocation } from "@/hooks/useLocation";
+// import { useLocation } from "@/hooks/useLocation"; // Removed - using props instead
 import LocationIcon from "./ui/LocationIcon";
 
 interface BranchSelectionDialogProps {
@@ -19,6 +19,13 @@ interface BranchSelectionDialogProps {
   onBranchSelect: (branch: Branch) => void;
   brandColor?: string;
   brandName?: string;
+  // Geolocation props
+  locationPermission?: boolean;
+  originPosition?: { latitude: number | null; longitude: number | null };
+  closestDestination?: Branch | null;
+  onGetLocation?: () => void;
+  onDenyLocation?: () => void;
+  grantingPermissions?: boolean;
 }
 
 export const BranchSelectionDialog: React.FC<BranchSelectionDialogProps> = ({
@@ -27,50 +34,63 @@ export const BranchSelectionDialog: React.FC<BranchSelectionDialogProps> = ({
   onBranchSelect,
   brandColor = "var(--qik)",
   brandName = "Restaurante",
+  // Geolocation props
+  locationPermission = false,
+  originPosition = { latitude: null, longitude: null },
+  closestDestination = null,
+  onGetLocation,
+  onDenyLocation,
+  grantingPermissions = false,
 }) => {
   const [selectedBranchId, setSelectedBranchId] = useState<string | null>(null);
-  const [showAllBranches, setShowAllBranches] = useState(false);
-  const [nearestBranch, setNearestBranch] = useState<Branch | null>(null);
-  const [currentView, setCurrentView] = useState<
-    "grantPermissions" | "suggestedLocations"
-  >("grantPermissions");
-  const [isCalculatingDistance, setIsCalculatingDistance] = useState(false);
+  const [currentView, setCurrentView] = useState<"permissions" | "selection">("permissions");
+  const [hasRequestedLocation, setHasRequestedLocation] = useState(false);
 
-  const {
-    userLocation,
-    isLoadingLocation,
-    locationError,
-    hasLocationPermission,
-    getCurrentLocation,
-    findNearestBranch,
-    requestLocationPermission,
-    clearLocation,
-    closestDestination,
-  } = useLocation();
-
-  // Initialize nearest branch when branches change
+  // Initialize selected branch when branches change
   useEffect(() => {
     if (branches.length > 0 && !selectedBranchId) {
-      // For demo purposes, we'll consider the first branch as the nearest initially
-      // This will be updated when we get real location data
-      const initialNearest = branches[0];
-      setNearestBranch(initialNearest);
-      setSelectedBranchId(initialNearest.id);
-    }
-  }, [branches, selectedBranchId]);
-
-  // Update nearest branch when we get real location data
-  useEffect(() => {
-    if (closestDestination && branches.length > 0) {
-      setNearestBranch(closestDestination);
-      if (!selectedBranchId) {
+      // If we have geolocation and closest destination, select it first
+      if (locationPermission && closestDestination) {
         setSelectedBranchId(closestDestination.id);
+      } else {
+        // Otherwise, select the first branch
+        setSelectedBranchId(branches[0].id);
       }
     }
-  }, [closestDestination, branches, selectedBranchId]);
+  }, [branches, selectedBranchId, locationPermission, closestDestination]);
+
+  // Ensure a branch is always selected when in selection view
+  useEffect(() => {
+    if (currentView === "selection" && branches.length > 0 && !selectedBranchId) {
+      if (locationPermission && closestDestination) {
+        setSelectedBranchId(closestDestination.id);
+      } else {
+        setSelectedBranchId(branches[0].id);
+      }
+    }
+  }, [currentView, branches, selectedBranchId, locationPermission, closestDestination]);
+
+  // Move to selection view when location permission is granted or denied
+  useEffect(() => {
+    if (hasRequestedLocation) {
+      setCurrentView("selection");
+      // Ensure we have a selected branch when moving to selection view
+      if (branches.length > 0 && !selectedBranchId) {
+        if (locationPermission && closestDestination) {
+          setSelectedBranchId(closestDestination.id);
+        } else {
+          setSelectedBranchId(branches[0].id);
+        }
+      }
+    }
+  }, [hasRequestedLocation, branches, selectedBranchId, locationPermission, closestDestination]);
 
   const handleBranchSelect = (branchId: string) => {
     setSelectedBranchId(branchId);
+  };
+
+  const handleBranchDoubleClick = (branch: Branch) => {
+    onBranchSelect(branch);
   };
 
   const handleConfirm = () => {
@@ -82,39 +102,18 @@ export const BranchSelectionDialog: React.FC<BranchSelectionDialogProps> = ({
     }
   };
 
-  const handleShowAllBranches = () => {
-    setShowAllBranches(true);
-  };
-
-  const handleBackToNearest = () => {
-    setShowAllBranches(false);
-    if (nearestBranch) {
-      setSelectedBranchId(nearestBranch.id);
-    }
-  };
-
   const handleGrantLocation = async () => {
-    setIsCalculatingDistance(true);
-    const hasPermission = await requestLocationPermission();
-
-    if (hasPermission) {
-      // Find the nearest branch based on real location
-      const nearest = await findNearestBranch(branches);
-      if (nearest) {
-        setNearestBranch(nearest);
-        setSelectedBranchId(nearest.id);
-      }
-      setCurrentView("suggestedLocations");
-    } else {
-      // If permission denied, show all branches
-      setCurrentView("suggestedLocations");
+    setHasRequestedLocation(true);
+    if (onGetLocation) {
+      onGetLocation();
     }
-    setIsCalculatingDistance(false);
   };
 
   const handleDenyLocation = () => {
-    clearLocation();
-    setCurrentView("suggestedLocations");
+    setHasRequestedLocation(true);
+    if (onDenyLocation) {
+      onDenyLocation();
+    }
   };
 
   if (!open) return null;
@@ -132,11 +131,9 @@ export const BranchSelectionDialog: React.FC<BranchSelectionDialogProps> = ({
               {brandName}
             </h1>
             <p className="text-sm text-gray-600">
-              {currentView === "grantPermissions"
+              {currentView === "permissions"
                 ? "Mejora tu experiencia"
-                : showAllBranches
-                ? "Todas las sucursales disponibles"
-                : "Sucursal más cercana"}
+                : "Selecciona tu sucursal"}
             </p>
           </div>
         </div>
@@ -144,115 +141,125 @@ export const BranchSelectionDialog: React.FC<BranchSelectionDialogProps> = ({
         {/* Content */}
         <div className="flex-1 p-4 overflow-y-auto">
           <div className="max-w-md mx-auto">
-            {currentView === "grantPermissions" ? (
-              // Location permission request view
+            {currentView === "permissions" ? (
+              // PANTALLA 1: Solicitar permisos de ubicación
               <div className="flex flex-col items-center justify-center h-full">
-                <div className="text-center space-y-3">
+                <div className="text-center space-y-6">
+                  <div className="text-6xl mb-4">📍</div>
                   <h2
                     className="font-bold text-[1.5rem]"
                     style={{ color: `hsl(${brandColor})` }}
                   >
                     Mejora tu experiencia
                   </h2>
-                  <p className="text-sky-900">
-                    Cuéntanos en qué sucursales te encuentras
+                  <p className="text-gray-600 text-base">
+                    Para brindarte la mejor experiencia, nos gustaría conocer tu ubicación y mostrarte la sucursal más cercana.
                   </p>
                 </div>
               </div>
-            ) : !showAllBranches && nearestBranch ? (
-              // Show nearest branch view
+            ) : (
+              // PANTALLA 2: Selección de sucursales
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <div
-                    onClick={() => handleBranchSelect(nearestBranch.id)}
-                    className={cn(
-                      "flex items-center gap-4 border py-4 px-4 rounded-lg cursor-pointer transition-colors",
-                      selectedBranchId === nearestBranch.id
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-gray-200 hover:border-gray-300"
-                    )}
-                  >
-                    {selectedBranchId === nearestBranch.id ? (
-                      <IconCircleCheck
-                        size={24}
-                        strokeWidth={3}
-                        style={{ color: `hsl(${brandColor})` }}
-                      />
-                    ) : (
-                      <IconCircle
-                        size={24}
-                        style={{ color: `hsl(${brandColor})` }}
-                      />
-                    )}
-
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <IconMapPin
-                          size={16}
-                          style={{ color: `hsl(${brandColor})` }}
+                <div className="text-center mb-4">
+                  <p className="text-sm text-gray-500">
+                    Selecciona una sucursal o haz doble click para continuar
+                  </p>
+                </div>
+                
+                {/* Mostrar sucursal más cercana primero si hay geolocalización */}
+                {locationPermission && closestDestination && (
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-bold text-gray-800 mb-3">
+                      🌟 Sucursal más cercana
+                    </h3>
+                    <div
+                      onClick={() => handleBranchSelect(closestDestination.id)}
+                      onDoubleClick={() => handleBranchDoubleClick(closestDestination)}
+                      className={cn(
+                        "flex items-center gap-4 border-2 py-4 px-4 rounded-lg cursor-pointer transition-colors bg-white",
+                        selectedBranchId === closestDestination.id
+                          ? "border-blue-500 bg-blue-50 shadow-md"
+                          : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"
+                      )}
+                    >
+                      {selectedBranchId === closestDestination.id ? (
+                        <IconCircleCheck
+                          size={24}
+                          strokeWidth={3}
+                          className="text-blue-600"
                         />
-                        <h4
-                          className="font-semibold text-base"
-                          style={{ color: `hsl(${brandColor})` }}
-                        >
-                          {nearestBranch.payload.name}
-                        </h4>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <IconPinned size={12} className="text-gray-400" />
-                        <p className="text-sm text-gray-600">
-                          {nearestBranch.payload.location.address}
+                      ) : (
+                        <IconCircle
+                          size={24}
+                          className="text-gray-600"
+                        />
+                      )}
+
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <IconMapPin
+                            size={16}
+                            className="text-gray-600"
+                          />
+                          <h4 className="font-semibold text-base text-gray-800">
+                            {closestDestination.payload.name}
+                          </h4>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <IconPinned size={12} className="text-gray-500" />
+                          <p className="text-sm text-gray-700 font-medium">
+                            {closestDestination.payload.location.address}
+                          </p>
+                        </div>
+                        <p className="text-xs text-green-600 font-medium mt-1">
+                          ⭐ Sucursal más cercana
                         </p>
                       </div>
-                      <p className="text-xs text-green-600 font-medium mt-1">
-                        ⭐ Sucursal más cercana
-                      </p>
                     </div>
                   </div>
-                </div>
-              </div>
-            ) : (
-              // Show all branches view
-              <div className="space-y-4">
+                )}
+
+                {/* Mostrar todas las sucursales */}
                 <div className="space-y-2">
+                  <h3 className="text-sm font-bold text-gray-800 mb-3">
+                    📍 Todas las sucursales
+                  </h3>
                   {branches.map((branch) => (
                     <div
                       key={branch.id}
                       onClick={() => handleBranchSelect(branch.id)}
+                      onDoubleClick={() => handleBranchDoubleClick(branch)}
                       className={cn(
-                        "flex items-center gap-4 border py-3 px-4 rounded-lg cursor-pointer transition-colors",
+                        "flex items-center gap-4 border-2 py-3 px-4 rounded-lg cursor-pointer transition-colors bg-white",
                         selectedBranchId === branch.id
-                          ? "border-blue-500 bg-blue-50"
-                          : "border-gray-200 hover:border-gray-300"
+                          ? "border-blue-500 bg-blue-50 shadow-md"
+                          : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"
                       )}
                     >
                       {selectedBranchId === branch.id ? (
                         <IconCircleCheck
                           size={20}
                           strokeWidth={3}
-                          style={{ color: `hsl(${brandColor})` }}
+                          className="text-blue-600"
                         />
                       ) : (
                         <IconCircle
                           size={20}
-                          style={{ color: `hsl(${brandColor})` }}
+                          className="text-gray-600"
                         />
                       )}
 
                       <div className="flex-1">
-                        <h4
-                          className="font-semibold text-sm"
-                          style={{ color: `hsl(${brandColor})` }}
-                        >
+                        <h4 className="font-semibold text-sm text-gray-800">
                           {branch.payload.name}
                         </h4>
                         <div className="flex items-center gap-1 mt-1">
-                          <IconPinned size={12} className="text-gray-400" />
-                          <p className="text-xs text-gray-600">
+                          <IconPinned size={12} className="text-gray-500" />
+                          <p className="text-xs text-gray-700 font-medium">
                             {branch.payload.location.address}
                           </p>
                         </div>
-                        {branch.id === nearestBranch?.id && (
+                        {branch.id === closestDestination?.id && (
                           <p className="text-xs text-green-600 font-medium mt-1">
                             ⭐ Más cercana
                           </p>
@@ -269,14 +276,15 @@ export const BranchSelectionDialog: React.FC<BranchSelectionDialogProps> = ({
         {/* Fixed Bottom Buttons */}
         <div className="border-t bg-white p-4">
           <div className="max-w-md mx-auto">
-            {currentView === "grantPermissions" ? (
+            {currentView === "permissions" ? (
+              // PANTALLA 1: Botones para permisos
               <div className="flex flex-col gap-3 w-full">
                 <Button
                   onClick={handleGrantLocation}
                   className="w-full"
-                  disabled={isLoadingLocation || isCalculatingDistance}
+                  disabled={grantingPermissions}
                 >
-                  {isLoadingLocation || isCalculatingDistance
+                  {grantingPermissions
                     ? "Obteniendo ubicación..."
                     : "Compartir ubicación"}
                 </Button>
@@ -285,59 +293,18 @@ export const BranchSelectionDialog: React.FC<BranchSelectionDialogProps> = ({
                   className="w-full"
                   variant="secondary"
                 >
-                  Ver sucursales
+                  Ver todas las sucursales
                 </Button>
               </div>
             ) : (
-              currentView === "suggestedLocations" && (
-                <>
-                  {!showAllBranches ? (
-                    <div className="flex flex-col gap-2">
-                      {branches.length > 1 && (
-                        <Button
-                          onClick={handleShowAllBranches}
-                          variant="outline"
-                          className="w-full"
-                          style={{
-                            borderColor: `hsl(${brandColor})`,
-                            color: `hsl(${brandColor})`,
-                          }}
-                        >
-                          Ver todas las sucursales ({branches.length})
-                        </Button>
-                      )}
-                      <Button
-                        onClick={handleConfirm}
-                        className="w-full"
-                        disabled={!selectedBranchId}
-                      >
-                        Continuar
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="flex gap-2">
-                      <Button
-                        onClick={handleBackToNearest}
-                        variant="outline"
-                        className="flex-1"
-                        style={{
-                          borderColor: `hsl(${brandColor})`,
-                          color: `hsl(${brandColor})`,
-                        }}
-                      >
-                        Volver
-                      </Button>
-                      <Button
-                        onClick={handleConfirm}
-                        className="flex-1"
-                        disabled={!selectedBranchId}
-                      >
-                        Continuar
-                      </Button>
-                    </div>
-                  )}
-                </>
-              )
+              // PANTALLA 2: Botón para confirmar selección
+              <Button
+                onClick={handleConfirm}
+                className="w-full"
+                disabled={!selectedBranchId}
+              >
+                Continuar
+              </Button>
             )}
           </div>
         </div>

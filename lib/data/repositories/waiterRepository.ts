@@ -12,16 +12,20 @@ export function createWaiterRepository(
 export class WaiterRepositoryImpl implements WaiterRepository {
   constructor(private httpClient: IHttpClient, private baseUrl?: string) {}
 
+  private buildUrl(path: string): string {
+    return this.baseUrl ? `${this.baseUrl}${path}` : path;
+  }
+
   async getWaiterById(id: string): Promise<Waiter> {
     const response = await this.httpClient.get<Waiter>(
-      `${this.baseUrl}/waiters/${id}`
+      this.buildUrl(`/waiters/${id}`)
     );
     return response.data;
   }
 
   async getWaitersByBranchId(branchId: string): Promise<Waiter[]> {
     const response = await this.httpClient.get<Waiter[]>(
-      `${this.baseUrl}/waiters/branch/${branchId}`
+      this.buildUrl(`/waiters/branch/${branchId}`)
     );
     return response.data;
   }
@@ -30,7 +34,7 @@ export class WaiterRepositoryImpl implements WaiterRepository {
     waiter: Omit<Waiter, "id" | "createdAt" | "updatedAt">
   ): Promise<Waiter> {
     const response = await this.httpClient.post<Waiter>(
-      `${this.baseUrl}/waiters`,
+      this.buildUrl(`/waiters`),
       waiter
     );
     return response.data;
@@ -38,13 +42,13 @@ export class WaiterRepositoryImpl implements WaiterRepository {
 
   async updateWaiter(id: string, waiter: Partial<Waiter>): Promise<Waiter> {
     const response = await this.httpClient.put<Waiter>(
-      `${this.baseUrl}/waiters/${id}`,
+      this.buildUrl(`/waiters/${id}`),
       waiter
     );
     return response.data;
   }
 
   async deleteWaiter(id: string): Promise<void> {
-    await this.httpClient.delete(`${this.baseUrl}/waiters/${id}`);
+    await this.httpClient.delete(this.buildUrl(`/waiters/${id}`));
   }
 }

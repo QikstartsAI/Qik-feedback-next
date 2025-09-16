@@ -95,7 +95,7 @@ export const calculateDetailedProgress = (formData: {
       completed: Boolean(
         formData.comment && formData.comment.trim().length > 0
       ),
-      required: false,
+      required: false, // Will be dynamically set based on rating
     },
     {
       id: "terms",

@@ -7,6 +7,7 @@ import { ProgressIndicator } from "@/components/ui/ProgressIndicator";
 import { LoadingPulse } from "@/components/ui/LoadingPulse";
 import { WaiterCard } from "@/components/WaiterCard";
 import { BranchSelectionDialog } from "@/components/BranchSelectionDialog";
+import { RequestLocationDialog } from "@/components/RequestLocationDialog";
 import { Header } from "@/components/layout/Header";
 import { WelcomeView } from "@/components/views/WelcomeView";
 import { SurveyView } from "@/components/views/SurveyView";
@@ -41,6 +42,17 @@ function FeedbackFormContent() {
     detailedProgress,
     canContinue,
 
+    // Geolocation state
+    showLocationDialog,
+    showBranchSelectionDialog,
+    locationPermission,
+    originPosition,
+    getLocation,
+    grantingPermissions,
+    distanceLoading,
+    enableGeolocation,
+    closestDestination,
+
     // Data
     currentBrand,
     currentBranch,
@@ -67,12 +79,45 @@ function FeedbackFormContent() {
     openGoogleMaps,
     backToWelcome,
     goToSurvey,
+
+    // Geolocation handlers
+    handleShareLocation,
+    handleViewAllBranches,
+    handleConfirmLocation,
+    handleCloseLocationDialog,
+    handleBranchSelectFromDialog,
+    showValidationErrors,
+
+    // Query parameters
+    brandId,
+    branchId,
+    waiterId,
   } = useFeedbackForm();
 
   // Get branch or brand information for header
   const branchInfo = currentBranch
     ? getBranchInfo(currentBranch)
     : getBrandInfo(currentBrand);
+
+  // Check if there are any query parameters
+  const hasQueryParams = brandId || branchId || waiterId;
+
+  // If no query parameters, show only Qik logo centered
+  if (!hasQueryParams) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-purple-100 via-blue-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <Image
+            src="/qik.svg"
+            alt="Qik Logo"
+            width={200}
+            height={100}
+            className="mx-auto mb-4"
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gradient-to-b from-purple-100 via-blue-50 to-white">
@@ -94,7 +139,7 @@ function FeedbackFormContent() {
               {/* Show waiter card if waiter data is available */}
               {currentWaiter && <WaiterCard waiter={currentWaiter} />}
 
-              <Card className="shadow-xl border-0 bg-white/95 backdrop-blur">
+              <Card className="shadow-xl border-0 bg-white">
                 <CardHeader className="text-center pb-4">
                   <div className="flex gap-3">
                     <IconChevronLeft
@@ -103,9 +148,8 @@ function FeedbackFormContent() {
                     />
                     <ProgressIndicator progress={detailedProgress.progress} />
                   </div>
-                  <div className="text-4xl mb-2">😊</div>
-                  <CardTitle className="text-xl text-gray-800">
-                    ¡Bienvenido!
+                  <CardTitle className="text-xl text-gray-800 text-center">
+                    Valoramos tu opinión 😊, te tomará menos de 60 segundos.
                   </CardTitle>
                 </CardHeader>
 
@@ -133,6 +177,7 @@ function FeedbackFormContent() {
                       onAverageTicketSelect={setAverageTicket}
                       onContinue={goToSurvey}
                       canContinue={canContinue}
+                      referralSourceError={showValidationErrors && !referralSource}
                     />
                   )}
 
@@ -173,6 +218,33 @@ function FeedbackFormContent() {
         onBranchSelect={handleBranchSelect}
         brandColor="var(--qik)"
         brandName={currentBrand?.payload?.name}
+      />
+
+      {/* Location Request Dialog */}
+      <RequestLocationDialog
+        open={showLocationDialog}
+        onClose={handleCloseLocationDialog}
+        onShareLocation={handleShareLocation}
+        onViewAllBranches={handleViewAllBranches}
+        suggestedBranches={closestDestination ? [closestDestination] : []}
+        onConfirmLocation={handleConfirmLocation}
+        grantingPermissions={grantingPermissions}
+        brandName={currentBrand?.payload?.name}
+      />
+
+      {/* Branch Selection Dialog */}
+      <BranchSelectionDialog
+        branches={availableBranches}
+        open={showBranchSelectionDialog}
+        onBranchSelect={handleBranchSelectFromDialog}
+        brandColor="var(--qik)"
+        brandName={currentBrand?.payload?.name}
+        locationPermission={locationPermission}
+        originPosition={originPosition}
+        closestDestination={closestDestination}
+        onGetLocation={getLocation}
+        onDenyLocation={() => setShowBranchSelectionDialog(false)}
+        grantingPermissions={grantingPermissions}
       />
     </div>
   );

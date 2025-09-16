@@ -15,9 +15,11 @@ interface MultiProviderProps {
 }
 
 export const MultiProvider = ({ children }: MultiProviderProps) => {
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY || process.env.NEXT_PUBLIC_VITE_APP_GOOGLE_API_KEY || "";
+  
   return (
     <APIProvider
-      apiKey={process.env.NEXT_PUBLIC_VITE_APP_GOOGLE_API_KEY ?? ""}
+      apiKey={apiKey}
       solutionChannel="GMP_devsite_samples_v3_rgmautocomplete"
     >
       <ThemeProvider

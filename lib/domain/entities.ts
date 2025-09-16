@@ -63,6 +63,13 @@ export interface Brand extends ModelResponseBase<BrandPayload> {
   payload: BrandPayload;
 }
 
+// Business entity for geolocation functionality
+export interface Business {
+  Geopoint?: { _lat: number; _long: number };
+  HasGeolocation?: boolean;
+  sucursales?: Branch[];
+}
+
 // Branch entity (updated to match specification)
 export type BranchPayload = {
   logoImgURL: string;
@@ -80,6 +87,9 @@ export type BranchPayload = {
 export interface Branch extends ModelResponseBase<BranchPayload> {
   brandId: string; // Reference to parent brand
   payload: BranchPayload;
+  // Geolocation fields
+  Geopoint?: { _lat: number; _long: number };
+  HasGeolocation?: boolean;
 }
 
 // Waiter entity

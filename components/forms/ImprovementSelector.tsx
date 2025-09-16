@@ -14,8 +14,8 @@ export function ImprovementSelector({
 }: ImprovementSelectorProps) {
   return (
     <div>
-      <Label className="text-sm font-medium text-gray-700">
-        ¿Qué podemos mejorar?
+      <Label className="text-sm font-semibold text-gray-800">
+        ¿En qué debemos mejorar?
       </Label>
       <div className="grid grid-cols-3 gap-2 mt-2">
         {improvementOptions.map((option) => (
@@ -24,12 +24,12 @@ export function ImprovementSelector({
             onClick={() => onImprovementSelect(option.id)}
             className={`p-3 rounded-lg border-2 transition-all flex flex-col items-center justify-center ${
               selectedImprovements.includes(option.id)
-                ? "border-purple-500 bg-purple-50"
-                : "border-gray-200 hover:border-gray-300"
+                ? "border-purple-500 bg-purple-50 text-purple-700"
+                : "border-gray-300 bg-white text-gray-700 hover:border-gray-400 hover:bg-gray-50"
             }`}
           >
             <div className="text-2xl mb-1">{option.emoji}</div>
-            <div className="text-xs font-medium text-center">
+            <div className="text-xs font-semibold text-center">
               {option.label}
             </div>
           </button>

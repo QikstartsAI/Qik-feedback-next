@@ -10,6 +10,7 @@ export interface UseBranchReturn {
 
   // Actions
   getBranchById: (id: string) => Promise<Branch | null>;
+  setCurrentBranch: (branch: Branch | null) => void;
 
   // Utility functions
   clearError: () => void;
@@ -31,6 +32,7 @@ export function useBranch(): UseBranchReturn {
 
     // Actions
     getBranchById: context.getBranchById,
+    setCurrentBranch: context.setCurrentBranch,
 
     // Utility functions
     clearError: context.clearError,

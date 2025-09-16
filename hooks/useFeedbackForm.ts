@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useCustomer } from "@/hooks/useCustomer";
 import { useBrand } from "@/hooks/useBrand";
 import { useBranch } from "@/hooks/useBranch";
 import { useWaiter } from "@/hooks/useWaiter";
 import { useFeedback } from "@/hooks/useFeedback";
+import { useGeolocationNew } from "@/hooks/useGeolocationNew";
 import { useSearchParams } from "next/navigation";
-import { Branch, Feedback } from "@/lib/domain/entities";
+import { Branch, Feedback, Business } from "@/lib/domain/entities";
 import {
   DEFAULT_COUNTRY_CODE,
   GOOGLE_REVIEW_URL,
@@ -28,6 +29,42 @@ import { getAverageTicket } from "@/app/constants/form";
 
 // Mock branches data for branch selection
 const mockBranches: Branch[] = [
+  {
+    id: "hooters-1",
+    brandId: "hooters",
+    createdAt: new Date("2024-01-01"),
+    updatedAt: new Date("2024-01-01"),
+    payload: {
+      logoImgURL: "/googleqik.png",
+      coverImgURL: "/restaurant-bg.jpg",
+      name: "Hooters - Centro Comercial",
+      category: "Restaurante",
+      location: {
+        address: "Centro Comercial Galerías, Bogotá, Colombia",
+        countryCode: "CO",
+        geopoint: { lat: 4.6097, lon: -74.0817 },
+        googleMapURL: "https://maps.google.com/?q=4.6097,-74.0817",
+      },
+    },
+  },
+  {
+    id: "hooters-2",
+    brandId: "hooters",
+    createdAt: new Date("2024-01-01"),
+    updatedAt: new Date("2024-01-01"),
+    payload: {
+      logoImgURL: "/googleqik.png",
+      coverImgURL: "/restaurant-bg.jpg",
+      name: "Hooters - Zona Rosa",
+      category: "Restaurante",
+      location: {
+        address: "Zona Rosa, Bogotá, Colombia",
+        countryCode: "CO",
+        geopoint: { lat: 4.6561, lon: -74.0597 },
+        googleMapURL: "https://maps.google.com/?q=4.6561,-74.0597",
+      },
+    },
+  },
   {
     id: "branch-1",
     brandId: "brand-1",
@@ -84,14 +121,60 @@ const mockBranches: Branch[] = [
   },
 ];
 
+// Mock brand data for Hooters
+const mockHootersBrand = {
+  id: "hooters",
+  createdAt: new Date("2024-01-01"),
+  updatedAt: new Date("2024-01-01"),
+  payload: {
+    logoImgURL: "/googleqik.png",
+    coverImgURL: "/restaurant-bg.jpg",
+    name: "Hooters",
+    category: "Restaurante",
+    location: {
+      address: "Bogotá, Colombia",
+      countryCode: "CO",
+      geopoint: { lat: 4.6097, lon: -74.0817 },
+      googleMapURL: "https://maps.google.com/?q=4.6097,-74.0817",
+    },
+  },
+  sucursales: mockBranches.filter(branch => branch.brandId === "hooters"),
+};
+
 export function useFeedbackForm() {
   // Hooks
   const { currentCustomer, getCustomerByPhone, customerType } = useCustomer();
   const { currentBrand, getBrandById, loading: brandLoading } = useBrand();
-  const { currentBranch, getBranchById, loading: branchLoading } = useBranch();
+  const { currentBranch, getBranchById, setCurrentBranch, loading: branchLoading } = useBranch();
   const { getWaiterById, loading: waiterLoading } = useWaiter();
   const { sendFeedback, loading: feedbackLoading } = useFeedback();
   const searchParams = useSearchParams();
+
+  // URL parameters - declare before using in hooks
+  const brandId = searchParams.get("id");
+  const branchId = searchParams.get("branch");
+  const waiterId = searchParams.get("waiter");
+
+  // Geolocation hook - memoize business object to avoid initialization issues
+  const business: Business | null = useMemo(() => {
+    return currentBrand ? {
+      HasGeolocation: true,
+      sucursales: currentBrand.sucursales || [],
+    } : null;
+  }, [currentBrand]);
+  
+  const {
+    locationPermission,
+    originPosition,
+    closestDestination,
+    requestLocation,
+    grantingPermissions,
+    distanceLoading,
+    enableGeolocation,
+    availableBranches: geolocationBranches,
+    getLocation,
+    setRequestLocation,
+  } = useGeolocationNew(brandId || null, business);
 
   // Form state
   const [currentView, setCurrentView] = useState<
@@ -108,6 +191,13 @@ export function useFeedbackForm() {
   const [socialMediaSource, setSocialMediaSource] = useState("");
   const [otherSource, setOtherSource] = useState("");
   const [rating, setRating] = useState<string>("");
+  const [showValidationErrors, setShowValidationErrors] = useState(false);
+
+  const handleRatingSelect = (ratingId: string) => {
+    setRating(ratingId);
+    // Auto-activate terms when rating is selected
+    setAcceptTerms(true);
+  };
   const [comment, setComment] = useState("");
   const [selectedImprovements, setSelectedImprovements] = useState<string[]>(
     []
@@ -119,11 +209,9 @@ export function useFeedbackForm() {
   const [currentWaiter, setCurrentWaiter] = useState<any>(null);
   const [showBranchSelection, setShowBranchSelection] = useState(false);
   const [availableBranches, setAvailableBranches] = useState<any[]>([]);
+  const [showLocationDialog, setShowLocationDialog] = useState(false);
+  const [showBranchSelectionDialog, setShowBranchSelectionDialog] = useState(false);
 
-  // URL parameters
-  const brandId = searchParams.get("id");
-  const branchId = searchParams.get("branch");
-  const waiterId = searchParams.get("waiter");
 
   // Calculate progress
   const detailedProgress = calculateDetailedProgress({
@@ -177,6 +265,27 @@ export function useFeedbackForm() {
       getBrandById(brandId);
     }
   }, [waiterId, branchId, brandId, getWaiterById, getBranchById, getBrandById]);
+
+  // Use mock data for Hooters when no real data is available
+  const effectiveBrand = currentBrand || (brandId === "hooters" ? mockHootersBrand : null);
+  const effectiveBranch = currentBranch || (brandId === "hooters" ? mockBranches[0] : null);
+
+  // Handle geolocation logic
+  useEffect(() => {
+    if (enableGeolocation && effectiveBrand && !currentBranch && !waiterId) {
+      // Show location dialog if geolocation is enabled and no specific branch/waiter is selected
+      if (!locationPermission && !requestLocation) {
+        setShowLocationDialog(true);
+      } else if (geolocationBranches.length > 0) {
+        setAvailableBranches(geolocationBranches);
+        setShowBranchSelectionDialog(true);
+      }
+    } else if (effectiveBrand && !enableGeolocation) {
+      // Use mock branches for non-geolocation enabled businesses
+      setAvailableBranches(mockBranches);
+      setShowBranchSelectionDialog(true);
+    }
+  }, [enableGeolocation, effectiveBrand, currentBranch, waiterId, locationPermission, requestLocation, geolocationBranches]);
 
   // Pre-select country based on branch's country code
   useEffect(() => {
@@ -411,8 +520,44 @@ export function useFeedbackForm() {
   };
 
   const goToSurvey = () => {
-    setCurrentView(VIEWS.SURVEY);
-    setStep(FORM_STEPS.SURVEY);
+    // Activate validation errors when user tries to continue
+    setShowValidationErrors(true);
+    
+    // Check if form is valid before proceeding
+    if (canContinue) {
+      setCurrentView(VIEWS.SURVEY);
+      setStep(FORM_STEPS.SURVEY);
+    }
+  };
+
+  // Geolocation handlers
+  const handleShareLocation = () => {
+    getLocation();
+  };
+
+  const handleViewAllBranches = () => {
+    setShowLocationDialog(false);
+    setRequestLocation(false);
+    // Show all branches instead of just the closest one
+    if (currentBrand?.sucursales) {
+      setAvailableBranches(currentBrand.sucursales);
+    }
+  };
+
+  const handleConfirmLocation = (branch: Branch) => {
+    setShowLocationDialog(false);
+    setRequestLocation(false);
+    handleBranchSelect(branch);
+  };
+
+  const handleCloseLocationDialog = () => {
+    setShowLocationDialog(false);
+    setRequestLocation(false);
+  };
+
+  const handleBranchSelectFromDialog = (branch: any) => {
+    setCurrentBranch(branch);
+    setShowBranchSelectionDialog(false);
   };
 
   // Validation
@@ -453,10 +598,19 @@ export function useFeedbackForm() {
     progress,
     canContinue,
 
+    // Geolocation state
+    showLocationDialog,
+    showBranchSelectionDialog,
+    locationPermission,
+    grantingPermissions,
+    distanceLoading,
+    enableGeolocation,
+    closestDestination,
+
     // Data
     currentCustomer,
-    currentBrand,
-    currentBranch,
+    currentBrand: effectiveBrand,
+    currentBranch: effectiveBranch,
     brandLoading,
     branchLoading,
     waiterLoading,
@@ -473,15 +627,29 @@ export function useFeedbackForm() {
     handleSourceSelect,
     handleSocialMediaSelect,
     setOtherSource,
-    setRating,
+    setRating: handleRatingSelect,
     setComment,
     setAverageTicket,
     handleImprovementSelect,
     handleCopyReview,
     handleBranchSelect,
+    setCurrentBranch,
     handleFeedbackSubmit,
     openGoogleMaps,
     backToWelcome,
     goToSurvey,
+
+    // Geolocation handlers
+    handleShareLocation,
+    handleViewAllBranches,
+    handleConfirmLocation,
+    handleCloseLocationDialog,
+    handleBranchSelectFromDialog,
+    showValidationErrors,
+
+    // Query parameters
+    brandId,
+    branchId,
+    waiterId,
   };
 }

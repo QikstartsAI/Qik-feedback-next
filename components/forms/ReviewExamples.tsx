@@ -2,17 +2,22 @@
 
 import { useState } from "react";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle } from "lucide-react";
 import { reviewExamples } from "@/lib/utils/phoneUtils";
 
 interface ReviewExamplesProps {
   onCopyReview: (reviewText: string, reviewId: string) => void;
   copiedReviewId: string | null;
+  onCommentChange?: (value: string) => void;
+  comment?: string;
 }
 
 export function ReviewExamples({
   onCopyReview,
   copiedReviewId,
+  onCommentChange,
+  comment = "",
 }: ReviewExamplesProps) {
   return (
     <div>
@@ -62,6 +67,18 @@ export function ReviewExamples({
           </div>
         ))}
       </div>
+      
+      {/* Editable field for additional comments */}
+      {copiedReviewId && onCommentChange && (
+        <div className="mt-4">
+          <Textarea
+            placeholder="Agrega más comentarios si deseas..."
+            value={comment}
+            onChange={(e) => onCommentChange(e.target.value)}
+            className="min-h-[80px]"
+          />
+        </div>
+      )}
     </div>
   );
 }
