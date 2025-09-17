@@ -25,6 +25,13 @@ export enum Improve {
   Other,
 }
 
+export enum Ratings {
+  Mal = "1",        // 😞
+  Regular = "2",    // 😐
+  Bien = "4",       // 😊
+  Excelente = "5"   // 😄
+}
+
 // Base interface for all entities
 interface ModelResponseBase<T> {
   id: string;

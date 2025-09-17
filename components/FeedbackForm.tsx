@@ -9,6 +9,9 @@ import { WaiterCard } from "@/components/WaiterCard";
 import { BranchSelectionDialog } from "@/components/BranchSelectionDialog";
 import { RequestLocationDialog } from "@/components/RequestLocationDialog";
 import { Header } from "@/components/layout/Header";
+import { Hero } from "@/components/Hero";
+import { Banner } from "@/components/Banner";
+import { Intro } from "@/components/Intro";
 import { WelcomeView } from "@/components/views/WelcomeView";
 import { SurveyView } from "@/components/views/SurveyView";
 import { ThankYouView } from "@/components/views/ThankYouView";
@@ -122,13 +125,19 @@ function FeedbackFormContent() {
 
   return (
     <div className="bg-gradient-to-b from-purple-100 via-blue-50 to-white">
-      {/* Header */}
-      <Header
-        logo={branchInfo.logo}
+      {/* Animated Hero Section */}
+      <Hero
         coverImage={branchInfo.coverImage}
+        logo={branchInfo.logo}
         name={branchInfo.name}
         address={branchInfo.address}
         loading={brandLoading}
+      />
+
+      {/* Animated Courtesy Banner */}
+      <Banner 
+        language="es" 
+        brandColor="bg-blue-600"
       />
 
       <div className="bg-gradient-to-b from-purple-100 via-blue-50 to-white">
@@ -137,10 +146,22 @@ function FeedbackFormContent() {
             <ThankYouView rating={rating} />
           ) : (
             <>
-              {/* Show waiter card if waiter data is available */}
-              {currentWaiter && <WaiterCard waiter={currentWaiter} />}
+              {/* Animated Intro with Waiter */}
+              {currentView === VIEWS.WELCOME && currentWaiter && (
+                <Intro 
+                  waiter={currentWaiter}
+                  onCustomerTypeSelect={(type) => {
+                    // Handle customer type selection
+                    console.log("Customer type selected:", type);
+                  }}
+                  className="mb-6"
+                />
+              )}
 
-              <Card className="shadow-xl border-0 bg-white">
+              {/* Show waiter card if waiter data is available and not in welcome view */}
+              {currentView !== VIEWS.WELCOME && currentWaiter && <WaiterCard waiter={currentWaiter} />}
+
+              <Card className="shadow-xl border-0 bg-white animate-in slide-in-from-bottom duration-700 delay-2000">
                 <CardHeader className="text-center pb-4">
                   <div className="flex gap-3">
                     <IconChevronLeft
@@ -203,7 +224,7 @@ function FeedbackFormContent() {
               </Card>
             </>
           )}
-          <div className="w-full flex gap-2 justify-center items-center mt-3">
+          <div className="w-full flex gap-2 justify-center items-center mt-3 animate-in fade-in duration-500 delay-2500">
             Powered by{" "}
             <a href="https://www.qikstarts.com" target="_blank">
               <Image src="/LogoQikencuestas.svg" alt="Qik Logo" width={60} height={30} />
