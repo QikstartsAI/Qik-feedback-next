@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { MapPin } from "lucide-react";
+import Image from "next/image";
 import { RatingSelector } from "@/components/forms/RatingSelector";
 import { ImprovementSelector } from "@/components/forms/ImprovementSelector";
 import { ReviewExamples } from "@/components/forms/ReviewExamples";
@@ -98,14 +99,22 @@ export function SurveyView({
             </div>
           </div>
 
-          <Button
+          <button
             onClick={onOpenGoogleMaps}
-            className="w-full mt-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
             disabled={!acceptTerms}
+            className="w-full mt-3 bg-red-600 hover:bg-red-700 disabled:bg-red-400 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-full transition-colors duration-200 flex items-center justify-center gap-4"
           >
-            <MapPin className="mr-2 h-4 w-4" />
-            Escribir mi reseña en Google
-          </Button>
+            <div className="flex items-center justify-center w-10 h-10 bg-red-700 rounded-full">
+              <Image
+                src="/Ggoogle-04.svg"
+                alt="Google"
+                width={24}
+                height={24}
+                className="text-white"
+              />
+            </div>
+            <span className="text-sm">Escribir mi reseña en Google</span>
+          </button>
         </div>
       )}
 

@@ -645,6 +645,7 @@ export function useFeedbackForm() {
     handleConfirmLocation,
     handleCloseLocationDialog,
     handleBranchSelectFromDialog,
+    setShowBranchSelectionDialog,
     showValidationErrors,
 
     // Query parameters

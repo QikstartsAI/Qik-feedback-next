@@ -19,6 +19,32 @@ export function ReviewExamples({
   onCommentChange,
   comment = "",
 }: ReviewExamplesProps) {
+  const handleCardClick = (review: any) => {
+    // Si hay comentarios adicionales, combinar con el texto original
+    const fullText = comment.trim() 
+      ? `${review.text} ${comment.trim()}`
+      : review.text;
+    
+    onCopyReview(fullText, review.id);
+  };
+
+  const handleCommentChange = (value: string) => {
+    if (onCommentChange) {
+      onCommentChange(value);
+      
+      // Si hay una reseña seleccionada, actualizar la copia con el texto combinado
+      if (copiedReviewId) {
+        const selectedReview = reviewExamples.find(r => r.id === copiedReviewId);
+        if (selectedReview) {
+          const fullText = value.trim() 
+            ? `${selectedReview.text} ${value.trim()}`
+            : selectedReview.text;
+          onCopyReview(fullText, copiedReviewId);
+        }
+      }
+    }
+  };
+
   return (
     <div>
       <Label className="text-sm font-medium text-gray-700">
@@ -28,22 +54,21 @@ export function ReviewExamples({
         {reviewExamples.map((review) => (
           <div
             key={review.id}
-            className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg"
+            onClick={() => handleCardClick(review)}
+            className={`flex items-start space-x-3 p-3 rounded-lg cursor-pointer transition-all ${
+              copiedReviewId === review.id
+                ? "bg-green-50 border-2 border-green-200"
+                : "bg-gray-50 hover:bg-gray-100 border-2 border-transparent"
+            }`}
           >
             <div className="flex-1">
               <p className="text-sm text-gray-800">{review.text}</p>
             </div>
-            <button
-              onClick={() => onCopyReview(review.text, review.id)}
-              className={`p-2 rounded-lg transition-all ${
-                copiedReviewId === review.id
-                  ? "bg-green-100 text-green-600"
-                  : "bg-white text-gray-500 hover:bg-gray-100"
-              }`}
-              title={
-                copiedReviewId === review.id ? "¡Copiado!" : "Copiar reseña"
-              }
-            >
+            <div className={`p-2 rounded-lg transition-all ${
+              copiedReviewId === review.id
+                ? "bg-green-100 text-green-600"
+                : "bg-white text-gray-500"
+            }`}>
               {copiedReviewId === review.id ? (
                 <CheckCircle className="h-4 w-4" />
               ) : (
@@ -63,7 +88,7 @@ export function ReviewExamples({
                   <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
                 </svg>
               )}
-            </button>
+            </div>
           </div>
         ))}
       </div>
@@ -71,12 +96,20 @@ export function ReviewExamples({
       {/* Editable field for additional comments */}
       {copiedReviewId && onCommentChange && (
         <div className="mt-4">
+          <Label className="text-sm font-medium text-gray-700 mb-2 block">
+            Agrega más comentarios si deseas:
+          </Label>
           <Textarea
-            placeholder="Agrega más comentarios si deseas..."
+            placeholder="Escribe aquí tus comentarios adicionales..."
             value={comment}
-            onChange={(e) => onCommentChange(e.target.value)}
-            className="min-h-[80px]"
+            onChange={(e) => handleCommentChange(e.target.value)}
+            className="min-h-[80px] bg-white border-2 border-gray-300 focus:border-green-500"
           />
+          {comment.trim() && (
+            <p className="text-xs text-green-600 mt-1">
+              ✓ Los comentarios se incluirán en la reseña copiada
+            </p>
+          )}
         </div>
       )}
     </div>

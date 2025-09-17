@@ -14,7 +14,7 @@ export function Header({
   coverImage,
   name,
   address,
-  distance = "0.2 km",
+  distance = "",
   loading = false,
 }: HeaderProps) {
   return (

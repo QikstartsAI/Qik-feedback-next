@@ -86,6 +86,7 @@ function FeedbackFormContent() {
     handleConfirmLocation,
     handleCloseLocationDialog,
     handleBranchSelectFromDialog,
+    setShowBranchSelectionDialog,
     showValidationErrors,
 
     // Query parameters
@@ -205,7 +206,7 @@ function FeedbackFormContent() {
           <div className="w-full flex gap-2 justify-center items-center mt-3">
             Powered by{" "}
             <a href="https://www.qikstarts.com" target="_blank">
-              <Image src="/qik.svg" alt="Qik Logo" width={60} height={30} />
+              <Image src="/LogoQikencuestas.svg" alt="Qik Logo" width={60} height={30} />
             </a>
           </div>
         </div>
