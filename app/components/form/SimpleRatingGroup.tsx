@@ -11,10 +11,10 @@ interface SimpleRatingGroupProps {
 }
 
 const ratingOptions = [
-  { value: Ratings.Mal, image: "/mal.png", alt: "Bad" },
-  { value: Ratings.Regular, image: "/regular.png", alt: "Regular" },
-  { value: Ratings.Bien, image: "/bueno.png", alt: "Good" },
-  { value: Ratings.Excelente, image: "/excelente.png", alt: "Excellent" },
+  { value: Ratings.Mal, image: "/experiencebad.svg", alt: "Bad" },
+  { value: Ratings.Regular, image: "/experienceregular.svg", alt: "Regular" },
+  { value: Ratings.Bien, image: "/experiencegood.svg", alt: "Good" },
+  { value: Ratings.Excelente, image: "/experienceexelent.svg", alt: "Excellent" },
 ];
 
 export function SimpleRatingGroup({ 

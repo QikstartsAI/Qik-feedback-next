@@ -113,7 +113,7 @@ export default function TestEmojiRatingPage() {
               <ul className="list-disc list-inside mt-2 space-y-1">
                 <li>✅ Enum Ratings con valores "1", "2", "4", "5"</li>
                 <li>✅ Soporte multiidioma (US, CA, FR, IT, Default)</li>
-                <li>✅ Imágenes PNG optimizadas (668x657px)</li>
+                <li>✅ Imágenes SVG optimizadas</li>
                 <li>✅ Diseño responsive (móvil: 32x32px, desktop: 40x40px)</li>
                 <li>✅ Efectos de hover y selección</li>
                 <li>✅ Transiciones suaves</li>
@@ -135,10 +135,10 @@ export default function TestEmojiRatingPage() {
             <div>
               <h3 className="font-semibold">Imágenes Utilizadas:</h3>
               <ul className="list-disc list-inside mt-2 space-y-1">
-                <li><code>/mal.png</code> - Cara triste (calificación mala)</li>
-                <li><code>/regular.png</code> - Cara neutral (calificación regular)</li>
-                <li><code>/bueno.png</code> - Cara contenta (calificación buena)</li>
-                <li><code>/excelente.png</code> - Cara muy feliz (calificación excelente)</li>
+                <li><code>/experiencebad.svg</code> - Cara triste (calificación mala)</li>
+                <li><code>/experienceregular.svg</code> - Cara neutral (calificación regular)</li>
+                <li><code>/experiencegood.svg</code> - Cara contenta (calificación buena)</li>
+                <li><code>/experienceexelent.svg</code> - Cara muy feliz (calificación excelente)</li>
               </ul>
             </div>
           </div>

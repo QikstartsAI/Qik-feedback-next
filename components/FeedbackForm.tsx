@@ -10,7 +10,6 @@ import { BranchSelectionDialog } from "@/components/BranchSelectionDialog";
 import { RequestLocationDialog } from "@/components/RequestLocationDialog";
 import { Header } from "@/components/layout/Header";
 import { Hero } from "@/components/Hero";
-import { Banner } from "@/components/Banner";
 import { Intro } from "@/components/Intro";
 import { WelcomeView } from "@/components/views/WelcomeView";
 import { SurveyView } from "@/components/views/SurveyView";
@@ -134,11 +133,6 @@ function FeedbackFormContent() {
         loading={brandLoading}
       />
 
-      {/* Animated Courtesy Banner */}
-      <Banner 
-        language="es" 
-        brandColor="bg-blue-600"
-      />
 
       <div className="bg-gradient-to-b from-purple-100 via-blue-50 to-white">
         <div className="max-w-md mx-auto p-6 -mt-8 relative z-20">

@@ -80,7 +80,7 @@ export function WelcomeView({
             onAcceptPromotionsChange(checked as boolean)
           }
         />
-        <Label htmlFor="promotions" className="text-sm">
+        <Label htmlFor="promotions" className="text-sm text-gray-800 font-medium">
           Acepto recibir promociones por{" "}
           <span className="text-green-600 font-medium">WhatsApp</span>
         </Label>

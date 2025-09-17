@@ -34,7 +34,7 @@ const ratingOptions: RatingOption[] = [
       it: "Male", 
       default: "Mal" 
     },
-    image: "/mal.png",
+    image: "/experiencebad.svg",
   },
   {
     value: Ratings.Regular,
@@ -45,7 +45,7 @@ const ratingOptions: RatingOption[] = [
       it: "Regolare",
       default: "Regular",
     },
-    image: "/regular.png",
+    image: "/experienceregular.svg",
   },
   {
     value: Ratings.Bien,
@@ -56,7 +56,7 @@ const ratingOptions: RatingOption[] = [
       it: "Bene", 
       default: "Bien" 
     },
-    image: "/bueno.png",
+    image: "/experiencegood.svg",
   },
   {
     value: Ratings.Excelente,
@@ -67,7 +67,7 @@ const ratingOptions: RatingOption[] = [
       it: "Eccellente",
       default: "Excelente",
     },
-    image: "/excelente.png",
+    image: "/experienceexelent.svg",
   },
 ];
 

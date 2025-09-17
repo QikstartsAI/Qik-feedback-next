@@ -102,18 +102,12 @@ export function SurveyView({
           <button
             onClick={onOpenGoogleMaps}
             disabled={!acceptTerms}
-            className="w-full mt-3 bg-red-600 hover:bg-red-700 disabled:bg-red-400 disabled:cursor-not-allowed text-white font-bold py-2 px-3 rounded-full transition-colors duration-200 flex items-center gap-2"
+            className="w-full mt-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors duration-200 flex items-center gap-3"
           >
-            <div className="flex items-center justify-center w-8 h-8 bg-red-700 rounded-full flex-shrink-0">
-              <Image
-                src="/Ggoogle-04.svg"
-                alt="Google"
-                width={20}
-                height={20}
-                className="text-white"
-              />
+            <div className="flex items-center justify-center w-10 h-10 bg-blue-800 rounded-md flex-shrink-0">
+              <span className="text-white font-bold text-xl">G</span>
             </div>
-            <span className="text-xs whitespace-nowrap overflow-hidden text-ellipsis">Escribir mi reseña en Google</span>
+            <span className="text-sm font-medium">Escribir reseña en Google</span>
           </button>
         </div>
       )}

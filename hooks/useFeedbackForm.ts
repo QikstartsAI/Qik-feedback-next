@@ -390,13 +390,36 @@ export function useFeedbackForm() {
 
   const handleCopyReview = async (reviewText: string, reviewId: string) => {
     try {
-      await navigator.clipboard.writeText(reviewText);
-      setCopiedReviewId(reviewId);
-      setTimeout(() => {
-        setCopiedReviewId(null);
-      }, 2000);
+      // Check if clipboard API is available
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(reviewText);
+        setCopiedReviewId(reviewId);
+      } else {
+        // Fallback for browsers that don't support clipboard API
+        const textArea = document.createElement('textarea');
+        textArea.value = reviewText;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+          document.execCommand('copy');
+          setCopiedReviewId(reviewId);
+        } catch (fallbackError) {
+          console.error("Fallback copy failed: ", fallbackError);
+          // Show user-friendly error message
+          alert('No se pudo copiar el texto. Por favor, selecciona y copia manualmente.');
+        } finally {
+          document.body.removeChild(textArea);
+        }
+      }
     } catch (error) {
       console.error("Failed to copy text: ", error);
+      // Show user-friendly error message
+      alert('No se pudo copiar el texto. Por favor, selecciona y copia manualmente.');
     }
   };
 
