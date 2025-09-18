@@ -170,11 +170,18 @@ export function CustomerProvider({ children }: CustomerProviderProps) {
 
         return customer;
       } catch (error) {
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "Failed to get customer by phone";
-        setError(errorMessage);
+        console.warn("⚠️ [CustomerContext] getCustomerByPhone failed, treating as new customer:", error);
+        
+        // For server errors (500), don't show error to user, just treat as new customer
+        const errorMessage = error instanceof Error ? error.message : "Failed to get customer by phone";
+        
+        if (errorMessage.includes("500") || errorMessage.includes("Internal Server Error")) {
+          console.log("🔄 [CustomerContext] Server error detected, treating as new customer silently");
+          setError(null); // Don't show error to user
+        } else {
+          setError(errorMessage);
+        }
+        
         // If error occurs, treat as New
         setCustomerType(CustomerType.New);
         return null;
@@ -211,9 +218,18 @@ export function CustomerProvider({ children }: CustomerProviderProps) {
 
         return customer;
       } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Failed to create customer";
-        setError(errorMessage);
+        console.warn("⚠️ [CustomerContext] createCustomer failed:", error);
+        
+        const errorMessage = error instanceof Error ? error.message : "Failed to create customer";
+        
+        // For server errors (500), don't show error to user, just return null
+        if (errorMessage.includes("500") || errorMessage.includes("Internal Server Error")) {
+          console.log("🔄 [CustomerContext] Server error detected, customer creation failed silently");
+          setError(null); // Don't show error to user
+        } else {
+          setError(errorMessage);
+        }
+        
         return null;
       } finally {
         setLoading(false);

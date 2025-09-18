@@ -1,5 +1,5 @@
 export const DEFAULT_COUNTRY_CODE = "+593";
-export const GOOGLE_REVIEW_URL = "https://g.page/r/CdUpuKOxF_CvEBM/review";
+export const GOOGLE_REVIEW_URL = "https://search.google.com/local/writereview?placeid=ChIJE2d1JuOb1ZER1Sm4o7EX8K8&source=g.page.m.ia._&laa=nmx-review-solicitation-ia2";
 
 export const FORM_STEPS = {
   WELCOME: 1,

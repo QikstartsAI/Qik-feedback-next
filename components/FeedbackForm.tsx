@@ -96,6 +96,12 @@ function FeedbackFormContent() {
     brandId,
     branchId,
     waiterId,
+    
+    // Google detection
+    isFromGoogle,
+    
+    // Test function
+    simulateGoogleReturn,
   } = useFeedbackForm();
 
   // Get branch or brand information for header
@@ -226,6 +232,18 @@ function FeedbackFormContent() {
               <Image src="/LogoQikencuestas.svg" alt="Qik Logo" width={60} height={30} />
             </a>
           </div>
+          
+          {/* Test button for Google detection - REMOVE IN PRODUCTION */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="w-full flex justify-center mt-4">
+              <button
+                onClick={simulateGoogleReturn}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+              >
+                🧪 Test Google Return Detection
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

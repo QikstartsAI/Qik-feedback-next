@@ -141,13 +141,22 @@ export const isRestaurantCategory = (category: string): boolean => {
 
 // Function to get filtered improvement options based on category
 export const getFilteredImprovementOptions = (category: string) => {
+  console.log("🍽️ [getFilteredImprovementOptions] category:", category);
   const isRestaurant = isRestaurantCategory(category);
+  console.log("🍽️ [getFilteredImprovementOptions] isRestaurant:", isRestaurant);
   
-  if (isRestaurant) {
-    return improvementOptions; // Show all options for restaurants
-  } else {
-    return improvementOptions.filter(option => option.id !== 'food'); // Hide food option for non-restaurants
-  }
+  // TEMPORARY: Always show all options for debugging
+  console.log("🍽️ [getFilteredImprovementOptions] TEMPORARY: Returning all options");
+  return improvementOptions;
+  
+  // Original logic (commented out for debugging):
+  // if (isRestaurant) {
+  //   console.log("🍽️ [getFilteredImprovementOptions] Returning all options for restaurant");
+  //   return improvementOptions; // Show all options for restaurants
+  // } else {
+  //   console.log("🍽️ [getFilteredImprovementOptions] Filtering out food option for non-restaurant");
+  //   return improvementOptions.filter(option => option.id !== 'food'); // Hide food option for non-restaurants
+  // }
 };
 
 export const reviewExamples = [

@@ -14,7 +14,9 @@ export function ImprovementSelector({
   onImprovementSelect,
   businessCategory = "",
 }: ImprovementSelectorProps) {
+  console.log("🍽️ [ImprovementSelector] businessCategory received:", businessCategory);
   const filteredOptions = getFilteredImprovementOptions(businessCategory);
+  console.log("🍽️ [ImprovementSelector] filteredOptions:", filteredOptions);
   
   return (
     <div>

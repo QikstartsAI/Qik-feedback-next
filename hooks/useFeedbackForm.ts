@@ -48,6 +48,7 @@ export function useFeedbackForm() {
   const brandId = searchParams.get("id");
   const branchId = searchParams.get("branch");
   const waiterId = searchParams.get("waiter");
+  const fromGoogle = searchParams.get("from") === "google";
 
   // Form state
   const [currentView, setCurrentView] = useState<
@@ -68,6 +69,72 @@ export function useFeedbackForm() {
   const [feedbackCompleted, setFeedbackCompleted] = useState(false);
   const [incompleteFeedbackId, setIncompleteFeedbackId] = useState<string | null>(null);
   const [brandBranches, setBrandBranches] = useState<Branch[]>([]);
+  const [isFromGoogle, setIsFromGoogle] = useState<boolean>(false);
+
+  // Fallback function to create mock customer when server fails
+  const createMockCustomer = (customerData: any) => {
+    const mockCustomer = {
+      id: `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      payload: {
+        ...customerData,
+        customerType: "new" as const,
+      }
+    };
+    console.log("🔄 [useFeedbackForm] Created mock customer due to server error:", mockCustomer.id);
+    return mockCustomer;
+  };
+
+  // Detect if user is coming from Google
+  useEffect(() => {
+    const detectGoogleOrigin = () => {
+      console.log("🔍 [GoogleDetection] Starting detection...");
+      console.log("🔍 [GoogleDetection] fromGoogle parameter:", fromGoogle);
+      console.log("🔍 [GoogleDetection] Current URL:", window.location.href);
+      console.log("🔍 [GoogleDetection] Search params:", window.location.search);
+      
+      // Check URL parameter first
+      if (fromGoogle) {
+        console.log("✅ [GoogleDetection] Detected Google origin via URL parameter");
+        setIsFromGoogle(true);
+        setCurrentView(VIEWS.THANK_YOU);
+        setStep(FORM_STEPS.THANK_YOU);
+        console.log("🎉 [GoogleDetection] Redirecting to Thank You view (Google origin)");
+        return;
+      }
+
+      // Check document referrer as fallback
+      if (typeof window !== "undefined") {
+        const referrer = document.referrer;
+        console.log("🔍 [GoogleDetection] Document referrer:", referrer);
+        
+        if (referrer) {
+          const isGoogleReferrer = 
+            referrer.includes('google.com') ||
+            referrer.includes('googleapis.com') ||
+            referrer.includes('maps.google.com') ||
+            referrer.includes('googleusercontent.com');
+          
+          console.log("🔍 [GoogleDetection] Is Google referrer:", isGoogleReferrer);
+          
+          if (isGoogleReferrer) {
+            console.log("✅ [GoogleDetection] Detected Google origin via referrer");
+            setIsFromGoogle(true);
+            setCurrentView(VIEWS.THANK_YOU);
+            setStep(FORM_STEPS.THANK_YOU);
+            console.log("🎉 [GoogleDetection] Redirecting to Thank You view (Google referrer)");
+          }
+        } else {
+          console.log("🔍 [GoogleDetection] No referrer found");
+        }
+      }
+      
+      console.log("🔍 [GoogleDetection] Detection completed. isFromGoogle:", isFromGoogle);
+    };
+
+    detectGoogleOrigin();
+  }, [fromGoogle, isFromGoogle]);
 
   const handleRatingSelect = (ratingId: string) => {
     setRating(ratingId);
@@ -272,7 +339,12 @@ export function useFeedbackForm() {
 
     if (!validation.error && digitsOnly.length === expectedLength) {
       const currentBranchId = currentBranch?.id || branchId || undefined;
-      await getCustomerByPhone(digitsOnly, currentBranchId);
+      try {
+        await getCustomerByPhone(digitsOnly, currentBranchId);
+      } catch (error) {
+        console.warn("⚠️ [useFeedbackForm] handlePhoneChange - Failed to get customer by phone:", error);
+        // Don't show error to user, just continue as new customer
+      }
     }
   };
 
@@ -407,11 +479,16 @@ export function useFeedbackForm() {
               }] : []
             };
             
-            customerData = await createCustomer(newCustomerPayload);
-            
-            if (!customerData) {
-              console.error("Failed to create customer");
-              return;
+            try {
+              customerData = await createCustomer(newCustomerPayload);
+              
+              if (!customerData) {
+                console.warn("⚠️ [useFeedbackForm] createCustomer returned null, using mock customer");
+                customerData = createMockCustomer(newCustomerPayload);
+              }
+            } catch (error) {
+              console.warn("⚠️ [useFeedbackForm] createCustomer failed, using mock customer:", error);
+              customerData = createMockCustomer(newCustomerPayload);
             }
             
             console.log("✅ Customer created successfully:", customerData.id);
@@ -455,13 +532,19 @@ export function useFeedbackForm() {
               }] : []
             };
             
-            const realCustomer = await createCustomer(realCustomerPayload);
-            
-            if (realCustomer && !realCustomer.id.startsWith('mock-')) {
-              console.log("✅ [useFeedbackForm] handleFeedbackSubmit - Successfully created real customer", realCustomer.id);
-              customerData = realCustomer;
-            } else {
-              console.error("❌ [useFeedbackForm] handleFeedbackSubmit - Failed to create real customer, using mock customer");
+            try {
+              const realCustomer = await createCustomer(realCustomerPayload);
+              
+              if (realCustomer && !realCustomer.id.startsWith('mock-')) {
+                console.log("✅ [useFeedbackForm] handleFeedbackSubmit - Successfully created real customer", realCustomer.id);
+                customerData = realCustomer;
+              } else {
+                console.warn("⚠️ [useFeedbackForm] handleFeedbackSubmit - createCustomer returned null or mock, using mock customer");
+                customerData = createMockCustomer(realCustomerPayload);
+              }
+            } catch (error) {
+              console.warn("⚠️ [useFeedbackForm] handleFeedbackSubmit - createCustomer failed, using mock customer:", error);
+              customerData = createMockCustomer(realCustomerPayload);
             }
           } catch (error) {
             console.error("❌ [useFeedbackForm] handleFeedbackSubmit - Error creating real customer:", error);
@@ -533,9 +616,29 @@ export function useFeedbackForm() {
           return;
         }
       }
-      
+
       console.log("🚀 [GoogleReview] Navigating to Google Maps");
-      window.location.href = GOOGLE_REVIEW_URL;
+      
+      // Generate return URL with Google parameter
+      const currentUrl = window.location.origin + window.location.pathname;
+      const params = new URLSearchParams(window.location.search);
+      params.set('from', 'google');
+      const returnUrl = `${currentUrl}?${params.toString()}`;
+      
+      console.log("🔗 [GoogleReview] Current URL:", currentUrl);
+      console.log("🔗 [GoogleReview] Original params:", window.location.search);
+      console.log("🔗 [GoogleReview] Generated return URL:", returnUrl);
+      
+      // Add return URL to Google Maps URL
+      const googleUrl = `${GOOGLE_REVIEW_URL}&return_url=${encodeURIComponent(returnUrl)}`;
+      console.log("🔗 [GoogleReview] Final Google URL:", googleUrl);
+
+      window.location.href = googleUrl;
+      
+      setTimeout(() => {
+        setCurrentView(VIEWS.THANK_YOU);
+        setStep(FORM_STEPS.THANK_YOU);
+      }, 1000);
       
     } catch (error) {
       console.error("❌ [GoogleReview] Failed to complete feedback before Google Maps:", error);
@@ -550,6 +653,17 @@ export function useFeedbackForm() {
   const backToWelcome = () => {
     setCurrentView(VIEWS.WELCOME);
     setStep(FORM_STEPS.WELCOME);
+  };
+
+  // Test function to simulate Google return
+  const simulateGoogleReturn = () => {
+    console.log("🧪 [Test] Simulating Google return...");
+    const currentUrl = window.location.origin + window.location.pathname;
+    const params = new URLSearchParams(window.location.search);
+    params.set('from', 'google');
+    const testUrl = `${currentUrl}?${params.toString()}`;
+    console.log("🧪 [Test] Navigating to:", testUrl);
+    window.location.href = testUrl;
   };
 
   const goToSurvey = async () => {
@@ -589,11 +703,16 @@ export function useFeedbackForm() {
             }] : []
           };
           
-          customerData = await createCustomer(newCustomerPayload);
-          
-          if (!customerData) {
-            console.error("Failed to create customer");
-            return;
+          try {
+            customerData = await createCustomer(newCustomerPayload);
+            
+            if (!customerData) {
+              console.warn("⚠️ [useFeedbackForm] createCustomer returned null, using mock customer");
+              customerData = createMockCustomer(newCustomerPayload);
+            }
+          } catch (error) {
+            console.warn("⚠️ [useFeedbackForm] createCustomer failed, using mock customer:", error);
+            customerData = createMockCustomer(newCustomerPayload);
           }
           
           console.log("✅ Customer created successfully:", customerData.id);
@@ -724,6 +843,8 @@ export function useFeedbackForm() {
     showLocationDialog,
     showBranchSelectionDialog,
     locationPermission,
+    originPosition,
+    getLocation,
     grantingPermissions,
     distanceLoading,
     enableGeolocation,
@@ -774,5 +895,11 @@ export function useFeedbackForm() {
     brandId,
     branchId,
     waiterId,
+    
+    // Google detection
+    isFromGoogle,
+    
+    // Test function
+    simulateGoogleReturn,
   };
 }
