@@ -119,11 +119,11 @@ export const BranchSelectionDialog: React.FC<BranchSelectionDialogProps> = ({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-white z-50">
+    <div className={`fixed inset-0 bg-white z-50 transition-all ease-in-out duration-100 ${open ? 'h-screen' : 'h-[0px]'}`}>
       <div className="h-full flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
-          <div>
+        <div className="flex items-center justify-center p-4 border-b">
+          <div className="text-center">
             <h1
               className="text-xl font-bold"
               style={{ color: `hsl(${brandColor})` }}
@@ -139,13 +139,13 @@ export const BranchSelectionDialog: React.FC<BranchSelectionDialogProps> = ({
         </div>
 
         {/* Content */}
-        <div className="flex-1 p-4 overflow-y-auto">
-          <div className="max-w-md mx-auto">
+        <div className="flex-1 p-4 overflow-y-auto flex items-center justify-center">
+          <div className="max-w-md w-full">
             {currentView === "permissions" ? (
               // PANTALLA 1: Solicitar permisos de ubicación
               <div className="flex flex-col items-center justify-center h-full">
                 <div className="text-center space-y-6">
-                  <div className="text-6xl mb-4">📍</div>
+                  <div className="text-6xl mb-4 animate-bounce delay-100">📍</div>
                   <h2
                     className="font-bold text-[1.5rem]"
                     style={{ color: `hsl(${brandColor})` }}
@@ -159,7 +159,7 @@ export const BranchSelectionDialog: React.FC<BranchSelectionDialogProps> = ({
               </div>
             ) : (
               // PANTALLA 2: Selección de sucursales
-              <div className="space-y-4">
+              <div className="space-y-4 w-full">
                 <div className="text-center mb-4">
                   <p className="text-sm text-gray-500">
                     Selecciona una sucursal o haz doble click para continuar
@@ -274,8 +274,8 @@ export const BranchSelectionDialog: React.FC<BranchSelectionDialogProps> = ({
         </div>
 
         {/* Fixed Bottom Buttons */}
-        <div className="border-t bg-white p-4">
-          <div className="max-w-md mx-auto">
+        <div className="border-t bg-white p-4 flex items-center justify-center">
+          <div className="max-w-md w-full">
             {currentView === "permissions" ? (
               // PANTALLA 1: Botones para permisos
               <div className="flex flex-col gap-3 w-full">
@@ -284,9 +284,14 @@ export const BranchSelectionDialog: React.FC<BranchSelectionDialogProps> = ({
                   className="w-full"
                   disabled={grantingPermissions}
                 >
-                  {grantingPermissions
-                    ? "Obteniendo ubicación..."
-                    : "Compartir ubicación"}
+                  {grantingPermissions ? (
+                    <>
+                      <span className="animate-pulse">QikStarts</span>
+                      <span className="ml-2">Obteniendo ubicación...</span>
+                    </>
+                  ) : (
+                    "Compartir ubicación"
+                  )}
                 </Button>
                 <Button
                   onClick={handleDenyLocation}

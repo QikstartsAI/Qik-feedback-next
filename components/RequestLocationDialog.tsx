@@ -54,7 +54,7 @@ export function RequestLocationDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className={`sm:max-w-md transition-all ease-in-out duration-100 ${open ? 'h-screen' : 'h-[0px]'}`}>
         <DialogHeader>
           <DialogTitle className="text-center text-xl font-semibold text-gray-800">
             {currentState === 'grantPermissions' 
@@ -68,7 +68,7 @@ export function RequestLocationDialog({
           {currentState === 'grantPermissions' && (
             <>
               <div className="text-center">
-                <div className="text-6xl mb-4">📍</div>
+                <div className="text-6xl mb-4 animate-bounce delay-100">📍</div>
                 <p className="text-gray-600 mb-6">
                   Para brindarte la mejor experiencia, nos gustaría conocer tu ubicación y mostrarte la sucursal más cercana.
                 </p>
@@ -83,7 +83,8 @@ export function RequestLocationDialog({
                   {grantingPermissions ? (
                     <>
                       <IconLoader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Obteniendo ubicación...
+                      <span className="animate-pulse">QikStarts</span>
+                      <span className="ml-2">Obteniendo ubicación...</span>
                     </>
                   ) : (
                     <>

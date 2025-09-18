@@ -200,8 +200,9 @@ export class FeedbackRepositoryImpl implements FeedbackRepository {
       };
       
       const endpoint = `${this.baseUrl}/feedback/${id}`;
-      console.log("📡 [FeedbackRepository] updateFeedback - Making request", { 
+      console.log("📡 [FeedbackRepository] updateFeedback - Making PATCH request", { 
         endpoint, 
+        method: 'PATCH',
         requestData: {
           ...requestData,
           payload: {
@@ -213,7 +214,7 @@ export class FeedbackRepositoryImpl implements FeedbackRepository {
         }
       });
       
-      const response = await this.httpClient.put<Feedback>(endpoint, requestData);
+      const response = await this.httpClient.patch<Feedback>(endpoint, requestData);
       
       console.log("✅ [FeedbackRepository] updateFeedback - Success", { 
         id,
