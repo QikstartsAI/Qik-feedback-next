@@ -121,7 +121,29 @@ export const calculateDetailedProgress = (formData: {
 };
 
 export const isPositiveRating = (rating: string): boolean => {
-  return rating === "good" || rating === "excellent";
+  return rating === "good" || rating === "excellent" || rating === "4" || rating === "5";
+};
+
+// Mapping between emoji-based ratings and numeric ratings
+export const mapEmojiToNumericRating = (emojiRating: string): string => {
+  const mapping: { [key: string]: string } = {
+    "terrible": "1", // Maps to Ratings.Mal
+    "bad": "1",      // Maps to Ratings.Mal  
+    "regular": "2",  // Maps to Ratings.Regular
+    "good": "4",     // Maps to Ratings.Bien
+    "excellent": "5" // Maps to Ratings.Excelente
+  };
+  return mapping[emojiRating] || emojiRating;
+};
+
+export const mapNumericToEmojiRating = (numericRating: string): string => {
+  const mapping: { [key: string]: string } = {
+    "1": "bad",      // Maps from Ratings.Mal
+    "2": "regular",  // Maps from Ratings.Regular
+    "4": "good",     // Maps from Ratings.Bien
+    "5": "excellent" // Maps from Ratings.Excelente
+  };
+  return mapping[numericRating] || numericRating;
 };
 
 export const getBranchInfo = (branch: any) => {

@@ -20,3 +20,5 @@ export const GET_BRAND_BY_ID_USE_CASE = Symbol("GetBrandByIdUseCase");
 export const GET_BRANCH_BY_ID_USE_CASE = Symbol("GetBranchByIdUseCase");
 export const GET_WAITER_BY_ID_USE_CASE = Symbol("GetWaiterByIdUseCase");
 export const SEND_FEEDBACK_USE_CASE = Symbol("SendFeedbackUseCase");
+export const CREATE_INCOMPLETE_FEEDBACK_USE_CASE = Symbol("CreateIncompleteFeedbackUseCase");
+export const COMPLETE_FEEDBACK_USE_CASE = Symbol("CompleteFeedbackUseCase");

@@ -8,9 +8,9 @@ export class BranchRepositoryImpl implements BranchRepository {
 
   constructor(httpClient: IHttpClient, baseUrl?: string) {
     this.httpClient = httpClient;
-    // Only use baseUrl if HttpClient doesn't already have a baseURL configured
-    // This prevents double base URL issues
-    this.baseUrl = baseUrl || "";
+    // Don't use baseUrl since HttpClient already has baseURL configured
+    // This prevents double base URL issues and undefined concatenation
+    this.baseUrl = "";
   }
 
   /**
@@ -41,10 +41,14 @@ export class BranchRepositoryImpl implements BranchRepository {
    */
   async getBranchesByBrandId(brandId: string): Promise<Branch[]> {
     try {
-      const response = await this.httpClient.get<Branch[]>(
-        `${this.baseUrl}/branches/brand/${brandId}`
+      const response = await this.httpClient.get<{items: Branch[], total: number}>(
+        `${this.baseUrl}/branches`,
+        {
+          params: { brandId }
+        }
       );
-      return response.data;
+      // The API returns {items: Branch[], total: number}, so we need to extract the items
+      return response.data.items || [];
     } catch (error) {
       console.error("Error fetching branches by brand ID:", error);
       throw new Error(

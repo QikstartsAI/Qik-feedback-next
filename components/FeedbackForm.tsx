@@ -43,6 +43,7 @@ function FeedbackFormContent() {
     availableBranches,
     detailedProgress,
     canContinue,
+    feedbackCompleted,
 
     // Geolocation state
     showLocationDialog,
@@ -259,7 +260,10 @@ function FeedbackFormContent() {
         originPosition={originPosition}
         closestDestination={closestDestination}
         onGetLocation={getLocation}
-        onDenyLocation={() => setShowBranchSelectionDialog(false)}
+        onDenyLocation={() => {
+          // Don't close the dialog, just allow the user to see all branches
+          // The BranchSelectionDialog will handle the view change internally
+        }}
         grantingPermissions={grantingPermissions}
       />
     </div>

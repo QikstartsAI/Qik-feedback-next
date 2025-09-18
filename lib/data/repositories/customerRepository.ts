@@ -8,9 +8,9 @@ export class CustomerRepositoryImpl implements CustomerRepository {
 
   constructor(httpClient: IHttpClient, baseUrl?: string) {
     this.httpClient = httpClient;
-    // Only use baseUrl if HttpClient doesn't already have a baseURL configured
-    // This prevents double base URL issues
-    this.baseUrl = baseUrl || "";
+    // Don't use baseUrl since HttpClient already has baseURL configured
+    // This prevents double base URL issues and undefined concatenation
+    this.baseUrl = "";
   }
 
   /**
@@ -19,13 +19,22 @@ export class CustomerRepositoryImpl implements CustomerRepository {
    * @returns Promise<Customer>
    */
   async getCustomerById(id: string): Promise<Customer> {
+    console.log("🔍 [CustomerRepository] getCustomerById - Starting", { id });
     try {
-      const response = await this.httpClient.get<Customer>(
-        `${this.baseUrl}/customers/${id}`
-      );
+      const endpoint = `${this.baseUrl}/customers/${id}`;
+      console.log("📡 [CustomerRepository] getCustomerById - Making request", { endpoint });
+      
+      const response = await this.httpClient.get<Customer>(endpoint);
+      
+      console.log("✅ [CustomerRepository] getCustomerById - Success", { 
+        id, 
+        customerId: response.data?.id,
+        customerName: response.data?.payload?.name 
+      });
+      
       return response.data;
     } catch (error) {
-      console.error("Error fetching customer by ID:", error);
+      console.error("❌ [CustomerRepository] getCustomerById - Error", { id, error });
       throw new Error(
         `Failed to fetch customer with ID ${id}: ${
           error instanceof Error ? error.message : "Unknown error"
@@ -40,17 +49,28 @@ export class CustomerRepositoryImpl implements CustomerRepository {
    * @returns Promise<Customer | null>
    */
   async getCustomerByPhoneNumber(phone: string): Promise<Customer | null> {
+    console.log("🔍 [CustomerRepository] getCustomerByPhoneNumber - Starting", { phone });
     try {
-      const response = await this.httpClient.get<Customer>(
-        `${this.baseUrl}/customers/by-number`,
-        {
-          params: { phone },
-        }
-      );
+      const endpoint = `${this.baseUrl}/customers/by-number`;
+      const params = { phoneNumber: phone };
+      
+      console.log("📡 [CustomerRepository] getCustomerByPhoneNumber - Making request", { 
+        endpoint, 
+        params 
+      });
+      
+      const response = await this.httpClient.get<Customer>(endpoint, { params });
+
+      console.log("✅ [CustomerRepository] getCustomerByPhoneNumber - Success", { 
+        phone, 
+        found: !!response.data,
+        customerId: response.data?.id,
+        customerName: response.data?.payload?.name 
+      });
 
       return response.data;
     } catch (error) {
-      console.error("Error fetching customer by phone:", error);
+      console.error("❌ [CustomerRepository] getCustomerByPhoneNumber - Error (returning null)", { phone, error });
       // Return null instead of throwing for phone lookups
       return null;
     }
@@ -63,14 +83,16 @@ export class CustomerRepositoryImpl implements CustomerRepository {
    */
   async getCustomerByEmail(email: string): Promise<Customer | null> {
     try {
-      const response = await this.httpClient.get<Customer>(
-        `${this.baseUrl}/customers/by-email`,
+      const response = await this.httpClient.get<{items: Customer[], total: number}>(
+        `${this.baseUrl}/customers`,
         {
           params: { email },
         }
       );
 
-      return response.data;
+      // The API returns {items: Customer[], total: number}, so we need to extract the items
+      const customers = response.data.items || [];
+      return customers.length > 0 ? customers[0] : null;
     } catch (error) {
       console.error("Error fetching customer by email:", error);
       // Return null instead of throwing for email lookups
@@ -84,14 +106,54 @@ export class CustomerRepositoryImpl implements CustomerRepository {
    * @returns Promise<Customer>
    */
   async createCustomer(customerData: CustomerPayload): Promise<Customer> {
+    console.log("👤 [CustomerRepository] createCustomer - Starting", { 
+      name: customerData.name,
+      lastName: customerData.lastName,
+      phoneNumber: customerData.phoneNumber,
+      email: customerData.email,
+      branchesCount: customerData.branches?.length || 0
+    });
+    
     try {
-      const response = await this.httpClient.post<Customer>(
-        `${this.baseUrl}/customers`,
-        customerData
-      );
+      // Backend expects data wrapped in a payload object
+      const requestData = {
+        payload: customerData
+      };
+      
+      const endpoint = `${this.baseUrl}/customers`;
+      console.log("📡 [CustomerRepository] createCustomer - Making request", { 
+        endpoint, 
+        requestData: {
+          ...requestData,
+          payload: {
+            ...requestData.payload,
+            // Don't log sensitive data in full
+            phoneNumber: requestData.payload.phoneNumber ? 
+              `${requestData.payload.phoneNumber.substring(0, 4)}***` : 'N/A'
+          }
+        }
+      });
+      
+      const response = await this.httpClient.post<Customer>(endpoint, requestData);
+      
+      console.log("✅ [CustomerRepository] createCustomer - Success", { 
+        customerId: response.data?.id,
+        customerName: response.data?.payload?.name,
+        customerLastName: response.data?.payload?.lastName,
+        createdAt: response.data?.createdAt
+      });
+      
       return response.data;
     } catch (error) {
-      console.error("Error creating customer:", error);
+      console.error("❌ [CustomerRepository] createCustomer - Error", { 
+        customerData: {
+          name: customerData.name,
+          lastName: customerData.lastName,
+          phoneNumber: customerData.phoneNumber ? 
+            `${customerData.phoneNumber.substring(0, 4)}***` : 'N/A'
+        },
+        error 
+      });
       throw new Error(
         `Failed to create customer: ${
           error instanceof Error ? error.message : "Unknown error"
@@ -110,14 +172,47 @@ export class CustomerRepositoryImpl implements CustomerRepository {
     id: string,
     customerData: Partial<CustomerPayload>
   ): Promise<Customer> {
+    console.log("✏️ [CustomerRepository] updateCustomer - Starting", { 
+      id,
+      updateFields: Object.keys(customerData)
+    });
+    
     try {
-      const response = await this.httpClient.put<Customer>(
-        `${this.baseUrl}/customers/${id}`,
-        customerData
-      );
+      // Backend expects data wrapped in a payload object
+      const requestData = {
+        payload: customerData
+      };
+      
+      const endpoint = `${this.baseUrl}/customers/${id}`;
+      console.log("📡 [CustomerRepository] updateCustomer - Making request", { 
+        endpoint, 
+        requestData: {
+          ...requestData,
+          payload: {
+            ...requestData.payload,
+            // Don't log sensitive data in full
+            phoneNumber: requestData.payload.phoneNumber ? 
+              `${requestData.payload.phoneNumber.substring(0, 4)}***` : undefined
+          }
+        }
+      });
+      
+      const response = await this.httpClient.put<Customer>(endpoint, requestData);
+      
+      console.log("✅ [CustomerRepository] updateCustomer - Success", { 
+        id,
+        customerId: response.data?.id,
+        customerName: response.data?.payload?.name,
+        updatedAt: response.data?.updatedAt
+      });
+      
       return response.data;
     } catch (error) {
-      console.error("Error updating customer:", error);
+      console.error("❌ [CustomerRepository] updateCustomer - Error", { 
+        id,
+        updateFields: Object.keys(customerData),
+        error 
+      });
       throw new Error(
         `Failed to update customer with ID ${id}: ${
           error instanceof Error ? error.message : "Unknown error"

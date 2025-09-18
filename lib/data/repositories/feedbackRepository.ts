@@ -8,9 +8,9 @@ export class FeedbackRepositoryImpl implements FeedbackRepository {
 
   constructor(httpClient: IHttpClient, baseUrl?: string) {
     this.httpClient = httpClient;
-    // Only use baseUrl if HttpClient doesn't already have a baseURL configured
-    // This prevents double base URL issues
-    this.baseUrl = baseUrl || "";
+    // Don't use baseUrl since HttpClient already has baseURL configured
+    // This prevents double base URL issues and undefined concatenation
+    this.baseUrl = "";
   }
 
   /**
@@ -41,10 +41,14 @@ export class FeedbackRepositoryImpl implements FeedbackRepository {
    */
   async getFeedbacksByBranchId(branchId: string): Promise<Feedback[]> {
     try {
-      const response = await this.httpClient.get<Feedback[]>(
-        `${this.baseUrl}/feedback/branch/${branchId}`
+      const response = await this.httpClient.get<{items: Feedback[], total: number}>(
+        `${this.baseUrl}/feedback/byBranchId`,
+        {
+          params: { branchId }
+        }
       );
-      return response.data;
+      // The API returns {items: Feedback[], total: number}, so we need to extract the items
+      return response.data.items || [];
     } catch (error) {
       console.error("Error fetching feedbacks by branch ID:", error);
       throw new Error(
@@ -62,10 +66,14 @@ export class FeedbackRepositoryImpl implements FeedbackRepository {
    */
   async getFeedbacksByCustomerId(customerId: string): Promise<Feedback[]> {
     try {
-      const response = await this.httpClient.get<Feedback[]>(
-        `${this.baseUrl}/feedback/customer/${customerId}`
+      const response = await this.httpClient.get<{items: Feedback[], total: number}>(
+        `${this.baseUrl}/feedback`,
+        {
+          params: { customerId }
+        }
       );
-      return response.data;
+      // The API returns {items: Feedback[], total: number}, so we need to extract the items
+      return response.data.items || [];
     } catch (error) {
       console.error("Error fetching feedbacks by customer ID:", error);
       throw new Error(
@@ -83,10 +91,14 @@ export class FeedbackRepositoryImpl implements FeedbackRepository {
    */
   async getFeedbacksByWaiterId(waiterId: string): Promise<Feedback[]> {
     try {
-      const response = await this.httpClient.get<Feedback[]>(
-        `${this.baseUrl}/feedback/waiter/${waiterId}`
+      const response = await this.httpClient.get<{items: Feedback[], total: number}>(
+        `${this.baseUrl}/feedback`,
+        {
+          params: { waiterId }
+        }
       );
-      return response.data;
+      // The API returns {items: Feedback[], total: number}, so we need to extract the items
+      return response.data.items || [];
     } catch (error) {
       console.error("Error fetching feedbacks by waiter ID:", error);
       throw new Error(
@@ -103,16 +115,59 @@ export class FeedbackRepositoryImpl implements FeedbackRepository {
    * @returns Promise<Feedback>
    */
   async sendFeedback(feedbackData: Feedback): Promise<Feedback> {
+    console.log("💬 [FeedbackRepository] sendFeedback - Starting", { 
+      branchId: feedbackData.branchId,
+      waiterId: feedbackData.waiterId,
+      customerId: feedbackData.customerId,
+      status: feedbackData.payload?.status,
+      rate: feedbackData.payload?.rate,
+      customerType: feedbackData.payload?.customerType
+    });
+    
     try {
       const { id, createdAt, updatedAt, ...data } = feedbackData;
 
-      const response = await this.httpClient.post<Feedback>(
-        `${this.baseUrl}/feedback`,
-        data
-      );
+      // Backend expects data wrapped in a payload object
+      const requestData = {
+        payload: data.payload,
+        branchId: data.branchId,
+        waiterId: data.waiterId,
+        customerId: data.customerId
+      };
+
+      const endpoint = `${this.baseUrl}/feedback`;
+      console.log("📡 [FeedbackRepository] sendFeedback - Making request", { 
+        endpoint, 
+        requestData: {
+          ...requestData,
+          payload: {
+            ...requestData.payload,
+            // Don't log sensitive feedback content
+            feedback: requestData.payload?.feedback ? 
+              `${requestData.payload.feedback.substring(0, 50)}...` : undefined
+          }
+        }
+      });
+
+      const response = await this.httpClient.post<Feedback>(endpoint, requestData);
+      
+      console.log("✅ [FeedbackRepository] sendFeedback - Success", { 
+        feedbackId: response.data?.id,
+        branchId: response.data?.branchId,
+        customerId: response.data?.customerId,
+        status: response.data?.payload?.status,
+        rate: response.data?.payload?.rate,
+        createdAt: response.data?.createdAt
+      });
+      
       return response.data;
     } catch (error) {
-      console.error("Error sending feedback:", error);
+      console.error("❌ [FeedbackRepository] sendFeedback - Error", { 
+        branchId: feedbackData.branchId,
+        customerId: feedbackData.customerId,
+        status: feedbackData.payload?.status,
+        error 
+      });
       throw new Error(
         `Failed to send feedback: ${
           error instanceof Error ? error.message : "Unknown error"
@@ -131,14 +186,50 @@ export class FeedbackRepositoryImpl implements FeedbackRepository {
     id: string,
     feedbackData: Partial<FeedbackPayload>
   ): Promise<Feedback> {
+    console.log("✏️ [FeedbackRepository] updateFeedback - Starting", { 
+      id,
+      updateFields: Object.keys(feedbackData),
+      status: feedbackData.status,
+      rate: feedbackData.rate
+    });
+    
     try {
-      const response = await this.httpClient.put<Feedback>(
-        `${this.baseUrl}/feedback/${id}`,
-        feedbackData
-      );
+      // Backend expects data wrapped in a payload object
+      const requestData = {
+        payload: feedbackData
+      };
+      
+      const endpoint = `${this.baseUrl}/feedback/${id}`;
+      console.log("📡 [FeedbackRepository] updateFeedback - Making request", { 
+        endpoint, 
+        requestData: {
+          ...requestData,
+          payload: {
+            ...requestData.payload,
+            // Don't log sensitive feedback content
+            feedback: requestData.payload?.feedback ? 
+              `${requestData.payload.feedback.substring(0, 50)}...` : undefined
+          }
+        }
+      });
+      
+      const response = await this.httpClient.put<Feedback>(endpoint, requestData);
+      
+      console.log("✅ [FeedbackRepository] updateFeedback - Success", { 
+        id,
+        feedbackId: response.data?.id,
+        status: response.data?.payload?.status,
+        rate: response.data?.payload?.rate,
+        updatedAt: response.data?.updatedAt
+      });
+      
       return response.data;
     } catch (error) {
-      console.error("Error updating feedback:", error);
+      console.error("❌ [FeedbackRepository] updateFeedback - Error", { 
+        id,
+        updateFields: Object.keys(feedbackData),
+        error 
+      });
       throw new Error(
         `Failed to update feedback ${id}: ${
           error instanceof Error ? error.message : "Unknown error"

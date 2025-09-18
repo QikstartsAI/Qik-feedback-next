@@ -1,14 +1,18 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { toast } from "sonner";
 import { useCustomer } from "@/hooks/useCustomer";
 import { useBrand } from "@/hooks/useBrand";
 import { useBranch } from "@/hooks/useBranch";
 import { useWaiter } from "@/hooks/useWaiter";
 import { useFeedback } from "@/hooks/useFeedback";
+import { useIncompleteFeedback } from "@/hooks/useIncompleteFeedback";
+import { useCompleteFeedback } from "@/hooks/useCompleteFeedback";
+import { useBranchSearch } from "@/hooks/useBranchSearch";
 import { useGeolocationNew } from "@/hooks/useGeolocationNew";
 import { useSearchParams } from "next/navigation";
-import { Branch, Feedback, Business } from "@/lib/domain/entities";
+import { Branch, Feedback, Business, CustomerType } from "@/lib/domain/entities";
 import {
   DEFAULT_COUNTRY_CODE,
   GOOGLE_REVIEW_URL,
@@ -27,154 +31,23 @@ import {
 } from "@/lib/utils/formUtils";
 import { getAverageTicket } from "@/app/constants/form";
 
-// Mock branches data for branch selection
-const mockBranches: Branch[] = [
-  {
-    id: "hooters-1",
-    brandId: "hooters",
-    createdAt: new Date("2024-01-01"),
-    updatedAt: new Date("2024-01-01"),
-    payload: {
-      logoImgURL: "/googleqik.png",
-      coverImgURL: "/restaurant-bg.jpg",
-      name: "Hooters - Centro Comercial",
-      category: "Restaurante",
-      location: {
-        address: "Centro Comercial Galerías, Bogotá, Colombia",
-        countryCode: "CO",
-        geopoint: { lat: 4.6097, lon: -74.0817 },
-        googleMapURL: "https://maps.google.com/?q=4.6097,-74.0817",
-      },
-    },
-  },
-  {
-    id: "hooters-2",
-    brandId: "hooters",
-    createdAt: new Date("2024-01-01"),
-    updatedAt: new Date("2024-01-01"),
-    payload: {
-      logoImgURL: "/googleqik.png",
-      coverImgURL: "/restaurant-bg.jpg",
-      name: "Hooters - Zona Rosa",
-      category: "Restaurante",
-      location: {
-        address: "Zona Rosa, Bogotá, Colombia",
-        countryCode: "CO",
-        geopoint: { lat: 4.6561, lon: -74.0597 },
-        googleMapURL: "https://maps.google.com/?q=4.6561,-74.0597",
-      },
-    },
-  },
-  {
-    id: "branch-1",
-    brandId: "brand-1",
-    createdAt: new Date("2024-01-01"),
-    updatedAt: new Date("2024-01-01"),
-    payload: {
-      logoImgURL: "/placeholder-logo.png",
-      coverImgURL: "/restaurant-bg.jpg",
-      name: "Restaurante El Buen Sabor",
-      category: "Restaurante",
-      location: {
-        address: "Calle 15 #23-45, Neiva, Huila",
-        countryCode: "MX",
-        geopoint: { lat: 2.9273, lon: -75.2819 },
-        googleMapURL: "https://maps.google.com/?q=2.9273,-75.2819",
-      },
-    },
-  },
-  {
-    id: "branch-2",
-    brandId: "brand-1",
-    createdAt: new Date("2024-01-01"),
-    updatedAt: new Date("2024-01-01"),
-    payload: {
-      logoImgURL: "/placeholder-logo.png",
-      coverImgURL: "/restaurant-bg.jpg",
-      name: "Restaurante El Buen Sabor - Centro",
-      category: "Restaurante",
-      location: {
-        address: "Carrera 5 #18-32, Centro, Neiva, Huila",
-        countryCode: "CO",
-        geopoint: { lat: 2.928, lon: -75.2825 },
-        googleMapURL: "https://maps.google.com/?q=2.9280,-75.2825",
-      },
-    },
-  },
-  {
-    id: "branch-3",
-    brandId: "brand-2",
-    createdAt: new Date("2024-01-01"),
-    updatedAt: new Date("2024-01-01"),
-    payload: {
-      logoImgURL: "/googleqik.png",
-      coverImgURL: "/business_icon_cover.jpg",
-      name: "Café Delicioso",
-      category: "Café",
-      location: {
-        address: "Avenida 26 #15-67, Neiva, Huila",
-        countryCode: "CO",
-        geopoint: { lat: 2.9265, lon: -75.28 },
-        googleMapURL: "https://maps.google.com/?q=2.9265,-75.2800",
-      },
-    },
-  },
-];
-
-// Mock brand data for Hooters
-const mockHootersBrand = {
-  id: "hooters",
-  createdAt: new Date("2024-01-01"),
-  updatedAt: new Date("2024-01-01"),
-  payload: {
-    logoImgURL: "/googleqik.png",
-    coverImgURL: "/restaurant-bg.jpg",
-    name: "Hooters",
-    category: "Restaurante",
-    location: {
-      address: "Bogotá, Colombia",
-      countryCode: "CO",
-      geopoint: { lat: 4.6097, lon: -74.0817 },
-      googleMapURL: "https://maps.google.com/?q=4.6097,-74.0817",
-    },
-  },
-  sucursales: mockBranches.filter(branch => branch.brandId === "hooters"),
-};
 
 export function useFeedbackForm() {
   // Hooks
-  const { currentCustomer, getCustomerByPhone, customerType } = useCustomer();
+  const { currentCustomer, getCustomerByPhone, customerType, createCustomer } = useCustomer();
   const { currentBrand, getBrandById, loading: brandLoading } = useBrand();
   const { currentBranch, getBranchById, setCurrentBranch, loading: branchLoading } = useBranch();
   const { getWaiterById, loading: waiterLoading } = useWaiter();
   const { sendFeedback, loading: feedbackLoading } = useFeedback();
+  const { createIncompleteFeedback } = useIncompleteFeedback();
+  const { completeFeedback } = useCompleteFeedback();
+  const { getBranchesByBrandId, loading: branchSearchLoading } = useBranchSearch();
   const searchParams = useSearchParams();
 
   // URL parameters - declare before using in hooks
   const brandId = searchParams.get("id");
   const branchId = searchParams.get("branch");
   const waiterId = searchParams.get("waiter");
-
-  // Geolocation hook - memoize business object to avoid initialization issues
-  const business: Business | null = useMemo(() => {
-    return currentBrand ? {
-      HasGeolocation: true,
-      sucursales: currentBrand.sucursales || [],
-    } : null;
-  }, [currentBrand]);
-  
-  const {
-    locationPermission,
-    originPosition,
-    closestDestination,
-    requestLocation,
-    grantingPermissions,
-    distanceLoading,
-    enableGeolocation,
-    availableBranches: geolocationBranches,
-    getLocation,
-    setRequestLocation,
-  } = useGeolocationNew(brandId || null, business);
 
   // Form state
   const [currentView, setCurrentView] = useState<
@@ -192,6 +65,9 @@ export function useFeedbackForm() {
   const [otherSource, setOtherSource] = useState("");
   const [rating, setRating] = useState<string>("");
   const [showValidationErrors, setShowValidationErrors] = useState(false);
+  const [feedbackCompleted, setFeedbackCompleted] = useState(false);
+  const [incompleteFeedbackId, setIncompleteFeedbackId] = useState<string | null>(null);
+  const [brandBranches, setBrandBranches] = useState<Branch[]>([]);
 
   const handleRatingSelect = (ratingId: string) => {
     setRating(ratingId);
@@ -212,6 +88,26 @@ export function useFeedbackForm() {
   const [showLocationDialog, setShowLocationDialog] = useState(false);
   const [showBranchSelectionDialog, setShowBranchSelectionDialog] = useState(false);
 
+  // Geolocation hook - memoize business object to avoid initialization issues
+  const business: Business | null = useMemo(() => {
+    return currentBrand ? {
+      HasGeolocation: true,
+      sucursales: brandBranches,
+    } : null;
+  }, [currentBrand, brandBranches]);
+
+  const {
+    locationPermission,
+    originPosition,
+    closestDestination,
+    requestLocation,
+    grantingPermissions,
+    distanceLoading,
+    enableGeolocation,
+    availableBranches: geolocationBranches,
+    getLocation,
+    setRequestLocation,
+  } = useGeolocationNew(brandId || null, business);
 
   // Calculate progress
   const detailedProgress = calculateDetailedProgress({
@@ -266,9 +162,25 @@ export function useFeedbackForm() {
     }
   }, [waiterId, branchId, brandId, getWaiterById, getBranchById, getBrandById]);
 
-  // Use mock data for Hooters when no real data is available
-  const effectiveBrand = currentBrand || (brandId === "hooters" ? mockHootersBrand : null);
-  const effectiveBranch = currentBranch || (brandId === "hooters" ? mockBranches[0] : null);
+  // Load branches when brand is available
+  useEffect(() => {
+    const loadBrandBranches = async () => {
+      if (currentBrand && !branchId && !waiterId) {
+        try {
+          const branches = await getBranchesByBrandId(currentBrand.id);
+          setBrandBranches(branches);
+        } catch (error) {
+          console.error("Error loading brand branches:", error);
+        }
+      }
+    };
+
+    loadBrandBranches();
+  }, [currentBrand, branchId, waiterId, getBranchesByBrandId]);
+
+  // Use real data from services
+  const effectiveBrand = currentBrand;
+  const effectiveBranch = currentBranch;
 
   // Handle geolocation logic
   useEffect(() => {
@@ -281,11 +193,11 @@ export function useFeedbackForm() {
         setShowBranchSelectionDialog(true);
       }
     } else if (effectiveBrand && !enableGeolocation) {
-      // Use mock branches for non-geolocation enabled businesses
-      setAvailableBranches(mockBranches);
+      // Use real branches for non-geolocation enabled businesses
+      setAvailableBranches(brandBranches);
       setShowBranchSelectionDialog(true);
     }
-  }, [enableGeolocation, effectiveBrand, currentBranch, waiterId, locationPermission, requestLocation, geolocationBranches]);
+  }, [enableGeolocation, effectiveBrand, currentBranch, waiterId, locationPermission, requestLocation, geolocationBranches, brandBranches]);
 
   // Pre-select country based on branch's country code
   useEffect(() => {
@@ -327,17 +239,18 @@ export function useFeedbackForm() {
   useEffect(() => {
     if (currentBrand && !branchId && !waiterId) {
       if (hasGeolocationPower(currentBrand)) {
-        const brandBranches = mockBranches.filter(
+        // Use branches already loaded from service
+        const filteredBranches = brandBranches.filter(
           (branch) => branch.brandId === currentBrand.id
         );
-        setAvailableBranches(brandBranches);
+        setAvailableBranches(filteredBranches);
 
-        if (brandBranches.length > 0) {
+        if (filteredBranches.length > 0) {
           setShowBranchSelection(true);
         }
       }
     }
-  }, [currentBrand, branchId, waiterId]);
+  }, [currentBrand, branchId, waiterId, brandBranches]);
 
   // Update customer data when customer is loaded
   useEffect(() => {
@@ -429,31 +342,6 @@ export function useFeedbackForm() {
   };
 
   const handleFeedbackSubmit = async () => {
-    // Create temporary customer and branch data if not available
-    const customerData = currentCustomer || {
-      id: "temp-customer-" + Date.now(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      payload: {
-        name: firstName,
-        lastName: lastName,
-        phoneNumber: phone,
-        email: "",
-        birthdayDate: "",
-        origin: "",
-        customerType: "new" as const,
-        acceptPromotions,
-        lastFeedbackFilled: new Date(),
-      },
-    };
-
-    const branchData = currentBranch || mockBranches[0];
-
-    if (!customerData || !branchData) {
-      console.error("Unable to create customer or branch data");
-      return;
-    }
-
     // Map text rating to numeric value
     const ratingMap: { [key: string]: number } = {
       "terrible": 1,
@@ -469,33 +357,6 @@ export function useFeedbackForm() {
       return;
     }
 
-    let originString = referralSource;
-    if (referralSource === "social_media" && socialMediaSource) {
-      originString = `${referralSource}:${socialMediaSource}`;
-    } else if (referralSource === "other" && otherSource) {
-      originString = `${referralSource}:${otherSource}`;
-    }
-
-    const feedbackData: Feedback = {
-      id: "",
-      updatedAt: new Date(),
-      createdAt: new Date(),
-      branchId: branchData.id,
-      waiterId: currentWaiter?.id,
-      customerId: customerData.id,
-      payload: {
-        acceptTerms,
-        acceptPromotions,
-        customerType: (customerData.payload as any).customerType || "new",
-        averageTicket: averageTicket || "0",
-        origin: originString,
-        feedback: comment,
-        rate: ratingValue,
-        experienceText: comment,
-        improve: selectedImprovements,
-      },
-    };
-
     try {
       console.log("🔍 Debug rating value:", {
         rating,
@@ -504,37 +365,147 @@ export function useFeedbackForm() {
         parsedRating: parseInt(rating),
         finalRating: ratingValue
       });
-      
-      console.log("📤 Sending feedback with payload:", {
-        feedbackData,
-        payload: feedbackData.payload,
-        customerData: {
-          id: customerData.id,
-          name: customerData.payload.name,
-          lastName: customerData.payload.lastName,
-          phoneNumber: customerData.payload.phoneNumber,
-          customerType: (customerData.payload as any).customerType || "new",
-        },
-        branchData: {
-          id: branchData.id,
-          name: branchData.payload?.name,
-        },
-        waiterData: currentWaiter ? {
-          id: currentWaiter.id,
-          name: currentWaiter.payload?.name,
-        } : null,
-      });
-      
-      await sendFeedback(feedbackData);
-      setCurrentView(VIEWS.THANK_YOU);
+
+      if (incompleteFeedbackId) {
+        // Complete existing incomplete feedback
+        console.log("📝 Completing existing feedback:", incompleteFeedbackId);
+        
+        const completeData = {
+          acceptTerms,
+          acceptPromotions,
+          rate: ratingValue,
+          feedback: comment,
+          experienceText: comment,
+          improve: selectedImprovements,
+        };
+
+        const result = await completeFeedback(incompleteFeedbackId, completeData);
+        if (result) {
+          console.log("✅ Feedback completed successfully:", result.id);
+          setFeedbackCompleted(true);
+          setCurrentView(VIEWS.THANK_YOU);
+        }
+      } else {
+        // Fallback: create new complete feedback (legacy behavior)
+        console.log("⚠️ No incomplete feedback found, creating new complete feedback");
+        
+        let customerData = currentCustomer;
+        
+        // If no customer exists, create one
+        if (!customerData) {
+          console.log("📝 Creating new customer for feedback");
+          try {
+            const newCustomerPayload = {
+              name: firstName,
+              lastName: lastName,
+              phoneNumber: phone,
+              email: "",
+              birthDate: new Date("1990-01-01"), // Default birth date
+              branches: currentBranch ? [{
+                branchId: currentBranch.id,
+                acceptPromotions
+              }] : []
+            };
+            
+            customerData = await createCustomer(newCustomerPayload);
+            
+            if (!customerData) {
+              console.error("Failed to create customer");
+              return;
+            }
+            
+            console.log("✅ Customer created successfully:", customerData.id);
+          } catch (error) {
+            console.error("Error creating customer:", error);
+            return;
+          }
+        }
+
+        const branchData = currentBranch || (brandBranches.length > 0 ? brandBranches[0] : null);
+
+        if (!branchData) {
+          console.error("No branch data available");
+          return;
+        }
+
+        let originString = referralSource;
+        if (referralSource === "social_media" && socialMediaSource) {
+          originString = `${referralSource}:${socialMediaSource}`;
+        } else if (referralSource === "other" && otherSource) {
+          originString = `${referralSource}:${otherSource}`;
+        }
+
+        const feedbackData: Feedback = {
+          id: "",
+          updatedAt: new Date(),
+          createdAt: new Date(),
+          branchId: branchData.id,
+          waiterId: currentWaiter?.id,
+          customerId: customerData.id,
+          payload: {
+            acceptTerms,
+            acceptPromotions,
+            customerType: (customerData.payload as any).customerType || "new",
+            averageTicket: averageTicket || "0",
+            origin: originString,
+            feedback: comment,
+            rate: ratingValue,
+            experienceText: comment,
+            improve: selectedImprovements,
+            status: "complete"
+          },
+        };
+
+        await sendFeedback(feedbackData);
+        setFeedbackCompleted(true);
+        setCurrentView(VIEWS.THANK_YOU);
+      }
     } catch (error) {
-      console.error("Failed to send feedback:", error);
+      console.error("Failed to complete feedback:", error);
     }
   };
 
-  const openGoogleMaps = () => {
-    window.open(GOOGLE_REVIEW_URL, "_blank");
-    setStep(FORM_STEPS.THANK_YOU);
+  const openGoogleMaps = async () => {
+    console.log("🌐 [GoogleReview] openGoogleMaps - Starting");
+    
+    try {
+      if (incompleteFeedbackId) {
+        // Complete existing incomplete feedback before going to Google
+        console.log("📝 [GoogleReview] Completing feedback before Google Maps:", incompleteFeedbackId);
+        
+        const completeData = {
+          acceptTerms,
+          acceptPromotions,
+          rate: 5, // Assume positive rating for Google Maps flow
+          feedback: comment || "Positive experience - leaving Google review",
+          experienceText: comment || "Positive experience - leaving Google review",
+          improve: [],
+        };
+
+        const result = await completeFeedback(incompleteFeedbackId, completeData);
+        if (result) {
+          console.log("✅ [GoogleReview] Feedback completed before Google Maps:", result.id);
+        } else {
+          console.error("❌ [GoogleReview] Failed to complete feedback - no result returned");
+          // Don't navigate if feedback completion failed
+          return;
+        }
+      }
+      
+      console.log("🚀 [GoogleReview] Navigating to Google Maps");
+      window.location.href = GOOGLE_REVIEW_URL;
+      setFeedbackCompleted(true);
+      setCurrentView(VIEWS.THANK_YOU);
+      setStep(FORM_STEPS.THANK_YOU);
+      
+    } catch (error) {
+      console.error("❌ [GoogleReview] Failed to complete feedback before Google Maps:", error);
+      // Don't navigate if there was an error
+      console.log("🚫 [GoogleReview] Navigation cancelled due to error");
+      
+      // Show user-friendly error message
+      toast.error("No se pudo completar el feedback. Por favor, inténtalo de nuevo.");
+    }
   };
 
   const backToWelcome = () => {
@@ -542,14 +513,99 @@ export function useFeedbackForm() {
     setStep(FORM_STEPS.WELCOME);
   };
 
-  const goToSurvey = () => {
+  const goToSurvey = async () => {
     // Activate validation errors when user tries to continue
     setShowValidationErrors(true);
     
     // Check if form is valid before proceeding
     if (canContinue) {
+      // Create incomplete feedback if not already created
+      if (!incompleteFeedbackId) {
+        await createInitialIncompleteFeedback();
+      }
+      
       setCurrentView(VIEWS.SURVEY);
       setStep(FORM_STEPS.SURVEY);
+    }
+  };
+
+  const createInitialIncompleteFeedback = async () => {
+    try {
+      // Create temporary customer and branch data if not available
+      let customerData = currentCustomer;
+      
+      // If no customer exists, create one
+      if (!customerData) {
+        console.log("📝 Creating new customer for incomplete feedback");
+        try {
+          const newCustomerPayload = {
+            name: firstName,
+            lastName: lastName,
+            phoneNumber: phone,
+            email: "",
+            birthDate: new Date("1990-01-01"), // Default birth date
+            branches: currentBranch ? [{
+              branchId: currentBranch.id,
+              acceptPromotions
+            }] : []
+          };
+          
+          customerData = await createCustomer(newCustomerPayload);
+          
+          if (!customerData) {
+            console.error("Failed to create customer");
+            return;
+          }
+          
+          console.log("✅ Customer created successfully:", customerData.id);
+        } catch (error) {
+          console.error("Error creating customer:", error);
+          return;
+        }
+      }
+
+      const branchData = currentBranch || (brandBranches.length > 0 ? brandBranches[0] : null);
+
+      if (!customerData || !branchData) {
+        console.error("Unable to create customer or branch data");
+        return;
+      }
+
+      let originString = referralSource;
+      if (referralSource === "social_media" && socialMediaSource) {
+        originString = `${referralSource}:${socialMediaSource}`;
+      } else if (referralSource === "other" && otherSource) {
+        originString = `${referralSource}:${otherSource}`;
+      }
+
+      const incompleteFeedbackData: Partial<Feedback> = {
+        id: "",
+        updatedAt: new Date(),
+        createdAt: new Date(),
+        branchId: branchData.id,
+        waiterId: currentWaiter?.id,
+        customerId: customerData.id,
+        payload: {
+          acceptTerms: false,
+          acceptPromotions,
+          customerType: (customerData.payload as any).customerType || "new",
+          averageTicket: averageTicket || "0",
+          origin: originString,
+          feedback: "",
+          rate: 0,
+          experienceText: "",
+          improve: [],
+          status: "incomplete"
+        }
+      };
+
+      const result = await createIncompleteFeedback(incompleteFeedbackData);
+      if (result) {
+        setIncompleteFeedbackId(result.id);
+        console.log("✅ Incomplete feedback created:", result.id);
+      }
+    } catch (error) {
+      console.error("Failed to create incomplete feedback:", error);
     }
   };
 
@@ -562,8 +618,9 @@ export function useFeedbackForm() {
     setShowLocationDialog(false);
     setRequestLocation(false);
     // Show all branches instead of just the closest one
-    if (currentBrand?.sucursales) {
-      setAvailableBranches(currentBrand.sucursales);
+    if (brandBranches.length > 0) {
+      setAvailableBranches(brandBranches);
+      setShowBranchSelectionDialog(true);
     }
   };
 
@@ -620,6 +677,9 @@ export function useFeedbackForm() {
     detailedProgress,
     progress,
     canContinue,
+    feedbackCompleted,
+    brandBranches,
+    branchSearchLoading,
 
     // Geolocation state
     showLocationDialog,

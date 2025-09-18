@@ -13,7 +13,9 @@ export class WaiterRepositoryImpl implements WaiterRepository {
   constructor(private httpClient: IHttpClient, private baseUrl?: string) {}
 
   private buildUrl(path: string): string {
-    return this.baseUrl ? `${this.baseUrl}${path}` : path;
+    // Don't use baseUrl since HttpClient already has baseURL configured
+    // This prevents double base URL issues and undefined concatenation
+    return path;
   }
 
   async getWaiterById(id: string): Promise<Waiter> {
@@ -25,7 +27,10 @@ export class WaiterRepositoryImpl implements WaiterRepository {
 
   async getWaitersByBranchId(branchId: string): Promise<Waiter[]> {
     const response = await this.httpClient.get<Waiter[]>(
-      this.buildUrl(`/waiters/branch/${branchId}`)
+      this.buildUrl(`/waiters/byBranchId`),
+      {
+        params: { branchId }
+      }
     );
     return response.data;
   }

@@ -142,6 +142,7 @@ export interface FeedbackPayload {
   rate: number;
   experienceText?: string;
   improve?: string[];
+  status: "incomplete" | "complete";
 }
 
 export interface Feedback extends ModelResponseBase<FeedbackPayload> {

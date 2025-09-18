@@ -16,6 +16,8 @@ import {
   GET_BRANCH_BY_ID_USE_CASE,
   GET_WAITER_BY_ID_USE_CASE,
   SEND_FEEDBACK_USE_CASE,
+  CREATE_INCOMPLETE_FEEDBACK_USE_CASE,
+  COMPLETE_FEEDBACK_USE_CASE,
 } from "./ServiceIdentifiers";
 
 import { HttpClient, IHttpClient } from "../httpClient";
@@ -44,6 +46,8 @@ import {
   GetBranchByIdUseCase,
   GetWaiterByIdUseCase,
   SendFeedbackUseCase,
+  CreateIncompleteFeedbackUseCase,
+  CompleteFeedbackUseCase,
 } from "@/lib/domain/usecases";
 
 export class ServiceRegistry {
@@ -55,7 +59,7 @@ export class ServiceRegistry {
     container
       .registerInstance(
         API_BASE_URL,
-        process.env.NEXT_PUBLIC_API_BASE_URL || "/api"
+        process.env.NEXT_PUBLIC_API_BASE_URL || "http://ec2-54-172-125-136.compute-1.amazonaws.com/api/v1"
       )
       .registerSingleton(HTTP_CLIENT, () => HttpClient.createWithEnv());
 
@@ -145,6 +149,20 @@ export class ServiceRegistry {
         FEEDBACK_REPOSITORY
       );
       return new SendFeedbackUseCase(feedbackRepository);
+    });
+
+    container.registerSingleton(CREATE_INCOMPLETE_FEEDBACK_USE_CASE, async () => {
+      const feedbackRepository = await container.resolve<FeedbackRepository>(
+        FEEDBACK_REPOSITORY
+      );
+      return new CreateIncompleteFeedbackUseCase(feedbackRepository);
+    });
+
+    container.registerSingleton(COMPLETE_FEEDBACK_USE_CASE, async () => {
+      const feedbackRepository = await container.resolve<FeedbackRepository>(
+        FEEDBACK_REPOSITORY
+      );
+      return new CompleteFeedbackUseCase(feedbackRepository);
     });
 
     return container;

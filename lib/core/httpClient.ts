@@ -1,4 +1,5 @@
 import { toast } from "sonner";
+import { logApiConfigStatus } from '@/lib/utils/apiConfigValidator';
 
 // Types for HTTP client
 export interface HttpClientConfig {
@@ -91,7 +92,6 @@ export class HttpClient implements IHttpClient {
       timeout: 10000,
       headers: {
         "Content-Type": "application/json",
-        // "X-Api-Key": `${process.env.NEXT_PUBLIC_API_KEY}`,
       },
       withCredentials: false,
       ...config,
@@ -109,14 +109,31 @@ export class HttpClient implements IHttpClient {
    * Factory method for creating HttpClient with environment-based configuration
    */
   static createWithEnv(): HttpClient {
-    return new HttpClient({
-      baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "",
+    // Log configuration status in development
+    if (process.env.NODE_ENV === 'development') {
+      logApiConfigStatus();
+    }
+    
+    const httpClient = new HttpClient({
+      baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "http://ec2-54-172-125-136.compute-1.amazonaws.com/api/v1",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": `${process.env.NEXT_PUBLIC_API_KEY}`,
-        // Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ODZjMmY1MDUzOWM4ZjVhNDg0ODdiYmMiLCJyb2xlcyI6WyJ1c2VyIl0sImJyYW5kSWQiOiJhYzM0YzQwMi03M2ExLTRhMmItYjkyMC1iOWExNDc0NzFlY2IiLCJpYXQiOjE3NTIxNTcxNzcsImV4cCI6MTc1MjI0MzU3N30.QgwliL6ju1bC3HZZquLGtOD9snKcJ9umb6MaEzicBoI`,
       },
     });
+
+    // Add request interceptor to dynamically add Bearer token
+    httpClient.addRequestInterceptor(async (config) => {
+      // Use NEXT_PUBLIC_API_KEY as Bearer token (as per backend implementation)
+      if (process.env.NEXT_PUBLIC_API_KEY) {
+        config.headers = {
+          ...config.headers,
+          "Authorization": `Bearer ${process.env.NEXT_PUBLIC_API_KEY}`,
+        };
+      }
+      return config;
+    });
+
+    return httpClient;
   }
 
   // Interceptor methods
@@ -241,6 +258,16 @@ export class HttpClient implements IHttpClient {
 
   // Main request method
   async request<T = any>(config: RequestConfig): Promise<HttpResponse<T>> {
+    const requestId = Math.random().toString(36).substring(7);
+    const startTime = Date.now();
+    
+    console.log(`🌐 [HttpClient] request - Starting [${requestId}]`, { 
+      method: config.method,
+      url: config.url,
+      hasData: !!config.data,
+      hasParams: !!config.params
+    });
+
     try {
       // Apply request interceptors
       const processedConfig = await this.applyRequestInterceptors(config);
@@ -268,6 +295,18 @@ export class HttpClient implements IHttpClient {
         }
       }
 
+      console.log(`📡 [HttpClient] request - Making request [${requestId}]`, { 
+        url,
+        method: processedConfig.method,
+        headers: {
+          ...fetchOptions.headers,
+          // Don't log full authorization token
+          Authorization: fetchOptions.headers?.['Authorization'] ? 
+            `${fetchOptions.headers['Authorization'].substring(0, 20)}...` : undefined
+        },
+        hasBody: !!fetchOptions.body
+      });
+
       // Create AbortController for timeout
       const controller = new AbortController();
       const timeoutId = setTimeout(
@@ -281,9 +320,18 @@ export class HttpClient implements IHttpClient {
       const response = await fetch(url, fetchOptions);
       clearTimeout(timeoutId);
 
+      const duration = Date.now() - startTime;
+
       // Check if response is ok
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
+        console.error(`❌ [HttpClient] request - HTTP Error [${requestId}]`, { 
+          status: response.status,
+          statusText: response.statusText,
+          duration: `${duration}ms`,
+          errorData
+        });
+        
         throw {
           status: response.status,
           statusText: response.statusText,
@@ -312,6 +360,14 @@ export class HttpClient implements IHttpClient {
         config: processedConfig,
       };
 
+      console.log(`✅ [HttpClient] request - Success [${requestId}]`, { 
+        status: response.status,
+        statusText: response.statusText,
+        duration: `${duration}ms`,
+        contentType,
+        dataSize: JSON.stringify(data).length
+      });
+
       // Apply response interceptors
       const processedResponse = await this.applyResponseInterceptors(
         httpResponse
@@ -319,6 +375,14 @@ export class HttpClient implements IHttpClient {
 
       return processedResponse;
     } catch (error) {
+      const duration = Date.now() - startTime;
+      console.error(`❌ [HttpClient] request - Error [${requestId}]`, { 
+        method: config.method,
+        url: config.url,
+        duration: `${duration}ms`,
+        error: error instanceof Error ? error.message : error
+      });
+      
       return this.handleError(error, config);
     }
   }

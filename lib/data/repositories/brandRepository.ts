@@ -13,7 +13,9 @@ export class BrandRepositoryImpl implements BrandRepository {
   constructor(private httpClient: IHttpClient, private baseUrl?: string) {}
 
   private buildUrl(path: string): string {
-    return this.baseUrl ? `${this.baseUrl}${path}` : path;
+    // Don't use baseUrl since HttpClient already has baseURL configured
+    // This prevents double base URL issues and undefined concatenation
+    return path;
   }
 
   async getBrandById(id: string): Promise<Brand> {

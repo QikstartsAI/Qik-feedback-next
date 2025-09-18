@@ -23,6 +23,14 @@ export {
   type ISendFeedbackUseCase,
 } from "./SendFeedbackUseCase";
 export {
+  CreateIncompleteFeedbackUseCase,
+  type ICreateIncompleteFeedbackUseCase,
+} from "./CreateIncompleteFeedbackUseCase";
+export {
+  CompleteFeedbackUseCase,
+  type ICompleteFeedbackUseCase,
+} from "./CompleteFeedbackUseCase";
+export {
   GetUserByIdUseCase,
   type IGetUserByIdUseCase,
 } from "./GetUserByIdUseCase";
