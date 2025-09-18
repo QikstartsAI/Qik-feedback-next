@@ -9,6 +9,52 @@ export class CreateCustomerUseCase implements ICreateCustomerUseCase {
   constructor(private customerRepository: CustomerRepository) {}
 
   /**
+   * Generate phone number variations to try different formats
+   * @param phone - Original phone number
+   * @returns Array of phone variations
+   */
+  private generatePhoneVariations(phone: string): string[] {
+    const variations: string[] = [];
+    
+    // Remove all non-digit characters
+    const digitsOnly = phone.replace(/\D/g, '');
+    
+    // Add original phone
+    variations.push(phone);
+    
+    // Add digits only version
+    if (digitsOnly !== phone) {
+      variations.push(digitsOnly);
+    }
+    
+    // Add with + prefix
+    if (!phone.startsWith('+')) {
+      variations.push(`+${digitsOnly}`);
+    }
+    
+    // Add with country code variations (Argentina)
+    if (digitsOnly.startsWith('54')) {
+      variations.push(digitsOnly);
+      variations.push(`+${digitsOnly}`);
+    } else if (digitsOnly.startsWith('9')) {
+      variations.push(`54${digitsOnly}`);
+      variations.push(`+54${digitsOnly}`);
+    } else if (digitsOnly.length >= 10) {
+      variations.push(`549${digitsOnly}`);
+      variations.push(`+549${digitsOnly}`);
+    }
+    
+    // Add formatted versions
+    if (digitsOnly.length >= 10) {
+      const formatted = `+54 (${digitsOnly.slice(-10, -7)}) ${digitsOnly.slice(-7, -4)}-${digitsOnly.slice(-4)}`;
+      variations.push(formatted);
+    }
+    
+    // Remove duplicates
+    return [...new Set(variations)];
+  }
+
+  /**
    * Execute the use case to create a new customer
    * @param customerData - Customer data to create
    * @returns Promise<Customer>
@@ -53,7 +99,7 @@ export class CreateCustomerUseCase implements ICreateCustomerUseCase {
       });
       
       // Handle 409 Conflict - Customer already exists
-      if (error?.status === 409 && error?.data?.message === "email registered") {
+      if (error?.status === 409) {
         console.log("🔄 [CreateCustomerUseCase] execute - Customer already exists, attempting to recover");
         
         // Try to recover the existing customer by phone number (more reliable)
@@ -71,6 +117,27 @@ export class CreateCustomerUseCase implements ICreateCustomerUseCase {
               
               // Return the existing customer as a recurrent customer
               return existingCustomer;
+            } else {
+              console.warn("⚠️ [CreateCustomerUseCase] execute - No customer found by phone, but 409 conflict suggests customer exists");
+              
+              // If we get 409 but can't find by phone, try different phone formats
+              const phoneVariations = this.generatePhoneVariations(customerData.phoneNumber);
+              
+              for (const phoneVariation of phoneVariations) {
+                if (phoneVariation !== customerData.phoneNumber) {
+                  console.log("🔍 [CreateCustomerUseCase] execute - Trying phone variation:", phoneVariation);
+                  const customerByVariation = await this.customerRepository.getCustomerByPhoneNumber(phoneVariation);
+                  
+                  if (customerByVariation) {
+                    console.log("✅ [CreateCustomerUseCase] execute - Found customer with phone variation", { 
+                      customerId: customerByVariation.id,
+                      originalPhone: customerData.phoneNumber,
+                      foundWithPhone: phoneVariation
+                    });
+                    return customerByVariation;
+                  }
+                }
+              }
             }
           } catch (recoveryError) {
             console.error("❌ [CreateCustomerUseCase] execute - Failed to recover customer by phone", { 
@@ -105,9 +172,9 @@ export class CreateCustomerUseCase implements ICreateCustomerUseCase {
           }
         }
         
-        // If both searches failed, throw an error
+        // If both searches failed, we need to throw an error because we cannot proceed without a real customer
         console.error("❌ [CreateCustomerUseCase] execute - Customer conflict but could not recover existing customer");
-        throw new Error("Customer conflict detected but could not recover existing customer");
+        throw new Error("Customer already exists but could not be recovered. Please try again or contact support.");
       }
       
       // Handle other errors

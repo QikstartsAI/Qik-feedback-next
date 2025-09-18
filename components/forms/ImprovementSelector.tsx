@@ -14,7 +14,7 @@ export function ImprovementSelector({
 }: ImprovementSelectorProps) {
   return (
     <div>
-      <Label className="text-sm font-semibold text-gray-800">
+      <Label className="text-sm font-bold text-gray-800 text-center block">
         ¿En qué debemos mejorar?
       </Label>
       <div className="grid grid-cols-3 gap-2 mt-2">

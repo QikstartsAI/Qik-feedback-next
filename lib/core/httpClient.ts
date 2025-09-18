@@ -162,7 +162,7 @@ export class HttpClient implements IHttpClient {
       return fullURL;
     }
 
-    const urlObj = new URL(fullURL, window.location.origin);
+    const urlObj = new URL(fullURL);
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         urlObj.searchParams.append(key, String(value));

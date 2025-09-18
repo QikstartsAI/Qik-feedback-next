@@ -14,6 +14,26 @@ export class CustomerRepositoryImpl implements CustomerRepository {
   }
 
   /**
+   * Clean phone number by removing formatting, spaces, and special characters
+   * @param phone - Phone number with formatting
+   * @returns Clean phone number with only digits and + prefix
+   */
+  private cleanPhoneNumber(phone: string): string {
+    if (!phone) return "";
+    
+    // Remove all non-digit characters except +
+    let cleaned = phone.replace(/[^\d+]/g, "");
+    
+    // Ensure it starts with + if it has country code
+    if (cleaned.length > 0 && !cleaned.startsWith("+") && cleaned.length >= 10) {
+      // If it doesn't start with + but has enough digits, add +
+      cleaned = "+" + cleaned;
+    }
+    
+    return cleaned;
+  }
+
+  /**
    * Get customer by ID
    * @param id - Customer ID
    * @returns Promise<Customer>
@@ -51,18 +71,28 @@ export class CustomerRepositoryImpl implements CustomerRepository {
   async getCustomerByPhoneNumber(phone: string): Promise<Customer | null> {
     console.log("🔍 [CustomerRepository] getCustomerByPhoneNumber - Starting", { phone });
     try {
+      // Clean phone number by removing formatting and mask
+      const cleanPhone = this.cleanPhoneNumber(phone);
+      console.log("🧹 [CustomerRepository] getCustomerByPhoneNumber - Cleaned phone", { 
+        original: phone, 
+        cleaned: cleanPhone 
+      });
+      
       const endpoint = `${this.baseUrl}/customers/by-number`;
-      const params = { phoneNumber: phone };
+      const params = { phoneNumber: cleanPhone };
       
       console.log("📡 [CustomerRepository] getCustomerByPhoneNumber - Making request", { 
         endpoint, 
-        params 
+        params,
+        baseUrl: this.baseUrl,
+        fullEndpoint: endpoint
       });
       
       const response = await this.httpClient.get<Customer>(endpoint, { params });
 
       console.log("✅ [CustomerRepository] getCustomerByPhoneNumber - Success", { 
-        phone, 
+        originalPhone: phone,
+        cleanPhone,
         found: !!response.data,
         customerId: response.data?.id,
         customerName: response.data?.payload?.name 
@@ -70,7 +100,11 @@ export class CustomerRepositoryImpl implements CustomerRepository {
 
       return response.data;
     } catch (error) {
-      console.error("❌ [CustomerRepository] getCustomerByPhoneNumber - Error (returning null)", { phone, error });
+      console.error("❌ [CustomerRepository] getCustomerByPhoneNumber - Error (returning null)", { 
+        originalPhone: phone,
+        cleanPhone,
+        error 
+      });
       // Return null instead of throwing for phone lookups
       return null;
     }
@@ -144,7 +178,7 @@ export class CustomerRepositoryImpl implements CustomerRepository {
       });
       
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ [CustomerRepository] createCustomer - Error", { 
         customerData: {
           name: customerData.name,
@@ -154,6 +188,13 @@ export class CustomerRepositoryImpl implements CustomerRepository {
         },
         error 
       });
+      
+      // Preserve the original error structure for 409 conflicts
+      if (error?.status === 409) {
+        throw error; // Re-throw the original error to preserve status and data
+      }
+      
+      // For other errors, wrap in a new Error
       throw new Error(
         `Failed to create customer: ${
           error instanceof Error ? error.message : "Unknown error"

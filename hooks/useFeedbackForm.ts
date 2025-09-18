@@ -435,6 +435,39 @@ export function useFeedbackForm() {
           originString = `${referralSource}:${otherSource}`;
         }
 
+        // Check if we have a mock customer and handle it appropriately
+        const isMockCustomer = customerData.id.startsWith('mock-');
+        
+        if (isMockCustomer) {
+          console.warn("⚠️ [useFeedbackForm] handleFeedbackSubmit - Detected mock customer, attempting to create real customer first");
+          
+          try {
+            // Try to create a real customer with the current form data
+            const realCustomerPayload = {
+              name: firstName,
+              lastName: lastName,
+              phoneNumber: phone,
+              email: "",
+              birthDate: new Date("1990-01-01"),
+              branches: currentBranch ? [{
+                branchId: currentBranch.id,
+                acceptPromotions
+              }] : []
+            };
+            
+            const realCustomer = await createCustomer(realCustomerPayload);
+            
+            if (realCustomer && !realCustomer.id.startsWith('mock-')) {
+              console.log("✅ [useFeedbackForm] handleFeedbackSubmit - Successfully created real customer", realCustomer.id);
+              customerData = realCustomer;
+            } else {
+              console.error("❌ [useFeedbackForm] handleFeedbackSubmit - Failed to create real customer, using mock customer");
+            }
+          } catch (error) {
+            console.error("❌ [useFeedbackForm] handleFeedbackSubmit - Error creating real customer:", error);
+          }
+        }
+
         const feedbackData: Feedback = {
           id: "",
           updatedAt: new Date(),
@@ -456,12 +489,20 @@ export function useFeedbackForm() {
           },
         };
 
-        await sendFeedback(feedbackData);
-        setFeedbackCompleted(true);
-        setCurrentView(VIEWS.THANK_YOU);
+        const result = await sendFeedback(feedbackData);
+        console.log("🔍 Debug result:", result);
+        if (result) {
+          console.log("✅ Feedback sent successfully:", result.id);
+          setFeedbackCompleted(true);
+          setCurrentView(VIEWS.THANK_YOU);
+        } else {
+          console.error("❌ Failed to send feedback - no result returned");
+          toast.error("No se pudo enviar el feedback. Por favor, inténtalo de nuevo.");
+        }
       }
     } catch (error) {
       console.error("Failed to complete feedback:", error);
+      toast.error("No se pudo enviar el feedback. Por favor, inténtalo de nuevo.");
     }
   };
 
@@ -483,6 +524,7 @@ export function useFeedbackForm() {
         };
 
         const result = await completeFeedback(incompleteFeedbackId, completeData);
+        console.log("🔍 Debug result:", result);
         if (result) {
           console.log("✅ [GoogleReview] Feedback completed before Google Maps:", result.id);
         } else {

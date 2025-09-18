@@ -165,7 +165,7 @@ function FeedbackFormContent() {
                     />
                     <ProgressIndicator progress={detailedProgress.progress} />
                   </div>
-                  <CardTitle className="text-xl text-gray-800 text-center">
+                  <CardTitle className="text-lg text-gray-800 text-center">
                     Valoramos tu opinión 😊, te tomará menos de 60 segundos.
                   </CardTitle>
                 </CardHeader>

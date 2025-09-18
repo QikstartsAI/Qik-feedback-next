@@ -177,7 +177,7 @@ export function SurveyView({
               !comment.trim()
             }
           >
-            {feedbackLoading ? "Enviando..." : "Enviar feedback"}
+            Enviar Feedback
           </Button>
         </div>
       )}

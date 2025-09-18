@@ -64,7 +64,7 @@ export function ReviewExamples({
 
   return (
     <div>
-      <Label className="text-sm font-medium text-gray-700">
+      <Label className="text-sm font-bold text-gray-700 text-center block">
         ¿Nos ayudas con una reseña?
       </Label>
       <div className="space-y-3 mt-2">

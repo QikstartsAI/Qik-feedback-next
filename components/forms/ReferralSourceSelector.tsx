@@ -29,7 +29,7 @@ export function ReferralSourceSelector({
         <Label className={`text-sm font-semibold ${hasError ? 'text-red-600' : 'text-gray-800'}`}>
           ¿De dónde nos conoces?
         </Label>
-        <div className="grid grid-cols-2 gap-2 mt-2">
+        <div className={`grid grid-cols-2 gap-2 mt-2 ${hasError ? 'ring-2 ring-red-200 rounded-lg p-2 bg-red-50' : ''}`}>
           {referralSources.map((source) => (
             <button
               key={source.id}
@@ -37,6 +37,8 @@ export function ReferralSourceSelector({
               className={`p-3 text-center rounded-lg border-2 transition-all text-xs font-medium ${
                 selectedSource === source.id
                   ? "border-purple-500 bg-purple-50 text-purple-700"
+                  : hasError
+                  ? "border-red-300 bg-white text-gray-700 hover:border-red-400 hover:bg-red-50"
                   : "border-gray-300 bg-white text-gray-700 hover:border-gray-400 hover:bg-gray-50"
               }`}
             >
@@ -44,6 +46,11 @@ export function ReferralSourceSelector({
             </button>
           ))}
         </div>
+        {hasError && (
+          <p className="text-red-500 text-xs mt-2">
+            Selecciona una opción para continuar
+          </p>
+        )}
       </div>
 
       {/* Conditional Social Media Selection */}
