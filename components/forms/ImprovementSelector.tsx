@@ -1,24 +1,28 @@
 "use client";
 
 import { Label } from "@/components/ui/label";
-import { improvementOptions } from "@/lib/utils/phoneUtils";
+import { getFilteredImprovementOptions } from "@/lib/utils/phoneUtils";
 
 interface ImprovementSelectorProps {
   selectedImprovements: string[];
   onImprovementSelect: (improvementId: string) => void;
+  businessCategory?: string;
 }
 
 export function ImprovementSelector({
   selectedImprovements,
   onImprovementSelect,
+  businessCategory = "",
 }: ImprovementSelectorProps) {
+  const filteredOptions = getFilteredImprovementOptions(businessCategory);
+  
   return (
     <div>
       <Label className="text-sm font-bold text-gray-800 text-center block">
         ¿En qué debemos mejorar?
       </Label>
-      <div className="grid grid-cols-3 gap-2 mt-2">
-        {improvementOptions.map((option) => (
+      <div className={`grid gap-2 mt-2 ${filteredOptions.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+        {filteredOptions.map((option) => (
           <button
             key={option.id}
             onClick={() => onImprovementSelect(option.id)}

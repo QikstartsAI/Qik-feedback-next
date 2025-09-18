@@ -30,6 +30,9 @@ interface SurveyViewProps {
 
   // Loading state
   feedbackLoading: boolean;
+  
+  // Business info
+  businessCategory?: string;
 }
 
 export function SurveyView({
@@ -46,6 +49,7 @@ export function SurveyView({
   onSubmitFeedback,
   onOpenGoogleMaps,
   feedbackLoading,
+  businessCategory = "",
 }: SurveyViewProps) {
   const positiveRating = isPositiveRating(rating);
 
@@ -107,7 +111,7 @@ export function SurveyView({
             <div className="flex items-center justify-center w-10 h-10 bg-blue-800 rounded-md flex-shrink-0">
               <span className="text-white font-bold text-xl">G</span>
             </div>
-            <span className="text-sm font-medium">Escribir reseña en Google</span>
+            <span className="text-sm font-medium">Escribir mi reseña en Google</span>
           </button>
         </div>
       )}
@@ -118,6 +122,7 @@ export function SurveyView({
           <ImprovementSelector
             selectedImprovements={selectedImprovements}
             onImprovementSelect={onImprovementSelect}
+            businessCategory={businessCategory}
           />
 
           <Textarea

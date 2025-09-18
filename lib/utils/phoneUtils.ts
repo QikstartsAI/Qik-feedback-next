@@ -99,7 +99,7 @@ export const referralSources = [
 ];
 
 export const socialMediaOptions = [
-  { id: "google", label: "Google" },
+  { id: "facebook", label: "Facebook" },
   { id: "instagram", label: "Instagram" },
   { id: "tiktok", label: "TikTok" },
   { id: "youtube", label: "YouTube" },
@@ -110,6 +110,45 @@ export const improvementOptions = [
   { id: "service", emoji: "👥", label: "Servicio" },
   { id: "ambiance", emoji: "🏪", label: "Ambiente" },
 ];
+
+// Function to determine if business is restaurant type
+export const isRestaurantCategory = (category: string): boolean => {
+  const restaurantCategories = [
+    'Restaurante',
+    'Café', 
+    'Pizzería',
+    'Fast Food',
+    'Restaurante Japonés',
+    'Restaurante Italiano',
+    'Restaurante Mexicano',
+    'Restaurante Chino',
+    'Restaurante Árabe',
+    'Restaurante Peruano',
+    'Restaurante Colombiano',
+    'Comida Rápida',
+    'Buffet',
+    'Asador',
+    'Parrilla',
+    'Marisquería',
+    'Sushi',
+    'Hamburguesería'
+  ];
+  
+  return restaurantCategories.some(restaurantCategory => 
+    category.toLowerCase().includes(restaurantCategory.toLowerCase())
+  );
+};
+
+// Function to get filtered improvement options based on category
+export const getFilteredImprovementOptions = (category: string) => {
+  const isRestaurant = isRestaurantCategory(category);
+  
+  if (isRestaurant) {
+    return improvementOptions; // Show all options for restaurants
+  } else {
+    return improvementOptions.filter(option => option.id !== 'food'); // Hide food option for non-restaurants
+  }
+};
 
 export const reviewExamples = [
   {

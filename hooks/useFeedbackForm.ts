@@ -536,9 +536,6 @@ export function useFeedbackForm() {
       
       console.log("🚀 [GoogleReview] Navigating to Google Maps");
       window.location.href = GOOGLE_REVIEW_URL;
-      setFeedbackCompleted(true);
-      setCurrentView(VIEWS.THANK_YOU);
-      setStep(FORM_STEPS.THANK_YOU);
       
     } catch (error) {
       console.error("❌ [GoogleReview] Failed to complete feedback before Google Maps:", error);

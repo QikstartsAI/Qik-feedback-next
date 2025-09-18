@@ -166,7 +166,7 @@ function FeedbackFormContent() {
                     <ProgressIndicator progress={detailedProgress.progress} />
                   </div>
                   <CardTitle className="text-lg text-gray-800 text-center">
-                    Valoramos tu opinión 😊, te tomará menos de 60 segundos.
+                  Tu opinión cuenta 😊, solo 60 segundos.
                   </CardTitle>
                 </CardHeader>
 
@@ -213,6 +213,7 @@ function FeedbackFormContent() {
                       onSubmitFeedback={handleFeedbackSubmit}
                       onOpenGoogleMaps={openGoogleMaps}
                       feedbackLoading={feedbackLoading}
+                      businessCategory={currentBranch?.payload?.category || currentBrand?.payload?.category || ""}
                     />
                   )}
                 </CardContent>
