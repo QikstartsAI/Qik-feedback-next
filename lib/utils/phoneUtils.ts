@@ -159,6 +159,32 @@ export const getFilteredImprovementOptions = (category: string) => {
   // }
 };
 
+// Function to clean phone number (equivalent to backend cleanPhone)
+export const cleanPhone = (phoneNumber: string): string => {
+  if (!phoneNumber) return '';
+  
+  // Remove all non-digit characters
+  const cleaned = phoneNumber.replace(/\D/g, '');
+  
+  console.log("📞 [cleanPhone] Input:", phoneNumber, "→ Output:", cleaned);
+  return cleaned;
+};
+
+// Function to format phone for server API calls
+export const formatPhoneForAPI = (phoneNumber: string, countryCode: string = "+593"): string => {
+  if (!phoneNumber) return '';
+  
+  // Remove country code and spaces from display format
+  const withoutCountryCode = phoneNumber.replace(countryCode + " ", "").replace(/\D/g, "");
+  
+  // Add country code digits (without +)
+  const countryDigits = countryCode.replace('+', '');
+  const formatted = countryDigits + withoutCountryCode;
+  
+  console.log("📞 [formatPhoneForAPI] Input:", phoneNumber, "Country:", countryCode, "→ Output:", formatted);
+  return formatted;
+};
+
 export const reviewExamples = [
   {
     id: "review-1",

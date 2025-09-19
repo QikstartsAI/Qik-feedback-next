@@ -42,3 +42,7 @@ export {
   GetWaiterByIdUseCase,
   type IGetWaiterByIdUseCase,
 } from "./GetWaiterByIdUseCase";
+export {
+  CustomerService,
+  type ICustomerService,
+} from "./CustomerService";

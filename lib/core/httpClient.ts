@@ -121,14 +121,17 @@ export class HttpClient implements IHttpClient {
       },
     });
 
-    // Add request interceptor to dynamically add Bearer token
+    // Add request interceptor to dynamically add API key
     httpClient.addRequestInterceptor(async (config) => {
-      // Use NEXT_PUBLIC_API_KEY as Bearer token (as per backend implementation)
+      // Use NEXT_PUBLIC_API_KEY as x-api-key header (as per backend implementation)
       if (process.env.NEXT_PUBLIC_API_KEY) {
         config.headers = {
           ...config.headers,
-          "Authorization": `Bearer ${process.env.NEXT_PUBLIC_API_KEY}`,
+          "x-api-key": process.env.NEXT_PUBLIC_API_KEY,
         };
+        console.log("🔑 [HttpClient] Added x-api-key header to request");
+      } else {
+        console.warn("⚠️ [HttpClient] NEXT_PUBLIC_API_KEY not found, requests may fail with 401");
       }
       return config;
     });

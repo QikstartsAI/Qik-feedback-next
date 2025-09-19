@@ -18,6 +18,7 @@ import {
   SEND_FEEDBACK_USE_CASE,
   CREATE_INCOMPLETE_FEEDBACK_USE_CASE,
   COMPLETE_FEEDBACK_USE_CASE,
+  CUSTOMER_SERVICE,
 } from "./ServiceIdentifiers";
 
 import { HttpClient, IHttpClient } from "../httpClient";
@@ -48,6 +49,7 @@ import {
   SendFeedbackUseCase,
   CreateIncompleteFeedbackUseCase,
   CompleteFeedbackUseCase,
+  CustomerService,
 } from "@/lib/domain/usecases";
 
 export class ServiceRegistry {
@@ -163,6 +165,14 @@ export class ServiceRegistry {
         FEEDBACK_REPOSITORY
       );
       return new CompleteFeedbackUseCase(feedbackRepository);
+    });
+
+    // Register services
+    container.registerSingleton(CUSTOMER_SERVICE, async () => {
+      const customerRepository = await container.resolve<CustomerRepository>(
+        CUSTOMER_REPOSITORY
+      );
+      return new CustomerService(customerRepository);
     });
 
     return container;

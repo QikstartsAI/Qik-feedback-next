@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { useCustomer } from "@/hooks/useCustomer";
+import { useCustomerService } from "@/hooks/useCustomerService";
 import { useBrand } from "@/hooks/useBrand";
 import { useBranch } from "@/hooks/useBranch";
 import { useWaiter } from "@/hooks/useWaiter";
@@ -23,6 +24,8 @@ import {
   validatePhone,
   getCountryCodeFromISO,
   countryCodes,
+  cleanPhone,
+  formatPhoneForAPI,
 } from "@/lib/utils/phoneUtils";
 import {
   calculateDetailedProgress,
@@ -34,7 +37,8 @@ import { getAverageTicket } from "@/app/constants/form";
 
 export function useFeedbackForm() {
   // Hooks
-  const { currentCustomer, getCustomerByPhone, customerType, createCustomer } = useCustomer();
+  const { currentCustomer, getCustomerByPhone, customerType } = useCustomer();
+  const { createOrRecoverCustomer } = useCustomerService();
   const { currentBrand, getBrandById, loading: brandLoading } = useBrand();
   const { currentBranch, getBranchById, setCurrentBranch, loading: branchLoading } = useBranch();
   const { getWaiterById, loading: waiterLoading } = useWaiter();
@@ -71,20 +75,7 @@ export function useFeedbackForm() {
   const [brandBranches, setBrandBranches] = useState<Branch[]>([]);
   const [isFromGoogle, setIsFromGoogle] = useState<boolean>(false);
 
-  // Fallback function to create mock customer when server fails
-  const createMockCustomer = (customerData: any) => {
-    const mockCustomer = {
-      id: `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      payload: {
-        ...customerData,
-        customerType: "new" as const,
-      }
-    };
-    console.log("🔄 [useFeedbackForm] Created mock customer due to server error:", mockCustomer.id);
-    return mockCustomer;
-  };
+
 
   // Detect if user is coming from Google
   useEffect(() => {
@@ -339,8 +330,23 @@ export function useFeedbackForm() {
 
     if (!validation.error && digitsOnly.length === expectedLength) {
       const currentBranchId = currentBranch?.id || branchId || undefined;
+      
+      // Clean and format phone number for server
+      const cleanedPhone = cleanPhone(value);
+      const formattedPhone = formatPhoneForAPI(value, selectedCountryCode);
+      
+      console.log("📞 [useFeedbackForm] handlePhoneChange - Phone processing:", {
+        originalPhone: value,
+        digitsOnly: digitsOnly,
+        cleanedPhone: cleanedPhone,
+        formattedPhone: formattedPhone,
+        currentBranchId
+      });
+      
+      // Try with formatted phone (includes country code)
       try {
-        await getCustomerByPhone(digitsOnly, currentBranchId);
+        const customer = await getCustomerByPhone(formattedPhone, currentBranchId);
+        console.log("📞 [useFeedbackForm] handlePhoneChange - Customer result:", customer ? "Found" : "Not found");
       } catch (error) {
         console.warn("⚠️ [useFeedbackForm] handlePhoneChange - Failed to get customer by phone:", error);
         // Don't show error to user, just continue as new customer
@@ -463,14 +469,14 @@ export function useFeedbackForm() {
         
         let customerData = currentCustomer;
         
-        // If no customer exists, create one
+        // If no customer exists, create or recover one
         if (!customerData) {
-          console.log("📝 Creating new customer for feedback");
+          console.log("📝 Creating or recovering customer for feedback");
           try {
             const newCustomerPayload = {
               name: firstName,
               lastName: lastName,
-              phoneNumber: phone,
+              phoneNumber: formatPhoneForAPI(phone, selectedCountryCode), // Use cleaned phone
               email: "",
               birthDate: new Date("1990-01-01"), // Default birth date
               branches: currentBranch ? [{
@@ -479,21 +485,18 @@ export function useFeedbackForm() {
               }] : []
             };
             
-            try {
-              customerData = await createCustomer(newCustomerPayload);
-              
-              if (!customerData) {
-                console.warn("⚠️ [useFeedbackForm] createCustomer returned null, using mock customer");
-                customerData = createMockCustomer(newCustomerPayload);
-              }
-            } catch (error) {
-              console.warn("⚠️ [useFeedbackForm] createCustomer failed, using mock customer:", error);
-              customerData = createMockCustomer(newCustomerPayload);
+            customerData = await createOrRecoverCustomer(newCustomerPayload);
+            
+            if (!customerData) {
+              console.error("❌ [useFeedbackForm] Failed to create or recover customer");
+              toast.error("No se pudo crear o recuperar el cliente. Por favor, inténtalo de nuevo.");
+              return;
             }
             
-            console.log("✅ Customer created successfully:", customerData.id);
+            console.log("✅ Customer created or recovered successfully:", customerData.id);
           } catch (error) {
-            console.error("Error creating customer:", error);
+            console.error("Error creating or recovering customer:", error);
+            toast.error("No se pudo crear o recuperar el cliente. Por favor, inténtalo de nuevo.");
             return;
           }
         }
@@ -512,44 +515,6 @@ export function useFeedbackForm() {
           originString = `${referralSource}:${otherSource}`;
         }
 
-        // Check if we have a mock customer and handle it appropriately
-        const isMockCustomer = customerData.id.startsWith('mock-');
-        
-        if (isMockCustomer) {
-          console.warn("⚠️ [useFeedbackForm] handleFeedbackSubmit - Detected mock customer, attempting to create real customer first");
-          
-          try {
-            // Try to create a real customer with the current form data
-            const realCustomerPayload = {
-              name: firstName,
-              lastName: lastName,
-              phoneNumber: phone,
-              email: "",
-              birthDate: new Date("1990-01-01"),
-              branches: currentBranch ? [{
-                branchId: currentBranch.id,
-                acceptPromotions
-              }] : []
-            };
-            
-            try {
-              const realCustomer = await createCustomer(realCustomerPayload);
-              
-              if (realCustomer && !realCustomer.id.startsWith('mock-')) {
-                console.log("✅ [useFeedbackForm] handleFeedbackSubmit - Successfully created real customer", realCustomer.id);
-                customerData = realCustomer;
-              } else {
-                console.warn("⚠️ [useFeedbackForm] handleFeedbackSubmit - createCustomer returned null or mock, using mock customer");
-                customerData = createMockCustomer(realCustomerPayload);
-              }
-            } catch (error) {
-              console.warn("⚠️ [useFeedbackForm] handleFeedbackSubmit - createCustomer failed, using mock customer:", error);
-              customerData = createMockCustomer(realCustomerPayload);
-            }
-          } catch (error) {
-            console.error("❌ [useFeedbackForm] handleFeedbackSubmit - Error creating real customer:", error);
-          }
-        }
 
         const feedbackData: Feedback = {
           id: "",
@@ -687,14 +652,14 @@ export function useFeedbackForm() {
       // Create temporary customer and branch data if not available
       let customerData = currentCustomer;
       
-      // If no customer exists, create one
+      // If no customer exists, create or recover one
       if (!customerData) {
-        console.log("📝 Creating new customer for incomplete feedback");
+        console.log("📝 Creating or recovering customer for incomplete feedback");
         try {
           const newCustomerPayload = {
             name: firstName,
             lastName: lastName,
-            phoneNumber: phone,
+            phoneNumber: formatPhoneForAPI(phone, selectedCountryCode), // Use cleaned phone
             email: "",
             birthDate: new Date("1990-01-01"), // Default birth date
             branches: currentBranch ? [{
@@ -703,21 +668,16 @@ export function useFeedbackForm() {
             }] : []
           };
           
-          try {
-            customerData = await createCustomer(newCustomerPayload);
-            
-            if (!customerData) {
-              console.warn("⚠️ [useFeedbackForm] createCustomer returned null, using mock customer");
-              customerData = createMockCustomer(newCustomerPayload);
-            }
-          } catch (error) {
-            console.warn("⚠️ [useFeedbackForm] createCustomer failed, using mock customer:", error);
-            customerData = createMockCustomer(newCustomerPayload);
+          customerData = await createOrRecoverCustomer(newCustomerPayload);
+          
+          if (!customerData) {
+            console.error("❌ [useFeedbackForm] Failed to create or recover customer for incomplete feedback");
+            return;
           }
           
-          console.log("✅ Customer created successfully:", customerData.id);
+          console.log("✅ Customer created or recovered successfully:", customerData.id);
         } catch (error) {
-          console.error("Error creating customer:", error);
+          console.error("Error creating or recovering customer:", error);
           return;
         }
       }

@@ -16,20 +16,15 @@ export class CustomerRepositoryImpl implements CustomerRepository {
   /**
    * Clean phone number by removing formatting, spaces, and special characters
    * @param phone - Phone number with formatting
-   * @returns Clean phone number with only digits and + prefix
+   * @returns Clean phone number with only digits (no + prefix)
    */
   private cleanPhoneNumber(phone: string): string {
     if (!phone) return "";
     
-    // Remove all non-digit characters except +
-    let cleaned = phone.replace(/[^\d+]/g, "");
+    // Remove all non-digit characters (including +)
+    const cleaned = phone.replace(/\D/g, "");
     
-    // Ensure it starts with + if it has country code
-    if (cleaned.length > 0 && !cleaned.startsWith("+") && cleaned.length >= 10) {
-      // If it doesn't start with + but has enough digits, add +
-      cleaned = "+" + cleaned;
-    }
-    
+    console.log("📞 [CustomerRepository] cleanPhoneNumber - Input:", phone, "→ Output:", cleaned);
     return cleaned;
   }
 

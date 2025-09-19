@@ -14,8 +14,11 @@ export class UserRepositoryImpl implements UserRepository {
 
   async getUserByPhoneNumber(phoneNumber: string): Promise<User | null> {
     try {
+      // Clean phone number - remove all non-digit characters
+      const cleanPhone = phoneNumber.replace(/\D/g, '');
+      
       const response = await this.httpClient.get<User>(
-        `${this.baseUrl}/users/phone/${phoneNumber}`
+        `${this.baseUrl}/users/phone/${cleanPhone}`
       );
       return response.data;
     } catch (error) {

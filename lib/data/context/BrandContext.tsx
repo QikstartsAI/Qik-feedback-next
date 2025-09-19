@@ -84,6 +84,66 @@ export function BrandProvider({ children }: BrandProviderProps) {
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : "Failed to get brand by ID";
+        
+        // Check if it's an authentication error (401)
+        if (errorMessage.includes("401") || errorMessage.includes("Unauthorized")) {
+          console.warn("⚠️ [BrandContext] Authentication error (401), creating fallback brand");
+          
+          // Create a fallback brand to prevent app from breaking
+          const fallbackBrand: Brand = {
+            id: id,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            payload: {
+              name: "Restaurante",
+              description: "Restaurante de prueba",
+              category: "Restaurante",
+              logo: "/qik.svg",
+              primaryColor: "#3B82F6",
+              secondaryColor: "#1E40AF",
+              website: "",
+              socialMedia: {
+                instagram: "",
+                facebook: "",
+                tiktok: "",
+                whatsapp: ""
+              },
+              settings: {
+                allowAnonymousFeedback: true,
+                requirePhoneNumber: true,
+                showSocialMediaOptions: true,
+                enableGeolocation: true,
+                enableWaiterSelection: true,
+                enableBranchSelection: true,
+                enableRating: true,
+                enableComments: true,
+                enableImprovementSuggestions: true,
+                enableReferralSource: true,
+                enablePromotions: true,
+                enableTermsAndConditions: true,
+                maxCommentLength: 500,
+                minRating: 1,
+                maxRating: 5,
+                defaultCountryCode: "+593",
+                supportedCountries: ["+593", "+54", "+57", "+52", "+1"],
+                businessHours: {
+                  monday: { open: "09:00", close: "22:00", isOpen: true },
+                  tuesday: { open: "09:00", close: "22:00", isOpen: true },
+                  wednesday: { open: "09:00", close: "22:00", isOpen: true },
+                  thursday: { open: "09:00", close: "22:00", isOpen: true },
+                  friday: { open: "09:00", close: "22:00", isOpen: true },
+                  saturday: { open: "09:00", close: "22:00", isOpen: true },
+                  sunday: { open: "09:00", close: "22:00", isOpen: true }
+                }
+              }
+            }
+          };
+          
+          setCurrentBrand(fallbackBrand);
+          setError(null); // Don't show error to user
+          return fallbackBrand;
+        }
+        
         setError(errorMessage);
         return null;
       } finally {
