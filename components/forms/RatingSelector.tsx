@@ -53,13 +53,13 @@ export function RatingSelector({
   onRatingSelect,
 }: RatingSelectorProps) {
   return (
-    <div className="grid grid-cols-5 gap-3">
+    <div className="grid grid-cols-5 gap-2 md:gap-3">
       {ratingOptions.map((item) => (
         <button
           key={item.id}
           onClick={() => onRatingSelect(item.id)}
           className={cn(
-            "p-4 rounded-lg transition-all duration-200 flex flex-col items-center justify-center group",
+            "p-3 md:p-4 rounded-lg transition-all duration-200 flex flex-col items-center justify-center group",
             {
               "bg-purple-50 text-purple-700": selectedRating === item.id,
               "bg-transparent text-gray-700 hover:bg-gray-50": selectedRating !== item.id,
@@ -69,19 +69,19 @@ export function RatingSelector({
           <div className={cn(
             "transition-all duration-200 mb-2",
             {
-              "scale-125": selectedRating === item.id,
-              "scale-100 group-hover:scale-110": selectedRating !== item.id,
+              "scale-110 opacity-100": selectedRating === item.id,
+              "scale-100 opacity-60 group-hover:scale-105 group-hover:opacity-80": selectedRating !== item.id,
             }
           )}>
             <Image
               src={item.image}
               alt={item.label}
-              className="w-8 h-8"
+              className="w-12 h-12 md:w-14 md:h-14"
               width={129}
               height={129}
             />
           </div>
-          <div className="text-xs font-semibold text-center">{item.label}</div>
+          <div className="text-xs md:text-sm font-semibold text-center">{item.label}</div>
         </button>
       ))}
     </div>

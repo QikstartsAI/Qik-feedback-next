@@ -94,30 +94,28 @@ export function RatingRadioGroup({
   className 
 }: RatingRadioGroupProps) {
   return (
-    <div className={cn("grid grid-cols-4 gap-2", className)}>
+    <div className={cn("grid grid-cols-4 gap-2 md:gap-3", className)}>
       {ratingOptions.map((option) => (
         <button
           key={option.value}
           type="button"
           onClick={() => onChange(option.value)}
           className={cn(
-            "flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all hover:scale-110 hover:sm:scale-125",
+            "flex flex-col items-center justify-center p-3 md:p-4 rounded-lg border-2 transition-all duration-200 group",
             {
-              "border-primary bg-primary/10 scale-110 sm:scale-125": value === option.value,
-              "border-gray-300 bg-white hover:border-gray-400 hover:bg-gray-50": value !== option.value,
+              "border-primary bg-primary/10 scale-105 opacity-100": value === option.value,
+              "border-gray-300 bg-white hover:border-gray-400 hover:bg-gray-50 opacity-60 hover:opacity-80": value !== option.value,
             }
           )}
         >
           <Image
             src={option.image}
             alt={`experiencia ${option.label.default.toLowerCase()}`}
-            className={cn("w-8 h-8 sm:w-10 sm:h-10", {
-              "opacity-50": value !== option.value,
-            })}
+            className="w-10 h-10 md:w-12 md:h-12"
             width={668}
             height={657}
           />
-          <span className="text-xs font-semibold text-center mt-1">
+          <span className="text-xs md:text-sm font-semibold text-center mt-1">
             {getLabel(option, country)}
           </span>
         </button>
