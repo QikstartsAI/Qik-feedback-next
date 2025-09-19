@@ -140,6 +140,7 @@ export function useFeedbackForm() {
   const [copiedReviewId, setCopiedReviewId] = useState<string | null>(null);
   const [selectedCountryCode, setSelectedCountryCode] =
     useState(DEFAULT_COUNTRY_CODE);
+  const [isManualCountrySelection, setIsManualCountrySelection] = useState(false);
   const [currentWaiter, setCurrentWaiter] = useState<any>(null);
   const [showBranchSelection, setShowBranchSelection] = useState(false);
   const [availableBranches, setAvailableBranches] = useState<any[]>([]);
@@ -242,6 +243,12 @@ export function useFeedbackForm() {
 
   // Handle geolocation logic
   useEffect(() => {
+    // No abrir diálogos si ya tenemos una sucursal seleccionada
+    if (currentBranch) {
+      console.log("🚫 [Dialog Logic] Skipping dialog opening - branch already selected:", currentBranch.id);
+      return;
+    }
+
     if (enableGeolocation && effectiveBrand && !currentBranch && !waiterId) {
       // Show location dialog if geolocation is enabled and no specific branch/waiter is selected
       if (!locationPermission && !requestLocation) {
@@ -257,8 +264,13 @@ export function useFeedbackForm() {
     }
   }, [enableGeolocation, effectiveBrand, currentBranch, waiterId, locationPermission, requestLocation, geolocationBranches, brandBranches]);
 
-  // Pre-select country based on branch's country code
+  // Pre-select country based on branch's country code (only if not manually selected)
   useEffect(() => {
+    // Skip if user has manually selected a country
+    if (isManualCountrySelection) {
+      return;
+    }
+    
     if (currentBranch?.payload?.location?.countryCode) {
       const countryCode = getCountryCodeFromISO(
         currentBranch.payload.location.countryCode
@@ -291,7 +303,7 @@ export function useFeedbackForm() {
         }
       }
     }
-  }, [currentBranch, currentBrand, selectedCountryCode, phone]);
+  }, [currentBranch, currentBrand, selectedCountryCode, phone, isManualCountrySelection]);
 
   // Check for geolocation power and handle branch selection
   useEffect(() => {
@@ -352,6 +364,12 @@ export function useFeedbackForm() {
         // Don't show error to user, just continue as new customer
       }
     }
+  };
+
+  // Custom country code change handler
+  const handleCountryCodeChange = (countryCode: string) => {
+    setIsManualCountrySelection(true);
+    setSelectedCountryCode(countryCode);
   };
 
   // Form handlers
@@ -416,7 +434,9 @@ export function useFeedbackForm() {
 
   const handleBranchSelect = (branch: Branch) => {
     setShowBranchSelection(false);
-    getBranchById(branch.id);
+    setCurrentBranch(branch);
+    setCurrentView(VIEWS.WELCOME);
+    setStep(FORM_STEPS.WELCOME);
   };
 
   const handleFeedbackSubmit = async () => {
@@ -598,12 +618,12 @@ export function useFeedbackForm() {
       const googleUrl = `${GOOGLE_REVIEW_URL}&return_url=${encodeURIComponent(returnUrl)}`;
       console.log("🔗 [GoogleReview] Final Google URL:", googleUrl);
 
-      window.location.href = googleUrl;
+      // Open Google Maps in a new tab
+      window.open(googleUrl, '_blank', 'noopener,noreferrer');
       
-      setTimeout(() => {
-        setCurrentView(VIEWS.THANK_YOU);
-        setStep(FORM_STEPS.THANK_YOU);
-      }, 1000);
+      // Immediately show thank you view since user stays on current page
+      setCurrentView(VIEWS.THANK_YOU);
+      setStep(FORM_STEPS.THANK_YOU);
       
     } catch (error) {
       console.error("❌ [GoogleReview] Failed to complete feedback before Google Maps:", error);
@@ -754,8 +774,32 @@ export function useFeedbackForm() {
   };
 
   const handleBranchSelectFromDialog = (branch: any) => {
-    setCurrentBranch(branch);
-    setShowBranchSelectionDialog(false);
+    console.log("🚀 [Navigation] handleBranchSelectFromDialog called with branch:", branch);
+    
+    try {
+      console.log("🚀 [Navigation] Setting current branch...");
+      setCurrentBranch(branch);
+      
+      console.log("🚀 [Navigation] Closing ALL dialogs...");
+      setShowBranchSelectionDialog(false);
+      console.log("✅ [Navigation] BranchSelectionDialog (geolocation) closed");
+      setShowBranchSelection(false); // Cerrar también el primer diálogo
+      console.log("✅ [Navigation] BranchSelectionDialog (basic) closed");
+      setShowLocationDialog(false); // Asegurar que RequestLocationDialog también se cierre
+      console.log("✅ [Navigation] RequestLocationDialog closed");
+      setRequestLocation(false);
+      console.log("✅ [Navigation] RequestLocation state reset");
+      
+      console.log("🚀 [Navigation] Setting view to WELCOME...");
+      setCurrentView(VIEWS.WELCOME);
+      
+      console.log("🚀 [Navigation] Setting step to WELCOME...");
+      setStep(FORM_STEPS.WELCOME);
+      
+      console.log("✅ [Navigation] Navigation completed successfully - all dialogs closed");
+    } catch (error) {
+      console.error("❌ [Navigation] Error during navigation:", error);
+    }
   };
 
   // Validation
@@ -824,7 +868,7 @@ export function useFeedbackForm() {
     setFirstName,
     setLastName,
     handlePhoneChange,
-    setSelectedCountryCode,
+    setSelectedCountryCode: handleCountryCodeChange,
     setAcceptPromotions,
     setAcceptTerms,
     handleSourceSelect,

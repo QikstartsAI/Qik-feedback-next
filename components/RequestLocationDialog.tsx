@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { IconMapPin, IconEye, IconLoader2 } from "@tabler/icons-react";
 import { Branch } from "@/lib/domain/entities";
+import Image from "next/image";
 
 interface RequestLocationDialogProps {
   open: boolean;
@@ -55,26 +56,25 @@ export function RequestLocationDialog({
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className={`sm:max-w-md transition-all ease-in-out duration-100 ${open ? 'h-screen' : 'h-[0px]'}`}>
-        <DialogHeader>
-          <DialogTitle className="text-center text-xl font-semibold text-gray-800">
-            {currentState === 'grantPermissions' 
-              ? `¡Bienvenido a ${brandName}!` 
-              : 'Ubicación sugerida'
-            }
-          </DialogTitle>
-        </DialogHeader>
-
-        <div className="space-y-4">
+        <div className="space-y-6 flex flex-col justify-center h-full">
           {currentState === 'grantPermissions' && (
             <>
               <div className="text-center">
-                <div className="text-6xl mb-4 animate-bounce delay-100">📍</div>
-                <p className="text-gray-600 mb-6">
+                <div className="mb-6 animate-bounce delay-100 w-[150px] h-[150px] mx-auto">
+                  <Image
+                    src="/location-blue.svg"
+                    alt="Location pin"
+                    width={150}
+                    height={150}
+                    className="w-full h-full"
+                  />
+                </div>
+                <p className="text-gray-600 mb-8 text-lg">
                   Para brindarte la mejor experiencia, nos gustaría conocer tu ubicación y mostrarte la sucursal más cercana.
                 </p>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <Button
                   onClick={handleShareLocation}
                   disabled={grantingPermissions}

@@ -53,7 +53,11 @@ export function RatingSelector({
   onRatingSelect,
 }: RatingSelectorProps) {
   return (
-    <div className="grid grid-cols-5 gap-2 md:gap-3">
+    <div className="space-y-4">
+      <h3 className="text-lg md:text-xl font-semibold text-gray-800 text-center">
+        ¿Cómo estuvimos el día de hoy?
+      </h3>
+      <div className="grid grid-cols-5 gap-2 md:gap-3">
       {ratingOptions.map((item) => (
         <button
           key={item.id}
@@ -84,6 +88,7 @@ export function RatingSelector({
           <div className="text-xs md:text-sm font-semibold text-center">{item.label}</div>
         </button>
       ))}
+      </div>
     </div>
   );
 }

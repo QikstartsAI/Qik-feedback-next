@@ -69,7 +69,9 @@ export const UseLocationHookExample: React.FC = () => {
   const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
 
   const handleBranchSelect = (branch: Branch) => {
+    console.log("handleBranchSelect called", branch);
     setSelectedBranch(branch);
+    console.log("setSelectedBranch called", branch);
     setShowDialog(false);
   };
 

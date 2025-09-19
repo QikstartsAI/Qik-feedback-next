@@ -149,7 +149,7 @@ export const mapNumericToEmojiRating = (numericRating: string): string => {
 export const getBranchInfo = (branch: any) => {
   return {
     name: branch?.payload?.name || "Restaurante",
-    logo: branch?.payload?.logoImgURL || "/logo.png",
+    logo: branch?.payload?.logoImgURL || "/placeholder-logo.svg",
     coverImage: branch?.payload?.coverImgURL || "/restaurant-bg.jpg",
     address: branch?.payload?.location?.address || "Ubicación",
   };
@@ -158,7 +158,7 @@ export const getBranchInfo = (branch: any) => {
 export const getBrandInfo = (brand: any) => {
   return {
     name: brand?.payload?.name || "Restaurante",
-    logo: brand?.payload?.logoImgURL || "/logo.png",
+    logo: brand?.payload?.logoImgURL || "/placeholder-logo.svg",
     coverImage: brand?.payload?.coverImgURL || "/restaurant-bg.jpg",
     address: brand?.payload?.location?.address || "Ubicación",
   };

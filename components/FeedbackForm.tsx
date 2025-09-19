@@ -141,8 +141,8 @@ function FeedbackFormContent() {
       />
 
 
-      <div className="bg-gradient-to-b from-purple-100 via-blue-50 to-white">
-        <div className="max-w-md mx-auto p-6 -mt-8 relative z-20">
+      <div className="bg-gradient-to-b from-purple-100 via-blue-50 to-white min-h-screen">
+        <div className="max-w-md mx-auto p-4 md:p-6 -mt-8 relative z-20">
           {currentView === VIEWS.THANK_YOU ? (
             <ThankYouView rating={rating} />
           ) : (
@@ -151,11 +151,7 @@ function FeedbackFormContent() {
               {currentView === VIEWS.WELCOME && currentWaiter && (
                 <Intro 
                   waiter={currentWaiter}
-                  onCustomerTypeSelect={(type) => {
-                    // Handle customer type selection
-                    console.log("Customer type selected:", type);
-                  }}
-                  className="mb-6"
+                  className="mb-3 md:mb-6"
                 />
               )}
 
@@ -248,6 +244,10 @@ function FeedbackFormContent() {
       </div>
 
       {/* Branch Selection Dialog */}
+      {console.log("🔍 [FeedbackForm] Rendering first BranchSelectionDialog", { 
+        showBranchSelection, 
+        availableBranches: availableBranches.length 
+      })}
       <BranchSelectionDialog
         branches={availableBranches}
         open={showBranchSelection}
@@ -269,6 +269,12 @@ function FeedbackFormContent() {
       />
 
       {/* Branch Selection Dialog */}
+      {console.log("🔍 [FeedbackForm] Rendering second BranchSelectionDialog", { 
+        showBranchSelectionDialog, 
+        availableBranches: availableBranches.length,
+        locationPermission,
+        closestDestination: !!closestDestination
+      })}
       <BranchSelectionDialog
         branches={availableBranches}
         open={showBranchSelectionDialog}

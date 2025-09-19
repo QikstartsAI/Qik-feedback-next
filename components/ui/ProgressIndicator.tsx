@@ -31,13 +31,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
       <div className="w-full space-y-2">
         <Progress value={progress} className={`h-2 [&>div]:${progressColor}`} />
         <div className="text-xs text-gray-500 text-center">
-          {progress === 100 ? (
-            <span className="text-green-600 font-medium">
-              ¡Formulario completado!
-            </span>
-          ) : (
-            `${Math.round(progress)}% completado`
-          )}
+          {progress < 100 && `${Math.round(progress)}% completado`}
         </div>
       </div>
     </div>

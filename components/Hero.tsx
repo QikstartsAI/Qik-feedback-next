@@ -29,6 +29,13 @@ export function Hero({
         className="object-cover animate-in fade-in duration-700"
         priority={true}
         loading="eager"
+        onError={(e) => {
+          // Only log warning if it's not an example URL
+          if (!coverImage.includes('example.com') && !coverImage.includes('placeholder')) {
+            console.warn("Failed to load cover image:", coverImage);
+          }
+          e.currentTarget.src = "/restaurant-bg.jpg";
+        }}
       />
       
       {/* Dark Overlay */}
@@ -47,6 +54,13 @@ export function Hero({
               className="w-8 h-8 md:w-12 md:h-12 rounded-full"
               priority={true}
               loading="eager"
+              onError={(e) => {
+                // Only log warning if it's not an example URL
+                if (!logo.includes('example.com') && !logo.includes('placeholder')) {
+                  console.warn("Failed to load logo:", logo);
+                }
+                e.currentTarget.src = "/placeholder-logo.svg";
+              }}
             />
           </div>
           

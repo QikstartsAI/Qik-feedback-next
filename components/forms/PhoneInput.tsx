@@ -35,6 +35,7 @@ export function PhoneInput({
   const [showCountrySelector, setShowCountrySelector] = useState(false);
   const countrySelectorRef = useRef<HTMLDivElement>(null);
 
+
   // Close country selector when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -46,12 +47,29 @@ export function PhoneInput({
       }
     };
 
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setShowCountrySelector(false);
+      }
+    };
+
     if (showCountrySelector) {
-      document.addEventListener("mousedown", handleClickOutside);
+      // Add a small delay to prevent immediate closure
+      const timeoutId = setTimeout(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+      }, 100);
+      document.addEventListener("keydown", handleEscapeKey);
+      
+      return () => {
+        clearTimeout(timeoutId);
+        document.removeEventListener("mousedown", handleClickOutside);
+        document.removeEventListener("keydown", handleEscapeKey);
+      };
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscapeKey);
     };
   }, [showCountrySelector]);
 
@@ -81,6 +99,10 @@ export function PhoneInput({
         countryCode
       );
       onChange(formattedPhone);
+    } else {
+      // If no digits, just update the country code
+      const formattedPhone = formatPhoneWithCountryCode("", countryCode);
+      onChange(formattedPhone);
     }
   };
 
@@ -93,8 +115,12 @@ export function PhoneInput({
         <div className="relative" ref={countrySelectorRef}>
           <button
             type="button"
-            onClick={() => setShowCountrySelector(!showCountrySelector)}
-            className={`flex items-center px-3 h-10 border-2 border-r-0 rounded-l-md transition-colors ${
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setShowCountrySelector(!showCountrySelector);
+            }}
+            className={`flex items-center px-3 h-10 border-2 border-r-0 rounded-l-md transition-colors cursor-pointer ${
               showCountrySelector
                 ? "bg-purple-50 border-purple-400 text-purple-700"
                 : "bg-white border-gray-400 text-gray-800 hover:bg-gray-50 hover:border-gray-500"
@@ -111,13 +137,20 @@ export function PhoneInput({
           </button>
 
           {showCountrySelector && (
-            <div className="absolute top-full left-0 z-50 mt-1 w-64 bg-white border-2 border-gray-300 rounded-md shadow-xl max-h-60 overflow-y-auto">
+            <div 
+              className="absolute top-full left-0 z-[9999] mt-1 w-64 bg-white border-2 border-gray-300 rounded-md shadow-xl max-h-60 overflow-y-auto" 
+              style={{ position: 'absolute', zIndex: 9999 }}
+            >
               {countryCodes.map((country) => (
                 <button
                   key={country.code}
                   type="button"
-                  onClick={() => handleCountryCodeChange(country.code)}
-                  className={`flex items-center w-full px-3 py-3 text-left transition-colors border-b border-gray-100 last:border-b-0 ${
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleCountryCodeChange(country.code);
+                  }}
+                  className={`flex items-center w-full px-3 py-3 text-left transition-colors border-b border-gray-100 last:border-b-0 cursor-pointer ${
                     selectedCountryCode === country.code
                       ? "bg-purple-50 text-purple-700"
                       : "bg-white text-gray-700 hover:bg-gray-50"

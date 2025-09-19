@@ -7,13 +7,16 @@ interface ThankYouViewProps {
 }
 
 export function ThankYouView({ rating }: ThankYouViewProps) {
+  // Determine if the rating is negative (terrible, bad, or regular)
+  const isNegativeRating = rating === "terrible" || rating === "bad" || rating === "regular";
+  
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full p-8 bg-white">
-      {/* Check Icon */}
+      {/* Icon - Check mark for positive ratings, sad face for negative ratings */}
       <div className="mb-8">
         <Image
-          src="/checkqikstarts.svg"
-          alt="Check mark"
+          src={isNegativeRating ? "/emojiqikstartsbadreview.svg" : "/checkqikstarts.svg"}
+          alt={isNegativeRating ? "Sad face" : "Check mark"}
           width={80}
           height={80}
           className="w-20 h-20"

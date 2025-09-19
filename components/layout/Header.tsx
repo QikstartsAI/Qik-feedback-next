@@ -26,7 +26,18 @@ export function Header({
       <div className="relative z-10 flex items-center justify-center h-full px-4">
         <div className="flex items-center space-x-3 w-full max-w-md">
           <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-            <img src={logo} alt="Logo" className="w-8 h-8 rounded-full" />
+            <img 
+              src={logo} 
+              alt="Logo" 
+              className="w-8 h-8 rounded-full"
+              onError={(e) => {
+                // Only log warning if it's not an example URL
+                if (!logo.includes('example.com') && !logo.includes('placeholder')) {
+                  console.warn("Failed to load logo:", logo);
+                }
+                e.currentTarget.src = "/placeholder-logo.svg";
+              }}
+            />
           </div>
           <div className="text-white">
             <h1 className="text-lg font-bold">{name}</h1>
