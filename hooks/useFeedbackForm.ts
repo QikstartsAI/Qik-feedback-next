@@ -202,20 +202,35 @@ export function useFeedbackForm() {
   // Fetch data when component mounts or parameters change
   useEffect(() => {
     if (waiterId) {
-      const fetchWaiterAndBranch = async () => {
+      const fetchWaiterBranchAndBrand = async () => {
         try {
           const waiter = await getWaiterById(waiterId);
           if (waiter) {
             setCurrentWaiter(waiter);
-            await getBranchById(waiter.branchId);
+            const branch = await getBranchById(waiter.branchId);
+            if (branch && branch.brandId) {
+              // Get the brand from the branch to ensure we have all necessary data
+              await getBrandById(branch.brandId);
+            }
           }
         } catch (error) {
-          console.error("Error fetching waiter:", error);
+          console.error("Error fetching waiter, branch, and brand:", error);
         }
       };
-      fetchWaiterAndBranch();
+      fetchWaiterBranchAndBrand();
     } else if (branchId) {
-      getBranchById(branchId);
+      const fetchBranchAndBrand = async () => {
+        try {
+          const branch = await getBranchById(branchId);
+          if (branch && branch.brandId) {
+            // Get the brand from the branch to ensure we have all necessary data
+            await getBrandById(branch.brandId);
+          }
+        } catch (error) {
+          console.error("Error fetching branch and brand:", error);
+        }
+      };
+      fetchBranchAndBrand();
     } else if (brandId) {
       getBrandById(brandId);
     }

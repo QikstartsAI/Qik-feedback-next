@@ -33,7 +33,7 @@ export function WaiterCard({ waiter }: WaiterCardProps) {
             <div className="flex items-center space-x-1">
               <Star className="h-4 w-4 text-yellow-400 fill-current" />
               <span className="text-sm font-medium text-gray-700">
-                {rate.toFixed(1)}
+                {rate ? rate.toFixed(1) : 'N/A'}
               </span>
               <span className="text-xs text-gray-500">/ 5.0</span>
             </div>
