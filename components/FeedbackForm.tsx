@@ -243,16 +243,14 @@ function FeedbackFormContent() {
       </div>
 
       {/* Branch Selection Dialog */}
-      {console.log("🔍 [FeedbackForm] Rendering first BranchSelectionDialog", { 
-        showBranchSelection, 
-        availableBranches: availableBranches.length 
-      })}
       <BranchSelectionDialog
         branches={availableBranches}
         open={showBranchSelection}
         onBranchSelect={handleBranchSelect}
         brandColor="var(--qik)"
         brandName={currentBrand?.payload?.name}
+        progress={detailedProgress.progress}
+        onBack={backToWelcome}
       />
 
       {/* Location Request Dialog */}
@@ -268,12 +266,6 @@ function FeedbackFormContent() {
       />
 
       {/* Branch Selection Dialog */}
-      {console.log("🔍 [FeedbackForm] Rendering second BranchSelectionDialog", { 
-        showBranchSelectionDialog, 
-        availableBranches: availableBranches.length,
-        locationPermission,
-        closestDestination: !!closestDestination
-      })}
       <BranchSelectionDialog
         branches={availableBranches}
         open={showBranchSelectionDialog}
@@ -289,6 +281,8 @@ function FeedbackFormContent() {
           // The BranchSelectionDialog will handle the view change internally
         }}
         grantingPermissions={grantingPermissions}
+        progress={detailedProgress.progress}
+        onBack={backToWelcome}
       />
     </div>
   );

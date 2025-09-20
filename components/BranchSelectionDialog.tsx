@@ -3,11 +3,14 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Branch } from "@/lib/domain/entities";
 import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
+import { ProgressIndicator } from "@/components/ui/ProgressIndicator";
 import {
   IconCircle,
   IconCircleCheck,
   IconPinned,
   IconMapPin,
+  IconChevronLeft,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 // import { useLocation } from "@/hooks/useLocation"; // Removed - using props instead
@@ -27,6 +30,9 @@ interface BranchSelectionDialogProps {
   onGetLocation?: () => void;
   onDenyLocation?: () => void;
   grantingPermissions?: boolean;
+  // Progress and navigation
+  progress?: number;
+  onBack?: () => void;
 }
 
 export const BranchSelectionDialog: React.FC<BranchSelectionDialogProps> = ({
@@ -42,6 +48,9 @@ export const BranchSelectionDialog: React.FC<BranchSelectionDialogProps> = ({
   onGetLocation,
   onDenyLocation,
   grantingPermissions = false,
+  // Progress and navigation
+  progress = 0,
+  onBack,
 }) => {
   const [selectedBranchId, setSelectedBranchId] = useState<string | null>(null);
   const [currentView, setCurrentView] = useState<"permissions" | "selection">("permissions");
@@ -222,182 +231,192 @@ export const BranchSelectionDialog: React.FC<BranchSelectionDialogProps> = ({
 
   return (
     <div className={`fixed inset-0 bg-white z-50 transition-all ease-in-out duration-100 ${open ? 'h-screen' : 'h-[0px]'}`}>
-      <div className="h-full flex flex-col">
-        {/* Content */}
-        <div className="flex-1 p-4 overflow-y-auto flex items-center justify-center">
-          <div className="max-w-md w-full">
-            {currentView === "permissions" ? (
-              // PANTALLA 1: Solicitar permisos de ubicación
-              <div className="space-y-6 flex flex-col justify-center h-full">
-                <div className="text-center">
-                  <div className="mb-6 animate-bounce delay-100 w-[150px] h-[150px] mx-auto">
-                    <Image
-                      src="/location-blue.svg"
-                      alt="Location pin"
-                      width={150}
-                      height={150}
-                      className="w-full h-full"
-                    />
-                  </div>
-                  <p className="text-gray-600 mb-8 text-lg">
-                    Para brindarte la mejor experiencia, nos gustaría conocer tu ubicación y mostrarte la sucursal más cercana.
-                  </p>
+      <div className="bg-gradient-to-b from-purple-100 via-blue-50 to-white min-h-screen">
+        <div className="max-w-md mx-auto p-4 md:p-6 -mt-8 relative z-20">
+          {currentView === "permissions" ? (
+            // PANTALLA 1: Solicitar permisos de ubicación
+            <div className="space-y-6 flex flex-col justify-center h-full min-h-[80vh]">
+              <div className="text-center">
+                <div className="mb-6 animate-bounce delay-100 w-[150px] h-[150px] mx-auto">
+                  <Image
+                    src="/location-blue.svg"
+                    alt="Location pin"
+                    width={150}
+                    height={150}
+                    className="w-full h-full"
+                  />
                 </div>
-
-                <div className="space-y-4">
-                  <Button
-                    onClick={handleGrantLocation}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                    disabled={grantingPermissions}
-                  >
-                    {grantingPermissions ? (
-                      <>
-                        <span className="animate-pulse">QikStarts</span>
-                        <span className="ml-2">Obteniendo ubicación...</span>
-                      </>
-                    ) : (
-                      "Compartir ubicación"
-                    )}
-                  </Button>
-                  <Button
-                    onClick={handleDenyLocation}
-                    variant="outline"
-                    className="w-full"
-                  >
-                    Ver todas las sucursales
-                  </Button>
-                </div>
+                <p className="text-gray-600 mb-8 text-lg">
+                  Para brindarte la mejor experiencia, nos gustaría conocer tu ubicación y mostrarte la sucursal más cercana.
+                </p>
               </div>
-            ) : (
-              // PANTALLA 2: Selección de sucursales
-              <div className="space-y-3 w-full">
-                <div className="text-center mb-3">
-                  <p className="text-xs text-gray-500">
-                    Selecciona una sucursal o haz doble click para continuar
-                  </p>
-                </div>
-                
-                {/* Mostrar sucursal más cercana primero si hay geolocalización */}
-                {locationPermission && closestDestination && (
-                  <div className="space-y-1">
-                    <h3 className="text-xs font-bold text-gray-800 mb-2">
-                      🌟 Sucursal más cercana
-                    </h3>
-                    <div
-                      onClick={() => handleBranchSelect(closestDestination.id)}
-                      onDoubleClick={() => handleBranchDoubleClick(closestDestination)}
-                      className={cn(
-                        "flex items-center gap-3 border-2 py-3 px-3 rounded-lg cursor-pointer transition-colors bg-white",
-                        selectedBranchId === closestDestination.id
-                          ? "border-blue-500 bg-blue-50 shadow-md"
-                          : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"
-                      )}
-                    >
-                      {selectedBranchId === closestDestination.id ? (
-                        <IconCircleCheck
-                          size={20}
-                          strokeWidth={3}
-                          className="text-blue-600"
-                        />
-                      ) : (
-                        <IconCircle
-                          size={20}
-                          className="text-gray-600"
-                        />
-                      )}
 
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <IconMapPin
-                            size={14}
+              <div className="space-y-4">
+                <Button
+                  onClick={handleGrantLocation}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  disabled={grantingPermissions}
+                >
+                  {grantingPermissions ? (
+                    <>
+                      <span className="animate-pulse">QikStarts</span>
+                      <span className="ml-2">Obteniendo ubicación...</span>
+                    </>
+                  ) : (
+                    "Compartir ubicación"
+                  )}
+                </Button>
+                <Button
+                  onClick={handleDenyLocation}
+                  variant="outline"
+                  className="w-full"
+                >
+                  Ver todas las sucursales
+                </Button>
+              </div>
+            </div>
+          ) : (
+            // PANTALLA 2: Selección de sucursales con formato de primera vista
+            <Card className="shadow-xl border-0 bg-white animate-in slide-in-from-bottom duration-700 delay-2000">
+              <CardHeader className="text-center pb-4">
+                <div className="flex gap-3">
+                  {onBack && (
+                    <IconChevronLeft
+                      className="cursor-pointer"
+                      onClick={onBack}
+                    />
+                  )}
+                  <ProgressIndicator progress={progress} />
+                </div>
+                <CardTitle className="text-lg text-gray-800 text-center">
+                  Selecciona una sucursal
+                </CardTitle>
+              </CardHeader>
+
+              <CardContent className="space-y-4">
+                <div className="space-y-3 w-full">
+                  <div className="text-center mb-3">
+                    <p className="text-xs text-gray-500">
+                      Selecciona una sucursal o haz doble click para continuar
+                    </p>
+                  </div>
+                  
+                  {/* Mostrar sucursal más cercana primero si hay geolocalización */}
+                  {locationPermission && closestDestination && (
+                    <div className="space-y-1">
+                      <h3 className="text-xs font-bold text-gray-800 mb-2">
+                        🌟 Sucursal más cercana
+                      </h3>
+                      <div
+                        onClick={() => handleBranchSelect(closestDestination.id)}
+                        onDoubleClick={() => handleBranchDoubleClick(closestDestination)}
+                        className={cn(
+                          "flex items-center gap-3 border-2 py-3 px-3 rounded-lg cursor-pointer transition-colors bg-white",
+                          selectedBranchId === closestDestination.id
+                            ? "border-blue-500 bg-blue-50 shadow-md"
+                            : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"
+                        )}
+                      >
+                        {selectedBranchId === closestDestination.id ? (
+                          <IconCircleCheck
+                            size={20}
+                            strokeWidth={3}
+                            className="text-blue-600"
+                          />
+                        ) : (
+                          <IconCircle
+                            size={20}
                             className="text-gray-600"
                           />
-                          <h4 className="font-semibold text-sm text-gray-800">
-                            {closestDestination.payload.name}
-                          </h4>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <IconPinned size={10} className="text-gray-500" />
-                          <p className="text-xs text-gray-700 font-medium">
-                            {closestDestination.payload.location.address}
-                          </p>
-                        </div>
-                        <p className="text-xs text-green-600 font-medium mt-1">
-                          ⭐ Sucursal más cercana
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Mostrar todas las sucursales */}
-                <div className="space-y-1">
-                  <h3 className="text-xs font-bold text-gray-800 mb-2">
-                    📍 Todas las sucursales
-                  </h3>
-                  {branches.map((branch) => (
-                    <div
-                      key={branch.id}
-                      onClick={() => handleBranchSelect(branch.id)}
-                      onDoubleClick={() => handleBranchDoubleClick(branch)}
-                      className={cn(
-                        "flex items-center gap-3 border-2 py-2 px-3 rounded-lg cursor-pointer transition-colors bg-white",
-                        selectedBranchId === branch.id
-                          ? "border-blue-500 bg-blue-50 shadow-md"
-                          : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"
-                      )}
-                    >
-                      {selectedBranchId === branch.id ? (
-                        <IconCircleCheck
-                          size={20}
-                          strokeWidth={3}
-                          className="text-blue-600"
-                        />
-                      ) : (
-                        <IconCircle
-                          size={20}
-                          className="text-gray-600"
-                        />
-                      )}
-
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-xs text-gray-800">
-                          {branch.payload.name}
-                        </h4>
-                        <div className="flex items-center gap-1 mt-1">
-                          <IconPinned size={10} className="text-gray-500" />
-                          <p className="text-xs text-gray-700 font-medium">
-                            {branch.payload.location.address}
-                          </p>
-                        </div>
-                        {branch.id === closestDestination?.id && (
-                          <p className="text-xs text-green-600 font-medium mt-1">
-                            ⭐ Más cercana
-                          </p>
                         )}
+
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <IconMapPin
+                              size={14}
+                              className="text-gray-600"
+                            />
+                            <h4 className="font-semibold text-sm text-gray-800">
+                              {closestDestination.payload.name}
+                            </h4>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <IconPinned size={10} className="text-gray-500" />
+                            <p className="text-xs text-gray-700 font-medium">
+                              {closestDestination.payload.location.address}
+                            </p>
+                          </div>
+                          <p className="text-xs text-green-600 font-medium mt-1">
+                            ⭐ Sucursal más cercana
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+                  )}
 
-        {/* Fixed Bottom Buttons - Solo para selección de sucursales */}
-        {currentView === "selection" && (
-          <div className="border-t bg-white p-4 flex items-center justify-center">
-            <div className="max-w-md w-full">
-              <Button
-                onClick={handleConfirm}
-                className="w-full"
-                disabled={branches.length === 0 || isConfirming || isProcessingRef.current}
-              >
-                {isConfirming || isProcessingRef.current ? "Continuando..." : "Continuar"}
-              </Button>
-            </div>
-          </div>
-        )}
+                  {/* Mostrar todas las sucursales */}
+                  <div className="space-y-1">
+                    <h3 className="text-xs font-bold text-gray-800 mb-2">
+                      📍 Todas las sucursales
+                    </h3>
+                    {branches.map((branch) => (
+                      <div
+                        key={branch.id}
+                        onClick={() => handleBranchSelect(branch.id)}
+                        onDoubleClick={() => handleBranchDoubleClick(branch)}
+                        className={cn(
+                          "flex items-center gap-3 border-2 py-2 px-3 rounded-lg cursor-pointer transition-colors bg-white",
+                          selectedBranchId === branch.id
+                            ? "border-blue-500 bg-blue-50 shadow-md"
+                            : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"
+                        )}
+                      >
+                        {selectedBranchId === branch.id ? (
+                          <IconCircleCheck
+                            size={20}
+                            strokeWidth={3}
+                            className="text-blue-600"
+                          />
+                        ) : (
+                          <IconCircle
+                            size={20}
+                            className="text-gray-600"
+                          />
+                        )}
+
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-xs text-gray-800">
+                            {branch.payload.name}
+                          </h4>
+                          <div className="flex items-center gap-1 mt-1">
+                            <IconPinned size={10} className="text-gray-500" />
+                            <p className="text-xs text-gray-700 font-medium">
+                              {branch.payload.location.address}
+                            </p>
+                          </div>
+                          {branch.id === closestDestination?.id && (
+                            <p className="text-xs text-green-600 font-medium mt-1">
+                              ⭐ Más cercana
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Continue Button */}
+                  <Button
+                    onClick={handleConfirm}
+                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                    disabled={branches.length === 0 || isConfirming || isProcessingRef.current}
+                  >
+                    {isConfirming || isProcessingRef.current ? "Continuando..." : "Continuar"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
     </div>
   );
